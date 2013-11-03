@@ -51,7 +51,7 @@ class Locale {
 	}
 	
 	public function import($lang, $file) {
-		$yaml = new \Symfony\Yaml\sfYamlParser();
+		$yaml = new \Symfony\Component\Yaml\Parser();
 		$raw = $yaml->parse(file_get_contents($file));
 		if(!isset($this->locales[$lang]))
 			$this->locales[$lang] = array();

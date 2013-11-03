@@ -57,7 +57,7 @@ class Browser {
 		$request->url->setURL($url);
 		$request->url->setServer('localhost');
 		$request->url->setRoot('');
-		
+
 		Coxis::load();
 
 		$res = \Coxis\Core\FrontController::getResponse();
