@@ -31,7 +31,7 @@ class Hookable {
 
 	public function hookAfter($hookName, $cb, $priority=0) {
 		$args = array(array('instances', spl_object_hash($this), $hookName), $cb);
-		return call_user_func_array(array('Hook', 'hookBefore'), $args);
+		return call_user_func_array(array('Hook', 'hookAfter'), $args);
 	}
 
 	public function getHooks() {
