@@ -146,7 +146,31 @@ class ModelForm extends Form {
 		else
 			$this->model->set($data);
 
-		return array_merge(parent::my_errors(), $this->model->errors());
+		$errors = array();
+		foreach($this->files as $name=>$f) {
+			switch($f['error']) {
+				case UPLOAD_ERR_INI_SIZE:
+					$errors[$name][] = __('The uploaded file exceeds the max filesize.');
+					break;
+				case UPLOAD_ERR_FORM_SIZE:
+					$errors[$name][] = __('The uploaded file exceeds the max filesize.');
+					break;
+				case UPLOAD_ERR_PARTIAL:
+					$errors[$name][] = __('The uploaded file was only partially uploaded.');
+					break;
+				case UPLOAD_ERR_NO_TMP_DIR:
+					$errors[$name][] = __('Missing a temporary folder.');
+					break;
+				case UPLOAD_ERR_CANT_WRITE:
+					$errors[$name][] = __('Failed to write file to disk.');
+					break;
+				case UPLOAD_ERR_EXTENSION:
+					$errors[$name][] = __('A PHP extension stopped the file upload.');
+					break;
+			}
+		}
+
+		return array_merge($errors, parent::my_errors(), $this->model->errors());
 	}
 	
 	public function save() {
