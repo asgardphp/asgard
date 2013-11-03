@@ -35,15 +35,15 @@ class Request implements \ArrayAccess {
 		global $argv;
 
 		$request = new static;
-		$request->get->setAll($_GET);
-		$request->post->setAll($_POST);
-		$request->file->setAll($_FILES);
-		$request->cookie->setAll($_COOKIE);
-		$request->server->setAll($_SERVER);
-		$request->argv->setAll($argv);
+		$request->get->_setAll($_GET);
+		$request->post->_setAll($_POST);
+		$request->file->_setAll($_FILES);
+		$request->cookie->_setAll($_COOKIE);
+		$request->server->_setAll($_SERVER);
+		$request->argv->_setAll($argv);
 		try {
 			$request->start();
-			$request->session->setAll($_SESSION);
+			$request->session->_setAll($_SESSION);
 		} catch(\ErrorException $e) {}
 		$request->body = file_get_contents('php://input');
 		try {

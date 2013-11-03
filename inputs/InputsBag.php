@@ -63,6 +63,14 @@ abstract class InputsBag implements \ArrayAccess {
 		return $this->clear()->set($all);
 	}
 
+	public function _setAll($all) {
+		return $this->clear()->_set($all);
+	}
+
+	public function _set($what, $value=null) {
+		return $this->set($what, $value);
+	}
+
 	public function size() {
 		return sizeof($this->inputs);
 	}

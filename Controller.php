@@ -8,7 +8,7 @@ class Controller extends Viewable {
 	public static function fetchRoutes() {
 		$routes = array();
 		$class = get_called_class();
-		$reflection = new \ReflectionAnnotatedClass($class);
+		$reflection = new \Addendum\ReflectionAnnotatedClass($class);
 		
 		if($reflection->getAnnotation('Prefix'))
 			$prefix = \Coxis\Core\Router::formatRoute($reflection->getAnnotation('Prefix')->value);
@@ -19,7 +19,7 @@ class Controller extends Viewable {
 		foreach($methods as $method) {
 			if(!preg_match('/Action$/i', $method))
 				continue;
-			$method_reflection = new \ReflectionAnnotatedMethod($class, $method);
+			$method_reflection = new \Addendum\ReflectionAnnotatedMethod($class, $method);
 		
 			if($method_reflection->getAllAnnotations('Route')) {
 				foreach($method_reflection->getAllAnnotations('Route') as $annotation) {

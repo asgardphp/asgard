@@ -16,12 +16,20 @@ namespace Coxis\Core {
 		public $from = '';
 		// public $preimported = array();
 
-		public $basedir = 'vendor/';
+		public $basedir;
+
+		public $aliases = array();
 
 		public function __construct($from='') {
+			// $this->basedir = _VENDOR_DIR_;
+			$this->basedir = _DIR_;
 			$this->from = $from;
 		}
 		
+		public function alias($original, $alias) {
+			$this->aliases[$alias] = $original;
+		}
+
 		public function import($what, $into='') {
 			$imports = explode(',', $what);
 			foreach($imports as $import) {
@@ -83,6 +91,9 @@ namespace Coxis\Core {
 			if(class_exists($class, false) || interface_exists($class, false))
 				// return static::createAlias($class, $alias);
 				return true;
+			#alias
+			elseif(isset($this->aliases[$class]))
+				return class_alias($this->aliases[$class], $class, true);
 			#file map
 			elseif(isset(Autoloader::$map[strtolower($class)]))
 				return static::loadClassFile(Autoloader::$map[strtolower($class)], $class);
@@ -91,14 +102,14 @@ namespace Coxis\Core {
 				foreach(Autoloader::$directories as $prefix=>$dir) {
 					if(preg_match('/^'.preg_quote($prefix).'/', $class)) {
 						$rest = preg_replace('/^'.preg_quote($prefix).'\\\?/', '', $class);
-						$path = $dir.DIRECTORY_SEPARATOR.static::class2path($rest);
-						
-						if(file_exists(_DIR_.$path))
+						$path = _DIR_.$dir.DIRECTORY_SEPARATOR.static::class2path($rest);
+
+						if(file_exists($path))
 							return static::loadClassFile($path, $class);
 					}
 				}
 
-				if(file_exists(_DIR_.$this->basedir.($path = static::class2path($class))))
+				if(file_exists($this->basedir.($path = static::class2path($class))))
 					return static::loadClassFile($this->basedir.$path, $class);
 				
 				// d($class);#only to test importer

@@ -6,10 +6,7 @@ if(version_compare(PHP_VERSION, '5.3.0') < 0)
 define('_START_', time()+microtime());
 ini_set('error_reporting', E_ALL);
 ini_set('display_errors', true);
-define('_DIR_', getcwd().'/'); #todo move it to index.php?
-define('_VENDOR_DIR_', _DIR_.'vendor/'); #todo move it to index.php?
 set_include_path(get_include_path() . PATH_SEPARATOR . _DIR_);
-define('_WEB_DIR_', _DIR_.'web/');#todo: remove..
 
 /* UTILS */
 function d() {
@@ -32,40 +29,36 @@ if(!function_exists('getallheaders')) {
 			if(substr($name, 0, 5) == 'HTTP_')
 				$headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
 		return $headers; 
-	} 
+	}
 } 
 function coxis_array_merge(&$a,$b){
     foreach($b as $child=>$value) {
         if(isset($a[$child])) {
             if(is_array($a[$child]) && is_array($value))
-                coxis_array_merge($a[$child],$value);
+                coxis_array_merge($a[$child], $value);
         }
         else
-            $a[$child]=$value;
+            $a[$child] = $value;
     }
 }
 function __($key, $params=array()) {
-	return \Context::get('locale')->translate($key, $params);
+	return \Coxis\Core\Context::get('locale')->translate($key, $params);
 }
 function is_function($f) {
     return (is_object($f) && ($f instanceof \Closure));
 }
 
-ob_start();
-
 /* CORE/LIBS */
-require_once _VENDOR_DIR_.'coxis/utils/Tools.php';
-require_once _VENDOR_DIR_.'coxis/core/Coxis.php';
-require_once _VENDOR_DIR_.'coxis/core/IoC.php';
-require_once _VENDOR_DIR_.'coxis/core/Context.php';
-require_once _VENDOR_DIR_.'coxis/utils/NamespaceUtils.php';
-require_once _VENDOR_DIR_.'coxis/core/Importer.php';
-require_once _VENDOR_DIR_.'coxis/core/Autoloader.php';
+require_once _COXIS_DIR_.'utils/Tools.php';
+require_once _CORE_DIR_.'Coxis.php';
+require_once _CORE_DIR_.'IoC.php';
+require_once _CORE_DIR_.'Context.php';
+require_once _COXIS_DIR_.'utils/NamespaceUtils.php';
+require_once _CORE_DIR_.'Importer.php';
+require_once _CORE_DIR_.'Autoloader.php';
 
-spl_autoload_register(array('Coxis\Core\Autoloader', 'loadClass'));
-Autoloader::preloadDir(_VENDOR_DIR_.'coxis/core/');
-foreach(Coxis::$facades as $facade=>$class)
-	Autoloader::map(strtolower($facade), _VENDOR_DIR_.'coxis/core/facades/'.$facade.'.php');
+require _VENDOR_DIR_.'autoload.php'; #composer autoloader
+spl_autoload_register(array('Coxis\Core\Autoloader', 'loadClass')); #coxis autoloader
 
 \Coxis\Utils\Timer::start();
 
@@ -84,15 +77,41 @@ register_shutdown_function(function () {
 		chdir(_DIR_);//wtf?
 		#todo get the full backtrace for shutdown errors
 		if($e=error_get_last()) {
-			if($e['type'] == 1) {
+			// if($e['type'] == 1) { #todo don't catch max file upload size
 				while(ob_get_level()){ ob_end_clean(); }
 				$response = \Coxis\Core\Error::report("($e[type]) $e[message]<br>
 					$e[file] ($e[line])", array(array('file'=>$e['file'], 'line'=>$e['line'])));
 				$response->send(false);
-			}
+			// }
 		}
 	}
 	if(\Config::get('profiler'))
 		Profiler::report();
 });
+
+ob_start();
+\Coxis\Core\Autoloader::preloadDir(_CORE_DIR_);
+
+\Coxis\Core\Facades::inst()->register('Importer', '\Coxis\Core\Facades\Importer');
+\Coxis\Core\Facades::inst()->register('Router', '\Coxis\Core\Facades\Router');
+\Coxis\Core\Facades::inst()->register('Config', '\Coxis\Core\Facades\Config');
+\Coxis\Core\Facades::inst()->register('Response', '\Coxis\Core\Facades\Response');
+\Coxis\Core\Facades::inst()->register('Memory', '\Coxis\Core\Facades\Memory');
+\Coxis\Core\Facades::inst()->register('Flash', '\Coxis\Core\Facades\Flash');
+\Coxis\Core\Facades::inst()->register('Validation', '\Coxis\Core\Facades\Validation');
+\Coxis\Core\Facades::inst()->register('ModelsManager', '\Coxis\Core\Facades\ModelsManager');
+\Coxis\Core\Facades::inst()->register('Hook', '\Coxis\Core\Facades\Hook');
+\Coxis\Core\Facades::inst()->register('Locale', '\Coxis\Core\Facades\Locale');
+\Coxis\Core\Facades::inst()->register('Request', '\Coxis\Core\Facades\Request');
+\Coxis\Core\Facades::inst()->register('URL'	, '\Coxis\Core\Facades\URL');
+\Coxis\Core\Facades::inst()->register('Session', '\Coxis\Core\Facades\Session');
+\Coxis\Core\Facades::inst()->register('Get', '\Coxis\Core\Facades\Get');
+\Coxis\Core\Facades::inst()->register('Post', '\Coxis\Core\Facades\Post');
+\Coxis\Core\Facades::inst()->register('File', '\Coxis\Core\Facades\File');
+\Coxis\Core\Facades::inst()->register('Cookie', '\Coxis\Core\Facades\Cookie');
+\Coxis\Core\Facades::inst()->register('Server', '\Coxis\Core\Facades\Server');
+
+\Coxis\Core\Facades::inst()->register('CLIRouter', 'Coxis\Cli\Facades\CLIRouter');
+\Coxis\Core\Facades::inst()->register('HTML', 'Coxis\Utils\Facades\HTML');
+
 \Coxis\Utils\Profiler::checkpoint('End of coxis.php');

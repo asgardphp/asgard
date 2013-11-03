@@ -10,25 +10,22 @@ class Context {
 	protected $ioc = null;
 
 	function __construct() {
-		$context = $this;
 		$this->ioc = new IoC;
 
-		foreach(Coxis::$facades as $facade=>$class) {
-			if(!$this->ioc->registered(strtolower($facade))) {
-				if(is_function($class))
-					$this->ioc->register(strtolower($facade), $class);
-				else {
-					$this->ioc->register(strtolower($facade), function() use($class) {
-						return new $class;
-					});
-				}
-			}
+		foreach(\Coxis\Core\Facades::inst()->all() as $facade=>$f) {
+			list($class, $cb) = $f;
+			if(!$this->ioc->registered(strtolower($facade)))
+				$this->ioc->register(strtolower($facade), $cb);
+		}
+		foreach(\Coxis\Core\Facades::inst()->all() as $facade=>$f) {
+			list($class, $cb) = $f;
+			$this->_get('importer')->alias($class, $facade);
 		}
 	}
 
 	public static function newDefault() {
 		$rand = Tools::randstr(10);
-		Context::setDefault($rand);
+		static::setDefault($rand);
 	}
 
 	public static function getDefault() {
@@ -67,8 +64,14 @@ class Context {
 	}
 
 	public function set($name, $value) {
-		$this->classes[$name] = $value;
-		return $this;
+		if(is_callable($value)) {
+			$this->ioc->register($name, $value);
+			// return $this->get($name);
+		}
+		else {
+			$this->classes[$name] = $value;
+			// return $this;
+		}
 	}
 
 	public function __set($name, $value) {

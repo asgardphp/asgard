@@ -14,14 +14,9 @@ abstract class Facade {
 	}
 
 	public static function getClass() {
-		// $class = static::$class;
 		if(isset(static::$class))
 			return static::$class;
 		else
 			return strtolower(NamespaceUtils::basename(get_called_class()));
-		// d($class);
-		// return 'Instance'.NamespaceUtils::basename(get_called_class());
-		// return NamespaceUtils::basename(get_called_class());
-		// return $class;
 	}
 }

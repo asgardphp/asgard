@@ -7,5 +7,26 @@
 	}],
     "autoload": {
         "psr-0": {"Coxis\\Core": "../.."}
+    },
+    "require": {
+        "symfony/yaml": "dev-master",
+        "duvanmonsa/php-query": "dev-master",
+        "coxis/auth": "dev-master",
+        "coxis/behaviors": "dev-master",
+        "coxis/cli": "dev-master",
+        "coxis/db": "dev-master",
+        "coxis/files": "dev-master",
+        "coxis/form": "dev-master",
+        "coxis/hook": "dev-master",
+        "coxis/orm": "dev-master",
+        "coxis/utils": "dev-master",
+        "coxis/validation": "dev-master"
+    },
+    "suggest": {
+        "coxis/seo": "dev-master",
+        "coxis/js": "dev-master",
+        "coxis/ckeditor": "dev-master",
+        "coxis/captcha": "dev-master",
+        "coxis/minify": "dev-master"
     }
 }

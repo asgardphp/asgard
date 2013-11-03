@@ -2,5 +2,7 @@
 namespace Coxis\Core\Facades;
 
 abstract class URL extends \Coxis\Core\Facade {
-	protected static $class = 'url';
+	public static function callback() {
+		return \Request::inst()->url;
+	}
 }

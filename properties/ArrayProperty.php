@@ -32,9 +32,11 @@ class ArrayProperty extends BaseProperty {
 	public function set($val) {
 		if(is_array($val))
 			return $val;
-		if($res = unserialize($val))
-			return $res;
-		else
-			return array();
+		try {
+			$res = unserialize($val);
+			return $res;	
+		} catch(\Exception $e) {
+			return array($val);
+		}
 	}
 }

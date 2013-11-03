@@ -6,12 +6,7 @@ class Autoloader {
 		// 'Something'	=>	'there/somewhere.php',
 	);
 	public static $directories = array(
-		// 'foo\bar'	=>	'there',
-		// 'swift_'	=>	'swift',
-		'Coxis\App'	=>	'app',
-		// 'Coxis'	=>	'coxis',
-		'App'	=>	'app',
-		'Tests'	=>	'tests',
+		// 'App'	=>	'app',
 	);
 	public static $preloaded = array(
 		// array('Somewhere', 'there/somewhere.php'),
@@ -26,13 +21,15 @@ class Autoloader {
 	}
 
 	public static function preloadClass($class, $file) {
-		static::$preloaded[] = array(strtolower($class), $file);
+		if(!array_search(realpath($file), static::$preloaded));
+			static::$preloaded[] = array(strtolower($class), realpath($file));
 	}
 	
 	public static function preloadDir($file) {
-		if(is_dir($file))
+		if(is_dir($file) && !strpos($file, '.') !== 0) {
 			foreach(glob($file.'/*') as $sub_file)
 				static::preloadDir($sub_file);
+		}
 		else {
 			if(!preg_match('/^[A-Z]{1}[a-zA-Z0-9_]+.php$/', basename($file)))
 				return;
@@ -50,7 +47,6 @@ class Autoloader {
 			return;
 		
 		$dir = \Coxis\Core\NamespaceUtils::dirname($class);
-		// $dir = str_replace('\\', DIRECTORY_SEPARATOR, \Coxis\Core\NamespaceUtils::dirname($class));
 
 		Context::get('importer')->_import($class, array('into'=>$dir));
 	}

@@ -1,35 +1,36 @@
 <?php
 namespace {
-	require_once('vendor/addendum/annotations.php');
-
 	/* Controllers */
-	class Annootate_Hook extends Annotation {}
-	class Annootate_Prefix extends Annotation {}
-	class Annootate_Priority extends Annotation {}
-	class Annootate_Route extends Annotation {
+	class Annootate_Hook extends Addendum\Annotation {}
+	class Annootate_Prefix extends Addendum\Annotation {}
+	class Annootate_Priority extends Addendum\Annotation {}
+	class Annootate_Route extends Addendum\Annotation {
 		public $name;
 		public $requirements;
 		public $method;
 	}
-	class Annootate_Shortcut extends Annotation {}
-	class Annootate_Usage extends Annotation {}
-	class Annootate_Description extends Annotation {}
+	class Annootate_Shortcut extends Addendum\Annotation {}
+	class Annootate_Usage extends Addendum\Annotation {}
+	class Annootate_Description extends Addendum\Annotation {}
 }
 
 namespace Coxis\Core {
-	abstract class BundlesManager {
-		public static function loadBundle($bundle) {
+	class BundlesManager {
+		protected static $inst = null;
+		protected $bundles = array();
+
+		/*public static function loadBundle($bundle) {
 			$bundle_load = array();
 			if(file_exists($bundle.'/coxis_load.php'))
 				$bundle_load = require $bundle.'/coxis_load.php';
 			if(file_exists($bundle.'/../coxis_dirload.php'))
-				$bundle_load = array_merge($bundle_load, require $bundle.'/../coxis_dirload.php');
+				$bundle_load = array_merge(require $bundle.'/../coxis_dirload.php', $bundle_load);
 			if(isset($bundle_load['type']))
 				$bundle_type = $bundle_load['type'];
 			else
 				$bundle_type = null;
 
-			if($bundle_type == 'mvc') {
+			if($bundle_type == 'mvc') { #todo replace mvc with "app"
 				\Context::get('locale')->importLocales($bundle.'/locales');
 
 				Autoloader::preloadDir($bundle.'/models');
@@ -52,33 +53,72 @@ namespace Coxis\Core {
 						\Coxis\Core\Importer::loadClassFile($filename);
 				}
 			}
+		}*/
+		
+		public function getBundles($directory = null) {
+			// return \Config::get('bundles');
+
+			// if(\Config::get('phpCache') && $bundles=\Coxis\Utils\Cache::get('bundlesmanager/bundles'))
+			// 	return $bundles;
+			// else {
+			// 	$bundles = array();
+			// 	if(!$directory)
+			// 		$directories = \Config::get('bundle_directories');
+			// 	elseif(is_string($directory))
+			// 		$directories = array($directory);
+			// 	else
+			// 		$directories = $directory;
+			// 	foreach($directories as $dir)
+			// 		foreach(glob(_DIR_.$dir.'/*') as $bundlepath)
+			// 			$bundles[] = realpath($bundlepath);
+			// 	if(\Config::get('phpCache'))
+			// 		\Coxis\Utils\Cache::set('bundlesmanager/bundles', $bundles);
+			// 	return $bundles;
+			// }
+
+			return $this->bundles;
 		}
 		
-		public static function getBundles($directory = null) {
-			if(\Config::get('phpCache') && $bundles=\Coxis\Utils\Cache::get('bundlesmanager/bundles'))
-				return $bundles;
+		public function getBundlesPath($directory = null) {
+			$r = array();
+			foreach($this->getBundles() as $bundle)
+				$r[] = $bundle->getBundle();
+			return $r;
+		}
+
+		public static function inst() {
+			if(!static::$inst)
+				static::$inst = new static;
+			return static::$inst;
+		}
+
+		public function addBundle($bundle) {
+			if(file_exists($bundle.'/Bundle.php') && ($b=include $bundle.'/Bundle.php') && is_subclass_of($b, 'Coxis\Core\BundleLoader'))
+				$this->bundles[] = $b;
 			else {
-				$bundles = array();
-				if(!$directory)
-					$directories = \Config::get('bundle_directories');
-				elseif(is_string($directory))
-					$directories = array($directory);
-				else
-					$directories = $directory;
-				foreach($directories as $dir)
-					foreach(glob(_DIR_.$dir.'/*') as $bundlepath)
-						$bundles[] = realpath($bundlepath);
-				if(\Config::get('phpCache'))
-					\Coxis\Utils\Cache::set('bundlesmanager/bundles', $bundles);
-				return $bundles;
+				$b = new \Coxis\Core\BundleLoader;
+				$b->setBundle($bundle);
+				$this->bundles[] = $b;
 			}
 		}
 		
-		public static function loadBundles($directory = null) {
+		function __construct() {
 			Profiler::checkpoint('loadBundles 1');
-			$bundles = static::getBundles($directory);
+			$bundles = \Config::get('bundles');
 			Profiler::checkpoint('loadBundles 2');
 
+			foreach($bundles as $bundle) {
+				$this->addBundle($bundle);
+			}
+
+			foreach($this->bundles as $b) {
+				if(is_subclass_of($b, 'Coxis\Core\BundleLoader'))
+					$b->load($this);
+			}
+		}
+
+		public static function loadBundles($directory = null) {
+			$bundle_queue = static::inst();
 			if($bm=\Coxis\Utils\Cache::get('bundlesmanager')) {
 				\CLIRouter::setRoutes($bm['cliroutes']);
 				\Router::setRoutes($bm['routes']);
@@ -87,10 +127,9 @@ namespace Coxis\Core {
 				Autoloader::$preloaded = $bm['preloaded'];
 			}
 			else {
-				foreach($bundles as $bundle)
-					Autoloader::preloadDir($bundle.'/libs');
-				foreach($bundles as $bundle)
-					static::loadBundle($bundle);
+				#todo run should always be called, even when there is no cache. Some code in the bundles run method should not though, like for preloading.
+				foreach($bundle_queue->bundles as $b)
+					$b->run();
 
 				$cliroutes = static::getCLIRoutes();
 				$routes = static::getRoutes();
@@ -112,11 +151,6 @@ namespace Coxis\Core {
 				));
 			}
 			Profiler::checkpoint('loadBundles 3');
-
-			foreach($bundles as $bundle)
-				if(file_exists($bundle.'/bundle.php'))
-					include($bundle.'/bundle.php');
-			Profiler::checkpoint('loadBundles 4');
 		}
 
 		public static function loadModelFixtures($bundle_path) {
@@ -126,7 +160,7 @@ namespace Coxis\Core {
 		}
 
 		public static function loadModelFixturesAll() {
-			foreach(static::getBundles() as $bundle)
+			foreach(static::inst()->getBundlesPath() as $bundle)
 				static::loadModelFixtures($bundle);
 		}
 
@@ -143,12 +177,12 @@ namespace Coxis\Core {
 				if(!$r->isInstantiable())
 					continue;
 
-				$reflection = new \ReflectionAnnotatedClass($classname);
+				$reflection = new \Addendum\ReflectionAnnotatedClass($classname);
 
 				foreach(get_class_methods($classname) as $method) {
 					if(!preg_match('/Action$/i', $method))
 						continue;
-					$method_reflection = new \ReflectionAnnotatedMethod($classname, $method);
+					$method_reflection = new \Addendum\ReflectionAnnotatedMethod($classname, $method);
 
 					if($v = $method_reflection->getAnnotation('Shortcut')) {
 						$usage = $description = '';
