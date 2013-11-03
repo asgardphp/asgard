@@ -1,10 +1,11 @@
 <?php
-namespace Coxis\App\Value\Models;
+namespace App\Value\Models;
 
-class Value extends \Coxis\App\Value\SingleValue {
+class Value extends \App\Value\Models\SingleValue {
 	public static $properties = array(
 		'key',
 		'value'    => array(
+			'type' => 'longtext',
 			'required'    =>    false,
 		),
 	);

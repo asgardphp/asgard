@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\App\Value\Controllers;
+namespace App\Value\Controllers;
 
 /**
 @Prefix('admin/preferences')

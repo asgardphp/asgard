@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\App\Value\Models;
+namespace App\Value\Models;
 
 abstract class SingleValue extends \Coxis\Core\Model {
 	public static $stored = array();
