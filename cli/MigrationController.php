@@ -2,7 +2,7 @@
 #todo delete old model tables
 namespace Coxis\ORM\CLI;
 
-class MigrationController extends \Coxis\Core\CLI\CLIController {
+class MigrationController extends \Coxis\Cli\CLIController {
 	/**
 	@Shortcut('automigrate')
 	@Usage('automigrate')

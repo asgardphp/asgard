@@ -10,7 +10,7 @@ class ORMManager {
 	}
 
 	public static function loadModelFixtures($file) {
-		$yaml = new \Symfony\Yaml\sfYamlParser();
+		$yaml = new \Symfony\Component\Yaml\Parser();
 		$raw = $yaml->parse(file_get_contents($file));
 
 		$models = array();
@@ -62,7 +62,7 @@ class ORMManager {
 	}
 
 	protected static function _diff() {
-		$bundles = BundlesManager::getBundles();
+		$bundles = BundlesManager::inst()->getBundlesPath();
 		
 		foreach($bundles as $bundle)
 			foreach(glob($bundle.'/models/*.php') as $model)
