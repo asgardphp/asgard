@@ -9,7 +9,7 @@
         "psr-0": {"Coxis\\Core": "../.."}
     },
     "require": {
-        "coxis/addendum": "dev-master",
+        "niktux/addendum": "dev-master",
         "symfony/yaml": "dev-master",
         "duvanmonsa/php-query": "dev-master",
         "coxis/auth": "dev-master",
@@ -29,11 +29,5 @@
         "coxis/ckeditor": "dev-master",
         "coxis/captcha": "dev-master",
         "coxis/minify": "dev-master"
-    },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/coxis/addendum"
-        }
-    ]
+    }
 }
