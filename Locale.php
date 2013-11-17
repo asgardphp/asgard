@@ -9,6 +9,11 @@ class Locale {
 		static::setLocale(\Config::get('locale'));
 	}
 
+	public function addLocales($locales) {
+		$this->locales = array_merge_recursive($this->locales, $locales);
+		return $this;
+	}
+
 	public function setLocales($locales) {
 		$this->locales = $locales;
 		return $this;
@@ -42,12 +47,13 @@ class Locale {
 	}
 	
 	public function importLocales($dir) {
-		if(is_array(glob($dir.'/*')))
+		if(is_array(glob($dir.'/*'))) {
 			foreach(glob($dir.'/*') as $lang_dir) {
 				$lang = basename($lang_dir);
 				foreach(glob($lang_dir.'/*') as $file)
 					$this->import($lang, $file);
 			}
+		}
 	}
 	
 	public function import($lang, $file) {
@@ -57,5 +63,25 @@ class Locale {
 			$this->locales[$lang] = array();
 		if(is_array($raw))
 			$this->locales[$lang] = array_merge($this->locales[$lang], $raw);
+	}
+
+	public function fetchLocalesFromDir($dir) {
+		$locales = array();
+		if(is_array(glob($dir.'/*'))) {
+			foreach(glob($dir.'/*') as $lang_dir) {
+				$lang = basename($lang_dir);
+				foreach(glob($lang_dir.'/*') as $file)
+					$locales = array_merge($locales, $this->fetchLocalesFromFile($file));
+			}
+		}
+		return $locales;
+	}
+
+	public function fetchLocalesFromFile($file) {
+		$yaml = new \Symfony\Component\Yaml\Parser();
+		$raw = $yaml->parse(file_get_contents($file));
+		if(is_array($raw))
+			return $raw;
+		return $raw;
 	}
 }

@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core;
+namespace Coxis\Utils;
 
 class NamespaceUtils {
 	public static function basename($ns) {

@@ -2,16 +2,7 @@
 namespace Coxis\Utils;
 
 class Profiler {
-	static $checkpoints = array();
-
-	public static function _autoload() {
-		if(defined('_START_')) {
-			static::$checkpoints[] = array(
-				'name'	=>	'start',
-				'time'	=>	_START_,
-			);
-		}
-	}
+	public static $checkpoints = array();
 
 	public static function checkpoint($name) {
 		$bt = debug_backtrace();
@@ -43,4 +34,10 @@ class Profiler {
 		}
 		Log::add('profiler/'.date('Y-m-d H-i-s').'.txt', $str);
 	}
+}
+if(defined('_START_')) {
+	Profiler::$checkpoints[] = array(
+		'name'	=>	'start',
+		'time'	=>	_START_,
+	);
 }
