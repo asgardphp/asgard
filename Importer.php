@@ -1,7 +1,4 @@
 <?php
-// loadClass
-// 	returns file
-
 namespace {
 	function from($from='') {
 		return new \Coxis\Core\Importer($from);
@@ -14,14 +11,12 @@ namespace {
 namespace Coxis\Core {
 	class Importer {
 		public $from = '';
-		// public $preimported = array();
 
 		public $basedir;
 
 		public $aliases = array();
 
 		public function __construct($from='') {
-			// $this->basedir = _VENDOR_DIR_;
 			$this->basedir = _DIR_;
 			$this->from = $from;
 		}
@@ -36,7 +31,7 @@ namespace Coxis\Core {
 				$import = trim($import);
 				
 				$class = $what;
-				$alias = \Coxis\Core\NamespaceUtils::basename($class);
+				$alias = \Coxis\Utils\NamespaceUtils::basename($class);
 				$vals = explode(' as ', $import);
 				if(isset($vals[1])) {
 					$class = trim($vals[0]);
@@ -60,7 +55,7 @@ namespace Coxis\Core {
 				$intoNamespace = '';
 
 			if(!$alias && $alias !== false) 
-				$alias = ($intoNamespace ? $intoNamespace.'\\':'').\Coxis\Core\NamespaceUtils::basename($class);
+				$alias = ($intoNamespace ? $intoNamespace.'\\':'').\Coxis\Utils\NamespaceUtils::basename($class);
 
 			#look for the class
 			if($res=$this->loadClass($class)) {
@@ -70,14 +65,14 @@ namespace Coxis\Core {
 			}
 			#go to upper level
 			else {
-				$dir = \Coxis\Core\NamespaceUtils::dirname($class);
+				$dir = \Coxis\Utils\NamespaceUtils::dirname($class);
 
 				if($dir != '.') {
-					$base = \Coxis\Core\NamespaceUtils::basename($class);
-					if(\Coxis\Core\NamespaceUtils::dirname($dir) == '.')
+					$base = \Coxis\Utils\NamespaceUtils::basename($class);
+					if(\Coxis\Utils\NamespaceUtils::dirname($dir) == '.')
 						$next = $base;
 					else
-						$next = str_replace(DIRECTORY_SEPARATOR, '\\', \Coxis\Core\NamespaceUtils::dirname($dir)).'\\'.$base;
+						$next = str_replace(DIRECTORY_SEPARATOR, '\\', \Coxis\Utils\NamespaceUtils::dirname($dir)).'\\'.$base;
 
 					return static::_import($next, array('into'=>$intoNamespace, 'as'=>$alias));
 				}
@@ -111,22 +106,18 @@ namespace Coxis\Core {
 
 				if(file_exists($this->basedir.($path = static::class2path($class))))
 					return static::loadClassFile($this->basedir.$path, $class);
-				
-				// d($class);#only to test importer
 
 				#lookup for global classes
-				if(\Coxis\Core\NamespaceUtils::dirname($class) == '.') {
+				if(\Coxis\Utils\NamespaceUtils::dirname($class) == '.') {
 					$classes = array();
 					
 					#check if there is any corresponding class already loaded
 					foreach(array_merge(get_declared_classes(), get_declared_interfaces()) as $v)
-						if(strtolower(\Coxis\Core\NamespaceUtils::basename($class)) == strtolower(\Coxis\Core\NamespaceUtils::basename($v)))
+						if(strtolower(\Coxis\Utils\NamespaceUtils::basename($class)) == strtolower(\Coxis\Utils\NamespaceUtils::basename($v)))
 							return static::createAlias($v, $class);
 					
-					#remove, only for testing class loading
-					// d();
 					foreach(Autoloader::$preloaded as $v)
-						if(strtolower(\Coxis\Core\NamespaceUtils::basename($class)) == $v[0])
+						if(strtolower(\Coxis\Utils\NamespaceUtils::basename($class)) == $v[0])
 							$classes[] = $v;
 					if(sizeof($classes) == 1)
 						return static::loadClassFile($classes[0][1], $class);
@@ -152,27 +143,24 @@ namespace Coxis\Core {
 			$after = array_merge(get_declared_classes(), get_declared_interfaces());
 			
 			$diff = array_diff($after, $before);
-			foreach($diff as $class) {
-				if(method_exists($class, '_autoload')) {
-					try {
-						call_user_func(array($class, '_autoload'));
-					} catch(\Exception $e) {
-						d($e); #todo error report this exception cause autoloader does not let it bubble up
+			$result = \Coxis\Utils\Tools::get(array_values($diff), sizeof($diff)-1);
+			if(!$result) {
+				foreach(array_merge(get_declared_classes(), get_declared_interfaces()) as $class) {
+					$reflector = new \ReflectionClass($class);
+					if($reflector->getFileName() == realpath($file)) {
+						$result = $class;
+						break;
 					}
 				}
 			}
-			if($alias) {
-				$result = \Coxis\Utils\Tools::get(array_values($diff), sizeof($diff)-1);
-				if(static::createAlias($result, $alias))
-					return $file;
+			if($alias && !static::createAlias($result, $alias))
 				return false;
-				// return static::createAlias($result, $alias);
-			}
+			return $result;
 		}
 		
 		public static function class2path($class) {
-			$className = \Coxis\Core\NamespaceUtils::basename($class);
-			$namespace = strtolower(\Coxis\Core\NamespaceUtils::dirname($class));
+			$className = \Coxis\Utils\NamespaceUtils::basename($class);
+			$namespace = strtolower(\Coxis\Utils\NamespaceUtils::dirname($class));
 
 			$namespace = str_replace('\\', DIRECTORY_SEPARATOR , $namespace );
 
@@ -186,7 +174,7 @@ namespace Coxis\Core {
 		}
 
 		public static function createAlias($loadedClass, $class) {
-			if(strtolower(\Coxis\Core\NamespaceUtils::basename($class)) != strtolower(\Coxis\Core\NamespaceUtils::basename($loadedClass)))
+			if(strtolower(\Coxis\Utils\NamespaceUtils::basename($class)) != strtolower(\Coxis\Utils\NamespaceUtils::basename($loadedClass)))
 				return false;
 			try {
 				if($loadedClass !== $class)

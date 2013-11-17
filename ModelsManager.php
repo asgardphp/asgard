@@ -135,6 +135,14 @@ class ModelDefinition extends Hookable {
 		return $this->behaviors;
 	}
 
+	public function behavior($name) {
+		return $this->behaviors[$name];
+	}
+
+	public function hasBehavior($name) {
+		return isset($this->behaviors[$name]) && $this->behaviors[$name];
+	}
+
 	public function relations() {
 		return $this->relations;
 	}

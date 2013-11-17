@@ -26,6 +26,6 @@ class Coxis {
 
 	public static function load() {
 		static::setDefaultEnvironment();
-		BundlesManager::loadBundles();
+		BundlesManager::instance()->loadBundles(\Config::get('bundles'));
 	}
 }

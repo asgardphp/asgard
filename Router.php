@@ -4,10 +4,6 @@ namespace Coxis\Core;
 class Router {
 	protected $routes = array();
 
-	public static function formatControllerName($controller) {
-		return preg_replace('/Controller$/i', '', $controller);
-	}
-
 	public static function formatActionName($action) {
 		return preg_replace('/Action$/i', '', $action);
 	}
@@ -16,19 +12,23 @@ class Router {
 		$this->routes = $routes;
 	}
 
+	public function addRoutes($routes) {
+		foreach($routes as $route)
+			$this->addRoute($route);
+	}
+
 	public function addRoute($route) {
 		$this->routes[] = $route;
 	}
 
 	public function dispatch($request, $response=null) {
 		$route = $this->parseRoutes($request);
-		if(method_exists($route['controller'].'Controller', $route['action'].'Action'))
+		if(method_exists($route['controller'], $route['action'].'Action'))
 			return Controller::run($route['controller'], $route['action'], $request, $response);
 		else
 			throw new NotFoundException('Page not found');
 	}
 
-	//todo ADD root /
 	public static function formatRoute($route) {
 		return '/'.trim($route, '/');
 	}
@@ -82,7 +82,6 @@ class Router {
 						$replacement = $requirement['regex']; break;
 					case 'integer':
 						$replacement = '[0-9]+'; break;
-					//todo int, etc.
 				}
 			}
 			else
@@ -96,7 +95,6 @@ class Router {
 
 	public function parseRoutes($request) {
 		$request_key = md5(serialize(array($request->method(), $request->url->get())));
-		#todo complete key
 
 		$routes = $this->routes;
 		$results = \Coxis\Utils\Cache::get('Router/requests/'.$request_key, function() use($routes, $request) {

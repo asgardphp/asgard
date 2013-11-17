@@ -27,7 +27,7 @@ class Controller extends Viewable {
 
 					$routes[] = array(
 						'route'	=>	$route,
-						'controller'		=>	\Coxis\Core\Router::formatControllerName($class), 
+						'controller'		=>	$class, 
 						'action'			=>	\Coxis\Core\Router::formatActionName($method),
 						'requirements'	=>	$method_reflection->getAnnotation('Route')->requirements,
 						'method'	=>	$method_reflection->getAnnotation('Route')->method,
@@ -53,25 +53,19 @@ class Controller extends Viewable {
 	}
 	
 	public static function url_for($action, $params=array(), $relative=false) {
-		return \URL::url_for(array(static::getControllerName(), $action), $params, $relative);
-	}
-	
-	public static function getControllerName() {
-		#todo what for?
-		return preg_replace('/Controller$/', '', get_called_class());
+		return \URL::url_for(array(get_called_class(), $action), $params, $relative);
 	}
 
-	public static function run($controllerShortname, $actionShortname, $request=null, $response=null) {
+	public static function run($controllerClassName, $actionShortname, $request=null, $response=null) {
 		if($request === null)
 			$request = new Request;
 		if($response === null)
 			$response = new Response;
 
-		$controllerClassName = $controllerShortname.'Controller';
 		$actionName = $actionShortname.'Action';
 		$controller = new $controllerClassName();
 
-		$request->route = array('controller'=>$controllerShortname, 'action'=>$actionShortname);
+		$request->route = array('controller'=>$controllerClassName, 'action'=>$actionShortname);
 		$controller->request = $request;
 		$controller->response = $response;
 
