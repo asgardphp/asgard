@@ -4,6 +4,8 @@ namespace Coxis\Core;
 class FrontController extends Controller {
 	public function mainAction() {
 		Profiler::checkpoint('Before loading coxis');
+		if(file_exists(_DIR_.'app/load.php'))
+			include _DIR_.'app/load.php';
 		\Coxis::load();
 		Profiler::checkpoint('After loading coxis');
 		return static::getResponse();
