@@ -14,15 +14,6 @@ abstract class AbstractGroup extends \Coxis\Hook\Hookable implements \ArrayAcces
 		return $this->dad->render($render_callback, $field, $options);
 	}
 
-	// public function getRenderCallback($name) {
-	// 	if(isset($this->render_callbacks[$name]))
-	// 		return $this->render_callbacks[$name];
-	// 	elseif($this->dad) 
-	// 		return $this->dad->getRenderCallback($name);
-	// 	else
-	// 		return Form::getDefaultRanderCallback($name);
-	// }
-
 	public function setErrors($errors) {
 		foreach($errors as $name=>$error)
 			$this->fields[$name]->setErrors($error);
@@ -53,18 +44,21 @@ abstract class AbstractGroup extends \Coxis\Hook\Hookable implements \ArrayAcces
 	}
 	
 	public function isSent() {
-		//todo handle get form
 		$method = strtolower(\Request::method());
-		if($method != 'post')
-			return false;
-		else
-			if($this->dad)
-				return $this->dad->isSent();
-			else
-				if($this->groupName)
+		if($this->dad)
+			return $this->dad->isSent();
+		else {
+			if($this->groupName) {
+				if($method == 'POST' || $method == 'PUT')
+					return \POST::has($this->groupName);
+				elseif($method == 'GET')
 					return \POST::has($this->groupName);
 				else
-					return true;
+					return false;
+			}
+			else
+				return true;
+		}
 	}
 
 	public function parseFields($fields, $name) {
@@ -75,7 +69,6 @@ abstract class AbstractGroup extends \Coxis\Hook\Hookable implements \ArrayAcces
 				);
 			}
 			elseif(is_object($fields) && is_subclass_of($fields, 'Coxis\Form\Fields\Field')) {
-				#todo
 				if(in_array($name, array('groupName', 'dad', 'data', 'fields', 'params', 'files'), true))
 					throw new \Exception('Can\'t use keyword "'.$name.'" for form field');
 				$field = $fields;
@@ -98,14 +91,9 @@ abstract class AbstractGroup extends \Coxis\Hook\Hookable implements \ArrayAcces
 				return $field;
 			}
 			elseif($fields instanceof \Coxis\Form\AbstractGroup) {
-			// 	d();
-			// }
-			// elseif(is_object($fields) && (is_subclass_of($fields, 'Coxis\Form\Form') || is_a($fields, 'Coxis\Form\Form'))) {
 				$form = $fields;
 				$form->setName($name);
 				$form->setDad($this);
-				// if(isset($this->data[$name]))
-				// 	$form->setData($this->data[$name], (isset($this->files[$name]) ? $this->files[$name]:array()));
 				$form->setData(
 					(isset($this->data[$name]) ? $this->data[$name]:array()),
 					(isset($this->files[$name]) ? $this->files[$name]:array())
@@ -123,14 +111,10 @@ abstract class AbstractGroup extends \Coxis\Hook\Hookable implements \ArrayAcces
 		foreach($fields as $name=>$sub_fields)
 			$this->fields[$name] = $this->parseFields($sub_fields, $name);
 			
-		//todo
-		//~ reset data (fields values) after adding new fields
-			
 		return $this;
 	}
 	
 	public function addField($field, $name=null) {
-		// d($name, in_array($name, array('groupName', 'dad', 'data', 'fields', 'params'), true));
 		if(in_array($name, array('groupName', 'dad', 'data', 'fields', 'params'), true))
 			throw new \Exception('Can\'t use keyword "'.$name.'"" for form field');
 		if($name !== null)
@@ -196,7 +180,6 @@ abstract class AbstractGroup extends \Coxis\Hook\Hookable implements \ArrayAcces
 		return false;
 	}
 	
-	#todo what's this method for?
 	protected function updateChilds() {
 		foreach($this->fields as $name=>$field) {
 			if($field instanceof \Coxis\Form\AbstractGroup) {
@@ -209,8 +192,6 @@ abstract class AbstractGroup extends \Coxis\Hook\Hookable implements \ArrayAcces
 				if($field instanceof \Coxis\Form\Fields\FileField) {
 					if(isset($this->files[$name]))
 						$field->setValue($this->files[$name]);
-					// else
-					// 	$field->setValue(null);
 				}
 				elseif(isset($this->data[$name]))
 					$field->setValue($this->data[$name]);
@@ -221,8 +202,6 @@ abstract class AbstractGroup extends \Coxis\Hook\Hookable implements \ArrayAcces
 						else
 							$field->setValue('');
 					}
-					// else
-					// 	$field->setValue(null);
 				}
 			}
 		}
@@ -241,33 +220,26 @@ abstract class AbstractGroup extends \Coxis\Hook\Hookable implements \ArrayAcces
 					unset($errors[$name]);
 			}
 
-		// $this->errors = array_merge($errors, $this->my_errors());
 		$this->errors = $errors + $this->my_errors();
 
 		$this->setErrors($this->errors);
-
-		#file in memory
-		// $this->trigger('afterErrors', array($this));
 
 		return $this->errors;
 	}
 	
 	public function my_errors() {
-		$validator = new Validator();
+		$validator = new \Coxis\Validation\Validator();
 		$constrains = array();
 		$messages = array();
 		
-		foreach($this->fields as $name=>$field)
+		foreach($this->fields as $name=>$field) {
 			if(is_subclass_of($field, 'Coxis\Form\Fields\Field')) {
-				if(isset($field->options['validation']))
-					$constrains[$name] = $field->options['validation'];
-				if(isset($field->options['messages']))
-					$messages[$name] = $field->options['messages'];
-				if(isset($field->options['choices']))
-					if(is_string($field->options['choices']))
-						d($field);
-					// $constrains[$name]['in']	=	array_keys($field->options['choices']);
+				if($field_rules = $field->getValidationRules())
+					$constrains[$name] = $field_rules;
+				if($field_messages = $field->getValidationMessages())
+					$constrains[$name] = $field_messages;
 			}
+		}
 
 		$validator->setConstrains($constrains);
 		$validator->setMessages($messages);

@@ -23,6 +23,18 @@ abstract class Field {
 			$this->form = $options['default_render'];
 	}
 
+	public function getValidationRules() {
+		$validation = isset($field->options['validation']) ? $field->options['validation']:array();
+		if(isset($field->options['choices']))
+			$constrains[$name]['in'] = array_keys($field->options['choices']);
+		return $validation;
+	}
+
+	public function getValidationMessages() {
+		$messages = isset($field->options['messages']) ? $field->options['messages']:array();
+		return $messages;
+	}
+
 	public function __call($name, $args) {
 		return $this->render($name, isset($args[0]) ? $args[0]:array());
 	}
@@ -110,19 +122,5 @@ abstract class Field {
 			return \Coxis\Utils\Tools::get(array_values($this->error), 0);
 		else
 			return $this->error;
-
-		// return $this->dad->getError($this->name);
-
-		// if(isset($this->dad->errors[$this->name])) {
-		// 	if(is_array($this->dad->errors[$this->name]))
-		// 		return $this->dad->errors[$this->name][0];
-		// 	else
-		// 		return $this->dad->errors[$this->name];
-		// }
-
-				// $res = '';
-				// foreach($this->dad->errors[$this->name] as $error)
-				// 	$res .= $error."<br/>\n";
-				// return $res;
 	}
 }

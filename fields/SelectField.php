@@ -29,13 +29,16 @@ class SelectField extends \Coxis\Form\Fields\Field {
 		$default = $this->value;
 
 		$value = isset($options['value']) ? $options['value']:null;
-		if($value===null)
-			foreach($choices as $k=>$v)
+		if($value === null) {
+			foreach($choices as $k=>$v) {
 				if($v == $name) {
 					$value = $k;
 					break;
 				}
-		#todo no choice found
+			}
+			if($value === null)
+				throw new \Exception('The choice "'.$name.'" does not exist.');
+		}
 
 		if($value == $default)
 			$options['attrs']['checked'] = 'checked';
