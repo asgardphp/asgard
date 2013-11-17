@@ -9,15 +9,16 @@ class HooksContainer extends Viewable {
 	public static function fetchHooks() {
 		$hooks = array();
 		$class = get_called_class();
-		$reflection = new \ReflectionAnnotatedClass($class);
+
+		$reflection = new \Addendum\ReflectionAnnotatedClass($class);
 		
 		$methods = get_class_methods($class);
 		foreach($methods as $method) {
-			$method_reflection = new \ReflectionAnnotatedMethod($class, $method);
+			$method_reflection = new \Addendum\ReflectionAnnotatedMethod($class, $method);
 		
 			if($method_reflection->getAnnotation('Hook')) {
 				$hook = $method_reflection->getAnnotation('Hook')->value;
-				$controller = Router::formatControllerName($class);
+				$controller = $class;
 				$action = Router::formatActionName($method);
 				$hooks[$hook][] = array($class, $method);
 			}
@@ -25,6 +26,29 @@ class HooksContainer extends Viewable {
 
 		return $hooks;
 	}
+
+	// public static function getHooks($directory = false) {
+	// 	$hooks = array();
+
+	// 	$controllers = get_declared_classes();
+	// 	$controllers = array_filter($controllers, function($controller) {
+	// 		return is_subclass_of($controller, 'Coxis\Hook\HooksContainer');
+	// 	});
+	// 	foreach($controllers as $classname) {
+	// 		$r = new \ReflectionClass($classname);
+	// 		if(!$r->isInstantiable())
+	// 			continue;
+	// 		if($directory) {
+	// 			if(strpos($r->getFileName(), realpath($directory)) !== 0)
+	// 				continue;
+	// 		}
+
+	// 		$hooks = array_merge_recursive($hooks, $classname::fetchHooks());
+	// 	}
+
+	// 	return $hooks;
+	// }
+
 
 	public static function run($hook, $args=array()) {
 		if(!is_array($args))
