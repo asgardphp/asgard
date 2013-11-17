@@ -220,7 +220,7 @@ class ORMManager {
 				}
 				else {
 					$diff = array_diff_assoc($schema[$col], $tableSchema[$col]);
-					unset($diff['position']); #todo
+					unset($diff['position']);
 					if($diff)
 						$colsmigration .=  static::updateColumn($table, $col, $diff);
 				}

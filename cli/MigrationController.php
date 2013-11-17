@@ -1,5 +1,4 @@
 <?php
-#todo delete old model tables
 namespace Coxis\ORM\CLI;
 
 class MigrationController extends \Coxis\Cli\CLIController {
@@ -19,7 +18,6 @@ class MigrationController extends \Coxis\Cli\CLIController {
 	@Description('Automatically build a migration from the models')
 	*/
 	public function diffAction($request) {
-		#todo check migration version
 		if(!ORMManager::uptodate())
 			die('You must run all migrations before using diff.');
 			
@@ -35,7 +33,7 @@ class MigrationController extends \Coxis\Cli\CLIController {
 	@Description('Automatically process migrations')
 	*/
 	public function migrateAction($request) {
-		CLIRouter::run('Coxis\Core\Cli\DB', 'backup', $request);
+		CLIRouter::run('Coxis\Cli\DB', 'backup', $request);
 		echo 'Migrating...'."\n";
 
 		ORMManager::migrate(true);
