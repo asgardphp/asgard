@@ -10,4 +10,3 @@ class Bundle extends \Coxis\Core\BundleLoader {
 		parent::run();
 	}
 }
-return new Bundle;
