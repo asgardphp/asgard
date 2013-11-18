@@ -4,6 +4,7 @@ namespace Coxis\Core;
 class BundlesManager {
 	protected static $instance = null;
 	protected $bundles = array();
+	protected $loaded = false;
 
 	public static function instance() {
 		if(!static::$instance)
@@ -23,15 +24,55 @@ class BundlesManager {
 			static::loadModelFixtures($bundle);
 	}
 
-	public function loadBundles($bundles) {
-		foreach($bundles as $bundle)
-			$this->addBundle($bundle);
+	public function addBundles($_bundles) {
+		$count = sizeof($_bundles);
+		$bundles = array();
+		foreach($_bundles as $k=>$v) {
+			if(is_a($v, 'Coxis\Core\BundleLoader')) {
+				$bundles[] = $v;
+				$count--;
+			}
+			elseif(is_string($v)) {
+				$bundle = realpath($v);
+				if(!$bundle)
+					throw new \Exception('Bundle '.$v.' does not exist.');
+				$bundles[$bundle] = null;
 
-		$i = 0;
-		while($i < sizeof($this->bundles)) {
-			$b = $this->bundles[$i++];
-			if(is_subclass_of($b, 'Coxis\Core\BundleLoader'))
-				$b->load($this);
+				if(file_exists($bundle.'/Bundle.php'))
+					require_once $bundle.'/Bundle.php';
+			}
+			else
+				throw new \Exception('Invalid bundle');
+		}
+		if($count > 0) {
+			foreach(get_declared_classes() as $class) {
+				if(!is_subclass_of($class, 'Coxis\Core\BundleLoader'))
+					continue;
+				$reflector = new \Addendum\ReflectionAnnotatedClass($class);
+				$dir = dirname($reflector->getFileName());
+				if(array_key_exists($dir, $bundles) && $bundles[$dir] === null) {
+					unset($bundles[$dir]);
+					$bundles[] = new $class;
+				}
+			}
+		}
+		foreach($bundles as $bundle=>$obj) {
+			if($obj === null) {
+				$obj = new \Coxis\Core\BundleLoader;
+				$obj->setBundle($bundle);
+			}
+			$this->bundles[] = $obj;
+		}
+	}
+
+	public function loadBundles($_bundles) {
+		if(!$this->loaded) {
+			$this->addBundles($_bundles);
+
+			for($i=0; $i < sizeof($this->bundles); $i++)
+				$this->bundles[$i]->load($this);
+
+			$this->loaded = true;
 		}
 
 		foreach($this->bundles as $b)
@@ -39,13 +80,7 @@ class BundlesManager {
 	}
 
 	public function addBundle($bundle) {
-		if(file_exists($bundle.'/Bundle.php') && ($b=include $bundle.'/Bundle.php') && is_subclass_of($b, 'Coxis\Core\BundleLoader'))
-			$this->bundles[] = $b;
-		else {
-			$b = new \Coxis\Core\BundleLoader;
-			$b->setBundle($bundle);
-			$this->bundles[] = $b;
-		}
+		$this->addBundles(array($bundle));
 	}
 	
 	public function getBundles() {

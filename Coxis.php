@@ -26,6 +26,8 @@ class Coxis {
 
 	public static function load() {
 		static::setDefaultEnvironment();
+		if(file_exists(_DIR_.'app/load.php'))
+			include _DIR_.'app/load.php';
 		BundlesManager::instance()->loadBundles(\Config::get('bundles'));
 	}
 }
