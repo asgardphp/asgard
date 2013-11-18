@@ -13,4 +13,3 @@ class Bundle extends BundleLoader {
 		parent::load($queue);
 	}
 }
-return new Bundle;
