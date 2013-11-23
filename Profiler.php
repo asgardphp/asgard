@@ -35,9 +35,9 @@ class Profiler {
 		Log::add('profiler/'.date('Y-m-d H-i-s').'.txt', $str);
 	}
 }
-if(defined('_START_')) {
+if(defined('_COXIS_START_')) {
 	Profiler::$checkpoints[] = array(
 		'name'	=>	'start',
-		'time'	=>	_START_,
+		'time'	=>	_COXIS_START_,
 	);
 }

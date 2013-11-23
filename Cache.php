@@ -26,7 +26,7 @@ class Cache {
 			}
 		}
 
-		if(is_function($default)) {
+		if(Tools::is_function($default)) {
 			$r = $default();
 			static::set($file, $r);
 			return $r;

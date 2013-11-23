@@ -2,6 +2,29 @@
 namespace Coxis\Utils;
 
 class Tools {
+	public static function is_function($f) {
+	    return (is_object($f) && ($f instanceof \Closure));
+	}
+
+	public static function coxis_array_merge(&$a,$b){
+	    foreach($b as $child=>$value) {
+	        if(isset($a[$child])) {
+	            if(is_array($a[$child]) && is_array($value))
+	                static::coxis_array_merge($a[$child], $value);
+	        }
+	        else
+	            $a[$child] = $value;
+	    }
+	}
+
+	public static function getallheaders() { 
+		$headers = ''; 
+		foreach($_SERVER as $name => $value)
+			if(substr($name, 0, 5) == 'HTTP_')
+				$headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+		return $headers; 
+	}
+
 	public static function var_dump_to_string($var){
 		ob_start();
 		var_dump($var);
