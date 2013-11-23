@@ -45,7 +45,8 @@ abstract class Model {
 		$chain->found = false;
 		$res = static::triggerChain($chain, 'callStatic', array($name, $arguments));
 		if(!$chain->found)
-			throw new \Exception('Static method '.$name.' does not exist for model '.static::getModelName());
+			// throw new \Exception('Static method '.$name.' does not exist for model '.static::getModelName());
+			trigger_error('Static method '.$name.' does not exist for model '.static::getModelName(), E_WARNING);
 
 		return $res;
 	}
@@ -57,8 +58,9 @@ abstract class Model {
 		if(!$chain->found) {
 			try {
 				return static::__callStatic($name, $arguments);
-			} catch(\Exception $e) {
-				throw new \Exception('Method '.$name.' does not exist for model '.static::getModelName());
+			} catch(\ErrorException $e) {
+				trigger_error('Method '.$name.' does not exist for model '.static::getModelName(), E_WARNING);
+				// throw new \Exception('Method '.$name.' does not exist for model '.static::getModelName());
 			}
 		}
 
@@ -200,13 +202,8 @@ abstract class Model {
 				
 		return $this;
 	}
-
-	public function raw($name, $lang=null) {
-		$res = $this->get($name, $lang, true);
-		return $res;
-	}
 	
-	public function get($name, $lang=null, $raw=false) {
+	public function get($name, $lang=null) {
 		if(!$lang)
 			$lang = \Config::get('locale');
 
@@ -291,7 +288,7 @@ abstract class Model {
 	
 	/* Definition */
 	public static function getModelName() {
-		return \Coxis\Core\NamespaceUtils::basename(strtolower(get_called_class()));
+		return \Coxis\Utils\NamespaceUtils::basename(strtolower(get_called_class()));
 	}
 
 	public static function hasProperty($name) {
