@@ -231,10 +231,6 @@ abstract class Model {
 				return $model->data[$name];
 		});
 
-		#todo into a hook
-		if(is_string($res) && !$raw && \Memory::get('in_view'))
-			return \HTML::sanitize($res);
-
 		return $res;
 	}
 	
