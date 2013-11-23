@@ -5,11 +5,9 @@ namespace Coxis\Core;
 class Config {
 	protected $config = array();
 	
-	function __construct() {
-		$this->loadConfigDir('config');
-		\Hook::hookOn(array('config', 'set', 'error_display'), function($chain, $value) {
-			ini_set('display_errors', $value);
-		});
+	function __construct($dir=null) {
+		if($dir)
+			$this->loadConfigDir($dir);
 	}
 
 	public function loadConfigDir($dir) {
@@ -18,7 +16,7 @@ class Config {
 	}
 	
 	public function loadConfigFile($filename) {
-		require($filename);
+		$config = require $filename;
 		if(isset($config['all']))
 			$this->load($config['all']);
 		if(isset($config[_ENV_]))
@@ -40,20 +38,12 @@ class Config {
 		
 		foreach($args as $parent)
 			$arr =& $arr[$parent];
-		\Hook::trigger(array_merge(array('config', 'set'), array_merge($args, array($key))), array($value));
+		if(\Coxis\Core\Context::has('hook'))
+			\Coxis\Core\Context::get('hook')->trigger(array_merge(array('config', 'set'), array_merge($args, array($key))), array($value));
 		$arr[$key] = $value;
 	}
 	
 	public function get() {
-		//todo use \get()
-		$args = func_get_args();
-		$result = $this->config;
-		foreach(func_get_args() as $key)
-			if(!isset($result[$key]))
-				return null;
-			else
-				$result = $result[$key];
-		
-		return $result;
+		return call_user_func_array(array('\Coxis\Utils\Tools', 'get'), array_merge(array($this->config), func_get_args()));
 	}
 }

@@ -35,6 +35,7 @@ class Request implements \ArrayAccess {
 		global $argv;
 
 		$request = new static;
+		#todo add headers
 		$request->get->_setAll($_GET);
 		$request->post->_setAll($_POST);
 		$request->file->_setAll($_FILES);
@@ -46,9 +47,10 @@ class Request implements \ArrayAccess {
 			$request->session->_setAll($_SESSION);
 		} catch(\ErrorException $e) {}
 		$request->body = file_get_contents('php://input');
-		try {
-			$request->json = json_decode($request->body);
-		} catch(\ErrorException $e) {}
+		#todo with headers, check if body is json
+		// try {
+		// 	$request->json = json_decode($request->body);
+		// } catch(\ErrorException $e) {}
 
 		$server = trim($request->server->get('SERVER_NAME'), '/');
 		if($request->server->has('ORIG_SCRIPT_NAME'))

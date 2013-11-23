@@ -69,6 +69,6 @@ class Autoloader {
 		
 		$dir = \Coxis\Utils\NamespaceUtils::dirname($class);
 
-		Context::get('importer')->_import($class, array('into'=>$dir));
+		\Coxis\Core\Context::get('importer')->_import($class, array('into'=>$dir));
 	}
 }

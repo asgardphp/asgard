@@ -13,7 +13,7 @@ class Coxis {
 	public static function getExceptionResponse($e) {
 		if($e instanceof \ErrorException) {
 			$msg = '('.$e->getCode().') '.$e->getMessage().'<br>'.$e->getFile().' ('.$e->getLine().')';
-			return \Error::report($msg, $e->getTrace());
+			return \Coxis\Core\Error::report($msg, $e->getTrace());
 		}
 		else {
 			$first_trace = array(array(
@@ -28,6 +28,6 @@ class Coxis {
 		static::setDefaultEnvironment();
 		if(file_exists(_DIR_.'app/load.php'))
 			include _DIR_.'app/load.php';
-		BundlesManager::instance()->loadBundles(\Config::get('bundles'));
+		BundlesManager::instance()->loadBundles(\Coxis\Core\Context::get('config')->get('bundles'));
 	}
 }

@@ -12,6 +12,25 @@ class Context {
 	function __construct() {
 		$this->ioc = new IoC;
 
+		$this->_set('importer', function() {
+			return new \Coxis\Core\Importer;
+		});
+		$this->_set('hook', function() {
+			return new \Coxis\Hook\Hook;
+		});
+		$this->_set('config', function() {
+			return new \Coxis\Core\Config('config');
+		});
+		$this->_set('request', function() {
+			return \Coxis\Core\Request::createFromGlobals();
+		});
+		$this->_set('response', function() {
+			return new \Coxis\Core\Response;
+		});
+		$this->_set('url', function() {
+			return \Coxis\Core\Context::get('request')->url;
+		});
+
 		foreach(\Coxis\Core\Facades::inst()->all() as $facade=>$f) {
 			list($class, $cb) = $f;
 			if(!$this->ioc->registered(strtolower($facade)))
@@ -63,18 +82,29 @@ class Context {
 		return $this->_get($name);
 	}
 
-	public function set($name, $value) {
-		if(is_callable($value)) {
+	public static function set($name, $value) {
+		$context = static::instance();
+		return $context->_set($name, $value);
+	}
+
+	public function _set($name, $value) {
+		if(is_callable($value))
 			$this->ioc->register($name, $value);
-			// return $this->get($name);
-		}
-		else {
+		else
 			$this->classes[$name] = $value;
-			// return $this;
-		}
+		return $this;
 	}
 
 	public function __set($name, $value) {
 		return $this->set($name, $value);
+	}
+
+	public static function has($class) {
+		$context = static::instance();
+		return $context->_has($class);
+	}
+
+	public function _has($class) {
+		return $this->ioc->registered($class);
 	}
 }

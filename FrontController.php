@@ -3,9 +3,9 @@ namespace Coxis\Core;
 
 class FrontController extends Controller {
 	public function mainAction() {
-		Profiler::checkpoint('Before loading coxis');
-		\Coxis::load();
-		Profiler::checkpoint('After loading coxis');
+		\Coxis\Utils\Profiler::checkpoint('Before loading coxis');
+		\Coxis\Core\Coxis::load();
+		\Coxis\Utils\Profiler::checkpoint('After loading coxis');
 		return static::getResponse();
 	}
 

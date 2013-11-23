@@ -2,7 +2,6 @@
 namespace Coxis\Core;
 
 class Response {
-	protected $instance;#todo what for ?
 	public $content;
 	public $code = 200;
 	public $headers = array();
@@ -20,7 +19,7 @@ class Response {
 		500 => 'Internal Server Error',
 	);
 
-	public function setCode($code) { 
+	public function setCode($code) {
 		$this->code = $code;
 		return $this;
 	} 
@@ -35,6 +34,8 @@ class Response {
 	}
 
 	public function getHeader($header) {
+		if(!isset($this->headers[strtolower($header)]))
+			return;
 		return $this->headers[strtolower($header)];
 	}
 
@@ -50,10 +51,6 @@ class Response {
 	public function sendHeaders($headers=null) {
 		if(headers_sent())
 			return;
-			
-		try {
-			while(ob_end_clean()){}
-		} catch(\Exception $e) {}
 	
 		if(!$headers) {
 			$headers = array();
@@ -70,8 +67,8 @@ class Response {
 	}
 
 	public function send($kill=true) {
-		\Hook::trigger('output');
-		
+		\Coxis\Core\Context::get('hook')->trigger('output');
+
 		$headers = array();
 		if(array_key_exists($this->code, static::$codes))
 			$headers[] = 'HTTP/1.1 '.$this->code.' '.static::$codes[$this->code];
@@ -84,7 +81,9 @@ class Response {
 	}
 
 	protected function doSend($headers, $content, $kill) {
-		\Hook::trigger('end');
+		while(ob_get_level())
+			ob_end_clean();
+		\Coxis\Core\Context::get('hook')->trigger('end');
 		\Coxis\Core\Response::sendHeaders($headers);
 		echo $content;
 		Profiler::checkpoint('Sending the response');
@@ -97,7 +96,7 @@ class Response {
 	}
 	
 	public function redirect($url='', $relative=true) {
-		if($relative && !preg_match('/http:\/\//', $url))
+		if($relative && !preg_match('/^http:\/\//', $url))
 			$this->headers['Location'] = \URL::to($url);
 		else
 			$this->headers['Location'] = $url;

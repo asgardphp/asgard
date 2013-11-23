@@ -28,6 +28,7 @@
         "coxis/js": "dev-master",
         "coxis/ckeditor": "dev-master",
         "coxis/captcha": "dev-master",
-        "coxis/minify": "dev-master"
+        "coxis/minify": "dev-master",
+        "psr/log": "1.0.0"
     }
 }
