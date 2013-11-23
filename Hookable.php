@@ -4,15 +4,15 @@ namespace Coxis\Hook;
 class Hookable {
 	/* INSTANCE */
 	public function hasHook($name) {
-		return \Hook::has(array('instances', spl_object_hash($this), $name));
+		return \Coxis\Core\Context::get('hook')->has(array('instances', spl_object_hash($this), $name));
 	}
 
 	public function trigger($name, $args=array(), $cb=null) {
-		return \Hook::trigger(array('instances', spl_object_hash($this), $name), $args, $cb);
+		return \Coxis\Core\Context::get('hook')->trigger(array('instances', spl_object_hash($this), $name), $args, $cb);
 	}
 
 	public function triggerChain($chain, $name, $args=array(), $cb=null) {
-		return \Hook::triggerChain($chain, array('instances', spl_object_hash($this), $name), $args, $cb);
+		return \Coxis\Core\Context::get('hook')->triggerChain($chain, array('instances', spl_object_hash($this), $name), $args, $cb);
 	}
 
 	public function hook() {
@@ -35,6 +35,6 @@ class Hookable {
 	}
 
 	public function getHooks() {
-		return \Hook::getHooks(array('instances', spl_object_hash($this)));
+		return \Coxis\Core\Context::get('hook')->getHooks(array('instances', spl_object_hash($this)));
 	}
 }
