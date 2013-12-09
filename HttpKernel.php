@@ -7,7 +7,7 @@ class HttpKernel {
 		static::process(\Request::inst(), true)->send();
 	}
 
-	public static function process($request, $catch=true) {
+	public static function process($request, $catch=false) {
 		if(!$catch) {
 			$response = static::processRaw($request);
 		}
@@ -27,7 +27,7 @@ class HttpKernel {
 
 				$response = \Hook::trigger('exception_'.get_class($e), array($e));
 				if($response === null)
-					$response = Coxis\Core\Coxis::getExceptionResponse($e);
+					$response = static::getExceptionResponse($e);
 			}
 		}
 
@@ -51,5 +51,10 @@ class HttpKernel {
 		$response = call_user_func_array($controller, $arguments);
 
 		return $response;
+	}
+
+	public static function getExceptionResponse($e) {
+		$trace = ErrorHandler::getBacktraceFromException($e);
+		return ErrorHandler::getHTTPErrorResponse($e->getMessage(), $trace);
 	}
 }

@@ -129,15 +129,6 @@ class ErrorHandler {
 		}
 	}
 
-	// public static function handle($severity, $message, $file, $line, $trace=null) {
-	// 	static::log($severity, $message, $file, $line, $trace);
-
-	// 	if(PHP_SAPI == 'cli')
-	// 		return static::getCLIErrorResponse($message, $trace);
-	// 	else
-	// 		return static::getHTTPErrorResponse($message, $trace);
-	// }
-
 	public static function getPHPErrorSeverity($code) {
 		$PHP_ERROR_LEVELS = array(
 			E_PARSE => \Psr\Log\LogLevel::ERROR,
