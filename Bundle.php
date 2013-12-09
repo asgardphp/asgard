@@ -20,7 +20,7 @@ class Bundle extends BundleLoader {
 		\Coxis\Core\Facades::inst()->register('Request', '\Coxis\Core\Facades\Request');
 		\Coxis\Core\Facades::inst()->register('Response', '\Coxis\Core\Facades\Response');
 		\Coxis\Core\Facades::inst()->register('URL', '\Coxis\Core\Facades\URL');
-		\Coxis\Core\Facades::inst()->register('Router', '\Coxis\Core\Facades\Router');
+		\Coxis\Core\Facades::inst()->register('Resolver', '\Coxis\Core\Facades\Resolver');
 		\Coxis\Core\Facades::inst()->register('Memory', '\Coxis\Core\Facades\Memory');
 		\Coxis\Core\Facades::inst()->register('Flash', '\Coxis\Core\Facades\Flash');
 		\Coxis\Core\Facades::inst()->register('Validation', '\Coxis\Core\Facades\Validation');

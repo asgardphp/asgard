@@ -1,8 +1,9 @@
 <?php
 namespace Coxis\Core;
 
-class Router {
+class Resolver {
 	protected $routes = array();
+	protected $results = array();
 
 	public static function formatActionName($action) {
 		return preg_replace('/Action$/i', '', $action);
@@ -21,13 +22,43 @@ class Router {
 		$this->routes[] = $route;
 	}
 
-	public function dispatch($request, $response=null) {
-		$route = $this->parseRoutes($request);
-		if(method_exists($route['controller'], $route['action'].'Action'))
-			return Controller::run($route['controller'], $route['action'], $request, $response);
-		else
-			throw new NotFoundException('Page not found');
+	public function getRoute($request) {
+		$request_hash = spl_object_hash($request);
+		if(!isset($this->results[$request_hash]))
+			$this->results[$request_hash] = $this->parseRoutes($request);
+		return $this->results[$request_hash];
 	}
+
+	public function getController($request) {
+		$route = $this->getRoute($request);
+		#todo support something else than controller/action
+		if(!$route)
+			return null;
+		else {
+			// return array(array('Coxis\Core\Controller', 'run'), array($route['controller'], $route['action']));
+			return array('Coxis\Core\Controller', 'run');
+		}
+		// if(method_exists($route['controller'], $route['action'].'Action'))
+		// 	return Controller::run($route['controller'], $route['action'], $request, $response);
+		// else
+		// 	throw new NotFoundException('Page not found');
+	}
+
+	public function getArguments($request) {
+		$route = $this->getRoute($request);
+		if(!$route)
+			return null;
+		else
+			return array($route['controller'], $route['action'], $request);
+	}
+
+	// public function dispatch($request, $response=null) {
+	// 	$route = $this->parseRoutes($request);
+	// 	if(method_exists($route['controller'], $route['action'].'Action'))
+	// 		return Controller::run($route['controller'], $route['action'], $request, $response);
+	// 	else
+	// 		throw new NotFoundException('Page not found');
+	// }
 
 	public static function formatRoute($route) {
 		return '/'.trim($route, '/');
@@ -98,7 +129,7 @@ class Router {
 
 		$routes = $this->routes;
 		$results = \Coxis\Utils\Cache::get('Router/requests/'.$request_key, function() use($routes, $request) {
-			\Coxis\Core\Router::sortRoutes($routes);
+			static::sortRoutes($routes);
 			/* PARSE ALL ROUTES */
 			foreach($routes as $params) {
 				$route = $params['route'];
@@ -106,13 +137,13 @@ class Router {
 				$method = $params['method'];
 
 				/* IF THE ROUTE MATCHES */
-				if(($results = \Coxis\Core\Router::match($request, $route, $requirements, $method)) !== false)
+				if(($results = static::match($request, $route, $requirements, $method)) !== false)
 					return array('params' => $results, 'route' => $params);
 			}
 		});
 
 		if(!$results)
-			throw new \Coxis\Core\Exceptions\NotFoundException;
+			return null;
 
 		$request->setParam($results['params']);
 

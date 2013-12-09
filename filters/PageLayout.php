@@ -32,6 +32,6 @@ class PageLayout extends Filter {
 			$htmllayout = false;
 
 		if($htmllayout !== false)
-			$result = View::render('app/general/views/default/html.php', array('content'=>$result));
+			$result = \Coxis\Core\View::render('app/general/views/default/html.php', array('content'=>$result));
 	}
 }

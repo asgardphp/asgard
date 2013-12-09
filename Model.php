@@ -45,7 +45,6 @@ abstract class Model {
 		$chain->found = false;
 		$res = static::triggerChain($chain, 'callStatic', array($name, $arguments));
 		if(!$chain->found)
-			// throw new \Exception('Static method '.$name.' does not exist for model '.static::getModelName());
 			trigger_error('Static method '.$name.' does not exist for model '.static::getModelName(), E_WARNING);
 
 		return $res;
@@ -60,7 +59,6 @@ abstract class Model {
 				return static::__callStatic($name, $arguments);
 			} catch(\ErrorException $e) {
 				trigger_error('Method '.$name.' does not exist for model '.static::getModelName(), E_WARNING);
-				// throw new \Exception('Method '.$name.' does not exist for model '.static::getModelName());
 			}
 		}
 

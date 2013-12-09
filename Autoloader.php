@@ -21,6 +21,8 @@ class Autoloader {
 	}
 
 	public static function addPreloadedClasses($classes) {
+		if(!\Coxis\Core\Context::get('config')->get('preload'))
+			return;
 		foreach($classes as $class)
 			static::$preloaded[] = $class;
 		#remove duplicate files
@@ -28,11 +30,15 @@ class Autoloader {
 	}
 
 	public static function preloadClass($class, $file) {
+		if(!\Coxis\Core\Context::get('config')->get('preload'))
+			return;
 		if(!array_search(realpath($file), static::$preloaded));
 			static::$preloaded[] = array(strtolower($class), realpath($file));
 	}
 	
 	public static function preloadDir($file) {
+		if(!\Coxis\Core\Context::get('config')->get('preload'))
+			return array();
 		if(is_dir($file) && !strpos($file, '.') !== 0) {
 			foreach(glob($file.'/*') as $sub_file)
 				static::preloadDir($sub_file);

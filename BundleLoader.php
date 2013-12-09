@@ -25,7 +25,8 @@ namespace Coxis\Core {
 				$preload = array_merge($preload, Autoloader::fetchPreloadDir($bundle.'/libs'));
 				$preload = array_merge($preload, Autoloader::fetchPreloadDir($bundle.'/controllers'));
 				$preload = array_merge($preload, Autoloader::fetchPreloadDir($bundle.'/hooks'));
-				$preload = array_merge($preload, Autoloader::fetchPreloadDir($bundle.'/cli'));
+				if(php_sapi_name() === 'cli')
+					$preload = array_merge($preload, Autoloader::fetchPreloadDir($bundle.'/cli'));
 				return $preload;
 			});
 			Autoloader::addPreloadedClasses($preload);
@@ -35,7 +36,8 @@ namespace Coxis\Core {
 			$this->loadLocales();
 			$this->loadHooks();
 			$this->loadControllers();
-			$this->loadCLI();
+			if(php_sapi_name() === 'cli')
+				$this->loadCLI();
 		}
 
 		protected function loadLocales() {
@@ -90,7 +92,7 @@ namespace Coxis\Core {
 			});
 			if(!is_array($routes))
 				return;
-			\Coxis\Facades\Router::addRoutes($routes);
+			\Coxis\Facades\Resolver::addRoutes($routes);
 		}
 
 		public function setBundle($bundle) {

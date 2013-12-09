@@ -4,7 +4,9 @@ namespace Coxis\Core;
 class PSRException extends \Exception {
 	protected $severity;
 
-	function __construct($severity=null, $message=null) {
+	function __construct($message=null, $severity=null) {
+		if($severity === null)
+			$severity = \Psr\Log\LogLevel::ERROR;
 		$this->severity = $severity;
 		parent::__construct($message);
 	}
@@ -17,7 +19,7 @@ class PSRException extends \Exception {
 		return $this->severity;
 	}
 
-	public function getMessage() {
-		return get_class($this).': '.$this->getMessage();
-	}
+	// public function getMessage() {
+	// 	return get_class($this).': '.$this->getMessage();
+	// }
 }

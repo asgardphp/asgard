@@ -19,6 +19,10 @@ class Response {
 		500 => 'Internal Server Error',
 	);
 
+	function __construct($code = 200) {
+		$this->code = $code;
+	}
+
 	public function setCode($code) {
 		$this->code = $code;
 		return $this;
@@ -86,7 +90,8 @@ class Response {
 		\Coxis\Core\Context::get('hook')->trigger('end');
 		\Coxis\Core\Response::sendHeaders($headers);
 		echo $content;
-		Profiler::checkpoint('Sending the response');
+        if(\Coxis\Core\Context::get('config')->get('profiler'))
+                \Coxis\Utils\Profiler::report();
 		if($kill)
 			exit();
 	}

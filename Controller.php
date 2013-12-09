@@ -11,7 +11,7 @@ class Controller extends Viewable {
 		$reflection = new \Addendum\ReflectionAnnotatedClass($class);
 		
 		if($reflection->getAnnotation('Prefix'))
-			$prefix = \Coxis\Core\Router::formatRoute($reflection->getAnnotation('Prefix')->value);
+			$prefix = Resolver::formatRoute($reflection->getAnnotation('Prefix')->value);
 		else
 			$prefix = '';
 		
@@ -23,12 +23,12 @@ class Controller extends Viewable {
 		
 			if($method_reflection->getAllAnnotations('Route')) {
 				foreach($method_reflection->getAllAnnotations('Route') as $annotation) {
-					$route = \Coxis\Core\Router::formatRoute($prefix.'/'.$annotation->value);
+					$route = Resolver::formatRoute($prefix.'/'.$annotation->value);
 
 					$routes[] = array(
 						'route'	=>	$route,
 						'controller'		=>	$class, 
-						'action'			=>	\Coxis\Core\Router::formatActionName($method),
+						'action'			=>	Resolver::formatActionName($method),
 						'requirements'	=>	$method_reflection->getAnnotation('Route')->requirements,
 						'method'	=>	$method_reflection->getAnnotation('Route')->method,
 						'name'	=>	isset($method_reflection->getAnnotation('Route')->name) ? $method_reflection->getAnnotation('Route')->name:null
@@ -41,7 +41,7 @@ class Controller extends Viewable {
 	}
 
 	public function notfound($msg=null) {
-		throw new \Coxis\Core\Exception\NotFoundException($msg);
+		throw new Exception\NotFoundException($msg);
 	}
 
 	public function addFilter($filter) {
@@ -69,7 +69,7 @@ class Controller extends Viewable {
 		$controller->request = $request;
 		$controller->response = $response;
 
-		\Coxis\Core\Context::get('hook')->trigger('controller_configure', array($controller));
+		Context::get('hook')->trigger('controller_configure', array($controller));
 
 		if(method_exists($controller, 'configure'))
 			if($res = $controller->doRun('configure', array($request), false))
@@ -92,7 +92,7 @@ class Controller extends Viewable {
 		if($result !== null) {
 			if(is_string($result))
 				return $controller->response->setContent($result);
-			elseif($result instanceof \Coxis\Core\Response)
+			elseif($result instanceof Response)
 				return $result;
 			else
 				throw new \Exception('Controller response is invalid.');

@@ -34,8 +34,11 @@ class BundlesManager {
 			}
 			elseif(is_string($v)) {
 				$bundle = realpath($v);
+				if($bundle === false)
+					$bundle = realpath(_DIR_.$v);
 				if(!$bundle)
-					throw new \Exception('Bundle '.$v.' does not exist.');
+					// throw new \Exception('Bundle '.$v.' does not exist.');
+					d($bundle, $v);
 				$bundles[$bundle] = null;
 
 				if(file_exists($bundle.'/Bundle.php'))

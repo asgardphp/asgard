@@ -20,6 +20,7 @@ class ErrorHandler {
 	}
 
 	public static function shutdownFunction() {
+	        // d(debug_backtrace());
 		if(($e=error_get_last()) && $e !== static::$errorAtStart) {
 	        $exceptionHandler = set_exception_handler(function() {});
 	        restore_exception_handler();
@@ -83,7 +84,38 @@ class ErrorHandler {
 			$severity = \Psr\Log\LogLevel::ERROR;
 			$msg = get_class($e).': '.$e->getMessage();
 		}
-		static::handle($severity, $msg, $e->getFile(), $e->getLine(), static::getBacktraceFromException($e));
+
+		$trace = static::getBacktraceFromException($e);
+
+		static::log($severity, $msg, $e->getFile(), $e->getLine(), $trace);
+		
+		if(PHP_SAPI == 'cli')
+			echo static::getCLIErrorResponse($msg, $trace);
+		else
+			static::getHTTPErrorResponse($msg, $trace)->send();
+		exit(1);
+	}
+
+	public static function logException($e) {
+		#PSRException with a given severity
+		if($e instanceof PSRException) {
+			$severity = $e->getseverity();
+			$msg = $e->getMessage();
+		}
+		#PHP exception
+		elseif($e instanceof \ErrorException) {
+			$severity = static::getPHPErrorSeverity($e->getCode());
+			$msg = 'PHP ('.static::getPHPError($e->getCode()).'): '.$e->getMessage();
+		}
+		#other exception
+		else {
+			$severity = \Psr\Log\LogLevel::ERROR;
+			$msg = get_class($e).': '.$e->getMessage();
+		}
+
+		$trace = static::getBacktraceFromException($e);
+
+		static::log($severity, $msg, $e->getFile(), $e->getLine(), $trace);
 	}
 
 	public static function log($severity, $message, $file, $line, $trace=null) {
@@ -97,16 +129,14 @@ class ErrorHandler {
 		}
 	}
 
-	public static function handle($severity, $message, $file, $line, $trace=null) {
-		static::log($severity, $message, $file, $line, $trace);
+	// public static function handle($severity, $message, $file, $line, $trace=null) {
+	// 	static::log($severity, $message, $file, $line, $trace);
 
-		if(static::isFatal($severity)) {
-			if(ob_get_level())
-				ob_end_clean();
-			static::errorReport($message, $trace)->send();
-			exit(1);
-		}
-	}
+	// 	if(PHP_SAPI == 'cli')
+	// 		return static::getCLIErrorResponse($message, $trace);
+	// 	else
+	// 		return static::getHTTPErrorResponse($message, $trace);
+	// }
 
 	public static function getPHPErrorSeverity($code) {
 		$PHP_ERROR_LEVELS = array(
@@ -152,29 +182,26 @@ class ErrorHandler {
 		return in_array($severity, Context::get('config')->get('fatal_errors'));
 	}
 
-	public static function errorReport($msg, $backtrace=null) {
-		while(ob_get_level())
-			ob_end_clean();
-
+	public static function getCLIErrorResponse($msg, $backtrace=null) {
 		$result = '';
-		if(PHP_SAPI == 'cli') {
-			if($msg)
-				$result .= $msg."\n\n";
-			$result .= \Coxis\Utils\Debug::getReport($backtrace);
-			die($result);
+		if($msg)
+			$result .= $msg."\n\n";
+		$result .= \Coxis\Utils\Debug::getReport($backtrace);
+		echo $result;
+	}
+
+	public static function getHTTPErrorResponse($msg, $backtrace=null) {
+		$result = '';
+		if($msg) {
+			$result .= '<b>Message</b><br>'."\n";
+			$result .= $msg."<hr>\n";
 		}
-		else {
-			if($msg) {
-				$result .= '<b>Message</b><br>'."\n";
-				$result .= $msg."<hr>\n";
-			}
-			$result .= \Coxis\Utils\Debug::getReport($backtrace);
-		
-			Context::get('response')->setCode(500);
-			if(Context::get('config')->get('debug'))
-				return Context::get('response')->setHeader('Content-Type', 'text/html')->setContent($result)->send();
-			else
-				return Context::get('response')->setHeader('Content-Type', 'text/html')->setContent('<h1>Error</h1>Oops, something went wrong.')->send();
-		}
+		$result .= \Coxis\Utils\Debug::getReport($backtrace);
+	
+		Context::get('response')->setCode(500);
+		if(Context::get('config')->get('debug'))
+			return Context::get('response')->setHeader('Content-Type', 'text/html')->setContent($result);
+		else
+			return Context::get('response')->setHeader('Content-Type', 'text/html')->setContent('<h1>Error</h1>Oops, something went wrong.');
 	}
 }
