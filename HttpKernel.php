@@ -4,7 +4,7 @@ namespace Coxis\Core;
 class HttpKernel {
 	public static function run() {
 		Coxis::load();
-		static::getResponse(\Request::inst(), true)->send();
+		static::process(\Request::inst(), true)->send();
 	}
 
 	public static function process($request, $catch=true) {
