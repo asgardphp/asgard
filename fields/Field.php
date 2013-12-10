@@ -36,6 +36,11 @@ abstract class Field {
 	}
 
 	public function __call($name, $args) {
+		// $widget = \Coxis\Core\IoC::get('Coxis\Form\Widgets\\'.$widget, array());
+		// if($widget === null)
+		// 	$widget = 'Coxis\Form\Widgets\\'.$name.'Widget';
+
+		// $widget = \Coxis\Core\Context::get('ioc')->get('Coxis\Form\Widgets\\'.$name, array(), 'Coxis\Form\Widgets\\'.$name.'Widget');
 		return $this->render($name, isset($args[0]) ? $args[0]:array());
 	}
 

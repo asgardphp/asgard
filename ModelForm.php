@@ -15,28 +15,29 @@ class ModelForm extends Form {
 		elseif($model->isOld())
 			$field_params['default'] = $model->get($name, $locale);
 
-		$field_type = 'text';
+		$field_type = 'Coxis\Form\Fields\TextField';
 		if($properties->type == 'boolean')
-			$field_type = 'boolean';
+			$field_type = 'Coxis\Form\Fields\BooleanField';
 		elseif($properties->type == 'file') {
 			if($properties->multiple)
-				$field_type = 'MultipleFile';
+				$field_type = 'Coxis\Form\Fields\MultipleFileField';
 			else
-				$field_type = 'file';
+				$field_type = 'Coxis\Form\Fields\FileField';
 		}
 		elseif($properties->type == 'date')
-			$field_type = 'date';
+			$field_type = 'Coxis\Form\Fields\DateField';
 
 		if($properties->in) {
 			foreach($properties->in as $v)
 				$field_params['choices'][$v] = $v;
 			if($properties->multiple)
-				$field_type = 'multipleselect';
+				$field_type = 'Coxis\Form\Fields\MultipleselectField';
 			else
-				$field_type = 'select';
+				$field_type = 'Coxis\Form\Fields\SelectField';
 		}
 
-		$field_class = $field_type.'Field';
+		// $field_class = $field_type.'Field';
+		$field_class = $field_type;
 
 		$field = new $field_class($field_params);
 

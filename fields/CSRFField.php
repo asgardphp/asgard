@@ -6,7 +6,7 @@ class CSRFField extends \Coxis\Form\Fields\HiddenField {
 
 		$this->default_render = function($field, $options) {
 			$token = $this->generateToken();
-			return HTMLWidget::hidden($field->getName(), $token, $options)->render();
+			return HTMLWidget::getWidget('Coxis\Form\Widgets\HiddenWidget', array($field->getName(), $token, $options))->render();
 		};
 	}
 

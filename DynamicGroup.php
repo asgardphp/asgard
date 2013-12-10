@@ -19,7 +19,7 @@ class DynamicGroup extends \Coxis\Form\AbstractGroup {
 		$this->files = array_values($files);
 
 		#merge data/files everywhere in form?
-		coxis_array_merge($data, $files);
+		\Coxis\Utils\Tools::coxis_array_merge($data, $files);
 		
 		foreach($data as $k=>$v) 
 			$this->newField($k, $v);

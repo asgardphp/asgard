@@ -26,9 +26,15 @@ abstract class HTMLWidget {
 		$this->options = $options;
 	}
 
+	public static function getWidget($name, $args) {
+		$reflector = new \ReflectionClass($name);
+		$widget = $reflector->newInstanceArgs($args);
+		return $widget;
+	}
+
 	public static function __callStatic($name, $args) {
-		// $widget = new $name.'Field';
-		$reflector = new \ReflectionClass($name.'Widget');
+		$widget = \Coxis\Core\Context::get('ioc')->get('Coxis\Form\Widgets\\'.$name, array(), 'Coxis\Form\Widgets\\'.$name.'Widget');
+		$reflector = new \ReflectionClass($widget);
 		$widget = $reflector->newInstanceArgs($args);
 		return $widget;
 	}

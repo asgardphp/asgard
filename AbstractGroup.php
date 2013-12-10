@@ -49,15 +49,15 @@ abstract class AbstractGroup extends \Coxis\Hook\Hookable implements \ArrayAcces
 			return $this->dad->isSent();
 		else {
 			if($this->groupName) {
-				if($method == 'POST' || $method == 'PUT')
+				if($method == 'post' || $method == 'put')
 					return \POST::has($this->groupName);
-				elseif($method == 'GET')
+				elseif($method == 'get')
 					return \POST::has($this->groupName);
 				else
 					return false;
 			}
 			else
-				return true;
+				return true;#todo hum...
 		}
 	}
 
@@ -80,12 +80,10 @@ abstract class AbstractGroup extends \Coxis\Hook\Hookable implements \ArrayAcces
 				elseif(isset($this->files[$name]))
 					$field->setValue($this->files[$name]);
 				else {
-					if($this->isSent()) {
-						if(isset($field->params['multiple']) && $field->params['multiple'])
-							$field->setValue(array());
-						else
-							$field->setValue('');
-					}
+					if(isset($field->params['multiple']) && $field->params['multiple'])
+						$field->setValue(array());
+					else
+						$field->setValue('');
 				}
 					
 				return $field;

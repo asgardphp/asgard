@@ -45,13 +45,19 @@ class Form extends AbstractGroup {
 		if($this->dad)
 			return $this->dad->render($render_callback, $field, $options);
 
-		if(is_function($render_callback))
+		if(\Coxis\Utils\Tools::is_function($render_callback))
 			$cb = $render_callback;
 		elseif(isset($this->render_callbacks[$render_callback]))
 			$cb = $this->render_callbacks[$render_callback];
 		else {
 			$cb = function($field, $options=array()) use($render_callback) {
-				return \Coxis\Form\Widgets\HTMLWidget::$render_callback($field->getName(), $field->getValue(), $options);
+				$widget = $this->trigger('Coxis\Form\Widgets\\'.$render_callback);
+				if($widget === null) {
+					$widget = \Coxis\Core\Context::get('hook')->trigger('Coxis\Form\Widgets\\'.$render_callback, array(), function() use($render_callback) {
+						return 'Coxis\Form\Widgets\\'.$render_callback.'Widget';
+					});	
+				}
+				return \Coxis\Form\Widgets\HTMLWidget::getWidget($widget, array($field->getName(), $field->getValue(), $options));
 			};
 		}
 
