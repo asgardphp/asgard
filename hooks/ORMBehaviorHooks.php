@@ -14,7 +14,7 @@ class ORMBehaviorHooks extends \Coxis\Hook\HooksContainer {
 	@Hook('behaviors_load_orm')
 	**/
 	public function behaviors_load_ormAction($modelDefinition) {
-		Profiler::checkpoint('Loading ORM : start');
+		\Coxis\Utils\Profiler::checkpoint('Loading ORM : start');
 		$modelName = $modelDefinition->getClass();
 
 		#Article::getTable()

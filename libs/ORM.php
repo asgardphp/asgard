@@ -109,7 +109,7 @@ class ORM {
 
 	public function getDAL() {
 		$current_model = $this->model;
-		$dal = new DAL;
+		$dal = new \Coxis\DB\DAL;
 		$table = $this->getTable();
 		$dal->orderBy($this->orderBy);
 		$dal->limit($this->limit);
