@@ -1,7 +1,7 @@
 <?php
 namespace Coxis\Hook;
 
-class HooksContainer extends Viewable {
+class HooksContainer extends \Coxis\Core\Viewable {
 	function __construct() {
 		$this->noView();
 	}
@@ -19,7 +19,7 @@ class HooksContainer extends Viewable {
 			if($method_reflection->getAnnotation('Hook')) {
 				$hook = $method_reflection->getAnnotation('Hook')->value;
 				$controller = $class;
-				$action = Router::formatActionName($method);
+				$action = \Coxis\Core\Resolver::formatActionName($method); #todo remove
 				$hooks[$hook][] = array($class, $method);
 			}
 		}

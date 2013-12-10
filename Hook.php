@@ -2,7 +2,6 @@
 namespace Coxis\Hook;
 
 class Hook {
-	// protected $registry = array();
 	public $registry = array();
 
 	public function trigger_print($name, $args=array(), $cb=null) {
@@ -13,12 +12,12 @@ class Hook {
 		return $this->triggerChain($chain, $name, $args, $cb, true);
 	}
 
-	#cannot use references with get_func_args
+	#todo cannot use references with get_func_args
 	public function trigger($name, $args=array(), $cb=null, $print=false) {
 		return $this->triggerChain(new \Coxis\Hook\HookChain, $name, $args, $cb, $print);
 	}
 
-	#cannot use references with get_func_args
+	#todo cannot use references with get_func_args
 	public function triggerChain($chain, $name, $args=array(), $cb=null, $print=false) {
 		if(count(func_get_args()) > 14)
 			throw new \Exception("triggerChain() can only accept up to 14 arguments");
@@ -114,4 +113,3 @@ class Hook {
 				$this->createhook($name, $cb);
 	}
 }
-#todo priority : see bundlesmanager
