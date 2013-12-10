@@ -49,13 +49,15 @@ namespace Coxis\Core {
 
 		protected function loadHooks() {
 			$hooks = \Coxis\Utils\Cache::get('bundles/'.$this->getBundle().'/hooks', function() {
+				$hooks = array();
 				if(file_exists($this->getBundle().'/hooks/')) {
 					foreach(glob($this->getBundle().'/hooks/*.php') as $filename) {
 						$class = \Coxis\Core\Importer::loadClassFile($filename);
 						if(is_subclass_of($class, 'Coxis\Hook\HooksContainer'))
-							return $class::fetchHooks();
+							$hooks = array_merge($hooks, $class::fetchHooks());
 					}
 				}
+				return $hooks;
 			});
 			if(!is_array($hooks))
 				return;
@@ -67,13 +69,15 @@ namespace Coxis\Core {
 
 		protected function loadCLI() {
 			$routes = \Coxis\Utils\Cache::get('bundles/'.$this->getBundle().'/cli', function() {
+				$routes = array();
 				if(file_exists($this->getBundle().'/cli/')) {
 					foreach(glob($this->getBundle().'/cli/*.php') as $filename) {
 						$class = \Coxis\Core\Importer::loadClassFile($filename);
 						if(is_subclass_of($class, 'Coxis\Cli\CLIController'))
-							return $class::fetchRoutes();
+							$routes = array_merge($routes, $class::fetchRoutes());
 					}
 				}
+				return $routes;
 			});
 			if(!is_array($routes))
 				return;
@@ -82,13 +86,15 @@ namespace Coxis\Core {
 
 		protected function loadControllers() {
 			$routes = \Coxis\Utils\Cache::get('bundles/'.$this->getBundle().'/controllers', function() {
+				$routes = array();
 				if(file_exists($this->getBundle().'/controllers/')) {
-					foreach(glob($this->getBundle().'/controllers/*.php') as $filename) {
+					foreach(glob($this->getBundle().'/controllers/*.php') as $k=>$filename) {
 						$class = \Coxis\Core\Importer::loadClassFile($filename);
 						if(is_subclass_of($class, 'Coxis\Core\Controller'))
-							return $class::fetchRoutes();
+							$routes = array_merge($routes, $class::fetchRoutes());
 					}
 				}
+				return $routes;
 			});
 			if(!is_array($routes))
 				return;

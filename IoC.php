@@ -8,15 +8,15 @@ class IoC {
 		$this->registry[$name] = $callback;
 	}
 	
-	public function get($name) {
-		$params = func_get_args();
-		if(isset($params[0]))
-			unset($params[0]);
-		return call_user_func_array($this->registry[$name], $params);
-	}
-	
-	public function set($name, $object) {
-		$this->registry[$name] = $object;
+	public function get($name, $params=array(), $default=null) {
+		if(isset($this->registry[$name]))
+			return call_user_func_array($this->registry[$name], $params);
+		else {
+			if($default instanceof \Closure)
+				return call_user_func_array($default, $params);
+			else
+				return $default;
+		}
 	}
 
 	public function registered($name) {

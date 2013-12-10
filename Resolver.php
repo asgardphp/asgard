@@ -35,13 +35,8 @@ class Resolver {
 		if(!$route)
 			return null;
 		else {
-			// return array(array('Coxis\Core\Controller', 'run'), array($route['controller'], $route['action']));
 			return array('Coxis\Core\Controller', 'run');
 		}
-		// if(method_exists($route['controller'], $route['action'].'Action'))
-		// 	return Controller::run($route['controller'], $route['action'], $request, $response);
-		// else
-		// 	throw new NotFoundException('Page not found');
 	}
 
 	public function getArguments($request) {
@@ -51,14 +46,6 @@ class Resolver {
 		else
 			return array($route['controller'], $route['action'], $request);
 	}
-
-	// public function dispatch($request, $response=null) {
-	// 	$route = $this->parseRoutes($request);
-	// 	if(method_exists($route['controller'], $route['action'].'Action'))
-	// 		return Controller::run($route['controller'], $route['action'], $request, $response);
-	// 	else
-	// 		throw new NotFoundException('Page not found');
-	// }
 
 	public static function formatRoute($route) {
 		return '/'.trim($route, '/');

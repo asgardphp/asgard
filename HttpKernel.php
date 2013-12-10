@@ -25,7 +25,7 @@ class HttpKernel {
 					ErrorHandler::logException($e);
 				}
 
-				$response = \Hook::trigger('exception_'.get_class($e), array($e));
+				$response = \Coxis\Core\Hook\Hook::trigger('exception_'.get_class($e), array($e));
 				if($response === null)
 					$response = static::getExceptionResponse($e);
 			}

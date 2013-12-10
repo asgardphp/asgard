@@ -19,7 +19,7 @@ class PageLayout extends Filter {
 		}
 
 		try {
-			if(\Response::getHeader('Content-Type') && \Response::getHeader('Content-Type')!='text/html')
+			if($controller->response->getHeader('Content-Type') && $controller->response->getHeader('Content-Type')!='text/html')
 				return;
 		} catch(\Exception $e) {}
 

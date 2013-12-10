@@ -13,6 +13,7 @@ class Bundle extends BundleLoader {
 		});
 		Autoloader::addPreloadedClasses($preload);
 
+		#todo revoir apres refactorisé Context et IoC
 		\Coxis\Core\Facades::inst()->register('Importer', 'Coxis\Core\Facades\Importer');
 		\Coxis\Core\Facades::inst()->register('Hook', '\Coxis\Core\Facades\Hook');
 		\Coxis\Core\Facades::inst()->register('Config', 'Coxis\Core\Facades\Config');

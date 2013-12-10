@@ -93,30 +93,30 @@ class URL {
 		if(is_array($what)) {
 			$controller = strtolower($what[0]);
 			$action = strtolower($what[1]);
-			foreach(\Router::getRoutes() as $route_params) {
+			foreach(\Resolver::getRoutes() as $route_params) {
 				$route = $route_params['route'];
 				if(strtolower($route_params['controller']) == $controller && strtolower($route_params['action']) == $action) {
 					if(isset($route_params['host']))
-						return 'http://'.$route_params['host'].'/'.\Router::buildRoute($route, $params);
+						return 'http://'.$route_params['host'].'/'.\Resolver::buildRoute($route, $params);
 					elseif($relative)
-						return \Router::buildRoute($route, $params);
+						return \Resolver::buildRoute($route, $params);
 					else
-						return $this->to(\Router::buildRoute($route, $params));
+						return $this->to(\Resolver::buildRoute($route, $params));
 				}
 			}
 		}
 		#route
 		else {
 			$what = strtolower($what);
-			foreach(\Router::getRoutes() as $route_params) {
+			foreach(\Resolver::getRoutes() as $route_params) {
 				$route = $route_params['route'];
 				if($route_params['name'] != null && strtolower($route_params['name']) == $what) {
 					if(isset($route_params['host']))
-						return 'http://'.$route_params['host'].'/'.\Router::buildRoute($route, $params);
+						return 'http://'.$route_params['host'].'/'.\Resolver::buildRoute($route, $params);
 					elseif($relative)
-						return \Router::buildRoute($route, $params);
+						return \Resolver::buildRoute($route, $params);
 					else
-						return $this->to(\Router::buildRoute($route, $params));
+						return $this->to(\Resolver::buildRoute($route, $params));
 				}
 			}
 		}

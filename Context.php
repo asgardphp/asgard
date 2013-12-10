@@ -15,20 +15,21 @@ class Context {
 		$this->_set('importer', function() {
 			return new \Coxis\Core\Importer;
 		});
-		$this->_set('hook', function() {
-			return new \Coxis\Hook\Hook;
-		});
 		$this->_set('config', function() {
 			return new \Coxis\Core\Config('config');
+		});
+		#used in errorhandler..
+		$this->_set('hook', function() {
+			return new \Coxis\Hook\Hook;
 		});
 		$this->_set('request', function() {
 			return \Coxis\Core\Request::createFromGlobals();
 		});
-		$this->_set('response', function() {
-			return new \Coxis\Core\Response;
-		});
 		$this->_set('url', function() {
 			return \Coxis\Core\Context::get('request')->url;
+		});
+		$this->_set('response', function() {
+			return new \Coxis\Core\Response;
 		});
 
 		foreach(\Coxis\Core\Facades::inst()->all() as $facade=>$f) {
@@ -42,17 +43,8 @@ class Context {
 		}
 	}
 
-	public static function newDefault() {
-		$rand = Tools::randstr(10);
-		static::setDefault($rand);
-	}
-
 	public static function getDefault() {
 		return static::$default;
-	}
-
-	public static function setDefault($def) {
-		static::$default = $def;
 	}
 
 	public static function instance($context=null) {
