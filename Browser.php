@@ -29,10 +29,6 @@ class Browser {
 			$file=array(),
 			$body=''
 		) {
-		#new context
-		$rand = Tools::randstr(10);
-		Context::setDefault($rand);
-
 		#build request
 		$get = array();
 		$infos = parse_url($url);
@@ -58,9 +54,7 @@ class Browser {
 		$request->url->setServer('localhost');
 		$request->url->setRoot('');
 
-		Coxis::load();
-
-		$res = \Coxis\Core\FrontController::getResponse();
+		$res = \Coxis\Core\HttpKernel::process(\Request::inst());
 
 		$this->last = $res;
 		$this->cookies = $request->cookie->all();

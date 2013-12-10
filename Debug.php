@@ -3,6 +3,10 @@ namespace Coxis\Utils;
 
 class Debug {
 	public static function d() {
+		static::dWithTrace(array_merge(array(debug_backtrace()), func_get_args()));
+	}
+
+	public static function dWithTrace($trace) {
 		if(!\Coxis\Core\Context::get('config')->get('debug'))
 			return;
 		while(ob_get_length())
@@ -10,12 +14,12 @@ class Debug {
 			
 		if(php_sapi_name() != 'cli')
 			echo '<pre>';
-		foreach(func_get_args() as $arg)
+		foreach(array_slice(func_get_args(), 1) as $arg)
 			var_dump($arg);
 		if(php_sapi_name() != 'cli')
 			echo '</pre>';
 		
-		die(static::getReport(debug_backtrace()));
+		die(static::getReport($trace));
 	}
 
 	public static function getReport($backtrace) {
