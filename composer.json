@@ -11,7 +11,6 @@
     "require": {
         "niktux/addendum": "dev-master",
         "symfony/yaml": "dev-master",
-        "duvanmonsa/php-query": "dev-master",
         "coxis/auth": "dev-master",
         "coxis/behaviors": "dev-master",
         "coxis/cli": "dev-master",
