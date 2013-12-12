@@ -48,7 +48,7 @@ class Browser {
 		else
 			$request->body = $body;
 
-		Context::instance()->request = $request;
+		App::instance()->request = $request;
 
 		$request->url->setURL($url);
 		$request->url->setServer('localhost');

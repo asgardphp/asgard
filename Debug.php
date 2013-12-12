@@ -7,7 +7,7 @@ class Debug {
 	}
 
 	public static function dWithTrace($trace) {
-		if(!\Coxis\Core\Context::get('config')->get('debug'))
+		if(!\Coxis\Core\App::get('config')->get('debug'))
 			return;
 		while(ob_get_length())
 			ob_end_clean();
@@ -37,7 +37,7 @@ class Debug {
 		if(!$backtrace)
 			$backtrace = debug_backtrace();
 
-		$jquery = Context::get('url')->to('js/jquery.js');
+		$jquery = App::get('url')->to('js/jquery.js');
 			
 		$r = '<b>Backtrace</b><br>'."\n";
 		$r .= <<<EOT
@@ -168,7 +168,7 @@ EOT;
 	}
 
 	public static function getHTMLRequest() {
-		$r = Context::get('request');
+		$r = App::get('request');
 		$res = '<b>Request</b><br>';
 		$res .= '<div>';
 
