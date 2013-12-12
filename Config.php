@@ -38,8 +38,8 @@ class Config {
 		
 		foreach($args as $parent)
 			$arr =& $arr[$parent];
-		if(\Coxis\Core\Context::has('hook'))
-			\Coxis\Core\Context::get('hook')->trigger(array_merge(array('config', 'set'), array_merge($args, array($key))), array($value));
+		if(\Coxis\Core\App::has('hook'))
+			\Coxis\Core\App::get('hook')->trigger(array_merge(array('config', 'set'), array_merge($args, array($key))), array($value));
 		$arr[$key] = $value;
 	}
 	

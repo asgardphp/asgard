@@ -18,9 +18,9 @@ class Facades {
 	public function register($alias, $class, $cb=null) {
 		if(!$cb)
 			$cb = array($class, 'callback');
-		if(!\Coxis\Core\Context::instance()->has(strtolower($alias)))
-			\Coxis\Core\Context::instance()->set(strtolower($alias), $cb);
-		\Coxis\Core\Context::instance()->get('importer')->alias($class, $alias);
+		if(!\Coxis\Core\App::instance()->has(strtolower($alias)))
+			\Coxis\Core\App::instance()->set(strtolower($alias), $cb);
+		\Coxis\Core\App::instance()->get('importer')->alias($class, $alias);
 		$this->facades[$alias] = array($class, $cb);
 	}
 }

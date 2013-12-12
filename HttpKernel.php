@@ -32,7 +32,7 @@ class HttpKernel {
 		}
 
 		try {
-			\Coxis\Core\Context::get('hook')->trigger('frontcontroller_end', array($response));
+			\Coxis\Core\App::get('hook')->trigger('frontcontroller_end', array($response));
 		} catch(\Exception $e) {
 			ErrorHandler::logException($e);
 		}

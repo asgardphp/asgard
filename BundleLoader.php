@@ -42,9 +42,9 @@ namespace Coxis\Core {
 
 		protected function loadLocales() {
 			$locales = \Coxis\Utils\Cache::get('bundles/'.$this->getBundle().'/locales', function() {
-				return \Context::get('locale')->fetchLocalesFromDir($this->getBundle().'/locales');
+				return \App::get('locale')->fetchLocalesFromDir($this->getBundle().'/locales');
 			});
-			\Context::get('locale')->addLocales($locales);
+			\App::get('locale')->addLocales($locales);
 		}
 
 		protected function loadHooks() {

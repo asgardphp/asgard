@@ -69,7 +69,7 @@ class Controller extends Viewable {
 		$controller->request = $request;
 		$controller->response = $response;
 
-		Context::get('hook')->trigger('controller_configure', array($controller));
+		App::get('hook')->trigger('controller_configure', array($controller));
 
 		if(method_exists($controller, 'configure'))
 			if($res = $controller->doRun('configure', array($request), false))

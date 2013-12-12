@@ -1,10 +1,8 @@
 <?php
 namespace Coxis\Core;
 
-class Context {
-	public static $default = 'default';
-
-	protected static $instances = array();
+class App {
+	protected static $instance;
 	public $classes = array();
 
 	protected $ioc = null;
@@ -26,7 +24,7 @@ class Context {
 			return \Coxis\Core\Request::createFromGlobals();
 		});
 		$this->_set('url', function() {
-			return \Coxis\Core\Context::get('request')->url;
+			return \Coxis\Core\App::get('request')->url;
 		});
 		$this->_set('response', function() {
 			return new \Coxis\Core\Response;
@@ -43,16 +41,10 @@ class Context {
 		}
 	}
 
-	public static function getDefault() {
-		return static::$default;
-	}
-
-	public static function instance($context=null) {
-		if(!$context)
-			$context = static::$default;
-		if(!isset(static::$instances[$context]))
-			static::$instances[$context] = new static;
-		return static::$instances[$context];
+	public static function instance() {
+		if(!isset(static::$instance))
+			static::$instance = new static;
+		return static::$instance;
 	}
 
 	public static function get($class) {

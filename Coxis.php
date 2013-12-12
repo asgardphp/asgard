@@ -20,13 +20,13 @@ class Coxis {
 		static::setDefaultEnvironment();
 		if(file_exists(_DIR_.'app/load.php'))
 			include _DIR_.'app/load.php';
-		BundlesManager::instance()->loadBundles(\Coxis\Core\Context::get('config')->get('bundles'));
+		BundlesManager::instance()->loadBundles(\Coxis\Core\App::get('config')->get('bundles'));
 		
 		if(file_exists(_DIR_.'app/start.php'))
 			include _DIR_.'app/start.php';
 		// \Hook::trigger('start');
 		\Request::inst()->isInitial = true;
-		\Context::get('locale')->importLocales('locales');
+		\App::get('locale')->importLocales('locales');
 
 		static::$loaded = true;
 	}

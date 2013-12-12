@@ -62,7 +62,7 @@ class ErrorHandler {
 	}
 
 	public static function phpErrorHandler($errno, $errstr, $errfile, $errline) {
-		if(static::isLogging() && Context::get('config')->get('log_php_errors'))
+		if(static::isLogging() && App::get('config')->get('log_php_errors'))
 			static::log(\Psr\Log\LogLevel::NOTICE, 'PHP ('.static::getPHPError($errno).'): '.$errstr, $errfile, $errline);
 		throw new \ErrorException($errstr, $errno, 0, $errfile, $errline);
 	}
@@ -139,11 +139,11 @@ class ErrorHandler {
 	}
 
 	public static function isLogging() {
-		return Context::get('config')->get('log') && !!static::getLogger();
+		return App::get('config')->get('log') && !!static::getLogger();
 	}
 
 	public static function getLogger() {
-		return Context::get('logger');
+		return App::get('logger');
 	}
 
 	public static function getPHPErrorSeverity($code) {
@@ -187,7 +187,7 @@ class ErrorHandler {
 	}
 
 	public static function isFatal($severity) {
-		return in_array($severity, Context::get('config')->get('fatal_errors'));
+		return in_array($severity, App::get('config')->get('fatal_errors'));
 	}
 
 	public static function getCLIErrorResponse($msg, $backtrace=null) {
@@ -206,10 +206,10 @@ class ErrorHandler {
 		}
 		$result .= \Coxis\Utils\Debug::getReport($backtrace);
 	
-		Context::get('response')->setCode(500);
-		if(Context::get('config')->get('debug'))
-			return Context::get('response')->setHeader('Content-Type', 'text/html')->setContent($result);
+		App::get('response')->setCode(500);
+		if(App::get('config')->get('debug'))
+			return App::get('response')->setHeader('Content-Type', 'text/html')->setContent($result);
 		else
-			return Context::get('response')->setHeader('Content-Type', 'text/html')->setContent('<h1>Error</h1>Oops, something went wrong.');
+			return App::get('response')->setHeader('Content-Type', 'text/html')->setContent('<h1>Error</h1>Oops, something went wrong.');
 	}
 }

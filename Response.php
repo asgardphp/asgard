@@ -71,7 +71,7 @@ class Response {
 	}
 
 	public function send($kill=true) {
-		\Coxis\Core\Context::get('hook')->trigger('output');
+		\Coxis\Core\App::get('hook')->trigger('output');
 
 		$headers = array();
 		if(array_key_exists($this->code, static::$codes))
@@ -87,10 +87,10 @@ class Response {
 	protected function doSend($headers, $content, $kill) {
 		while(ob_get_level())
 			ob_end_clean();
-		\Coxis\Core\Context::get('hook')->trigger('end');
+		\Coxis\Core\App::get('hook')->trigger('end');
 		\Coxis\Core\Response::sendHeaders($headers);
 		echo $content;
-        if(\Coxis\Core\Context::get('config')->get('profiler'))
+        if(\Coxis\Core\App::get('config')->get('profiler'))
                 \Coxis\Utils\Profiler::report();
 		if($kill)
 			exit();

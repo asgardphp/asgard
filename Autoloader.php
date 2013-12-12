@@ -21,7 +21,7 @@ class Autoloader {
 	}
 
 	public static function addPreloadedClasses($classes) {
-		if(!\Coxis\Core\Context::get('config')->get('preload'))
+		if(!\Coxis\Core\App::get('config')->get('preload'))
 			return;
 		foreach($classes as $class)
 			static::$preloaded[] = $class;
@@ -30,14 +30,14 @@ class Autoloader {
 	}
 
 	public static function preloadClass($class, $file) {
-		if(!\Coxis\Core\Context::get('config')->get('preload'))
+		if(!\Coxis\Core\App::get('config')->get('preload'))
 			return;
 		if(!array_search(realpath($file), static::$preloaded));
 			static::$preloaded[] = array(strtolower($class), realpath($file));
 	}
 	
 	public static function preloadDir($file) {
-		if(!\Coxis\Core\Context::get('config')->get('preload'))
+		if(!\Coxis\Core\App::get('config')->get('preload'))
 			return array();
 		if(is_dir($file) && !strpos($file, '.') !== 0) {
 			foreach(glob($file.'/*') as $sub_file)
@@ -75,6 +75,6 @@ class Autoloader {
 		
 		$dir = \Coxis\Utils\NamespaceUtils::dirname($class);
 
-		\Coxis\Core\Context::get('importer')->_import($class, array('into'=>$dir));
+		\Coxis\Core\App::get('importer')->_import($class, array('into'=>$dir));
 	}
 }

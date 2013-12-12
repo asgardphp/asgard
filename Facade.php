@@ -10,7 +10,7 @@ abstract class Facade {
 	}
 
 	public static function inst() {
-		return Context::get(static::getClass());
+		return App::get(static::getClass());
 	}
 
 	public static function getClass() {
