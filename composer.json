@@ -7,5 +7,9 @@
 	}],
     "autoload": {
         "psr-0": {"Coxis\\Form": "../.."}
+    },
+    "suggest": {
+        "coxis/ckeditor": "dev-master",
+        "coxis/captcha": "dev-master"
     }
 }
