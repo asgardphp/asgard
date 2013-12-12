@@ -62,7 +62,8 @@ class ErrorHandler {
 	}
 
 	public static function phpErrorHandler($errno, $errstr, $errfile, $errline) {
-		static::log(\Psr\Log\LogLevel::NOTICE, 'PHP ('.static::getPHPError($errno).'): '.$errstr, $errfile, $errline);
+		if(static::isLogging() && Context::get('config')->get('log_php_errors'))
+			static::log(\Psr\Log\LogLevel::NOTICE, 'PHP ('.static::getPHPError($errno).'): '.$errstr, $errfile, $errline);
 		throw new \ErrorException($errstr, $errno, 0, $errfile, $errline);
 	}
 
@@ -71,23 +72,27 @@ class ErrorHandler {
 
 		#PSRException with a given severity
 		if($e instanceof PSRException) {
-			$severity = $e->getseverity();
+			if(static::isLogging())
+				$severity = $e->getseverity();
 			$msg = $e->getMessage();
 		}
 		#PHP exception
 		elseif($e instanceof \ErrorException) {
-			$severity = static::getPHPErrorSeverity($e->getCode());
+			if(static::isLogging())
+				$severity = static::getPHPErrorSeverity($e->getCode());
 			$msg = 'PHP ('.static::getPHPError($e->getCode()).'): '.$e->getMessage();
 		}
 		#other exception
 		else {
-			$severity = \Psr\Log\LogLevel::ERROR;
+			if(static::isLogging())
+				$severity = \Psr\Log\LogLevel::ERROR;
 			$msg = get_class($e).': '.$e->getMessage();
 		}
 
 		$trace = static::getBacktraceFromException($e);
 
-		static::log($severity, $msg, $e->getFile(), $e->getLine(), $trace);
+		if(static::isLogging())
+			static::log($severity, $msg, $e->getFile(), $e->getLine(), $trace);
 		
 		if(PHP_SAPI == 'cli')
 			echo static::getCLIErrorResponse($msg, $trace);
@@ -97,6 +102,9 @@ class ErrorHandler {
 	}
 
 	public static function logException($e) {
+		if(!static::isLogging())
+			return;
+
 		#PSRException with a given severity
 		if($e instanceof PSRException) {
 			$severity = $e->getseverity();
@@ -119,14 +127,23 @@ class ErrorHandler {
 	}
 
 	public static function log($severity, $message, $file, $line, $trace=null) {
-		if(Context::get('config')->get('log') && Context::has('logger')) {
-			$context = array(
-				'file' => $file,
-				'line' => $line,
-				'trace' => $trace,
-			);
-			Context::get('logger')->log($severity, $message, $context);
-		}
+		if(!static::isLogging())
+			return;
+
+		$context = array(
+			'file' => $file,
+			'line' => $line,
+			'trace' => $trace,
+		);
+		static::getLogger()->log($severity, $message, $context);
+	}
+
+	public static function isLogging() {
+		return Context::get('config')->get('log') && !!static::getLogger();
+	}
+
+	public static function getLogger() {
+		return Context::get('logger');
 	}
 
 	public static function getPHPErrorSeverity($code) {

@@ -28,7 +28,7 @@ class BundlesManager {
 		$count = sizeof($_bundles);
 		$bundles = array();
 		foreach($_bundles as $k=>$v) {
-			if(is_a($v, 'Coxis\Core\BundleLoader')) {
+			if($v instanceof BundleLoader) {
 				$bundles[] = $v;
 				$count--;
 			}
@@ -37,8 +37,7 @@ class BundlesManager {
 				if($bundle === false)
 					$bundle = realpath(_DIR_.$v);
 				if(!$bundle)
-					// throw new \Exception('Bundle '.$v.' does not exist.');
-					d($bundle, $v);
+					throw new \Exception('Bundle '.$v.' does not exist.');
 				$bundles[$bundle] = null;
 
 				if(file_exists($bundle.'/Bundle.php'))
