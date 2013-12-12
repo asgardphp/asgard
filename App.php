@@ -3,13 +3,10 @@ namespace Coxis\Core;
 
 class App {
 	protected static $instance;
-	public $classes = array();
-
-	protected $ioc = null;
+	protected $instances = array();
+	protected $registry = array();
 
 	function __construct() {
-		$this->ioc = new IoC;
-
 		$this->_set('importer', function() {
 			return new \Coxis\Core\Importer;
 		});
@@ -32,8 +29,8 @@ class App {
 
 		foreach(\Coxis\Core\Facades::inst()->all() as $facade=>$f) {
 			list($class, $cb) = $f;
-			if(!$this->ioc->registered(strtolower($facade)))
-				$this->ioc->register(strtolower($facade), $cb);
+			if(!$this->registered(strtolower($facade)))
+				$this->register(strtolower($facade), $cb);
 		}
 		foreach(\Coxis\Core\Facades::inst()->all() as $facade=>$f) {
 			list($class, $cb) = $f;
@@ -48,18 +45,18 @@ class App {
 	}
 
 	public static function get($class) {
-		$context = static::instance();
-		return $context->_get($class);
+		$instance = static::instance();
+		return $instance->_get($class);
 	}
 
-	protected function _get($class) {
+	public function _get($class) {
 		if($class == 'ioc')
-			return $this->ioc;
+			return $this;
 
-		if(!isset($this->classes[$class]))
-			$this->classes[$class] = $this->ioc->get($class);
+		if(!isset($this->instances[$class]))
+			$this->instances[$class] = $this->make($class);
 
-		return $this->classes[$class];
+		return $this->instances[$class];
 	}
 
 	public function __get($name) {
@@ -67,15 +64,15 @@ class App {
 	}
 
 	public static function set($name, $value) {
-		$context = static::instance();
-		return $context->_set($name, $value);
+		$instance = static::instance();
+		return $instance->_set($name, $value);
 	}
 
 	public function _set($name, $value) {
 		if(is_callable($value))
-			$this->ioc->register($name, $value);
+			$this->register($name, $value);
 		else
-			$this->classes[$name] = $value;
+			$this->instances[$name] = $value;
 		return $this;
 	}
 
@@ -84,11 +81,30 @@ class App {
 	}
 
 	public static function has($class) {
-		$context = static::instance();
-		return $context->_has($class);
+		$instance = static::instance();
+		return $instance->_has($class);
 	}
 
 	public function _has($class) {
-		return $this->ioc->registered($class);
+		return $this->registered($class);
+	}
+
+	public function register($name, $callback) {
+		$this->registry[$name] = $callback;
+	}
+	
+	public function make($name, $params=array(), $default=null) {
+		if(isset($this->registry[$name]))
+			return call_user_func_array($this->registry[$name], $params);
+		else {
+			if($default instanceof \Closure)
+				return call_user_func_array($default, $params);
+			else
+				return $default;
+		}
+	}
+
+	public function registered($name) {
+		return isset($this->registry[$name]);
 	}
 }
