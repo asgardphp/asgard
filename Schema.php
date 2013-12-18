@@ -325,7 +325,7 @@ class Column {
 	protected function getType() {
 		$r = \DB::query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
-                 WHERE TABLE_SCHEMA = '".\Config::get('database', 'database')."' 
+                 WHERE TABLE_SCHEMA = '".\Config::get('database/database')."' 
                  AND  TABLE_NAME = '$this->table'
 		 AND COLUMN_NAME = '$this->name'")->first();
 		 
@@ -335,7 +335,7 @@ class Column {
 	protected function getNullable() {
 		$r = \DB::query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
-                 WHERE TABLE_SCHEMA = '".\Config::get('database', 'database')."' 
+                 WHERE TABLE_SCHEMA = '".\Config::get('database/database')."' 
                  AND  TABLE_NAME = '$this->table'
 		 AND COLUMN_NAME = '$this->name'")->first();
 		 
@@ -345,7 +345,7 @@ class Column {
 	protected function getDefault() {
 		$r = \DB::query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
-                 WHERE TABLE_SCHEMA = '".\Config::get('database', 'database')."' 
+                 WHERE TABLE_SCHEMA = '".\Config::get('database/database')."' 
                  AND  TABLE_NAME = '$this->table'
 		 AND COLUMN_NAME = '$this->name'")->first();
 		 
@@ -355,7 +355,7 @@ class Column {
 	protected function getAutoincrement() {
 		$r = \DB::query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
-                 WHERE TABLE_SCHEMA = '".\Config::get('database', 'database')."' 
+                 WHERE TABLE_SCHEMA = '".\Config::get('database/database')."' 
                  AND  TABLE_NAME = '$this->table'
 		 AND COLUMN_NAME = '$this->name'")->first();
 		 
@@ -372,7 +372,6 @@ class Column {
 	}
 	
 	public function index() {
-		#todo length ADD INDEX(title(50))
 		$sql = 'ALTER TABLE `'.$this->table.'` ADD INDEX(`'.$this->name.'`)';
 		\DB::query($sql);
 		
@@ -380,7 +379,6 @@ class Column {
 	}
 	
 	public function unique() {
-		#todo length ADD INDEX(title(50))
 		$sql = 'ALTER TABLE `'.$this->table.'` ADD UNIQUE(`'.$this->name.'`)';
 		\DB::query($sql);
 		
@@ -388,7 +386,6 @@ class Column {
 	}
 	
 	public function primary() {
-		#todo length ADD INDEX(title(50))
 		$sql = 'ALTER TABLE `'.$this->table.'` ADD PRIMARY(`'.$this->name.'`)';
 		\DB::query($sql);
 		

@@ -63,8 +63,8 @@ class DAL {
 		return $this;
 	}
 	
-	public function query($sql, $args=array()) {
-		return $this->db->query($sql, $args);
+	public function query($sql, $params=array()) {
+		return $this->db->query($sql, $params);
 	}
 	
 	/* GETTERS */
@@ -75,7 +75,7 @@ class DAL {
 	
 	public function get() {
 		list($sql, $params) = $this->buildSQL();
-		return $this->db->query($sql, $params, $params)->all();
+		return $this->db->query($sql, $params)->all();
 	}
 	
 	public function paginate($page, $per_page=10) {
@@ -255,8 +255,8 @@ class DAL {
 		$jointures = '';
 		foreach($this->joins as $jointure) {
 			$type = $jointure[0];
-			$table = \Coxis\Utils\Tools::get(array_keys($jointure[1]), 0);
-			$conditions = \Coxis\Utils\Tools::get(array_values($jointure[1]), 0);
+			$table = \Coxis\Utils\Tools::array_get(array_keys($jointure[1]), 0);
+			$conditions = \Coxis\Utils\Tools::array_get(array_values($jointure[1]), 0);
 			$res = $this->buildJointure($type, $table, $conditions);
 			$jointures .= $res[0];
 			$params = array_merge($params, $res[1]);
@@ -422,7 +422,7 @@ class DAL {
 				->offset(null)
 				->orderBy(null)
 				->limit(null);
-			return \Coxis\Utils\Tools::get($this->first(), $fct);
+			return \Coxis\Utils\Tools::array_get($this->first(), $fct);
 		}
 	}
 	
