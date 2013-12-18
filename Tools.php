@@ -2,6 +2,10 @@
 namespace Coxis\Utils;
 
 class Tools {
+	public static function dateEscape($str) {
+		return '\\'.implode('\\', str_split($str));
+	}
+
 	public static function is_function($f) {
 	    return (is_object($f) && ($f instanceof \Closure));
 	}
@@ -19,9 +23,10 @@ class Tools {
 
 	public static function getallheaders() { 
 		$headers = ''; 
-		foreach($_SERVER as $name => $value)
+		foreach($_SERVER as $name => $value) {
 			if(substr($name, 0, 5) == 'HTTP_')
 				$headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+		}
 		return $headers; 
 	}
 
@@ -33,41 +38,33 @@ class Tools {
 		return $str;
 	}
 
-	public static function get() {
-		$args = func_get_args();
-		$result = array_shift($args);
-		$args = \Coxis\Utils\Tools::flateArray($args);
-		foreach($args as $key)
-			if(!isset($result[$key]))
-				return null;
-			else
-				$result = $result[$key];
-		
-		return $result;
-	}
-
 	public static function hash($pwd) {
 		return sha1(Config::get('salt').$pwd);
 	}
 
-	public static function array_set(&$arr, $keys, $value) {
-		if(!$keys)
-			return;
-		if(!is_array($keys))
-			$keys = array($keys);
-		$lastkey = array_pop($keys);
-		foreach($keys as $parent) {
+	public static function pathGet($arr, $str_path, $default=null) {
+		$path = explode('/', $str_path);
+		return static::array_get($arr, $path, $default);
+	}
+
+	public static function pathSet(&$arr, $str_path, $value) {
+		$path = explode('/', $str_path);
+		static::array_set($arr, $path, $value);
+	}
+
+	public static function array_set(&$arr, $path, $value) {
+		if(!is_array($path))
+			$path = array($path);
+		$lastkey = array_pop($path);
+		foreach($path as $parent)
 			$arr =& $arr[$parent];
-		}
 		$arr[$lastkey] = $value;
 	}
 	
-	public static function array_get($arr, $keys, $default=null) {
-		if(!$keys)
-			return;
-		if(!is_array($keys))
-			$keys = array($keys);
-		foreach($keys as $key) {
+	public static function array_get($arr, $path, $default=null) {
+		if(!is_array($path))
+			$path = array($path);
+		foreach($path as $key) {
 			if(!isset($arr[$key]))
 				return $default;
 			else
@@ -116,14 +113,39 @@ class Tools {
 		'December'	=>	'Décembre',
 	);
 
-	static $jours = array(
-		'Lundi'=>'Lundi',
-		'Mardi'=>'Mardi',
-		'Mercredi'=>'Mercredi',
-		'Jeudi'=>'Jeudi',
-		'Vendredi'=>'Vendredi',
-		'Samedi'=>'Samedi',
-		'Dimanche'=>'Dimanche',
+	static $shortMonths = array(
+		'Jan'	=>	'Jan',
+		'Feb'	=>	'Fév',
+		'Mar'	=>	'Mar',
+		'Apr'	=>	'Avr',
+		'May'	=>	'Mai',
+		'Jun'	=>	'Jui',
+		'Jul'	=>	'Jui',
+		'Aug'	=>	'Aoû',
+		'Sep'	=>	'Sep',
+		'Oct'	=>	'Oct',
+		'Nov'	=>	'Nov',
+		'Dec'	=>	'Déc',
+	);
+
+	static $days = array(
+		'Monday'=>'Lundi',
+		'Tuesday'=>'Mardi',
+		'Wednesday'=>'Mercredi',
+		'Thursday'=>'Jeudi',
+		'Friday'=>'Vendredi',
+		'Saturday'=>'Samedi',
+		'Sunday'=>'Dimanche',
+	);
+
+	static $shortDays = array(
+		'Mon'=>'Lun',
+		'Tue'=>'Mar',
+		'Wed'=>'Mer',
+		'Thu'=>'Jeu',
+		'Fri'=>'Ven',
+		'Sat'=>'Sam',
+		'Sun'=>'Dim',
 	);
 
 	static $departements = array(
@@ -225,10 +247,10 @@ class Tools {
 				'95'	=>	'Val-d\'Oise',
 	);
 
-	public static function modelsToArray($models) {
-		foreach($models as $k=>$v)
-			$models[$k] = json_decode($v->toJSON());
-		return json_encode($models);
+	public static function EntitiesToArray($entities) {
+		foreach($entities as $k=>$v)
+			$entities[$k] = json_decode($v->toJSON());
+		return json_encode($entities);
 	}
 	
 	public static function prependHttp($url) {
@@ -447,7 +469,6 @@ class Tools {
 		return $result;
 	}
 	
-	#todo move to i18n
 	static $countries = array(
 		'AF' => 'AFGHANISTAN',
 		'AX' => 'Ã…LAND ISLANDS',

@@ -25,20 +25,13 @@ class Time {
 	public function date() {
 		return $this->format('d/m/Y');
 	}
-	
-	protected static function escape($str) {
-		return '\\'.implode('\\', str_split($str));
-	}
 
-	#todo put i18n somewhere else, SoC
 	public function format($format) {
-		// d(static::escape('aaaa'));
-		$format = str_replace('F', static::escape(Tools::$months[date('F', $this->timestamp)]), $format);
-		// d($format);
-
-	//~ try {
+		$format = preg_replace('/(?<!\\\\)M/', Tools::dateEscape(Tools::$shortMonths[date('M', $this->timestamp)]), $format); #Jan
+		$format = preg_replace('/(?<!\\\\)F/', Tools::dateEscape(Tools::$months[date('F', $this->timestamp)]), $format); #January
+		$format = preg_replace('/(?<!\\\\)D/', Tools::dateEscape(Tools::$shortDays[date('D', $this->timestamp)]), $format); #Mon
+		$format = preg_replace('/(?<!\\\\)l/', Tools::dateEscape(Tools::$days[date('l', $this->timestamp)]), $format); #Monday
 		return date($format, $this->timestamp);
-		//~ }catch(Exception $e){d($this->timestamp, $e);}
 	}
 
 	public static function dateToSQLFormat($date) {

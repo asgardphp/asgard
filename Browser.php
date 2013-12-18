@@ -48,13 +48,11 @@ class Browser {
 		else
 			$request->body = $body;
 
-		App::instance()->request = $request;
-
 		$request->url->setURL($url);
 		$request->url->setServer('localhost');
 		$request->url->setRoot('');
 
-		$res = \Coxis\Core\HttpKernel::process(\Request::inst());
+		$res = \Coxis\Core\HttpKernel::process($request, true);
 
 		$this->last = $res;
 		$this->cookies = $request->cookie->all();
@@ -64,6 +62,8 @@ class Browser {
 	}
 
 	public function submit($item=0, $to=null, $override=array()) {
+		if($this->last === null)
+			throw new \Exception('No page to submit from.');
 		libxml_use_internal_errors(true);
 		$orig = new \DOMDocument();
 		$orig->loadHTML($this->last->content);

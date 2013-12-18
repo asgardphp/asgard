@@ -23,9 +23,9 @@ $csv->get();
 $csv->output();
 $csv->separator(';');
 
-$csv = new CSV($model::propertyNames());
-foreach($models as $model)
-	$csv->add($model->toArray());
+$csv = new CSV($entity::propertyNames());
+foreach($entities as $entity)
+	$csv->add($entity->toArray());
 $result = $csv->get();
 return \Response::setHeader('Content-Type', 'text/csv')
        ->setHeader('content-disposition', 'attachment; filename="participants.csv"')

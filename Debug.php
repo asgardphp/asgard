@@ -94,7 +94,7 @@ EOT;
 				$r .= ' at '.$next['function'];
 			$r .= "<br>\n";
 
-			if(sizeof($next['args']) > 0) {
+			if(isset($next['args']) && sizeof($next['args']) > 0) {
 				$r .= '<div><span class="toggle"><span>+</span>Args:</span>'."<br>\n";
 				$r .= '<div style="display:none"><ul>';
 				foreach($next['args'] as $arg) {
