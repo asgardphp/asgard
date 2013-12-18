@@ -1,7 +1,7 @@
 <?php
-namespace Coxis\Value\Models;
+namespace Coxis\Value\Entities;
 
-abstract class SingleValue extends \Coxis\Core\Model {
+abstract class SingleValue extends \Coxis\Core\Entity {
 	public static $stored = array();
 
 	public static $meta = array(

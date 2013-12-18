@@ -18,7 +18,7 @@ class PreferencesAdminController extends \Coxis\Admin\Libs\Controller\AdminParen
 		$vars = array('name', 'email', 'head_script', 'adresse', 'telephone');
 		foreach($vars as $valueName) {
 			$value = Value::fetch($valueName);
-			$a = new AdminModelForm($value, $this);
+			$a = new AdminEntityForm($value, $this);
 			unset($a->key);
 			$form->values[$value->key] = $a;
 		}
