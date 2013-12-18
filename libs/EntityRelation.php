@@ -1,17 +1,12 @@
 <?php
-class ModelRelation implements \ArrayAccess {
-	protected $modelClass;
+class EntityRelation implements \ArrayAccess {
+	protected $entityClass;
 	public $name;
 	public $params = array();
 
-		// if(isset($this->params['polymorphic']) && $this->params['polymorphic']) {
-			
-		// }
-		// else {
-
-	function __construct($modelDefinition, $name, $params) {
-		$modelClass = $modelDefinition->getClass();
-		$this->modelClass = $modelClass;
+	function __construct($entityDefinition, $name, $params) {
+		$entityClass = $entityDefinition->getClass();
+		$this->entityClass = $entityClass;
 		$this->params = $params;
 		$this->params['name'] = $this->name = $name;
 
@@ -20,12 +15,12 @@ class ModelRelation implements \ArrayAccess {
 			$this->params['link'] = $name.'_id';
 			$this->params['link_type'] = $name.'_type';
 
-			$modelDefinition->addProperty($this->params['link'], array('type' => 'integer', 'required' => (isset($this->params['required']) && $this->params['required']), 'editable'=>false));
-			$modelDefinition->addProperty($this->params['link_type'], array('type' => 'text', 'required' => (isset($this->params['required']) && $this->params['required']), 'editable'=>false));
+			$entityDefinition->addProperty($this->params['link'], array('type' => 'integer', 'required' => (isset($this->params['required']) && $this->params['required']), 'editable'=>false));
+			$entityDefinition->addProperty($this->params['link_type'], array('type' => 'text', 'required' => (isset($this->params['required']) && $this->params['required']), 'editable'=>false));
 		}
 		else {
 			$rev = $this->reverseRelationParams();
-			$relation_model = $this->params['model'];
+			$relation_entity = $this->params['entity'];
 
 			if(!isset($this->params['type'])) {
 				if($this->params['has'] == 'one') {
@@ -50,38 +45,38 @@ class ModelRelation implements \ArrayAccess {
 				$this->params['link'] = $rev_rel['name'].'_id';
 			}
 			elseif($this->params['type'] == 'HMABT') {
-				$this->params['link_a'] = $modelClass::getModelName().'_id';
-				$this->params['link_b'] = $relation_model::getModelName().'_id';
+				$this->params['link_a'] = $entityClass::getEntityName().'_id';
+				$this->params['link_b'] = $relation_entity::getEntityName().'_id';
 				if(isset($this->params['sortable']) && $this->params['sortable'])
-					$this->params['sortable'] = $modelClass::getModelName().'_position';
+					$this->params['sortable'] = $entityClass::getEntityName().'_position';
 				else
 					$this->params['sortable'] = false;
-				if($modelClass::getModelName() < $relation_model::getModelName())
-					$this->params['join_table'] = \Config::get('database', 'prefix').$modelClass::getModelName().'_'.$relation_model::getModelName();
+				if($entityClass::getEntityName() < $relation_entity::getEntityName())
+					$this->params['join_table'] = \Config::get('database/prefix').$entityClass::getEntityName().'_'.$relation_entity::getEntityName();
 				else
-					$this->params['join_table'] = \Config::get('database', 'prefix').$relation_model::getModelName().'_'.$modelClass::getModelName();
+					$this->params['join_table'] = \Config::get('database/prefix').$relation_entity::getEntityName().'_'.$entityClass::getEntityName();
 			}
 			else {
 				$this->params['link'] = $name.'_id';
-				$modelDefinition->addProperty($this->params['link'], array('type' => 'integer', 'required' => (isset($this->params['required']) && $this->params['required']), 'editable'=>false));
+				$entityDefinition->addProperty($this->params['link'], array('type' => 'integer', 'required' => (isset($this->params['required']) && $this->params['required']), 'editable'=>false));
 			}
 		}
 	}
 
 	protected function reverseRelationParams() {
-		$origModelName = strtolower($this->modelClass);
-		$modelName = preg_replace('/^\\\/', '', $origModelName);
+		$origEntityName = strtolower($this->entityClass);
+		$entityName = preg_replace('/^\\\/', '', $origEntityName);
 
-		$relation_model = $this->params['model'];
+		$relation_entity = $this->params['entity'];
 		$name = $this->name;
 
 		$rev_relations = array();
-		if(isset($relation_model::$relations))
-			foreach($relation_model::$relations as $rev_rel_name=>$rev_rel) {
-				$relModelClass = preg_replace('/^\\\/', '', strtolower($rev_rel['model']));
+		if(isset($relation_entity::$relations))
+			foreach($relation_entity::$relations as $rev_rel_name=>$rev_rel) {
+				$relEntityClass = preg_replace('/^\\\/', '', strtolower($rev_rel['entity']));
 
-				if($relModelClass == $modelName
-					|| $this['as'] && $this['as'] == $rev_rel['model']
+				if($relEntityClass == $entityName
+					|| $this['as'] && $this['as'] == $rev_rel['entity']
 					) {
 					if($rev_rel_name == $name)
 						continue;
@@ -94,18 +89,18 @@ class ModelRelation implements \ArrayAccess {
 			}
 
 		if(count($rev_relations) == 0)
-			throw new \Exception('No reverse relation for '.$modelName.': '.$name);
+			throw new \Exception('No reverse relation for '.$entityName.': '.$name);
 		elseif(count($rev_relations) > 1)
-			throw new \Exception('Multiple reverse relations for '.$modelName.': '.$name);
+			throw new \Exception('Multiple reverse relations for '.$entityName.': '.$name);
 		else
 			return $rev_relations[0];
 	}
 
 	public function reverse() {
 		$reverse_rel = $this->reverseRelationParams();
-		$model = $this->params['model'];
+		$entity = $this->params['entity'];
 		$rel_name = $reverse_rel['name'];
-		return $model::getDefinition()->relations[$rel_name];
+		return $entity::getDefinition()->relations[$rel_name];
 	}
 
     public function offsetSet($offset, $value) {

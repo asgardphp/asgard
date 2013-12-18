@@ -2,7 +2,7 @@
 namespace Coxis\ORM\Libs;
 
 class ORM {
-	protected $model;
+	protected $entity;
 	protected $with;
 	protected $where = array();
 	protected $orderBy;
@@ -12,24 +12,23 @@ class ORM {
 
 	protected $tmp_dal = null;
 		
-	function __construct($model) {
+	function __construct($entity) {
 		Profiler::checkpoint('ORM construct');
-		$this->model = $model;
+		$this->entity = $entity;
 
-		#todo move it into orm/model
-		$this->orderBy($model::getDefinition()->meta['order_by']);
+		$this->orderBy($entity::getDefinition()->meta['order_by']);
 	}
 
 	public function __call($relationName, $args) {
-		$current_model = $this->model;
-		if(!$current_model::getDefinition()->hasRelation($relationName))
+		$current_entity = $this->entity;
+		if(!$current_entity::getDefinition()->hasRelation($relationName))
 			throw new \Exception('Relation '.$relationName.' does not exist.');
-		$relation = $current_model::getDefinition()->relations[$relationName];
+		$relation = $current_entity::getDefinition()->relations[$relationName];
 		$reverse_relation = $relation->reverse();
 		$reverse_relation_name = $reverse_relation['name'];
-		$relation_model = $relation['model'];
+		$relation_entity = $relation['entity'];
 
-		$newOrm = $relation_model::orm();
+		$newOrm = $relation_entity::orm();
 		$newOrm->where($this->where);
 
 		$newOrm->join(array($reverse_relation_name => $this->join));
@@ -41,14 +40,14 @@ class ORM {
 		return $this->$name()->get();
 	}
 
-	public function joinToModel($relation, $model) {
+	public function joinToEntity($relation, $entity) {
 		if($relation['polymorphic']) {
-			$this->where(array($relation['link_type'] => $model->getModelName()));
-			$relation['real_model'] = $model->getModelName();
+			$this->where(array($relation['link_type'] => $entity->getEntityName()));
+			$relation['real_entity'] = $entity->getEntityName();
 		}
 		$this->join($relation);
 
-		$this->where(array($relation->name.'.id' => $model->id));
+		$this->where(array($relation->name.'.id' => $entity->id));
 
 		return $this;
 	}
@@ -59,18 +58,18 @@ class ORM {
 	}
 
 	public function getTable() {
-		$current_model = $this->model;
-		return $current_model::getTable();
+		$current_entity = $this->entity;
+		return $current_entity::getTable();
 	}
 
 	public function geti18nTable() {
 		return $this->getTable().'_translation';
 	}
 
-	public function toModel($raw, $modelClass=null) {
-		if(!$modelClass)
-			$modelClass = $this->model;
-		$new = new $modelClass;
+	public function toEntity($raw, $entityClass=null) {
+		if(!$entityClass)
+			$entityClass = $this->entity;
+		$new = new $entityClass;
 		return ORMHandler::unserializeSet($new, $raw);
 	}
 
@@ -80,7 +79,7 @@ class ORM {
 		if(!($r = $this->tmp_dal->next()))
 			return false;
 		else
-			return $this->toModel($r);
+			return $this->toEntity($r);
 	}
 
 	public function ids() {
@@ -108,7 +107,7 @@ class ORM {
 	}
 
 	public function getDAL() {
-		$current_model = $this->model;
+		$current_entity = $this->entity;
 		$dal = new \Coxis\DB\DAL;
 		$table = $this->getTable();
 		$dal->orderBy($this->orderBy);
@@ -118,10 +117,10 @@ class ORM {
 
 		$dal->where($this->processConditions($this->where));
 
-		if($current_model::isI18N()) {
+		if($current_entity::isI18N()) {
 			$translation_table = $this->geti18nTable();
 			$selects = array($table.'.*');
-			foreach($current_model::getDefinition()->properties() as $name=>$property)
+			foreach($current_entity::getDefinition()->properties() as $name=>$property)
 				if($property->i18n)
 					$selects[] = $translation_table.'.`'.$name.'`';
 			$dal->select($selects);
@@ -138,43 +137,42 @@ class ORM {
 			$dal->setTable($table);
 		}
 
-		$table = $current_model::getTable();
-		$this->recursiveJointures($dal, $this->join, $current_model, $table);
+		$table = $current_entity::getTable();
+		$this->recursiveJointures($dal, $this->join, $current_entity, $table);
 
 		return $dal;
 	}
 
-	public function recursiveJointures($dal, $jointures, $current_model, $table) {
+	public function recursiveJointures($dal, $jointures, $current_entity, $table) {
 		foreach($jointures as $k=>$v) {
 			if(is_array($v)) {
 				$relationName = get(array_keys($v), 0);
 				$recJoins = get(array_values($v), 0);
-				$relation = $current_model::getDefinition()->relations[$relationName];
-				$model = $relation['model'];
+				$relation = $current_entity::getDefinition()->relations[$relationName];
+				$entity = $relation['entity'];
 
-				$this->jointure($dal, $relationName, $current_model, $table);
-				$this->recursiveJointures($dal, $recJoins, $model, $table);
+				$this->jointure($dal, $relationName, $current_entity, $table);
+				$this->recursiveJointures($dal, $recJoins, $entity, $table);
 			}
 			else {
 				$relationName = $v;
-				$this->jointure($dal, $relationName, $current_model, $table);
+				$this->jointure($dal, $relationName, $current_entity, $table);
 			}
 		}
 	}
 
-	// todo replace alias $relationName by something else, in case of relations with the same name
-	public function jointure($dal, $relation, $current_model, $ref_table) {
+	public function jointure($dal, $relation, $current_entity, $ref_table) {
 		if($relation['polymorphic'])
-			$relation_model = $relation['real_model'];
+			$relation_entity = $relation['real_entity'];
 		else
-			$relation_model = $relation['model'];
+			$relation_entity = $relation['entity'];
 		$relationName = $relation->name;
 
 		switch($relation['type']) {
 			case 'hasOne':
 			case 'belongsTo':
 				$link = $relation['link'];
-				$table = $relation_model::getTable();
+				$table = $relation_entity::getTable();
 				$dal->rightjoin(array(
 					$table.' '.$relationName => $this->processConditions(array(
 						$ref_table.'.'.$link.' = '.$relationName.'.id'
@@ -183,7 +181,7 @@ class ORM {
 				break;
 			case 'hasMany':
 				$link = $relation['link'];
-				$table = $relation_model::getTable();
+				$table = $relation_entity::getTable();
 				$dal->rightjoin(array(
 					$table.' '.$relationName => $this->processConditions(array(
 						$ref_table.'.id'.' = '.$relationName.'.'.$link
@@ -197,15 +195,15 @@ class ORM {
 					))
 				));
 				$dal->rightjoin(array(
-					$relation_model::getTable().' '.$relationName => $this->processConditions(array(
+					$relation_entity::getTable().' '.$relationName => $this->processConditions(array(
 						$relation['join_table'].'.'.$relation['link_b'].' = '.$relationName.'.id',
 					))
 				));
 				break;
 		}
 
-		if($relation_model::isI18N()) {
-			$table = $relation_model::getTable();
+		if($relation_entity::isI18N()) {
+			$table = $relation_entity::getTable();
 			$translation_table = $table.'_translation';
 			$dal->leftjoin(array(
 				$translation_table.' '.$relationName.'_translation' => $this->processConditions(array(
@@ -218,9 +216,9 @@ class ORM {
 	
 	public function get() {
 		Profiler::checkpoint('ORM get');
-		$models = array();
+		$entities = array();
 		$ids = array();
-		$current_model = $this->model;
+		$current_entity = $this->entity;
 
 		$dal = $this->getDAL();
 
@@ -228,72 +226,72 @@ class ORM {
 		foreach($rows as $row) {
 			if(!$row['id'])
 				continue;
-			$models[] = $this->toModel($row);
+			$entities[] = $this->toEntity($row);
 			$ids[] = $row['id'];
 		}
 		
-		if(sizeof($models) && sizeof($this->with)) {
+		if(sizeof($entities) && sizeof($this->with)) {
 			foreach($this->with as $relation_name=>$closure) {
-				$rel = $current_model::getDefinition()->relations[$relation_name];
+				$rel = $current_entity::getDefinition()->relations[$relation_name];
 				$relation_type = $rel['type'];
-				$relation_model = $rel['model'];
+				$relation_entity = $rel['entity'];
 
 				switch($relation_type) {
 					case 'hasOne':
 					case 'belongsTo':
 						$link = $rel['link'];
 						
-						$res = $relation_model::where(array('id IN ('.implode(', ', $ids).')'))->get();
-						foreach($models as $model) {
-							$id = $model->$link;
+						$res = $relation_entity::where(array('id IN ('.implode(', ', $ids).')'))->get();
+						foreach($entities as $entity) {
+							$id = $entity->$link;
 							$filter = array_filter($res, function($result) use ($id) {
 								return ($id == $result->id);
 							});
 							if(isset($filter[0]))
-								$model->$relation_name = $filter[0];
+								$entity->$relation_name = $filter[0];
 							else
-								$model->$relation_name = null;
+								$entity->$relation_name = null;
 						}
 						break;
 					case 'hasMany':
 						$link = $rel['link'];
 						
-						$orm = $relation_model::where(array($link.' IN ('.implode(', ', $ids).')'));
+						$orm = $relation_entity::where(array($link.' IN ('.implode(', ', $ids).')'));
 						if(is_callable($closure))
 							$closure($orm);
 						$res = $orm->get();
-						foreach($models as $model) {
-							$id = $model->id;
-							$model->$relation_name = array_filter($res, function($result) use ($id, $link) {
+						foreach($entities as $entity) {
+							$id = $entity->id;
+							$entity->$relation_name = array_filter($res, function($result) use ($id, $link) {
 								return ($id == $result->$link);
 							});
 						}
 						break;
 					case 'HMABT':
 						$join_table = $rel['join_table'];
-						$currentmodel_idfield = $rel['link_a'];
-						$relationmodel_idfield = $rel['link_b'];
+						$currentEntity_idfield = $rel['link_a'];
+						$relationEntity_idfield = $rel['link_b'];
 
 						$reverse_relation = $rel->reverse();
 						$reverse_relation_name = $reverse_relation['name'];
 
-						$orm = $relation_model::join($reverse_relation_name)
+						$orm = $relation_entity::join($reverse_relation_name)
 							->where(array(
-								$current_model::getTable().'.id IN ('.implode(', ', $ids).')',
+								$current_entity::getTable().'.id IN ('.implode(', ', $ids).')',
 							));
 
 						if(is_callable($closure))
 							$closure($orm);
-						$res = $orm->getDAL()->addSelect($join_table.'.'.$currentmodel_idfield.' as __ormrelid')->groupBy(null)->get();
-						foreach($models as $model) {
-							$id = $model->id;
+						$res = $orm->getDAL()->addSelect($join_table.'.'.$currentEntity_idfield.' as __ormrelid')->groupBy(null)->get();
+						foreach($entities as $entity) {
+							$id = $entity->id;
 							$filter = array_filter($res, function($result) use ($id) {
 								return $id == $result['__ormrelid'];
 							});
 							$mres = array();
 							foreach($filter as $m)
-								$mres[] = $this->toModel($m, $relation_model);
-							$model->$relation_name = $mres;
+								$mres[] = $this->toEntity($m, $relation_entity);
+							$entity->$relation_name = $mres;
 						}
 						break;
 					default:
@@ -302,26 +300,26 @@ class ORM {
 			}
 		}
 		
-		return $models;
+		return $entities;
 	}
 	
 	public function selectQuery($sql, $args=array()) {
-		$models = array();
-		$model = $this->model;
+		$entities = array();
+		$entity = $this->entity;
 		
 		$dal = new DAL;
 		$rows = $dal->query($sql, $args)->all();
 		foreach($rows as $row)
-			$models[] = ORMHandler::unserializeSet(new $model, $row);
+			$entities[] = ORMHandler::unserializeSet(new $entity, $row);
 			
-		return $models;
+		return $entities;
 	}
 	
 	public function paginate($page, $per_page=10, &$paginator=null) {
 		$page = $page ? $page:1;
 		$this->offset(($page-1)*$per_page);
 		$this->limit($per_page);
-		$paginator = new \Coxis\Utils\Paginator($per_page, $this->count(), $page);
+		$paginator = new \Coxis\Utils\Paginator($this->count(), $page, $per_page);
 		
 		return $this->get();
 	}
@@ -334,18 +332,16 @@ class ORM {
 	}
 
 	protected function replaceTable($sql) {
-		$model = $this->model;
+		$entity = $this->entity;
 		$table = $this->getTable();
 		$i18nTable = $this->geti18nTable();
 		preg_match_all('/(?<![\.a-z0-9-_`\(\)])([a-z0-9-_]+)(?![\.a-z0-9-_`\(\)])/', $sql, $matches);
 		foreach($matches[0] as $property) {
-			if(!$model::hasProperty($property))
+			if(!$entity::hasProperty($property))
 				continue;
-			$table = $model::property($property)->i18n ? $i18nTable:$table;
+			$table = $entity::property($property)->i18n ? $i18nTable:$table;
 			$sql = preg_replace('/(?<![\.a-z0-9-_`\(\)])('.$property.')(?![\.a-z0-9-_`\(\)])/', $table.'.`$1`', $sql);
 		}
-		// $sql = preg_replace('/([a-zA-Z0-9-_]+)\.([a-zA-Z0-9-_]+)/', '$1.`$2`', $sql);
-		#todo, was that really useful?
 
 		return $sql;
 	}
@@ -392,15 +388,15 @@ class ORM {
 	
 	public function delete() {
 		$count = 0;
-		while($model = $this->next())
-			$count += $model->destroy();
+		while($entity = $this->next())
+			$count += $entity->destroy();
 
 		return $count;
 	}
 	
 	public function update($values) {
-		while($model = $this->next())
-			$model->save($values);
+		while($entity = $this->next())
+			$entity->save($values);
 		return $this;
 	}
 	

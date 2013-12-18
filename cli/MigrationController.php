@@ -5,7 +5,7 @@ class MigrationController extends \Coxis\Cli\CLIController {
 	/**
 	@Shortcut('automigrate')
 	@Usage('automigrate')
-	@Description('Automacally build and process a migration from the models')
+	@Description('Automacally build and process a migration from the Entities')
 	*/
 	public function automigrateAction($request) {
 		$this->diffAction($request);
@@ -15,7 +15,7 @@ class MigrationController extends \Coxis\Cli\CLIController {
 	/**
 	@Shortcut('diff')
 	@Usage('diff')
-	@Description('Automatically build a migration from the models')
+	@Description('Automatically build a migration from the Entities')
 	*/
 	public function diffAction($request) {
 		if(!ORMManager::uptodate())

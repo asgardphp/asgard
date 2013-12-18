@@ -2,50 +2,50 @@
 namespace Coxis\ORM\Libs;
 
 class ORMManager {
-	public static function autobuild() {
-		list($up) = static::_diff();
+	// public static function autobuild() {
+	// 	list($up) = static::_diff();
 
-		foreach($up as $one)
-			eval($one);
-	}
+	// 	foreach($up as $one)
+	// 		eval($one);
+	// }
 
-	public static function loadModelFixtures($file) {
+	public static function loadEntityFixtures($file) {
 		$yaml = new \Symfony\Component\Yaml\Parser();
 		$raw = $yaml->parse(file_get_contents($file));
 
-		$models = array();
+		$entities = array();
 
-		foreach($raw as $class => $raw_models) {
-			foreach($raw_models as $name => $raw_model) {
-				foreach($raw_model as $k=>$V)
+		foreach($raw as $class => $raw_entities) {
+			foreach($raw_entities as $name => $raw_entity) {
+				foreach($raw_entity as $k=>$V)
 					if(!$class::hasProperty($k))
-						unset($raw_model[$k]);
+						unset($raw_entity[$k]);
 
-				$model = new $class;
-				$model->set($raw_model, 'all');
-				$model->save(array(), true);
-				$model->save(null, true);
-				$models[$class][$name] = $model;
+				$entity = new $class;
+				$entity->set($raw_entity, 'all');
+				$entity->save(array(), true);
+				$entity->save(null, true);
+				$entities[$class][$name] = $entity;
 			}
 		}
 
-		foreach($models as $class => $classmodels) {
-			foreach($classmodels as $name => $model) {
+		foreach($entities as $class => $classEntities) {
+			foreach($classEntities as $name => $entity) {
 				foreach($class::getDefinition()->relations as $relation => $params) {
 					if(!isset($raw[$class][$name][$relation]))
 						continue;
 					$relationFixtures = $raw[$class][$name][$relation];
 
 					$rel = $class::getDefinition()->relations[$relation];
-					$relationClass = $rel['model'];
+					$relationClass = $rel['entity'];
 
 					if(is_array($relationFixtures))
 						foreach($relationFixtures as $v)
-							$relationFixtures[$k] = $models[$relationClass][$v]->id;
+							$relationFixtures[$k] = $entities[$relationClass][$v]->id;
 					else
-						$relationFixtures = $models[$relationClass][$relationFixtures]->id;
+						$relationFixtures = $entities[$relationClass][$relationFixtures]->id;
 
-					$model->save(array($relation => $relationFixtures), true);
+					$entity->save(array($relation => $relationFixtures), true);
 				}
 			}
 		}
@@ -62,23 +62,23 @@ class ORMManager {
 	}
 
 	protected static function _diff() {
-		$bundles = BundlesManager::inst()->getBundlesPath();
+		$bundles = BundlesManager::instance()->getBundlesPath();
 		
 		foreach($bundles as $bundle)
-			foreach(glob($bundle.'/models/*.php') as $model)
-				\Importer::loadClassFile($model);
+			foreach(glob($bundle.'/Entities/*.php') as $entity)
+				\Importer::loadClassFile($entity);
 
 		$newSchemas = array();
 		$oldSchemas = array();
 		$tables = DB::query('SHOW TABLES')->all();
 		foreach($tables as $k=>$v) {
-			$table = \Coxis\Utils\Tools::get(array_values($v), 0);
+			$table = \Coxis\Utils\Tools::array_get(array_values($v), 0);
 			$oldSchemas[$table] = static::tableSchema($table);
 		}
 
 		foreach(get_declared_classes() as $class) {
-			if(is_subclass_of($class, 'Coxis\Core\Model')) {
-				if($class == 'Coxis\Core\Model')
+			if(is_subclass_of($class, 'Coxis\Core\Entity')) {
+				if($class == 'Coxis\Core\Entity')
 					continue;
 				$reflection = new \ReflectionClass($class);
 				if($reflection->isAbstract())

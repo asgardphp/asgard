@@ -5,14 +5,14 @@ class CollectionORM extends ORM implements \Coxis\Core\Collection {
 	protected $parent;
 	protected $relation;
 
-	function __construct($model, $relation_name) {
-		$this->parent = $model;
+	function __construct($entity, $relation_name) {
+		$this->parent = $entity;
 
-		$this->relation = $model->getDefinition()->relations[$relation_name];
+		$this->relation = $entity->getDefinition()->relations[$relation_name];
 
-		parent::__construct($this->relation['model']);
+		parent::__construct($this->relation['entity']);
 
-		$this->joinToModel($this->relation->reverse(), $model);
+		$this->joinToEntity($this->relation->reverse(), $entity);
 	}
 	
 	public function sync($ids) {
@@ -21,14 +21,14 @@ class CollectionORM extends ORM implements \Coxis\Core\Collection {
 		if(!is_array($ids))
 			$ids = array($ids);
 		foreach($ids as $k=>$v)
-			if($v instanceof \Coxis\Core\Model)
+			if($v instanceof \Coxis\Core\Entity)
 				$ids[$k] = (int)$v->id;
 	
 		switch($this->relation['type']) {
 			case 'hasMany':
-				$relation_model = $this->relation['model'];
+				$relation_entity = $this->relation['entity'];
 				$link = $this->relation['link'];
-				$dal = new DAL($relation_model::getTable());
+				$dal = new DAL($relation_entity::getTable());
 				$dal->where(array($link => $this->parent->id))->getDAL()->update(array($link => 0));
 				if($ids)
 					$dal->reset()->where(array('id IN ('.implode(', ', $ids).')'))->getDAL()->update(array($link => $this->parent->id));
@@ -56,13 +56,13 @@ class CollectionORM extends ORM implements \Coxis\Core\Collection {
 		if(!is_array($ids))
 			$ids = array($ids);
 		foreach($ids as $k=>$id)
-			if($id instanceof \Coxis\Core\Model)
+			if($id instanceof \Coxis\Core\Entity)
 				$ids[$k] = (int)$id->id;
 			
 		switch($this->relation['type']) {
 			case 'hasMany':
-				$relation_model = $this->relation['model'];
-				$dal = new DAL($relation_model::getTable());
+				$relation_entity = $this->relation['entity'];
+				$dal = new DAL($relation_entity::getTable());
 				foreach($ids as $id)
 					$dal->reset()->where(array('id' => $id))->getDAL()->update(array($this->relation['link'] => $this->parent->id));
 				break;
@@ -85,17 +85,18 @@ class CollectionORM extends ORM implements \Coxis\Core\Collection {
 	}
 
 	public function create($params=array()) {
-		$relModel = $this->relation['model'];
-		$new = new $relModel;
+		$relEntity = $this->relation['entity'];
+		$new = new $relEntity;
 		switch($this->relation['type']) {
 			case 'hasMany':
 				$params[$this->relation['link']] = $this->parent->id;
+				$new->save($params);
 				break;
 			case 'HMABT':
-				d('todo');#todo
+				$new->save($params);
+				$this->add($new->id);
 				break;
 		}
-		$new->save($params);
 		return $new;
 	}
 	
@@ -103,13 +104,13 @@ class CollectionORM extends ORM implements \Coxis\Core\Collection {
 		if(!is_array($ids))
 			$ids = array($ids);
 		foreach($ids as $k=>$id)
-			if($id instanceof \Coxis\Core\Model)
+			if($id instanceof \Coxis\Core\Entity)
 				$ids[$k] = $id->id;
 			
 		switch($this->relation['type']) {
 			case 'hasMany':
-				$relation_model = $this->relation['model'];
-				$dal = new DAL($relation_model::getTable());
+				$relation_entity = $this->relation['entity'];
+				$dal = new DAL($relation_entity::getTable());
 				foreach($ids as $id)
 					$dal->reset()->where(array('id' => $id))->getDAL()->update(array($this->relation['link'] => 0));
 				break;

@@ -2,14 +2,14 @@
 namespace Coxis\ORM\Libs;
 
 class ORMHandler {
-	private $model;
+	private $entity;
 
-	function __construct($modelDefinition) {
-		$this->model = $modelDefinition;
-		if(!isset($modelDefinition->meta['order_by']))
-			$modelDefinition->meta['order_by'] = 'id DESC';
+	function __construct($entityDefinition) {
+		$this->entity = $entityDefinition;
+		if(!isset($entityDefinition->meta['order_by']))
+			$entityDefinition->meta['order_by'] = 'id DESC';
 		
-		$modelDefinition->addProperty('id', array(
+		$entityDefinition->addProperty('id', array(
 			'type' => 'text', 
 			'editable'=>false, 
 			'required'=>false,
@@ -22,167 +22,168 @@ class ORMHandler {
 				'nullable'	=>	false,
 			),
 		));	
-		static::loadRelations($modelDefinition);
+		static::loadRelations($entityDefinition);
 	}
 
-	public function isNew($model) {
-		return !(isset($model->data['properties']['id']) && $model->data['properties']['id']);
+	public function isNew($entity) {
+		return !(isset($entity->data['properties']['id']) && $entity->data['properties']['id']);
 	}
 
-	public function isOld($model) {
-		return !static::isNew($model);
+	public function isOld($entity) {
+		return !static::isNew($entity);
 	}
 
 	public function load($id) {
-		$modelName = $this->model->getClass();
-		$model = new $modelName($id);
-		if($model->isNew())
+		$entityName = $this->entity->getClass();
+		$entity = new $entityName($id);
+		if($entity->isNew())
 			return null;
-		return $model;
+		return $entity;
 	}
 	
 	public function getORM() {
-		$orm = new ORM($this->model->getClass());
-		$this->model->trigger('getorm', array($orm));
+		$orm = new ORM($this->entity->getClass());
+		$this->entity->trigger('getorm', array($orm));
 		return $orm;
 	}
 	
-	public function myORM($model) {
-		if($model->isNew())
+	public function myORM($entity) {
+		if($entity->isNew())
 			return $this->getORM();
 		else
-			return $this->getORM()->where(array('id' => $model->id));
+			return $this->getORM()->where(array('id' => $entity->id));
 	}
 	
-	public static function getTranslationTable($model) {
-		return $model::getTable().'_translation';
+	public static function getTranslationTable($entity) {
+		return $entity::getTable().'_translation';
 	}
 
-	public static function getTable($modelName) {
-		if(isset($modelName::getDefinition()->meta['table']) && $modelName::getDefinition()->meta['table'])
-			return \Config::get('database', 'prefix').$modelName::getDefinition()->meta['table'];
+	public static function getTable($entityName) {
+		if(isset($entityName::getDefinition()->meta['table']) && $entityName::getDefinition()->meta['table'])
+			return \Config::get('database/prefix').$entityName::getDefinition()->meta['table'];
 		else
-			return \Config::get('database', 'prefix').$modelName::getModelName();
+			return \Config::get('database/prefix').$entityName::getEntityName();
 	}
 	
-	public static function loadRelations($modelDefinition) {
-		$model_relations = $modelDefinition->relations();
+	public static function loadRelations($entityDefinition) {
+		$entity_relations = $entityDefinition->relations();
 
-		foreach($modelDefinition->relations() as $name=>$params)
-			$modelDefinition->relations[$name] = new ModelRelation($modelDefinition, $name, $params);
+		foreach($entityDefinition->relations() as $name=>$params)
+			$entityDefinition->relations[$name] = new EntityRelation($entityDefinition, $name, $params);
 	}
 	
-	public static function getI18N($model, $lang) {
-		$dal = new \Coxis\DB\DAL(static::getTranslationTable($model));
-		return $dal->where(array('id' => $model->id))->where(array('locale'=>$lang))->first();
+	public static function getI18N($entity, $lang) {
+		$dal = new \Coxis\DB\DAL(static::getTranslationTable($entity));
+		return $dal->where(array('id' => $entity->id))->where(array('locale'=>$lang))->first();
 	}
 	
 	public function destroyAll() {
-		$modelName = $this->model->getClass();
-		foreach($modelName::all() as $one)
-			$model->destroy();
+		$entityName = $this->entity->getClass();
+		foreach($entityName::all() as $one)
+			$entity->destroy();
 	}
 	
 	public function destroyOne($id) {
-		$modelName = $this->model->getClass();
-		if($model = $modelName::load($id)) {
-			$model->destroy();
+		$entityName = $this->entity->getClass();
+		if($entity = $entityName::load($id)) {
+			$entity->destroy();
 			return true;
 		}
 		return false;
 	}
 	
-	public static function fetch($model, $name, $lang=null) {
-		if(!$model::hasProperty($name))
+	public static function fetch($entity, $name, $lang=null) {
+		if(!$entity::hasProperty($name))
 			return;
-		if($model::property($name)->i18n) {
-			if(!($res = static::getI18N($model, $lang)))
+		if($entity::property($name)->i18n) {
+			if(!($res = static::getI18N($entity, $lang)))
 				return;
 			unset($res['id']);
 			unset($res['locale']);
 
-			static::unserializeSet($model, $res, $lang);
+			static::unserializeSet($entity, $res, $lang);
 				
-			if(isset($model->data['properties'][$name][$lang]))
-				return $model->data['properties'][$name][$lang];
+			if(isset($entity->data['properties'][$name][$lang]))
+				return $entity->data['properties'][$name][$lang];
 		}
 	}
 
-	public function relation($model, $name) {
-		$rel = $model::getDefinition()->relation($name);
+	public function relation($entity, $name) {
+		$rel = $entity::getDefinition()->relation($name);
 		$relation_type = $rel['type'];
-		$relmodel = $rel['model'];
+		$relEntity = $rel['entity'];
 		
 		switch($relation_type) {
 			case 'hasOne':
-				if($model->isNew())
+				if($entity->isNew())
 					return;
 				
 				$link = $rel['link'];
 				if($rel['polymorphic']) {
-					$relmodel = $model->{$rel['link_type']};
-					if(!$relmodel)
+					$relEntity = $entity->{$rel['link_type']};
+					if(!$relEntity)
 						return;
 				}
-				return $relmodel::where(array('id' => $model->{$link}))->first();
+				return $relEntity::where(array('id' => $entity->{$link}))->first();
 			case 'belongsTo':
-				if($model->isNew())
+				if($entity->isNew())
 					return;
 
 				$link = $rel['link'];
 				if($rel['polymorphic']) {
-					$relmodel = $model->{$rel['link_type']};
-					if(!$relmodel)
+					$relEntity = $entity->{$rel['link_type']};
+					if(!$relEntity)
 						return;
 				}
-				return $relmodel::where(array('id' => $model->$link))->first();
+				return $relEntity::where(array('id' => $entity->$link))->first();
 			case 'hasMany':
 			case 'HMABT':
-				if($model->isNew())
+				if($entity->isNew())
 					return;
 
-				$collection = new \Coxis\ORM\Libs\CollectionORM($model, $name);
+				$collection = new \Coxis\ORM\Libs\CollectionORM($entity, $name);
 				return $collection;
 			default:	
 				throw new \Exception('Relation '.$relation_type.' does not exist.');
 		}
 	}
 
-	public function construct($chain, $model, $id) {
+	public function construct($chain, $entity, $id) {
 		if(!ctype_digit($id) && !is_int($id))
 			return;
 
 		$res = $this->getORM()->where(array('id' => $id))->getDAL()->first();
 		if($res) {
-			static::unserializeSet($model, $res);
+			static::unserializeSet($entity, $res);
 			$chain->found = true;
 		}
 	}
 
-	public static function unserializeSet($model, $data, $lang=null) {
+	public static function unserializeSet($entity, $data, $lang=null) {
 		foreach($data as $k=>$v)
-			if($model->hasProperty($k))
-				$data[$k] = $model->property($k)->unserialize($v, $model);
+			if($entity->hasProperty($k))
+				$data[$k] = $entity->property($k)->unserialize($v, $entity);
 			else
 				unset($data[$k]);
-		return $model->set($data, $lang, true);
+		return $entity->set($data, $lang, true);
 	}
 
-	public function destroy($model) {
+	public function destroy($entity) {
 		$orms = array();
-		foreach($model->getDefinition()->relations() as $name=>$relation)
-			if(isset($relation['cascade']['delete'])) {
-				$orm = $model->$name();
+		foreach($entity->getDefinition()->relations() as $name=>$relation) {
+			if(isset($relation['cascade']['delete']) && $relation['cascade']['delete']) {
+				$orm = $entity->$name();
 				if(!is_object($orm))
 					continue;
 				$orm->getDAL()->rsc();
 				$orms[] = $orm;
 			}
+		}
 
-		if($model::isI18N())
-			$r = static::myORM($model)->getDAL()->delete(array($model->getTable(), $model->geti18nTable()));
+		if($entity::isI18N())
+			$r = static::myORM($entity)->getDAL()->delete(array($entity->getTable(), $entity->geti18nTable()));
 		else
-			$r = static::myORM($model)->getDAL()->delete();
+			$r = static::myORM($entity)->getDAL()->delete();
 
 		foreach($orms as $orm)
 			$orm->delete();
@@ -190,36 +191,31 @@ class ORMHandler {
 		return $r;
 	}
 
-	public function save($model) {
-		$vars = $model->toArrayRaw();
+	public function save($entity) {
+		$vars = $entity->toArrayRaw();
 		
 		#apply filters before saving
 		foreach($vars as $col => $var) {
-			if($model::property($col)->filter) {
-				$filter = $model::property($col)->filter['to'];
-				$vars[$col] = $model::$filter($var);
+			if($entity::property($col)->i18n) {
+				foreach($var as $k=>$v)
+					$vars[$col][$k] = $entity::property($col)->serialize($v);
 			}
-			else {
-				if($model::property($col)->i18n)
-					foreach($var as $k=>$v)
-						$vars[$col][$k] = $model::property($col)->serialize($v);
-				else
-					$vars[$col] = $model::property($col)->serialize($var);
-			}
+			else
+				$vars[$col] = $entity::property($col)->serialize($var);
 		}
 		
 		//Persist local id field
-		foreach($model::getDefinition()->relations as $relation => $params) {
-			if(!isset($model->data[$relation]))
+		foreach($entity::getDefinition()->relations as $relation => $params) {
+			if(!isset($entity->data[$relation]))
 				continue;
-			$rel = $model::getDefinition()->relations[$relation];
+			$rel = $entity::getDefinition()->relations[$relation];
 			$type = $rel['type'];
 			if($type == 'belongsTo' || $type == 'hasOne') {
 				$link = $rel['link'];
-				if(is_object($model->data[$relation]))
-					$vars[$link] = $model->data[$relation]->id;
+				if(is_object($entity->data[$relation]))
+					$vars[$link] = $entity->data[$relation]->id;
 				else
-					$vars[$link] = $model->data[$relation];
+					$vars[$link] = $entity->data[$relation];
 			}
 		}
 		
@@ -227,7 +223,7 @@ class ORMHandler {
 		$values = array();
 		$i18n = array();
 		foreach($vars as $p => $v) {
-			if($model::property($p)->i18n)
+			if($entity::property($p)->i18n)
 				foreach($v as $lang=>$lang_value)
 					$i18n[$lang][$p] = $lang_value;
 			else
@@ -237,45 +233,45 @@ class ORMHandler {
 		//Persist
 		$orm = $this->getORM();
 		//new
-		if(!isset($model->id) || !$model->id)
-			$model->id = $orm->getDAL()->insert($values);
+		if(!isset($entity->id) || !$entity->id)
+			$entity->id = $orm->getDAL()->insert($values);
 		//existing
 		elseif(sizeof($vars) > 0) {
-			if(!$orm->reset()->where(array('id'=>$model->id))->getDAL()->update($values))
-				$model->id = $orm->getDAL()->insert($values);
+			if(!$orm->reset()->where(array('id'=>$entity->id))->getDAL()->update($values))
+				$entity->id = $orm->getDAL()->insert($values);
 		}		
 		
 		//Persist i18n
 		foreach($i18n as $lang=>$values) {
-			$dal = new \Coxis\DB\DAL(static::getTranslationTable($model));
-			if(!$dal->where(array('id'=>$model->id, 'locale'=>$lang))->update($values))
+			$dal = new \Coxis\DB\DAL(static::getTranslationTable($entity));
+			if(!$dal->where(array('id'=>$entity->id, 'locale'=>$lang))->update($values))
 				$dal->insert(
 					array_merge(
 						$values, 
 						array(
 							'locale'=>$lang,
-							'id'=>$model->id,
+							'id'=>$entity->id,
 						)
 					)
 				);
 		}
 	
 		//Persist relations
-		foreach($model::getDefinition()->relations as $relation => $params) {
-			if(!isset($model->data[$relation]))
+		foreach($entity::getDefinition()->relations as $relation => $params) {
+			if(!isset($entity->data[$relation]))
 				continue;
-			$rel = $model::getDefinition()->relations[$relation];
+			$rel = $entity::getDefinition()->relations[$relation];
 			$reverse_rel = $rel->reverse();
 			$type = $rel['type'];
 
 			if($type == 'hasOne') {
-				$relation_model = $rel['model'];
+				$relation_entity = $rel['entity'];
 				$link = $reverse_rel['link'];
-				$relation_model::where(array($link => $model->id))->getDAL()->update(array($link => 0));
-				$relation_model::where(array('id' => $model->data[$relation]))->getDAL()->update(array($link => $model->id));
+				$relation_entity::where(array($link => $entity->id))->getDAL()->update(array($link => 0));
+				$relation_entity::where(array('id' => $entity->data[$relation]))->getDAL()->update(array($link => $entity->id));
 			}
 			elseif($type == 'hasMany' || $type == 'HMABT')
-				$model->$relation()->sync($model->data[$relation]);
+				$entity->$relation()->sync($entity->data[$relation]);
 		}
 	}
 }
