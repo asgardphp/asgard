@@ -22,11 +22,11 @@ class FileProperty extends \Coxis\Core\Properties\BaseProperty {
 		return 'varchar(255)';
 	}
 
-	public function getDefault($model=null) {
+	public function getDefault($entity=null) {
 		if($this->multiple)
-			return new \Coxis\Files\Libs\ModelMultipleFile($model, $this->name, array());
+			return new \Coxis\Files\Libs\EntityMultipleFile($entity, $this->name, array());
 		else
-			return new \Coxis\Files\Libs\ModelFile($model, $this->name, null);
+			return new \Coxis\Files\Libs\EntityFile($entity, $this->name, null);
 	}
 
 	public function serialize($obj) {
@@ -36,23 +36,23 @@ class FileProperty extends \Coxis\Core\Properties\BaseProperty {
 			return $obj->file;
 	}
 
-	public function unserialize($str, $model=null) {
+	public function unserialize($str, $entity=null) {
 		if($this->multiple)
 			try {
-				return new \Coxis\Files\Libs\ModelMultipleFile($model, $this->name, unserialize($str));
+				return new \Coxis\Files\Libs\EntityMultipleFile($entity, $this->name, unserialize($str));
 			} catch(\Exception $e) {
-				return $this->getDefault($model);
+				return $this->getDefault($entity);
 			}
-		return new \Coxis\Files\Libs\ModelFile($model, $this->name, $str);
+		return new \Coxis\Files\Libs\EntityFile($entity, $this->name, $str);
 	}
 
-	public function set($val, $model=null) {
+	public function set($val, $entity=null) {
 		if(is_object($val))
 			return $val;
 
 		if($this->multiple)
-			return new \Coxis\Files\Libs\ModelMultipleFile($model, $this->name, $val);
+			return new \Coxis\Files\Libs\EntityMultipleFile($entity, $this->name, $val);
 		else
-			return new \Coxis\Files\Libs\ModelFile($model, $this->name, $val);
+			return new \Coxis\Files\Libs\EntityFile($entity, $this->name, $val);
 	}
 }

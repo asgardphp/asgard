@@ -1,18 +1,18 @@
 <?php
 namespace Coxis\Files\Libs;
 
-class ModelFile {
-	public $model;
+class EntityFile {
+	public $entity;
 	public $property;
 	public $file;
 	public $saved = true;
 	
-	function __construct($model, $name, $file=array()) {
-		if(!$model::hasProperty($name))
-			throw new \Exception('File '.$name.' does not exist for model '.get_class($model));
+	function __construct($entity, $name, $file=array()) {
+		if(!$entity::hasProperty($name))
+			throw new \Exception('File '.$name.' does not exist for Entity '.get_class($entity));
 
-		$this->model = $model;
-		$this->property = $model::property($name);
+		$this->entity = $entity;
+		$this->property = $entity::property($name);
 		if(is_array($file)) {
 			if(!$file['name'])
 				return;
@@ -100,7 +100,7 @@ class ModelFile {
 			\Coxis\Imagecache\Libs\ImageCache::clearFile($path);
 		}
 		$this->file = null;
-		$this->model->save(null, true);
+		$this->entity->save(null, true);
 		
 		return $this;
 	}

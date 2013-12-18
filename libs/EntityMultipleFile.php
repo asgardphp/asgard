@@ -1,24 +1,24 @@
 <?php
 namespace Coxis\Files\Libs;
 
-class ModelMultipleFile {
-	public $model;
+class EntityMultipleFile {
+	public $entity;
 	public $name;
 	public $property;
 	public $files = array();
 	public $saved = true;
 	
-	function __construct($model, $name, $files=array()) {
-		if(!$model::hasProperty($name))
-			throw new \Exception('File '.$name.' does not exist for model '.get_class($model));
+	function __construct($entity, $name, $files=array()) {
+		if(!$entity::hasProperty($name))
+			throw new \Exception('File '.$name.' does not exist for Entity '.get_class($entity));
 
 		if(!is_array($files))
 			$files = array();
 		$this->name = $name;
-		$this->model = $model;
-		$this->property = $model::property($name);
+		$this->entity = $entity;
+		$this->property = $entity::property($name);
 		foreach($files as $file)
-			$this->files[] = new ModelFile($model, $name, $file);
+			$this->files[] = new EntityFile($entity, $name, $file);
 	}
 
 	public function extension() {
@@ -71,7 +71,7 @@ class ModelMultipleFile {
 
 	public function add($files) {
 		foreach($files as $file)
-			$this->files[] = new ModelFile($this->model, $this->name, $file);
+			$this->files[] = new EntityFile($this->entity, $this->name, $file);
 		return $this;
 	}
 	
@@ -89,7 +89,7 @@ class ModelMultipleFile {
 			$this->files = array();
 		}
 
-		$this->model->save(null, true);
+		$this->entity->save(null, true);
 		
 		return $this;
 	}
