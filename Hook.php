@@ -12,16 +12,11 @@ class Hook {
 		return $this->triggerChain($chain, $name, $args, $cb, true);
 	}
 
-	#todo cannot use references with get_func_args
 	public function trigger($name, $args=array(), $cb=null, $print=false) {
 		return $this->triggerChain(new \Coxis\Hook\HookChain, $name, $args, $cb, $print);
 	}
 
-	#todo cannot use references with get_func_args
 	public function triggerChain($chain, $name, $args=array(), $cb=null, $print=false) {
-		if(count(func_get_args()) > 14)
-			throw new \Exception("triggerChain() can only accept up to 14 arguments");
-
 		if(is_string($name))
 			$name = explode('/', $name);
 
@@ -89,7 +84,6 @@ class Hook {
 	}
 
 	public function hook() {
-		#todo this function is called when Hook is invoked
 		if(!func_get_args())
 			return;
 		return call_user_func_array(array(get_called_class(), 'hookOn'), func_get_args());

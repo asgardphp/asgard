@@ -7,12 +7,12 @@ class Hookable {
 		return \Coxis\Core\App::get('hook')->has(array('instances', spl_object_hash($this), $name));
 	}
 
-	public function trigger($name, $args=array(), $cb=null) {
-		return \Coxis\Core\App::get('hook')->trigger(array('instances', spl_object_hash($this), $name), $args, $cb);
+	public function trigger($name, $args=array(), $cb=null, $print=false) {
+		return \Coxis\Core\App::get('hook')->trigger(array('instances', spl_object_hash($this), $name), $args, $cb, $print);
 	}
 
-	public function triggerChain($chain, $name, $args=array(), $cb=null) {
-		return \Coxis\Core\App::get('hook')->triggerChain($chain, array('instances', spl_object_hash($this), $name), $args, $cb);
+	public function triggerChain($chain, $name, $args=array(), $cb=null, $print=false) {
+		return \Coxis\Core\App::get('hook')->triggerChain($chain, array('instances', spl_object_hash($this), $name), $args, $cb, $print);
 	}
 
 	public function hook() {

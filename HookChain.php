@@ -1,7 +1,6 @@
 <?php
 namespace Coxis\Hook;
 
-#todo handle priorities
 class HookChain {
 	public $calls;
 	protected $continue = true;
