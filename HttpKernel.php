@@ -3,11 +3,14 @@ namespace Coxis\Core;
 
 class HttpKernel {
 	public static function run() {
-		Coxis::load();
+		App::load();
 		static::process(\Request::inst(), true)->send();
 	}
 
 	public static function process($request, $catch=false) {
+		$previousRequest = App::instance()->request;
+		App::instance()->request = $request;
+
 		if(!$catch) {
 			$response = static::processRaw($request);
 		}
@@ -37,23 +40,29 @@ class HttpKernel {
 			ErrorHandler::logException($e);
 		}
 
+		App::instance()->request = $previousRequest;
+
 		return $response;
 	}
 
-	public static function processRaw($request, $catch=true) {
+	protected static function processRaw($request, $catch=true) {
+		if(file_exists(_DIR_.'app/start.php'))
+			include _DIR_.'app/start.php';
+		\Coxis\Core\App::get('hook')->trigger('start');
+
 		$resolver = \Resolver::inst();
 
-		$controller = $resolver->getController($request);
-		if($controller === null)
+		$callback = $resolver->getCallback($request);
+		if($callback === null)
 			throw new \Coxis\Core\Exceptions\NotFoundException;
 		$arguments = $resolver->getArguments($request);
 
-		$response = call_user_func_array($controller, $arguments);
+		$response = call_user_func_array($callback, array_merge($arguments, array($request)));
 
 		return $response;
 	}
 
-	public static function getExceptionResponse($e) {
+	protected static function getExceptionResponse($e) {
 		$trace = ErrorHandler::getBacktraceFromException($e);
 		return ErrorHandler::getHTTPErrorResponse($e->getMessage(), $trace);
 	}

@@ -12,11 +12,9 @@ class PageLayout extends Filter {
 		if(!is_string($result))
 			return;
 
-		if(function_exists('getallheaders')) {
-			if(\Coxis\Utils\Tools::get(\getallheaders(), 'X-Requested-With') == 'XMLHttpRequest'
-				|| \Coxis\Utils\Tools::get(\getallheaders(), 'x-requested-with') == 'XMLHttpRequest')
-				return;
-		}
+		if(\Coxis\Utils\Tools::array_get(\Coxis\Utils\Tools::getallheaders(), 'X-Requested-With') == 'XMLHttpRequest'
+			|| \Coxis\Utils\Tools::array_get(\Coxis\Utils\Tools::getallheaders(), 'x-requested-with') == 'XMLHttpRequest')
+			return;
 
 		try {
 			if($controller->response->getHeader('Content-Type') && $controller->response->getHeader('Content-Type')!='text/html')
@@ -32,6 +30,6 @@ class PageLayout extends Filter {
 			$htmllayout = false;
 
 		if($htmllayout !== false)
-			$result = \Coxis\Core\View::render('app/general/views/default/html.php', array('content'=>$result));
+			$result = \Coxis\Core\Viewable::staticRender('app/general/views/default/html.php', array('content'=>$result));
 	}
 }

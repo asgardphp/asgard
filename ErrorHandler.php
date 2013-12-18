@@ -20,7 +20,6 @@ class ErrorHandler {
 	}
 
 	public static function shutdownFunction() {
-	        // d(debug_backtrace());
 		if(($e=error_get_last()) && $e !== static::$errorAtStart) {
 	        $exceptionHandler = set_exception_handler(function() {});
 	        restore_exception_handler();

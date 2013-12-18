@@ -2,31 +2,13 @@
 namespace Coxis\Core;
 
 class Memory {
-	protected $arrs = array();
+	protected $registry = array();
 	
-	public function set() {
-		$args = func_get_args();
-		$arr =& $this->arrs;
-		$key = $args[sizeof($args)-2];
-		$value = $args[sizeof($args)-1];
-		array_pop($args);
-		array_pop($args);
-		
-		foreach($args as $parent)
-			$arr =& $arr[$parent];
-		$arr[$key] = $value;
+	public function set($str_path, $value) {
+		\Coxis\Utils\Tools::pathSet($this->registry, $str_path, $value);
 	}
 	
-	public function get() {
-		//todo use access()
-		$args = func_get_args();
-		$result = $this->arrs;
-		foreach(func_get_args() as $key)
-			if(!isset($result[$key]))
-				return null;
-			else
-				$result = $result[$key];
-		
-		return $result;
+	public function get($str_path) {
+		return \Coxis\Utils\Tools::pathGet($this->registry, $str_path);
 	}
 }

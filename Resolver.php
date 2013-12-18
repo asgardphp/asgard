@@ -29,14 +29,12 @@ class Resolver {
 		return $this->results[$request_hash];
 	}
 
-	public function getController($request) {
+	public function getCallback($request) {
 		$route = $this->getRoute($request);
-		#todo support something else than controller/action
 		if(!$route)
 			return null;
-		else {
-			return array('Coxis\Core\Controller', 'run');
-		}
+		else
+			return $route->getCallback();
 	}
 
 	public function getArguments($request) {
@@ -44,11 +42,11 @@ class Resolver {
 		if(!$route)
 			return null;
 		else
-			return array($route['controller'], $route['action'], $request);
+			return $route->getArguments();
 	}
 
 	public static function formatRoute($route) {
-		return '/'.trim($route, '/');
+		return trim($route, '/');
 	}
 	
 	public static function matchWith($route, $with, $requirements=array(), $request=null, $method=null) {
@@ -118,14 +116,14 @@ class Resolver {
 		$results = \Coxis\Utils\Cache::get('Router/requests/'.$request_key, function() use($routes, $request) {
 			static::sortRoutes($routes);
 			/* PARSE ALL ROUTES */
-			foreach($routes as $params) {
-				$route = $params['route'];
-				$requirements = $params['requirements'];
-				$method = $params['method'];
+			foreach($routes as $r) {
+				$route = $r->getRoute();
+				$requirements = $r->get('requirements');
+				$method = $r->get('method');
 
 				/* IF THE ROUTE MATCHES */
 				if(($results = static::match($request, $route, $requirements, $method)) !== false)
-					return array('params' => $results, 'route' => $params);
+					return array('route' => $r, 'params' => $results);
 			}
 		});
 
@@ -139,11 +137,11 @@ class Resolver {
 
 	public static function sortRoutes(&$routes) {
 		usort($routes, function($r1, $r2) {
-			$route1 = $r1['route'];
-			$route2 = $r2['route'];
+			$route1 = $r1->getRoute();
+			$route2 = $r2->getRoute();
 			
 			if($route1 == $route2) {
-				if(isset($r1['host']) && $r1['host'])
+				if($r1->get('host'))
 					return -1;
 				else
 					return 1;
@@ -193,12 +191,6 @@ class Resolver {
 			throw new \Exception('Missing parameter for route: '.$route);
 			
 		return trim($route, '/');
-	}
-	
-	public function getRouteFor($what) {
-		foreach($this->routes as $route)
-			if($route['controller'] == $what[0] && $route['action'] == $what[1])
-				return $route['route'];
 	}
 
 	public function getRoutes() {

@@ -25,16 +25,13 @@ abstract class InputsBag implements \ArrayAccess {
 	}
 
 	public function get($name, $default=null) {
-		if($this->has($name))
-			return Tools::array_get($this->inputs, $name, $default);
-		else
-			return $default;
+		return Tools::array_get($this->inputs, $name, $default);
 	}
 
 	public function set($name, $value=null) {
-		if(is_array($name) && array_values($name) !== $name) {
+		if(is_array($name) && $value===null) {
 			foreach($name as $k=>$v)
-				static::set($k, $v);
+				$this->set($k, $v);
 		}
 		else
 			Tools::array_set($this->inputs, $name, $value);

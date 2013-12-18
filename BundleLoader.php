@@ -1,16 +1,17 @@
 <?php
 namespace {
-	class Annootate_Hook extends Addendum\Annotation {}
-	class Annootate_Prefix extends Addendum\Annotation {}
-	class Annootate_Priority extends Addendum\Annotation {}
-	class Annootate_Route extends Addendum\Annotation {
+	class Annotate_Hook extends Addendum\Annotation {}
+	class Annotate_Priority extends Addendum\Annotation {}
+	class Annotate_Prefix extends Addendum\Annotation {}
+	class Annotate_Route extends Addendum\Annotation {
 		public $name;
 		public $requirements;
 		public $method;
+		public $host;
 	}
-	class Annootate_Shortcut extends Addendum\Annotation {}
-	class Annootate_Usage extends Addendum\Annotation {}
-	class Annootate_Description extends Addendum\Annotation {}
+	class Annotate_Shortcut extends Addendum\Annotation {}
+	class Annotate_Usage extends Addendum\Annotation {}
+	class Annotate_Description extends Addendum\Annotation {}
 }
 
 namespace Coxis\Core {
@@ -21,7 +22,7 @@ namespace Coxis\Core {
 			$preload = \Coxis\Utils\Cache::get('bundles/'.$this->getBundle().'/preload', function() {
 				$bundle = $this->getBundle();
 				$preload = array();
-				$preload = array_merge($preload, Autoloader::fetchPreloadDir($bundle.'/models'));
+				$preload = array_merge($preload, Autoloader::fetchPreloadDir($bundle.'/Entities'));
 				$preload = array_merge($preload, Autoloader::fetchPreloadDir($bundle.'/libs'));
 				$preload = array_merge($preload, Autoloader::fetchPreloadDir($bundle.'/controllers'));
 				$preload = array_merge($preload, Autoloader::fetchPreloadDir($bundle.'/hooks'));
@@ -61,10 +62,7 @@ namespace Coxis\Core {
 			});
 			if(!is_array($hooks))
 				return;
-			foreach($hooks as $name=>$subhooks) {
-				foreach($subhooks as $hook)
-					\Coxis\Hook\HooksContainer::addHook($name, $hook);
-			}
+			\App::get('hook')->hooks($hooks);
 		}
 
 		protected function loadCLI() {

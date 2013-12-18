@@ -35,14 +35,10 @@ class URL {
 	}
 	
 	public function full($params=array()) {
-		if($this->request->get->size() || $params) {
-			$r = $this->current().'?';
-			foreach(array_merge($this->request->get->all(), $params) as $k=>$v)
-				$r .= $k.'='.$v.'&';
-			return $r;
-		}
-		else
-			return $this->current();
+		$r = $this->current();
+		if($params = array_merge($this->request->get->all(), $params))
+			$r .= '?'.http_build_query($params);
+		return $r;
 	}
 	
 	public function base() {
@@ -94,10 +90,10 @@ class URL {
 			$controller = strtolower($what[0]);
 			$action = strtolower($what[1]);
 			foreach(\Resolver::getRoutes() as $route_params) {
-				$route = $route_params['route'];
-				if(strtolower($route_params['controller']) == $controller && strtolower($route_params['action']) == $action) {
-					if(isset($route_params['host']))
-						return 'http://'.$route_params['host'].'/'.\Resolver::buildRoute($route, $params);
+				$route = $route_params->getRoute();
+				if(strtolower($route_params->getController()) == $controller && strtolower($route_params->getAction()) == $action) {
+					if($route_params->get('host'))
+						return 'http://'.$route_params->get('host').'/'.\Resolver::buildRoute($route, $params);
 					elseif($relative)
 						return \Resolver::buildRoute($route, $params);
 					else
@@ -109,10 +105,10 @@ class URL {
 		else {
 			$what = strtolower($what);
 			foreach(\Resolver::getRoutes() as $route_params) {
-				$route = $route_params['route'];
-				if($route_params['name'] != null && strtolower($route_params['name']) == $what) {
-					if(isset($route_params['host']))
-						return 'http://'.$route_params['host'].'/'.\Resolver::buildRoute($route, $params);
+				$route = $route_params->getRoute();
+				if($route_params->get('name') != null && strtolower($route_params->get('name')) == $what) {
+					if($route_params->get('host'))
+						return 'http://'.$route_params->get('host').'/'.\Resolver::buildRoute($route, $params);
 					elseif($relative)
 						return \Resolver::buildRoute($route, $params);
 					else

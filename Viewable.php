@@ -54,16 +54,20 @@ class Viewable extends \Coxis\Hook\Hookable {
 	}
 	
 	public function render($_view, $_args=array()) {
-		$reflection = new \ReflectionObject($this);	
-		$dir = dirname($reflection->getFileName());
-
 		foreach($_args as $_key=>$_value)
-			$$_key = $_value;#TODO, watchout keywords
+			$$_key = $_value;
 
 		ob_start();
-		\Memory::set('in_view', true);
 		include($_view);
-		\Memory::set('in_view', false);
+		return ob_get_clean();
+	}
+
+	public static function staticRender($_viewfile, $_args=array()) {
+		foreach($_args as $_key=>$_value)
+			$$_key = $_value;
+
+		ob_start();
+		include($_viewfile);
 		return ob_get_clean();
 	}
 }

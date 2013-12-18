@@ -5,7 +5,6 @@ class Request implements \ArrayAccess {
 	public $get;
 	public $post;
 	public $file;
-	// public $json = array(); #todo
 	public $server;
 	public $cookie;
 	public $session;
@@ -31,11 +30,9 @@ class Request implements \ArrayAccess {
 	}
 
 	public static function createFromGlobals() {
-		#todo separate cli and http request
 		global $argv;
 
 		$request = new static;
-		#todo add headers
 		$request->get->_setAll($_GET);
 		$request->post->_setAll($_POST);
 		$request->file->_setAll($_FILES);
@@ -43,14 +40,10 @@ class Request implements \ArrayAccess {
 		$request->server->_setAll($_SERVER);
 		$request->argv->_setAll($argv);
 		try {
-			$request->start();
+			$request->sessionStart();
 			$request->session->_setAll($_SESSION);
 		} catch(\ErrorException $e) {}
 		$request->body = file_get_contents('php://input');
-		#todo with headers, check if body is json
-		// try {
-		// 	$request->json = json_decode($request->body);
-		// } catch(\ErrorException $e) {}
 
 		$server = trim($request->server->get('SERVER_NAME'), '/');
 		if($request->server->has('ORIG_SCRIPT_NAME'))
@@ -72,6 +65,16 @@ class Request implements \ArrayAccess {
 		$request->process();
 
 		return $request;
+	}
+
+	public function getJSON() {
+		try {
+			return json_decode($request->body);
+		} catch(\Exception $e) {}
+	}
+
+	public function setJSON($data) {
+		$request->body = json_encode($data);
 	}
 
 	public function setURL($server, $root, $url) {
@@ -114,8 +117,7 @@ class Request implements \ArrayAccess {
 		return isset($this->params[$offset]) ? $this->params[$offset] : null;
 	}
 
-	#todo should i really have it in Request ?!?!
-	public function start() {
+	protected function sessionStart() {
 		if(!headers_sent()) {
 			if(isset($this->get['PHPSESSID']))
 				session_id($this->get['PHPSESSID']);

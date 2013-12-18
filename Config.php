@@ -1,7 +1,6 @@
 <?php
 namespace Coxis\Core;
 
-//todo merge with coxis?
 class Config {
 	protected $config = array();
 	
@@ -28,22 +27,14 @@ class Config {
 			$this->set($key, $value);
 	}
 	
-	public function set() {
-		$args = func_get_args();
-		$arr =& $this->config;
-		$key = $args[sizeof($args)-2];
-		$value = $args[sizeof($args)-1];
-		array_pop($args);
-		array_pop($args);
-		
-		foreach($args as $parent)
-			$arr =& $arr[$parent];
+	public function set($str_path, $value) {
+		\Coxis\Utils\Tools::pathSet($this->config, $str_path, $value);
+
 		if(\Coxis\Core\App::has('hook'))
-			\Coxis\Core\App::get('hook')->trigger(array_merge(array('config', 'set'), array_merge($args, array($key))), array($value));
-		$arr[$key] = $value;
+			\Coxis\Core\App::get('hook')->trigger(array('Config/Set/'.$str_path, $value));
 	}
 	
-	public function get() {
-		return call_user_func_array(array('\Coxis\Utils\Tools', 'get'), array_merge(array($this->config), func_get_args()));
+	public function get($str_path) {
+		return \Coxis\Utils\Tools::pathGet($this->config, $str_path);
 	}
 }

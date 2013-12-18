@@ -134,7 +134,7 @@ class Importer {
 		$after = array_merge(get_declared_classes(), get_declared_interfaces());
 		
 		$diff = array_diff($after, $before);
-		$result = \Coxis\Utils\Tools::get(array_values($diff), sizeof($diff)-1);
+		$result = \Coxis\Utils\Tools::array_get(array_values($diff), sizeof($diff)-1);
 		if(!$result) {
 			foreach(array_merge(get_declared_classes(), get_declared_interfaces()) as $class) {
 				$reflector = new \ReflectionClass($class);

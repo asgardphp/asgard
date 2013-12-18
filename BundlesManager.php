@@ -12,16 +12,16 @@ class BundlesManager {
 		return static::$instance;
 	}
 
-	public static function loadModelFixtures($bundle_path) {
+	public static function loadEntityFixtures($bundle_path) {
 		if(file_exists($bundle_path.'/data')) {
-			foreach(glob($bundle_path.'/data/*.models.yml') as $file)
-				ORMManager::loadModelFixtures($file);
+			foreach(glob($bundle_path.'/data/*.entities.yml') as $file)
+				\Coxis\ORM\Libs\ORMManager::loadEntityFixtures($file);
 		}
 	}
 
-	public static function loadModelFixturesAll() {
-		foreach(static::inst()->getBundlesPath() as $bundle)
-			static::loadModelFixtures($bundle);
+	public static function loadEntityFixturesAll() {
+		foreach(static::instance()->getBundlesPath() as $bundle)
+			static::loadEntityFixtures($bundle);
 	}
 
 	public function addBundles($_bundles) {

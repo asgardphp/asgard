@@ -20,24 +20,35 @@ class Controller extends Viewable {
 			if(!preg_match('/Action$/i', $method))
 				continue;
 			$method_reflection = new \Addendum\ReflectionAnnotatedMethod($class, $method);
-		
+			if($method != 'publishAction' && $method != 'promoteAction' && $method != 'demoteAction')
+
 			if($method_reflection->getAllAnnotations('Route')) {
 				foreach($method_reflection->getAllAnnotations('Route') as $annotation) {
 					$route = Resolver::formatRoute($prefix.'/'.$annotation->value);
 
-					$routes[] = array(
-						'route'	=>	$route,
-						'controller'		=>	$class, 
-						'action'			=>	Resolver::formatActionName($method),
-						'requirements'	=>	$method_reflection->getAnnotation('Route')->requirements,
-						'method'	=>	$method_reflection->getAnnotation('Route')->method,
-						'name'	=>	isset($method_reflection->getAnnotation('Route')->name) ? $method_reflection->getAnnotation('Route')->name:null
+					$routes[] = new ControllerRoute(
+						$route,
+						$class,
+						Resolver::formatActionName($method),
+						array(
+							'host' => $method_reflection->getAnnotation('Route')->host,
+							'requirements' => $method_reflection->getAnnotation('Route')->requirements,
+							'method' => $method_reflection->getAnnotation('Route')->method,
+							'name'	=>	isset($method_reflection->getAnnotation('Route')->name) ? $method_reflection->getAnnotation('Route')->name:null
+						)
 					);
 				}
 			}
 		}
 
 		return $routes;
+	}
+	
+	public function getRouteFor($what) {
+		foreach(App::get('resolver')->getRoutes() as $route) {
+			if($route instanceof ControllerRoute && $route->getController() == $what[0] && $route->getAction() == $what[1])
+				return $route->getRoute();
+		}
 	}
 
 	public function notfound($msg=null) {

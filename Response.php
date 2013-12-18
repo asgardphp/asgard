@@ -109,6 +109,15 @@ class Response {
 	}
 
 	public function __toString() {
-		return $this->content;
+		$r = 'Code: '.$this->getCode()."\n\n".
+			'Headers: '."\n";
+		foreach($this->headers as $header=>$value)
+			$r .= $header.': '.$value;
+		$r .= "\n\n".'Content: '."\n".$this->content;
+		return $r;
+	}
+
+	public function isOK() {
+		return $this->getCode() < 300;
 	}
 }

@@ -13,30 +13,29 @@ class Bundle extends BundleLoader {
 		});
 		Autoloader::addPreloadedClasses($preload);
 
-		#todo revoir apres refactorisé Context et IoC
-		\Coxis\Core\Facades::inst()->register('Importer', 'Coxis\Core\Facades\Importer');
-		\Coxis\Core\Facades::inst()->register('Hook', '\Coxis\Core\Facades\Hook');
-		\Coxis\Core\Facades::inst()->register('Config', 'Coxis\Core\Facades\Config');
+		App::get('facades')->register('Importer', 'Coxis\Core\Facades\Importer');
+		App::get('facades')->register('Hook', '\Coxis\Core\Facades\Hook');
+		App::get('facades')->register('Config', 'Coxis\Core\Facades\Config');
 		
-		\Coxis\Core\Facades::inst()->register('Request', '\Coxis\Core\Facades\Request');
-		\Coxis\Core\Facades::inst()->register('Response', '\Coxis\Core\Facades\Response');
-		\Coxis\Core\Facades::inst()->register('URL', '\Coxis\Core\Facades\URL');
-		\Coxis\Core\Facades::inst()->register('Resolver', '\Coxis\Core\Facades\Resolver');
-		\Coxis\Core\Facades::inst()->register('Memory', '\Coxis\Core\Facades\Memory');
-		\Coxis\Core\Facades::inst()->register('Flash', '\Coxis\Core\Facades\Flash');
-		\Coxis\Core\Facades::inst()->register('Validation', '\Coxis\Core\Facades\Validation');
-		\Coxis\Core\Facades::inst()->register('ModelsManager', '\Coxis\Core\Facades\ModelsManager');
-		\Coxis\Core\Facades::inst()->register('Locale', '\Coxis\Core\Facades\Locale');
-		\Coxis\Core\Facades::inst()->register('Session', '\Coxis\Core\Facades\Session');
-		\Coxis\Core\Facades::inst()->register('Get', '\Coxis\Core\Facades\Get');
-		\Coxis\Core\Facades::inst()->register('Post', '\Coxis\Core\Facades\Post');
-		\Coxis\Core\Facades::inst()->register('File', '\Coxis\Core\Facades\File');
-		\Coxis\Core\Facades::inst()->register('Cookie', '\Coxis\Core\Facades\Cookie');
-		\Coxis\Core\Facades::inst()->register('Server', '\Coxis\Core\Facades\Server');
+		App::get('facades')->register('Request', '\Coxis\Core\Facades\Request');
+		App::get('facades')->register('Response', '\Coxis\Core\Facades\Response');
+		App::get('facades')->register('URL', '\Coxis\Core\Facades\URL');
+		App::get('facades')->register('Resolver', '\Coxis\Core\Facades\Resolver');
+		App::get('facades')->register('Memory', '\Coxis\Core\Facades\Memory');
+		App::get('facades')->register('Flash', '\Coxis\Core\Facades\Flash');
+		App::get('facades')->register('Validation', '\Coxis\Core\Facades\Validation');
+		App::get('facades')->register('EntitiesManager', '\Coxis\Core\Facades\EntitiesManager');
+		App::get('facades')->register('Locale', '\Coxis\Core\Facades\Locale');
+		App::get('facades')->register('Session', '\Coxis\Core\Facades\Session');
+		App::get('facades')->register('Get', '\Coxis\Core\Facades\Get');
+		App::get('facades')->register('Post', '\Coxis\Core\Facades\Post');
+		App::get('facades')->register('File', '\Coxis\Core\Facades\File');
+		App::get('facades')->register('Cookie', '\Coxis\Core\Facades\Cookie');
+		App::get('facades')->register('Server', '\Coxis\Core\Facades\Server');
 
-		\Coxis\Core\Facades::inst()->register('CLIRouter', 'Coxis\Cli\Facades\CLIRouter');
-		\Coxis\Core\Facades::inst()->register('HTML', 'Coxis\Utils\Facades\HTML');
-		\Coxis\Core\Facades::inst()->register('DB', 'Coxis\DB\Facades\DB');
+		App::get('facades')->register('CLIRouter', 'Coxis\Cli\Facades\CLIRouter');
+		App::get('facades')->register('HTML', 'Coxis\Utils\Facades\HTML');
+		App::get('facades')->register('DB', 'Coxis\DB\Facades\DB');
 
 		parent::load($queue);
 	}

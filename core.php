@@ -7,7 +7,6 @@ set_include_path(get_include_path() . PATH_SEPARATOR . _DIR_);
 
 /* CORE CLASSES */
 require_once _CORE_DIR_.'Coxis.php';
-require_once _CORE_DIR_.'IoC.php';
 require_once _CORE_DIR_.'App.php';
 require_once _CORE_DIR_.'Importer.php';
 require_once _CORE_DIR_.'Autoloader.php';

@@ -5,8 +5,35 @@ class App {
 	protected static $instance;
 	protected $instances = array();
 	protected $registry = array();
+	static $loaded = false;
+
+	public static function setDefaultEnvironment() {
+		if(!defined('_ENV_')) {
+			if(PHP_SAPI == 'cli' || \Server::get('HTTP_HOST') == '127.0.0.1' || \Server::get('HTTP_HOST') == 'localhost')
+				define('_ENV_', 'dev');
+			else
+				define('_ENV_', 'prod');
+		}
+	}
+
+	public static function load() {
+		if(static::$loaded)
+			return;
+		
+		static::setDefaultEnvironment();
+		$app = static::instance();
+		if(file_exists(_DIR_.'app/load.php'))
+			include _DIR_.'app/load.php';
+		BundlesManager::instance()->loadBundles($app->get('config')->get('bundles'));
+		
+		\Request::inst()->isInitial = true;
+		$app->get('locale')->importLocales('locales');
+
+		static::$loaded = true;
+	}
 
 	function __construct() {
+		#default instances
 		$this->_set('importer', function() {
 			return new \Coxis\Core\Importer;
 		});
@@ -26,16 +53,9 @@ class App {
 		$this->_set('response', function() {
 			return new \Coxis\Core\Response;
 		});
-
-		foreach(\Coxis\Core\Facades::inst()->all() as $facade=>$f) {
-			list($class, $cb) = $f;
-			if(!$this->registered(strtolower($facade)))
-				$this->register(strtolower($facade), $cb);
-		}
-		foreach(\Coxis\Core\Facades::inst()->all() as $facade=>$f) {
-			list($class, $cb) = $f;
-			$this->_get('importer')->alias($class, $facade);
-		}
+		$this->_set('facades', function() {
+			return \Coxis\Core\Facades::inst();
+		});
 	}
 
 	public static function instance() {
@@ -50,9 +70,6 @@ class App {
 	}
 
 	public function _get($class) {
-		if($class == 'ioc')
-			return $this;
-
 		if(!isset($this->instances[$class]))
 			$this->instances[$class] = $this->make($class);
 

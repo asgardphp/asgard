@@ -2,23 +2,22 @@
 namespace Coxis\Core\Properties;
 
 class BaseProperty {
-	protected $model = null;
+	protected $entity = null;
 	protected $name = null;
 	public $params = array();
 
-	function __construct($model, $name, $params) {
-		$this->model = $model;
+	function __construct($entity, $name, $params) {
+		$this->entity = $entity;
 		$this->name = $name;
 		$this->params = $params;
 	}
 
-	public function __get($name) {
-		$path = explode('_', $name);
-		return \Coxis\Utils\Tools::get($this->params, $path);
+	public function __get($str_path) {
+		return \Coxis\Utils\Tools::pathGet($this->params, $str_path);
 	}
 
 	public function __toString() {
-		return $this->name;
+		return $this->getName();
 	}
 
 	public function getName() {
