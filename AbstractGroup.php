@@ -57,7 +57,7 @@ abstract class AbstractGroup extends \Coxis\Hook\Hookable implements \ArrayAcces
 					return false;
 			}
 			else
-				return true;#todo hum...
+				return false;
 		}
 	}
 
@@ -79,12 +79,6 @@ abstract class AbstractGroup extends \Coxis\Hook\Hookable implements \ArrayAcces
 					$field->setValue($this->data[$name]);
 				elseif(isset($this->files[$name]))
 					$field->setValue($this->files[$name]);
-				else {
-					if(isset($field->params['multiple']) && $field->params['multiple'])
-						$field->setValue(array());
-					else
-						$field->setValue('');
-				}
 					
 				return $field;
 			}
@@ -349,7 +343,7 @@ abstract class AbstractGroup extends \Coxis\Hook\Hookable implements \ArrayAcces
 		return $var;
     }
 
-	public function trigger($name, $args=array(), $cb=null) {
-		return parent::trigger($name, array_merge(array($this), $args), $cb);
+	public function trigger($name, $args=array(), $cb=null, $print=false) {
+		return parent::trigger($name, array_merge(array($this), $args), $cb, $print);
 	}
 }

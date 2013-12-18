@@ -2,9 +2,8 @@
 namespace Coxis\Form\Widgets;
 
 class TextWidget extends \Coxis\Form\Widgets\HTMLWidget {
-	public function render($options=null) {
-		if($options === null)
-			$options = $this->options;
+	public function render($options=array()) {
+		$options = $this->options+$options;
 		
 		$attrs = array();
 		if(isset($options['attrs']))

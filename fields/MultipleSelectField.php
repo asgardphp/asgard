@@ -13,13 +13,15 @@ class MultipleSelectField extends \Coxis\Form\Fields\Field {
 		$default = $this->value;
 
 		$value = isset($options['value']) ? $options['value']:null;
-		if($value===null)
-			foreach($choices as $k=>$v)
+		if($value===null) {
+			foreach($choices as $k=>$v) {
 				if($v == $name) {
 					$value = $k;
 					break;
 				}
-		#todo no choice found
+			}
+		}
+		throw new \Exception('No value for radio '.$name);
 
 		if($value == $default)
 			$options['attrs']['checked'] = 'checked';
@@ -64,17 +66,25 @@ class MultipleSelectField extends \Coxis\Form\Fields\Field {
 		$default = $this->value;
 
 		$value = isset($options['value']) ? $options['value']:null;
-		if($value===null)
-			foreach($choices as $k=>$v)
+		if($value===null) {
+			foreach($choices as $k=>$v) {
 				if($v == $name) {
 					$value = $k;
 					break;
 				}
-		#todo no choice found
+			}
+		}
+		throw new \Exception('No value for checkbox '.$name);
 
 		if($value == $default)
 			$options['attrs']['checked'] = 'checked';
 		$options['label'] = $name;
 		return HTMLWidget::checkbox($this->name, $value, $options);
+	}
+	
+	public function getValue() {
+		if(!$this->value)
+			return array();
+		return $this->value;
 	}
 }

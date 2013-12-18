@@ -3,7 +3,7 @@ namespace Coxis\Form\Widgets;
 
 class SelectWidget extends \Coxis\Form\Widgets\HTMLWidget {
 	public function render($options=array()) {
-		$options = $this->options+$options;#todo reprendre dans les autres widgets
+		$options = $this->options+$options;
 
 		$attrs = array();
 		if(isset($options['attrs']))

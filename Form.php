@@ -53,9 +53,9 @@ class Form extends AbstractGroup {
 			$cb = function($field, $options=array()) use($render_callback) {
 				$widget = $this->trigger('Coxis\Form\Widgets\\'.$render_callback);
 				if($widget === null) {
-					$widget = \Coxis\Core\Context::get('hook')->trigger('Coxis\Form\Widgets\\'.$render_callback, array(), function() use($render_callback) {
+					$widget = \Coxis\Core\App::get('hook')->trigger('Coxis\Form\Widgets\\'.$render_callback, array(), function() use($render_callback) {
 						return 'Coxis\Form\Widgets\\'.$render_callback.'Widget';
-					});	
+					});
 				}
 				return \Coxis\Form\Widgets\HTMLWidget::getWidget($widget, array($field->getName(), $field->getValue(), $options));
 			};
@@ -164,15 +164,14 @@ class Form extends AbstractGroup {
 		return $this;
 	}
 	
-	//todo should not pass this args here but when defining the form
-	public function open($options=array()) {
-		$options = array_merge($this->params, $options);
-		$action = isset($options['action']) && $options['action'] ? $options['action']:\URL::full();
-		$method = isset($options['method']) ? $options['method']:'post';
-		$enctype = isset($options['enctype']) ? $options['enctype']:($this->hasFile() ? ' enctype="multipart/form-data"':'');
+	public function open($params=array()) {
+		$params = array_merge($this->params, $params);
+		$action = isset($params['action']) && $params['action'] ? $params['action']:\URL::full();
+		$method = isset($params['method']) ? $params['method']:'post';
+		$enctype = isset($params['enctype']) ? $params['enctype']:($this->hasFile() ? ' enctype="multipart/form-data"':'');
 		$attrs = '';
-		if(isset($options['attrs']))
-			foreach($options['attrs'] as $k=>$v)
+		if(isset($params['attrs']))
+			foreach($params['attrs'] as $k=>$v)
 				$attrs .= ' '.$k.'="'.$v.'"';
 		echo '<form action="'.$action.'" method="'.$method.'"'.$enctype.$attrs.'>'."\n";
 		
