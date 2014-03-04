@@ -21,17 +21,17 @@ class Hookable {
 
 	public function hookOn($hookName, $cb, $priority=0) {
 		$args = array(array('instances', spl_object_hash($this), $hookName), $cb);
-		return call_user_func_array(array('Hook', 'hookOn'), $args);
+		return call_user_func_array(array(\Coxis\Core\App::get('hook'), 'hookOn'), $args);
 	}
 
 	public function hookBefore($hookName, $cb, $priority=0) {
 		$args = array(array('instances', spl_object_hash($this), $hookName), $cb);
-		return call_user_func_array(array('Hook', 'hookBefore'), $args);
+		return call_user_func_array(array(\Coxis\Core\App::get('hook'), 'hookBefore'), $args);
 	}
 
 	public function hookAfter($hookName, $cb, $priority=0) {
 		$args = array(array('instances', spl_object_hash($this), $hookName), $cb);
-		return call_user_func_array(array('Hook', 'hookAfter'), $args);
+		return call_user_func_array(array(\Coxis\Core\App::get('hook'), 'hookAfter'), $args);
 	}
 
 	public function getHooks() {
