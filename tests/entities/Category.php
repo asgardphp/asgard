@@ -1,7 +1,7 @@
 <?php
-namespace Coxis\ORM\Tests\Entities;
+namespace Asgard\ORM\Tests\Entities;
 
-class Category extends \Coxis\Core\Entity {
+class Category extends \Asgard\Core\Entity {
 	public static $properties = array(
 		'title',
 		'description',
@@ -9,7 +9,7 @@ class Category extends \Coxis\Core\Entity {
 
 	public static $relations = array(
 		'news' => array(
-			'entity' => 'Coxis\ORM\Tests\Entities\News',
+			'entity' => 'Asgard\ORM\Tests\Entities\News',
 			'has' => 'many'
 		),
 	);

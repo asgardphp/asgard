@@ -1,7 +1,7 @@
 <?php
-namespace Coxis\ORM\CLI;
+namespace Asgard\ORM\CLI;
 
-class MigrationController extends \Coxis\Cli\CLIController {
+class MigrationController extends \Asgard\Cli\CLIController {
 	/**
 	@Shortcut('automigrate')
 	@Usage('automigrate')
@@ -33,7 +33,7 @@ class MigrationController extends \Coxis\Cli\CLIController {
 	@Description('Automatically process migrations')
 	*/
 	public function migrateAction($request) {
-		CLIRouter::run('Coxis\Cli\DB', 'backup', $request);
+		CLIRouter::run('Asgard\Cli\DB', 'backup', $request);
 		echo 'Migrating...'."\n";
 
 		ORMManager::migrate(true);

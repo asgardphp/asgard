@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\ORM\Libs;
+namespace Asgard\ORM\Libs;
 
 class ORMManager {
 	public static function loadEntityFixtures($file) {
@@ -65,13 +65,13 @@ class ORMManager {
 		$oldSchemas = array();
 		$tables = DB::query('SHOW TABLES')->all();
 		foreach($tables as $k=>$v) {
-			$table = \Coxis\Utils\Tools::array_get(array_values($v), 0);
+			$table = \Asgard\Utils\Tools::array_get(array_values($v), 0);
 			$oldSchemas[$table] = static::tableSchema($table);
 		}
 
 		foreach(get_declared_classes() as $class) {
-			if(is_subclass_of($class, 'Coxis\Core\Entity')) {
-				if($class == 'Coxis\Core\Entity')
+			if(is_subclass_of($class, 'Asgard\Core\Entity')) {
+				if($class == 'Asgard\Core\Entity')
 					continue;
 				$reflection = new \ReflectionClass($class);
 				if($reflection->isAbstract())
@@ -269,7 +269,7 @@ class '.$filename.'_'.$i.' {
 		'.implode("\n\n\t\t", $down)."
 	}
 }";
-		\Coxis\Utils\FileManager::mkdir('migrations');
+		\Asgard\Utils\FileManager::mkdir('migrations');
 		file_put_contents('migrations/'.$i.'_'.$filename.'.php', $migration);
 
 		if($verbose)

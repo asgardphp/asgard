@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\ORM\Libs;
+namespace Asgard\ORM\Libs;
 
 class ORMHandler {
 	private $entity;
@@ -60,9 +60,9 @@ class ORMHandler {
 
 	public static function getTable($entityName) {
 		if(isset($entityName::getDefinition()->meta['table']) && $entityName::getDefinition()->meta['table'])
-			return \Coxis\Core\App::get('config')->get('database/prefix').$entityName::getDefinition()->meta['table'];
+			return \Asgard\Core\App::get('config')->get('database/prefix').$entityName::getDefinition()->meta['table'];
 		else
-			return \Coxis\Core\App::get('config')->get('database/prefix').$entityName::getEntityName();
+			return \Asgard\Core\App::get('config')->get('database/prefix').$entityName::getEntityName();
 	}
 	
 	public static function loadRelations($entityDefinition) {
@@ -73,7 +73,7 @@ class ORMHandler {
 	}
 	
 	public static function getI18N($entity, $lang) {
-		$dal = new \Coxis\DB\DAL(\Coxis\Core\App::get('db'), static::getTranslationTable($entity));
+		$dal = new \Asgard\DB\DAL(\Asgard\Core\App::get('db'), static::getTranslationTable($entity));
 		return $dal->where(array('id' => $entity->id))->where(array('locale'=>$lang))->first();
 	}
 	
@@ -131,7 +131,7 @@ class ORMHandler {
 				if($entity->isNew())
 					return;
 
-				$collection = new \Coxis\ORM\Libs\CollectionORM($entity, $name);
+				$collection = new \Asgard\ORM\Libs\CollectionORM($entity, $name);
 				return $collection;
 			default:	
 				throw new \Exception('Relation '.$relation_type.' does not exist.');
@@ -233,7 +233,7 @@ class ORMHandler {
 		
 		//Persist i18n
 		foreach($i18n as $lang=>$values) {
-			$dal = new \Coxis\DB\DAL(\Coxis\Core\App::get('db'), static::getTranslationTable($entity));
+			$dal = new \Asgard\DB\DAL(\Asgard\Core\App::get('db'), static::getTranslationTable($entity));
 			if(!$dal->where(array('id'=>$entity->id, 'locale'=>$lang))->update($values))
 				$dal->insert(
 					array_merge(

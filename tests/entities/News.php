@@ -1,7 +1,7 @@
 <?php
-namespace Coxis\ORM\Tests\Entities;
+namespace Asgard\ORM\Tests\Entities;
 
-class News extends \Coxis\Core\Entity {
+class News extends \Asgard\Core\Entity {
 	public static $properties = array(
 		'title',
 		'content',
@@ -9,11 +9,11 @@ class News extends \Coxis\Core\Entity {
 
 	public static $relations = array(
 		'category' => array(
-			'entity' => 'Coxis\ORM\Tests\Entities\Category',
+			'entity' => 'Asgard\ORM\Tests\Entities\Category',
 			'has' => 'one'
 		),
 		'author' => array(
-			'entity' => 'Coxis\ORM\Tests\Entities\Author',
+			'entity' => 'Asgard\ORM\Tests\Entities\Author',
 			'has' => 'one'
 		),
 	);

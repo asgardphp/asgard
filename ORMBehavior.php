@@ -1,34 +1,34 @@
 <?php
-namespace Coxis\ORM;
+namespace Asgard\ORM;
 
-class ORMBehavior implements \Coxis\Core\Behavior {
+class ORMBehavior implements \Asgard\Core\Behavior {
 	public static function load($entityDefinition, $params=null) {
-		$this->register('relation_required', function($attribute, $value, $params, $validator) {
+		// $this->register('relation_required', function($attribute, $value, $params, $validator) {
 
-			if(!$value->count()) {
-				$msg = $validator->getMessage('email', $attribute, __('The relation ":attribute" is required.'));
-				return Validation::format($msg, array(
-					'attribute'	=>	__(str_replace('_', ' ', $attribute)),
-				));
-			}
-		});
+		// 	if(!$value->count()) {
+		// 		$msg = $validator->getMessage('email', $attribute, __('The relation ":attribute" is required.'));
+		// 		return Validation::format($msg, array(
+		// 			'attribute'	=>	__(str_replace('_', ' ', $attribute)),
+		// 		));
+		// 	}
+		// });
 
 		$entityName = $entityDefinition->getClass();
 
 		#Article::getTable()
 		$entityDefinition->addStaticMethod('getTable', function() use($entityName) {
-			return \Coxis\ORM\Libs\ORMHandler::getTable($entityName);
+			return \Asgard\ORM\Libs\ORMHandler::getTable($entityName);
 		});
 
-		$ormHandler = new \Coxis\ORM\Libs\ORMHandler($entityDefinition);
+		$ormHandler = new \Asgard\ORM\Libs\ORMHandler($entityDefinition);
 
-		$entityDefinition->hookOn('constrains', function($chain, &$constrains) use($entityName) {
-			foreach($entityName::getDefinition()->relations() as $name=>$relation) {
-				$res = isset($this->params['validation']) ? $this->params['validation']:array();
-				if(!is_array($res))
-					$res = array('validation' => $res);
-				if(isset($relation['required']) && $relation['required'])
-					$constrains[$name]['relation_required'] = true;
+		// $entityDefinition->hookOn('constrains', function($chain, &$constrains) use($entityName) {
+		// 	foreach($entityName::getDefinition()->relations() as $name=>$relation) {
+		// 		$res = isset($relation->params['validation']) ? $relation->params['validation']:array();
+		// 		if(!is_array($res))
+		// 			$res = array('validation' => $res);
+		// 		if(isset($relation['required']) && $relation['required'])
+		// 			$constrains[$name]['relation_required'] = true;
 
 				#e.g. todo
 				// $constrains[] = array('relation_required', array(true, 'actualites'));
@@ -37,8 +37,8 @@ class ORMBehavior implements \Coxis\Core\Behavior {
 				// true
 				// actualites / relation
 				// $entity
-			}
-		});
+			// }
+		// });
 
 		// $entityDefinition->hookBefore('validation', function($chain, $entity, &$data, &$errors) {
 		// 	$data = array_merge($data, $entity::getDefinition()->relations());
@@ -76,7 +76,7 @@ class ORMBehavior implements \Coxis\Core\Behavior {
 				return $ormHandler->getORM()->where(array($property => $val))->first();
 			}
 			#Article::where() / ::limit() / ::orderBy() / ..
-			elseif(method_exists('Coxis\ORM\Libs\ORM', $name)) {
+			elseif(method_exists('Asgard\ORM\Libs\ORM', $name)) {
 				$chain->found = true;
 				return call_user_func_array(array($ormHandler->getORM(), $name), $args);
 			}
@@ -123,13 +123,13 @@ class ORMBehavior implements \Coxis\Core\Behavior {
 		
 		#$article->title
 		$entityDefinition->hookAfter('get', function($chain, $entity, $name, $lang) {
-			return \Coxis\ORM\Libs\ORMHandler::fetch($entity, $name, $lang);
+			return \Asgard\ORM\Libs\ORMHandler::fetch($entity, $name, $lang);
 		});
 
 		$entityDefinition->hookBefore('get', function($chain, $entity, $name, $lang) {
 			if($entity::hasRelation($name)) {
 				$rel = $entity->relation($name);
-				if($rel instanceof \Coxis\Core\Collection)
+				if($rel instanceof \Asgard\Core\Collection)
 					return $rel->get();
 				else
 					return $rel;

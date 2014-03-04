@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\ORM\Libs;
+namespace Asgard\ORM\Libs;
 
 class ORM {
 	protected $entity;
@@ -114,7 +114,7 @@ class ORM {
 
 	public function getDAL() {
 		$current_entity = $this->entity;
-		$dal = new \Coxis\DB\DAL(\Coxis\Core\App::get('db'));
+		$dal = new \Asgard\DB\DAL(\Asgard\Core\App::get('db'));
 		$table = $this->getTable();
 		$dal->orderBy($this->orderBy);
 		$dal->limit($this->limit);
@@ -135,7 +135,7 @@ class ORM {
 			$dal->leftjoin(array(
 				$translation_table => $this->processConditions(array(
 					$table.'.id = '.$translation_table.'.id',
-					$translation_table.'.locale' => \Coxis\Core\App::get('config')->get('locale')
+					$translation_table.'.locale' => \Asgard\Core\App::get('config')->get('locale')
 				))
 			));
 		}
@@ -152,8 +152,8 @@ class ORM {
 	public function recursiveJointures($dal, $jointures, $current_entity, $table) {
 		foreach($jointures as $k=>$relation) {
 			if(is_array($relation)) {
-				$relationName = \Coxis\Utils\Tools::array_get(array_keys($relation), 0);
-				$recJoins = \Coxis\Utils\Tools::array_get(array_values($relation), 0);
+				$relationName = \Asgard\Utils\Tools::array_get(array_keys($relation), 0);
+				$recJoins = \Asgard\Utils\Tools::array_get(array_values($relation), 0);
 				$relation = $current_entity::getDefinition()->relations[$relationName];
 				$entity = $relation['entity'];
 
@@ -215,7 +215,7 @@ class ORM {
 			$dal->leftjoin(array(
 				$translation_table.' '.$relationName.'_translation' => $this->processConditions(array(
 					$table.'.id = '.$relationName.'_translation.id',
-					$relationName.'_translation.locale' => \Coxis\Core\App::get('config')->get('locale')
+					$relationName.'_translation.locale' => \Asgard\Core\App::get('config')->get('locale')
 				))
 			));
 		}
@@ -320,7 +320,7 @@ class ORM {
 		$entities = array();
 		$entity = $this->entity;
 		
-		$dal = new \Coxis\DB\DAL(\Coxis\Core\App::get('db'));
+		$dal = new \Asgard\DB\DAL(\Asgard\Core\App::get('db'));
 		$rows = $dal->query($sql, $args)->all();
 		foreach($rows as $row)
 			$entities[] = ORMHandler::unserializeSet(new $entity, $row);
@@ -342,7 +342,7 @@ class ORM {
 	public function getPaginator() {
 		if($this->page === null || $this->per_page === null)
 			return;
-		return new \Coxis\Utils\Paginator($this->count(), $this->page, $this->per_page);
+		return new \Asgard\Utils\Paginator($this->count(), $this->page, $this->per_page);
 	}
 	
 	public function with($with, $closure=null) {

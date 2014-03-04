@@ -1,7 +1,7 @@
 <?php
-namespace Coxis\ORM\Libs;
+namespace Asgard\ORM\Libs;
 
-class CollectionORM extends ORM implements \Coxis\Core\Collection {
+class CollectionORM extends ORM implements \Asgard\Core\Collection {
 	protected $parent;
 	protected $relation;
 
@@ -21,7 +21,7 @@ class CollectionORM extends ORM implements \Coxis\Core\Collection {
 		if(!is_array($ids))
 			$ids = array($ids);
 		foreach($ids as $k=>$v)
-			if($v instanceof \Coxis\Core\Entity)
+			if($v instanceof \Asgard\Core\Entity)
 				$ids[$k] = (int)$v->id;
 	
 		switch($this->relation['type']) {
@@ -56,7 +56,7 @@ class CollectionORM extends ORM implements \Coxis\Core\Collection {
 		if(!is_array($ids))
 			$ids = array($ids);
 		foreach($ids as $k=>$id)
-			if($id instanceof \Coxis\Core\Entity)
+			if($id instanceof \Asgard\Core\Entity)
 				$ids[$k] = (int)$id->id;
 			
 		switch($this->relation['type']) {
@@ -104,7 +104,7 @@ class CollectionORM extends ORM implements \Coxis\Core\Collection {
 		if(!is_array($ids))
 			$ids = array($ids);
 		foreach($ids as $k=>$id)
-			if($id instanceof \Coxis\Core\Entity)
+			if($id instanceof \Asgard\Core\Entity)
 				$ids[$k] = $id->id;
 			
 		switch($this->relation['type']) {
