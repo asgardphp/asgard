@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Data\Entities;
+namespace Asgard\Data\Entities;
 
 class File extends BaseData {
 	public static $properties = array(

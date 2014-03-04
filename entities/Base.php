@@ -1,7 +1,7 @@
 <?php
-namespace Coxis\Data\Entities;
+namespace Asgard\Data\Entities;
 
-abstract class Base extends \Coxis\Core\Entity {
+abstract class Base extends \Asgard\Core\Entity {
 	protected static $stored = array();
 
 	public static $meta = array(

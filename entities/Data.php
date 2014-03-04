@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Data\Entities;
+namespace Asgard\Data\Entities;
 
 class Data extends Base {
 	public static $properties = array(
