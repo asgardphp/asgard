@@ -10,16 +10,16 @@ class ORMHandler {
 			$entityDefinition->meta['order_by'] = 'id DESC';
 		
 		$entityDefinition->addProperty('id', array(
-			'type' => 'text', 
-			'editable'=>false, 
-			'required'=>false,
-			'position'	=>	0,
-			'defaut'	=>	0,
-			'orm'	=>	array(
-				'type'	=>	'int(11)',
-				'auto_increment'	=>	true,
-				'key'	=>	'PRI',
-				'nullable'	=>	false,
+			'type'     => 'text', 
+			'editable' => false, 
+			'required' => false,
+			'position' => 0,
+			'defaut'   => 0,
+			'orm'      => array(
+				'type'              => 'int(11)',
+				'auto_increment'	=> true,
+				'key'	            => 'PRI',
+				'nullable'	        => false,
 			),
 		));	
 		static::loadRelations($entityDefinition);
@@ -60,9 +60,9 @@ class ORMHandler {
 
 	public static function getTable($entityName) {
 		if(isset($entityName::getDefinition()->meta['table']) && $entityName::getDefinition()->meta['table'])
-			return \Config::get('database/prefix').$entityName::getDefinition()->meta['table'];
+			return \Coxis\Core\App::get('config')->get('database/prefix').$entityName::getDefinition()->meta['table'];
 		else
-			return \Config::get('database/prefix').$entityName::getEntityName();
+			return \Coxis\Core\App::get('config')->get('database/prefix').$entityName::getEntityName();
 	}
 	
 	public static function loadRelations($entityDefinition) {
@@ -73,7 +73,7 @@ class ORMHandler {
 	}
 	
 	public static function getI18N($entity, $lang) {
-		$dal = new \Coxis\DB\DAL(static::getTranslationTable($entity));
+		$dal = new \Coxis\DB\DAL(\Coxis\Core\App::get('db'), static::getTranslationTable($entity));
 		return $dal->where(array('id' => $entity->id))->where(array('locale'=>$lang))->first();
 	}
 	
@@ -115,16 +115,6 @@ class ORMHandler {
 		
 		switch($relation_type) {
 			case 'hasOne':
-				if($entity->isNew())
-					return;
-				
-				$link = $rel['link'];
-				if($rel['polymorphic']) {
-					$relEntity = $entity->{$rel['link_type']};
-					if(!$relEntity)
-						return;
-				}
-				return $relEntity::where(array('id' => $entity->{$link}))->first();
 			case 'belongsTo':
 				if($entity->isNew())
 					return;
@@ -165,7 +155,7 @@ class ORMHandler {
 				$data[$k] = $entity->property($k)->unserialize($v, $entity);
 			else
 				unset($data[$k]);
-		return $entity->set($data, $lang, true);
+		return $entity->_set($data, $lang);
 	}
 
 	public function destroy($entity) {
@@ -243,7 +233,7 @@ class ORMHandler {
 		
 		//Persist i18n
 		foreach($i18n as $lang=>$values) {
-			$dal = new \Coxis\DB\DAL(static::getTranslationTable($entity));
+			$dal = new \Coxis\DB\DAL(\Coxis\Core\App::get('db'), static::getTranslationTable($entity));
 			if(!$dal->where(array('id'=>$entity->id, 'locale'=>$lang))->update($values))
 				$dal->insert(
 					array_merge(

@@ -1,4 +1,6 @@
 <?php
+namespace Coxis\ORM\Libs;
+
 class EntityRelation implements \ArrayAccess {
 	protected $entityClass;
 	public $name;
@@ -52,9 +54,9 @@ class EntityRelation implements \ArrayAccess {
 				else
 					$this->params['sortable'] = false;
 				if($entityClass::getEntityName() < $relation_entity::getEntityName())
-					$this->params['join_table'] = \Config::get('database/prefix').$entityClass::getEntityName().'_'.$relation_entity::getEntityName();
+					$this->params['join_table'] = \Coxis\Core\App::get('config')->get('database/prefix').$entityClass::getEntityName().'_'.$relation_entity::getEntityName();
 				else
-					$this->params['join_table'] = \Config::get('database/prefix').$relation_entity::getEntityName().'_'.$entityClass::getEntityName();
+					$this->params['join_table'] = \Coxis\Core\App::get('config')->get('database/prefix').$relation_entity::getEntityName().'_'.$entityClass::getEntityName();
 			}
 			else {
 				$this->params['link'] = $name.'_id';

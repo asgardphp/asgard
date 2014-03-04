@@ -2,13 +2,6 @@
 namespace Coxis\ORM\Libs;
 
 class ORMManager {
-	// public static function autobuild() {
-	// 	list($up) = static::_diff();
-
-	// 	foreach($up as $one)
-	// 		eval($one);
-	// }
-
 	public static function loadEntityFixtures($file) {
 		$yaml = new \Symfony\Component\Yaml\Parser();
 		$raw = $yaml->parse(file_get_contents($file));

@@ -3,6 +3,16 @@ namespace Coxis\ORM;
 
 class ORMBehavior implements \Coxis\Core\Behavior {
 	public static function load($entityDefinition, $params=null) {
+		$this->register('relation_required', function($attribute, $value, $params, $validator) {
+
+			if(!$value->count()) {
+				$msg = $validator->getMessage('email', $attribute, __('The relation ":attribute" is required.'));
+				return Validation::format($msg, array(
+					'attribute'	=>	__(str_replace('_', ' ', $attribute)),
+				));
+			}
+		});
+
 		$entityName = $entityDefinition->getClass();
 
 		#Article::getTable()
@@ -14,10 +24,27 @@ class ORMBehavior implements \Coxis\Core\Behavior {
 
 		$entityDefinition->hookOn('constrains', function($chain, &$constrains) use($entityName) {
 			foreach($entityName::getDefinition()->relations() as $name=>$relation) {
+				$res = isset($this->params['validation']) ? $this->params['validation']:array();
+				if(!is_array($res))
+					$res = array('validation' => $res);
 				if(isset($relation['required']) && $relation['required'])
-					$constrains[$name]['required'] = true;
+					$constrains[$name]['relation_required'] = true;
+
+				#e.g. todo
+				// $constrains[] = array('relation_required', array(true, 'actualites'));
+				// $constrains[] = array('relation_min', array(3, 'actualites'));
+				// relation_required
+				// true
+				// actualites / relation
+				// $entity
 			}
 		});
+
+		// $entityDefinition->hookBefore('validation', function($chain, $entity, &$data, &$errors) {
+		// 	$data = array_merge($data, $entity::getDefinition()->relations());
+		// 	// foreach($entity::getDefinition()->relations() as $name=>$relation)
+		// 	// 	$data[$name] = $entity->relation($name);
+		// });
 
 		#Article::orm()
 		$entityDefinition->addStaticMethod('orm', function() use($ormHandler) {
@@ -44,7 +71,7 @@ class ORMBehavior implements \Coxis\Core\Behavior {
 			if(strpos($name, 'loadBy') === 0) {
 				$chain->found = true;
 				preg_match('/^loadBy(.*)/', $name, $matches);
-				$property = $matches[1];
+				$property = strtolower($matches[1]);
 				$val = $args[0];
 				return $ormHandler->getORM()->where(array($property => $val))->first();
 			}
@@ -73,20 +100,11 @@ class ORMBehavior implements \Coxis\Core\Behavior {
 		});
 		$entityDefinition->hookOn('call', function($chain, $entity, $name, $args) use($ormHandler) {
 			$res = null;
-			if(array_key_exists($name, $entity::$relations)) {
+			if($entity::hasRelation($name)) {
 				$chain->found = true;
 				$res = $entity->relation($name);
 			}
 			return $res;
-		});
-
-		$entityDefinition->hookBefore('validation', function($chain, $entity, &$data, &$errors) {
-			foreach($entity::getDefinition()->relations() as $name=>$relation) {
-				if(isset($entity->data[$name]))
-					$data[$name] = $entity->data[$name];
-				else
-					$data[$name] = $entity->$name;
-			}
 		});
 
 		$entityDefinition->hookOn('construct', function($chain, $entity, $id) use($ormHandler) {

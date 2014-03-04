@@ -9,11 +9,12 @@ class ORM {
 	protected $limit;
 	protected $offset;
 	protected $join = array();
+	protected $page;
+	protected $per_page;
 
 	protected $tmp_dal = null;
 		
 	function __construct($entity) {
-		Profiler::checkpoint('ORM construct');
 		$this->entity = $entity;
 
 		$this->orderBy($entity::getDefinition()->meta['order_by']);
@@ -41,6 +42,11 @@ class ORM {
 	}
 
 	public function joinToEntity($relation, $entity) {
+		if(!$relation instanceof EntityRelation) {
+			$current_entity = $this->entity;
+			$relation = $current_entity::getDefinition()->relations[$relation];
+		}
+
 		if($relation['polymorphic']) {
 			$this->where(array($relation['link_type'] => $entity->getEntityName()));
 			$relation['real_entity'] = $entity->getEntityName();
@@ -108,7 +114,7 @@ class ORM {
 
 	public function getDAL() {
 		$current_entity = $this->entity;
-		$dal = new \Coxis\DB\DAL;
+		$dal = new \Coxis\DB\DAL(\Coxis\Core\App::get('db'));
 		$table = $this->getTable();
 		$dal->orderBy($this->orderBy);
 		$dal->limit($this->limit);
@@ -120,21 +126,21 @@ class ORM {
 		if($current_entity::isI18N()) {
 			$translation_table = $this->geti18nTable();
 			$selects = array($table.'.*');
-			foreach($current_entity::getDefinition()->properties() as $name=>$property)
+			foreach($current_entity::getDefinition()->properties() as $name=>$property) {
 				if($property->i18n)
-					$selects[] = $translation_table.'.`'.$name.'`';
+					$selects[] = $translation_table.'.'.$name;
+			}
 			$dal->select($selects);
-			$dal->setTable($table);
+			$dal->from($table);
 			$dal->leftjoin(array(
 				$translation_table => $this->processConditions(array(
 					$table.'.id = '.$translation_table.'.id',
-					$translation_table.'.locale' => \Config::get('locale')
+					$translation_table.'.locale' => \Coxis\Core\App::get('config')->get('locale')
 				))
 			));
 		}
 		else {
-			$dal->select($table.'.*');
-			$dal->setTable($table);
+			$dal->from($table);
 		}
 
 		$table = $current_entity::getTable();
@@ -144,19 +150,20 @@ class ORM {
 	}
 
 	public function recursiveJointures($dal, $jointures, $current_entity, $table) {
-		foreach($jointures as $k=>$v) {
-			if(is_array($v)) {
-				$relationName = get(array_keys($v), 0);
-				$recJoins = get(array_values($v), 0);
+		foreach($jointures as $k=>$relation) {
+			if(is_array($relation)) {
+				$relationName = \Coxis\Utils\Tools::array_get(array_keys($relation), 0);
+				$recJoins = \Coxis\Utils\Tools::array_get(array_values($relation), 0);
 				$relation = $current_entity::getDefinition()->relations[$relationName];
 				$entity = $relation['entity'];
 
-				$this->jointure($dal, $relationName, $current_entity, $table);
-				$this->recursiveJointures($dal, $recJoins, $entity, $table);
+				$this->jointure($dal, $relation, $current_entity, $table);
+				$this->recursiveJointures($dal, $recJoins, $entity, $relation->name);
 			}
 			else {
-				$relationName = $v;
-				$this->jointure($dal, $relationName, $current_entity, $table);
+				if(!$relation instanceof EntityRelation)
+					$relation = $current_entity::getDefinition()->relations[$relation];
+				$this->jointure($dal, $relation, $current_entity, $table);
 			}
 		}
 	}
@@ -208,14 +215,13 @@ class ORM {
 			$dal->leftjoin(array(
 				$translation_table.' '.$relationName.'_translation' => $this->processConditions(array(
 					$table.'.id = '.$relationName.'_translation.id',
-					$relationName.'_translation.locale' => \Config::get('locale')
+					$relationName.'_translation.locale' => \Coxis\Core\App::get('config')->get('locale')
 				))
 			));
 		}
 	}
 	
 	public function get() {
-		Profiler::checkpoint('ORM get');
 		$entities = array();
 		$ids = array();
 		$current_entity = $this->entity;
@@ -229,7 +235,7 @@ class ORM {
 			$entities[] = $this->toEntity($row);
 			$ids[] = $row['id'];
 		}
-		
+
 		if(sizeof($entities) && sizeof($this->with)) {
 			foreach($this->with as $relation_name=>$closure) {
 				$rel = $current_entity::getDefinition()->relations[$relation_name];
@@ -241,12 +247,16 @@ class ORM {
 					case 'belongsTo':
 						$link = $rel['link'];
 						
-						$res = $relation_entity::where(array('id IN ('.implode(', ', $ids).')'))->get();
+						$orm = $relation_entity::where(array('id IN ('.implode(', ', $ids).')'));
+						if(is_callable($closure))
+							$closure($orm);
+						$res = $orm->get();
 						foreach($entities as $entity) {
 							$id = $entity->$link;
 							$filter = array_filter($res, function($result) use ($id) {
 								return ($id == $result->id);
 							});
+							$filter = array_values($filter);
 							if(isset($filter[0]))
 								$entity->$relation_name = $filter[0];
 							else
@@ -262,9 +272,11 @@ class ORM {
 						$res = $orm->get();
 						foreach($entities as $entity) {
 							$id = $entity->id;
-							$entity->$relation_name = array_filter($res, function($result) use ($id, $link) {
+							$filter = array_filter($res, function($result) use ($id, $link) {
 								return ($id == $result->$link);
 							});
+							$filter = array_values($filter);
+							$entity->$relation_name = $filter;
 						}
 						break;
 					case 'HMABT':
@@ -288,6 +300,7 @@ class ORM {
 							$filter = array_filter($res, function($result) use ($id) {
 								return $id == $result['__ormrelid'];
 							});
+							$filter = array_values($filter);
 							$mres = array();
 							foreach($filter as $m)
 								$mres[] = $this->toEntity($m, $relation_entity);
@@ -307,7 +320,7 @@ class ORM {
 		$entities = array();
 		$entity = $this->entity;
 		
-		$dal = new DAL;
+		$dal = new \Coxis\DB\DAL(\Coxis\Core\App::get('db'));
 		$rows = $dal->query($sql, $args)->all();
 		foreach($rows as $row)
 			$entities[] = ORMHandler::unserializeSet(new $entity, $row);
@@ -315,17 +328,24 @@ class ORM {
 		return $entities;
 	}
 	
-	public function paginate($page, $per_page=10, &$paginator=null) {
+	public function paginate($page, $per_page=10) {
 		$page = $page ? $page:1;
 		$this->offset(($page-1)*$per_page);
 		$this->limit($per_page);
-		$paginator = new \Coxis\Utils\Paginator($this->count(), $page, $per_page);
+
+		$this->page = $page;
+		$this->per_page = $per_page;
 		
-		return $this->get();
+		return $this;
+	}
+
+	public function getPaginator() {
+		if($this->page === null || $this->per_page === null)
+			return;
+		return new \Coxis\Utils\Paginator($this->count(), $this->page, $this->per_page);
 	}
 	
 	public function with($with, $closure=null) {
-		Profiler::checkpoint('ORM with');
 		$this->with[$with] = $closure;
 		
 		return $this;
@@ -340,7 +360,8 @@ class ORM {
 			if(!$entity::hasProperty($property))
 				continue;
 			$table = $entity::property($property)->i18n ? $i18nTable:$table;
-			$sql = preg_replace('/(?<![\.a-z0-9-_`\(\)])('.$property.')(?![\.a-z0-9-_`\(\)])/', $table.'.`$1`', $sql);
+			// $sql = preg_replace('/(?<![\.a-z0-9-_`\(\)])('.$property.')(?![\.a-z0-9-_`\(\)])/', $table.'.`$1`', $sql);
+			$sql = preg_replace('/(?<![\.a-z0-9-_`\(\)])('.$property.')(?![\.a-z0-9-_`\(\)])/', $table.'.$1', $sql);
 		}
 
 		return $sql;
