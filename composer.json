@@ -1,11 +1,11 @@
 {
-	"name": "coxis/value",
+	"name": "coxis/data",
 	"license": "MIT",
 	"authors": [{
 		"name": "Michel Hognerud",
 		"email": "michel@hognerud.net"
 	}],
     "autoload": {
-        "psr-0": {"Coxis\\Value": "../.."}
+        "psr-0": {"Coxis\\Data": "../.."}
     }
 }

@@ -1,8 +1,8 @@
 <?php
-namespace Coxis\Value\Entities;
+namespace Coxis\Data\Entities;
 
-abstract class SingleValue extends \Coxis\Core\Entity {
-	public static $stored = array();
+abstract class Base extends \Coxis\Core\Entity {
+	protected static $stored = array();
 
 	public static $meta = array(
 		'table'	=>	'value',
@@ -24,22 +24,18 @@ abstract class SingleValue extends \Coxis\Core\Entity {
 	}
 
 	public static function val($name, $val=null) {
-		if($val===null)
+		if($val === null)
 			return static::_get($name);
 		else
-			return static::_set($name, $val);
+			return static::doSet($name, $val);
 	}
 
-	public static function _get($name) {
+	protected static function _get($name) {
 		return static::fetch($name)->value;
 	}
 
-	protected static function _set($name, $val) {
+	protected static function doSet($name, $val) {
 		return static::fetch($name)->save(array('value'=>$val));
-	}
-
-	public static function rawVal($name) {
-		return static::fetch($name)->raw('value');
 	}
 
 	public static function configure($definition) {

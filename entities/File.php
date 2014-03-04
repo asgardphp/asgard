@@ -1,7 +1,7 @@
 <?php
-namespace Coxis\Value\Entities;
+namespace Coxis\Data\Entities;
 
-class FileValue extends \Coxis\Value\Entities\SingleValue {
+class File extends BaseData {
 	public static $properties = array(
 		'key',
 		'value'    => array(
