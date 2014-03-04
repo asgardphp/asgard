@@ -1,18 +1,18 @@
 <?php
-namespace Coxis\Hook;
+namespace Asgard\Hook;
 
 class Hookable {
 	/* INSTANCE */
 	public function hasHook($name) {
-		return \Coxis\Core\App::get('hook')->has(array('instances', spl_object_hash($this), $name));
+		return \Asgard\Core\App::get('hook')->has(array('instances', spl_object_hash($this), $name));
 	}
 
 	public function trigger($name, $args=array(), $cb=null, $print=false) {
-		return \Coxis\Core\App::get('hook')->trigger(array('instances', spl_object_hash($this), $name), $args, $cb, $print);
+		return \Asgard\Core\App::get('hook')->trigger(array('instances', spl_object_hash($this), $name), $args, $cb, $print);
 	}
 
 	public function triggerChain($chain, $name, $args=array(), $cb=null, $print=false) {
-		return \Coxis\Core\App::get('hook')->triggerChain($chain, array('instances', spl_object_hash($this), $name), $args, $cb, $print);
+		return \Asgard\Core\App::get('hook')->triggerChain($chain, array('instances', spl_object_hash($this), $name), $args, $cb, $print);
 	}
 
 	public function hook() {
@@ -21,20 +21,20 @@ class Hookable {
 
 	public function hookOn($hookName, $cb, $priority=0) {
 		$args = array(array('instances', spl_object_hash($this), $hookName), $cb);
-		return call_user_func_array(array(\Coxis\Core\App::get('hook'), 'hookOn'), $args);
+		return call_user_func_array(array(\Asgard\Core\App::get('hook'), 'hookOn'), $args);
 	}
 
 	public function hookBefore($hookName, $cb, $priority=0) {
 		$args = array(array('instances', spl_object_hash($this), $hookName), $cb);
-		return call_user_func_array(array(\Coxis\Core\App::get('hook'), 'hookBefore'), $args);
+		return call_user_func_array(array(\Asgard\Core\App::get('hook'), 'hookBefore'), $args);
 	}
 
 	public function hookAfter($hookName, $cb, $priority=0) {
 		$args = array(array('instances', spl_object_hash($this), $hookName), $cb);
-		return call_user_func_array(array(\Coxis\Core\App::get('hook'), 'hookAfter'), $args);
+		return call_user_func_array(array(\Asgard\Core\App::get('hook'), 'hookAfter'), $args);
 	}
 
 	public function getHooks() {
-		return \Coxis\Core\App::get('hook')->getHooks(array('instances', spl_object_hash($this)));
+		return \Asgard\Core\App::get('hook')->getHooks(array('instances', spl_object_hash($this)));
 	}
 }

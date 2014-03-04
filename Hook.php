@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Hook;
+namespace Asgard\Hook;
 
 class Hook {
 	public $registry = array();
@@ -13,7 +13,7 @@ class Hook {
 	}
 
 	public function trigger($name, $args=array(), $cb=null, $print=false) {
-		return $this->triggerChain(new \Coxis\Hook\HookChain, $name, $args, $cb, $print);
+		return $this->triggerChain(new \Asgard\Hook\HookChain, $name, $args, $cb, $print);
 	}
 
 	public function triggerChain($chain, $name, $args=array(), $cb=null, $print=false) {

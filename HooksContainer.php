@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Hook;
+namespace Asgard\Hook;
 
 class HooksContainer {
 	function __construct() {

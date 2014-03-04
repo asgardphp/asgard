@@ -1,11 +1,11 @@
 {
-	"name": "coxis/hook",
+	"name": "asgard/hook",
 	"license": "MIT",
 	"authors": [{
 		"name": "Michel Hognerud",
 		"email": "michel@hognerud.net"
 	}],
     "autoload": {
-        "psr-0": {"Coxis\\Hook": "../.."}
+        "psr-0": {"Asgard\\Hook": "../.."}
     }
 }

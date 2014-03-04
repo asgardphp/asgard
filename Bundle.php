@@ -1,9 +1,9 @@
 <?php
-namespace Coxis\Hook;
+namespace Asgard\Hook;
 
-class Bundle extends \Coxis\Core\BundleLoader {
+class Bundle extends \Asgard\Core\BundleLoader {
 	public function load($queue) {
-		\Coxis\Core\Autoloader::preloadDir(dirname(__FILE__));
+		\Asgard\Core\Autoloader::preloadDir(dirname(__FILE__));
 		
 		parent::load($queue);
 	}
