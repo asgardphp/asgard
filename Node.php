@@ -88,7 +88,7 @@ class Node {
 		if($this->xpath === null)
 			return null;
 		if(!$path)
-			return static::getInnerHTML($this->domnode);
+			return trim(static::getInnerHTML($this->domnode));
 		else {
 			$item = $this->item($path, $pos);
 			if($item === null)
@@ -117,7 +117,7 @@ class Node {
 		if($this->xpath === null)
 			return null;
 		if(!$path)
-			return static::getInnerXML($this->domnode);
+			return trim(static::getInnerXML($this->domnode));
 		else {
 			$item = $this->item($path, $pos);
 			if($item === null)
