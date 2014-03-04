@@ -158,31 +158,33 @@ class BuildTable {
 }
 
 class Table {
+	protected $db;
 	protected $name;
 	
-	function __construct($name) {
+	function __construct($db, $name) {
+		$this->db = $db;
 		$this->name = $name;
 	}
 	
 	public function add($name, $type, $length=null) {
-		$col = new Column($this->name, $name, $type, $length);
+		$col = new Column($this->db, $this->name, $name, $type, $length);
 		$col->create();
 		return $col;
 	}
 	
 	public function col($name) {
-		$col = new Column($this->name, $name);
+		$col = new Column($this->db, $this->name, $name);
 		return $col;
 	}
 	
 	public function drop($name) {
-		$col = new Column($this->name, $name);
+		$col = new Column($this->db, $this->name, $name);
 		return $col->drop();
 	}
 	
 	public function primary($keys) {
 		try {
-			\DB::query('ALTER TABLE  `'.$this->name.'` DROP PRIMARY KEY');
+			$this->db->query('ALTER TABLE  `'.$this->name.'` DROP PRIMARY KEY');
 		} catch(\Coxis\DB\DBException $e) {}
 	
 		if(!is_array($keys))
@@ -192,7 +194,7 @@ class Table {
 			$keys[$k] = '`'.$v.'`';
 		$sql .= implode(', ', $keys);
 		$sql .= ')';
-		\DB::query($sql);
+		$this->db->query($sql);
 		
 		return $this;
 	}
@@ -204,7 +206,8 @@ class Column {
 	protected $type;
 	protected $length;
 	
-	function __construct($table, $name, $type=null, $length=null) {
+	function __construct($db, $table, $name, $type=null, $length=null) {
+		$this->db = $db;
 		$this->table = $table;
 		$this->name = $name;
 		$this->type = $type;
@@ -213,7 +216,7 @@ class Column {
 	
 	public function drop() {
 		$sql = 'alter table `'.$this->table.'` drop column `'.$this->name.'`';
-		\DB::query($sql);
+		$this->db->query($sql);
 		
 		return $this;
 	}
@@ -223,7 +226,7 @@ class Column {
 			$sql = 'ALTER TABLE `'.$this->table.'` ADD `'.$this->name.'` '.$this->type.'('.$type->length.')';
 		else
 			$sql = 'ALTER TABLE `'.$this->table.'` ADD `'.$this->name.'` '.$this->type;
-		\DB::query($sql);
+		$this->db->query($sql);
 		
 		return $this;
 	}
@@ -259,7 +262,7 @@ class Column {
 		
 		$sql = 'ALTER TABLE `'.$table.'` CHANGE `'.$oldcol.'` `'.$newcol.'` '.$type.' '.$default.' '.$nullable.' '.$autoincrement;
 		//~ d($sql);
-		\DB::query($sql);
+		$this->db->query($sql);
 		//~ ALTER TABLE `test` CHANGE `title2` `title3` varchar(100) DEFAULT 'bob' NOT NULL auto_increment
 		//~ ALTER TABLE `test` CHANGE `title2` `title3` varchar(100) NOT NULL auto_increment DEFAULT 'bob'
 	}
@@ -297,7 +300,7 @@ class Column {
 	
 	public function notNullable() {
 		$sql = 'UPDATE `'.$this->table.'` set `'.$this->name.'` = 0 where `'.$this->name.'` is null';
-		\DB::query($sql);
+		$this->db->query($sql);
 		
 		$this->change(array('nullable'=>false));
 		
@@ -323,9 +326,9 @@ class Column {
 	}
 	
 	protected function getType() {
-		$r = \DB::query("SELECT * 
+		$r = $this->db->query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
-                 WHERE TABLE_SCHEMA = '".\Config::get('database/database')."' 
+                 WHERE TABLE_SCHEMA = '".\Coxis\Core\App::get('config')->get('database/database')."' 
                  AND  TABLE_NAME = '$this->table'
 		 AND COLUMN_NAME = '$this->name'")->first();
 		 
@@ -333,9 +336,9 @@ class Column {
 	}
 	
 	protected function getNullable() {
-		$r = \DB::query("SELECT * 
+		$r = $this->db->query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
-                 WHERE TABLE_SCHEMA = '".\Config::get('database/database')."' 
+                 WHERE TABLE_SCHEMA = '".\Coxis\Core\App::get('config')->get('database/database')."' 
                  AND  TABLE_NAME = '$this->table'
 		 AND COLUMN_NAME = '$this->name'")->first();
 		 
@@ -343,9 +346,9 @@ class Column {
 	}
 	
 	protected function getDefault() {
-		$r = \DB::query("SELECT * 
+		$r = $this->db->query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
-                 WHERE TABLE_SCHEMA = '".\Config::get('database/database')."' 
+                 WHERE TABLE_SCHEMA = '".\Coxis\Core\App::get('config')->get('database/database')."' 
                  AND  TABLE_NAME = '$this->table'
 		 AND COLUMN_NAME = '$this->name'")->first();
 		 
@@ -353,9 +356,9 @@ class Column {
 	}
 	
 	protected function getAutoincrement() {
-		$r = \DB::query("SELECT * 
+		$r = $this->db->query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
-                 WHERE TABLE_SCHEMA = '".\Config::get('database/database')."' 
+                 WHERE TABLE_SCHEMA = '".\Coxis\Core\App::get('config')->get('database/database')."' 
                  AND  TABLE_NAME = '$this->table'
 		 AND COLUMN_NAME = '$this->name'")->first();
 		 
@@ -365,7 +368,7 @@ class Column {
 	public function dropIndex() {
 		$sql = 'alter table `'.$this->table.'` drop index `'.$this->name.'`';
 		try {
-		\DB::query($sql);
+		$this->db->query($sql);
 		} catch(\Coxis\DB\DBException $e) {}
 		
 		return $this;
@@ -373,74 +376,80 @@ class Column {
 	
 	public function index() {
 		$sql = 'ALTER TABLE `'.$this->table.'` ADD INDEX(`'.$this->name.'`)';
-		\DB::query($sql);
+		$this->db->query($sql);
 		
 		return $this;
 	}
 	
 	public function unique() {
 		$sql = 'ALTER TABLE `'.$this->table.'` ADD UNIQUE(`'.$this->name.'`)';
-		\DB::query($sql);
+		$this->db->query($sql);
 		
 		return $this;
 	}
 	
 	public function primary() {
 		$sql = 'ALTER TABLE `'.$this->table.'` ADD PRIMARY(`'.$this->name.'`)';
-		\DB::query($sql);
+		$this->db->query($sql);
 		
 		return $this;
 	}
 }
 
 class Schema {
-	public static function dropAll() {
-		$tables = Tools::flateArray(\DB::query('SHOW TABLES')->all());
-		foreach($tables as $table)
-			\DB::query('DROP TABLE '.$table);
+	protected $db;
+
+	function __construct($db) {
+		$this->db = $db;
 	}
 
-	public static function create($tableName, $cb) {
+	public function dropAll() {
+		$tables = Tools::flateArray($this->db->query('SHOW TABLES')->all());
+		foreach($tables as $table)
+			$this->db->query('DROP TABLE '.$table);
+	}
+
+	public function create($tableName, $cb) {
 		$table = new BuildTable($tableName);
 		$cb($table);
 		$sql = $table->sql();
-		\DB::query($sql);
+		$this->db->query($sql);
 	}
 	
-	public static function emptyTable($tableName) {
+	public function emptyTable($tableName) {
 		$sql = 'TRUNCATE TABLE  `'.$tableName.'`';
-		\DB::query($sql);
+		$this->db->query($sql);
 	}
 	
-	public static function dropColumn($table, $col) {
+	public function dropColumn($table, $col) {
 		$sql = 'alter table `'.$table.'` drop column `'.$col.'`';
-		\DB::query($sql);
+		$this->db->query($sql);
 	}
 	
-	public static function drop($table) {
+	public function drop($table) {
 		$sql = 'DROP TABLE `'.$table.'`';
-		\DB::query($sql);
+		$this->db->query($sql);
 	}
 	
-	public static function rename($from, $to) {
+	public function rename($from, $to) {
 		$sql = 'RENAME TABLE `'.$from.'` TO `'.$to.'`';
-		\DB::query($sql);
+		$this->db->query($sql);
 	}
 	
-	public static function table($tableName, $cb) {
-		$table = new Table($tableName);
+	public function table($tableName, $cb) {
+		$table = new Table($this->db, $tableName);
 		$cb($table);
 	}
 	
-	public static function renameColumn($table, $old, $new, $type=null) {
-		$table = new Table($table);
+	public function renameColumn($table, $old, $new, $type=null) {
+		$table = new Table($this->db, $table);
 		$col = $table->col($old);
 		$col->rename($new);
 		if($type)
 			$col->type($type);
 	}
 	
-	public static function getType($table, $column) {
+	public function getType($table, $column) {
 		$table = new BuildTable($tableName);
 		$col = $table->col($old);
 		

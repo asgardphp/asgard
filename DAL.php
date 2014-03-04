@@ -3,57 +3,127 @@ namespace Coxis\DB;
 
 class DAL {
 	public $db = null;
-	public $table;
-	public $selects = array();
-	public $where = null;
+	public $tables = array();
+	public $columns = array();
+	public $where = array();
 	public $offset = null;
 	public $limit = null;
 	public $orderBy = null;
 	public $groupBy = null;
 	public $joins = array();
+	public $params = array();
+
+	public $into = null;
+
+	public $page = null;
+	public $per_page = null;
 
 	protected $rsc = null;
-		
-	function __construct($table=null, $db=null) {
-		if($db === null)
-			$this->db = \DB::inst();
-		else
-			$this->db = $db;
-		$this->table = $table;
+
+	function __construct($db, $tables=null) {
+		$this->db = $db;
+		$this->addFrom($tables);
+	}
+
+	public function getParameters() {
+		return $this->params;
 	}
 	
-	public function setTable($table) {
-		$this->table = $table;
+	public function from($tables) {
+		$this->tables = array();
+		return $this->addFrom($tables);
+	}
+	
+	public function into($table) {
+		$this->into = $table;
+		return $this;
+	}
+
+	public function addFrom($tables) {
+		if(!$tables)
+			return $this;
+
+		$tables = explode(',', $tables);
+		foreach($tables as $tablestr) {
+			$tablestr = trim($tablestr);
+
+			preg_match('/(.*?) ([a-z_][a-z0-9_]*)?$/i', $tablestr, $matches);
+			if(isset($matches[2])) {
+				$alias = $matches[2];
+				$table = $matches[1];
+			}
+			else
+				$alias = $table = $tablestr;
+
+			if(isset($this->tables[$alias]))
+				throw new \Exception('Table alias '.$alias.' is already used.');
+			$this->tables[$alias] = $table;
+		}
 		
 		return $this;
 	}
 
-	public function leftjoin($table) {
-		$this->joins[] = array('leftjoin', $table);
+	public function removeFrom($what) {
+		foreach($this->tables as $alias=>$table) {
+			if($alias === $what) {
+				unset($this->tables[$alias]);
+				break;
+			}
+		}
+
+		return $this;
 	}
 
-	public function rightjoin($table) {
-		$this->joins[] = array('rightjoin', $table);
+	protected function join($type, $table, $conditions=null) {
+		if(is_array($table)) {
+			foreach($table as $_table=>$_conditions)
+				$this->leftjoin($_table, $_conditions);
+			return $this;
+		}
+		$table_alias = explode(' ', $table);
+		$table = $table_alias[0];
+		if(isset($table_alias[1]))
+			$alias = $table_alias[1];
+		else
+			$alias = $table;
+		$this->joins[$alias] = array($type, $table, $conditions);
+		return $this;
 	}
 
-	public function innerjoin($table) {
-		$this->joins[] = array('innerjoin', $table);
+	public function leftjoin($table, $conditions=null) {
+		return $this->join('leftjoin', $table, $conditions);
 	}
 
-	public function rsc() {
-		$query = $this->buildSQL();
-		return $this->query($query[0], $query[1]);
+	public function rightjoin($table, $conditions=null) {
+		return $this->join('rightjoin', $table, $conditions);
 	}
+
+	public function innerjoin($table, $conditions=null) {
+		return $this->join('innerjoin', $table, $conditions);
+	}
+
+	// public function rsc() {
+	// 	$query = $this->buildSQL();
+	// 	return $this->query($query[0], $query[1]);
+	// }
+
+	// public function rsc() {
+	// 	$query = $this->buildSQL();
+	// 	$params = $this->getParameters();
+	// 	// d($query);
+	// 	return $this->query($query, $params)->rsc();
+	// }
 
 	public function next() {
 		if($this->rsc === null)
-			$this->rsc = $this->rsc();
+			$this->rsc = $this->query();
 		return $this->rsc->next();
 	}
 	
 	public function reset() {
-		$this->select = null;
-		$this->where = null;
+		$this->columns = null;
+		$this->tables = null;
+		$this->where = array();
 		$this->offset = null;
 		$this->limit = null;
 		$this->orderBy = null;
@@ -63,38 +133,90 @@ class DAL {
 		return $this;
 	}
 	
-	public function query($sql, $params=array()) {
+	public function query($sql=null, $params=array()) {
+		if($sql === null) {
+			$sql = $this->buildSQL();
+			$params = $this->getParameters();
+			return $this->query($sql, $params);
+		}
+
 		return $this->db->query($sql, $params);
 	}
 	
 	/* GETTERS */
 	public function first() {
-		list($sql, $params) = $this->limit(1)->buildSQL();
-		return $this->db->query($sql, $params)->first();
+		return $this->query()->first();
 	}
 	
 	public function get() {
-		list($sql, $params) = $this->buildSQL();
-		return $this->db->query($sql, $params)->all();
+		return $this->query()->all();
 	}
 	
 	public function paginate($page, $per_page=10) {
-		$page = $page ? $page:1;
+		$this->page = $page = $page ? $page:1;
+		$this->per_page = $per_page;
 		$this->offset(($page-1)*$per_page);
 		$this->limit($per_page);
 		
 		return $this;
 	}
 
+	public function getPaginator() {
+		if($this->page === null || $this->per_page === null)
+			return;
+		return new \Coxis\Utils\Paginator($this->count(), $this->page, $this->per_page);
+	}
+
 	/* SETTERS */
-	public function select($select) {
-		if(!is_array($select))
-			$select = array($select);
-		$this->selects = $select;
+	#todo ajouter test pour $columns en string ou array
+		#et verifier si necessaire pour les autres fonctions
+	public function select($columns) {
+		$this->columns = array();
+		return $this->addSelect($columns);
+	}
+
+	public function addSelect($columns) {
+		if(is_array($columns))
+			return $this->_addSelect($columns);
+
+		$columns = explode(',', $columns);
+		foreach($columns as $columnstr) {
+			$columnstr = trim($columnstr);
+
+			preg_match('/(.*?) ([a-z_][a-z0-9_]*)?$/i', $columnstr, $matches);
+			if(isset($matches[2])) {
+				$alias = $matches[2];
+				$column = $matches[1];
+			}
+			else
+				$alias = $column = $columnstr;
+
+			if(isset($this->columns[$alias]))
+				throw new \Exception('Column alias '.$alias.' is not already used.');
+			$this->columns[$alias] = $column;
+		}
+		
 		return $this;
 	}
-	public function addSelect($select) {
-		$this->selects[] = $select;
+
+	public function _addSelect($columns) {
+		if(array_values($columns) === $columns) {
+			foreach($columns as $k=>$v) {
+				unset($columns[$k]);
+				$columns[$v] = $v;
+			}
+		}
+		$this->columns = array_merge($this->columns, $columns);
+		return $this;
+	}
+
+	public function removeSelect($what) {
+		foreach($this->columns as $alias=>$column) {
+			if($alias === $what) {
+				unset($this->columns[$alias]);
+				break;
+			}
+		}
 		return $this;
 	}
 
@@ -107,7 +229,7 @@ class DAL {
 		$this->limit = $limit;
 		return $this;
 	}
-		
+
 	public function orderBy($orderBy) {
 		$this->orderBy = $orderBy;
 		return $this;
@@ -118,76 +240,117 @@ class DAL {
 		return $this;
 	}
 		
-	public function where($conditions) {
-		if($this->where === null)
-			$this->where = array();
-			
+	public function where($conditions, $values=null) {
+		// d($conditions);
 		if(!$conditions)
 			return $this;
-		
-		$this->where[] = static::parseConditions($conditions);
+
+		if($values !== null)
+			$this->where[$conditions] = $values;
+		else		
+			$this->where[] = $conditions;
 		
 		return $this;
 	}
 
 	/* CONDITIONS PROCESSING */
-	protected static function processConditions($params, $condition = 'and', $brackets=false, $table=null) {
+	protected function processConditions($params, $condition = 'and', $brackets=false, $table=null) {
 		if(sizeof($params) == 0)
 			return array('', array());
 		
 		$string_conditions = '';
 		
-		if(!is_array($params))
+		if(!is_array($params)) {
+			// d($params); #todo remove the block
 			if($condition == 'and')
-				return array($params, array());
+				return array($this->replace($params, $table), array());
+				// return array($params, array());
+				// d($params);
 			else
-				return array(static::replace($condition, $table), array());
+				return array($this->replace($condition, $table), array());
+		}
 
 		$pdoparams = array();
 
 		foreach($params as $key=>$value) {
 			if(!is_array($value)) {
+		// d($value);
 				if(is_int($key))
-					$string_conditions[] = $value;
+					$string_conditions[] = $this->replace($value);
+					// $string_conditions[] = $value;
 				else {
-					$string_conditions[] = static::replace($key);
+					$res = $this->replace($key);
+					if(static::isIdentifier($key))
+						$res .= '=?';
+					$string_conditions[] = $res;
 					$pdoparams[] = $value;
 				}
 			}
 			else {
 				if(is_int($key)) {
-					$r = static::processConditions($value, 'and', false, $table);
+					$r = $this->processConditions($value, 'and', false, $table);
 					$string_conditions[] = $r[0];
 					$pdoparams[] = $r[1];
 				}
 				else {
-					$r = static::processConditions($value, $key, true, $table);
+					$r = $this->processConditions($value, $key, sizeof($params) > 1, $table);
 					$string_conditions[] = $r[0];
 					$pdoparams[] = $r[1];
 				}
 			}
 		}
 
-		$result = implode(' '.$condition.' ', $string_conditions);
+		$result = implode(' '.strtoupper($condition).' ', $string_conditions);
 		
 		if($brackets)
 			$result = '('.$result.')';
 		
-		return array($result, Tools::flateArray($pdoparams));
+		return array($result, \Coxis\Utils\Tools::flateArray($pdoparams));
+	}
+
+	#todo revemo
+	public function removeJointure($alias) {
+		unset($this->joins[$alias]);
+		return $this;
 	}
 	
-	protected static function replace($condition) {
-		if(strpos($condition, '?') === false) {
-			if(preg_match('/^[a-zA-Z0-9_]+$/', $condition))
-				$condition = '`'.$condition.'` = ?';
-			else
-				$condition = $condition.' = ?';
-		}
+	protected function replace($condition) {
+		// d($condition);
+		$condition = preg_replace_callback('/[a-z_][a-z0-9._]*(?![^\(]*\))/', function($matches) {
+			// d($matches, $this->identifierQuotes($matches[0]));
+			// return 'test';
+
+			if(strpos($matches[0], '.')===false && count($this->joins) > 0 && count($this->tables)===1)
+				$matches[0] = array_keys($this->tables)[0].'.'.$matches[0];
+
+			return $this->identifierQuotes($matches[0]);
+		}, $condition);
+		// d($condition);
+
+		// if(strpos($condition, '?') === false) {
+		// 	if(preg_match('/^[a-zA-Z0-9_]+$/', $condition))
+		// 		$condition = '`'.$condition.'` = ?';
+		// 	else
+		// 		$condition = $condition.' = ?';
+		// }
 		
 		return $condition;
 	}
+
+	protected static function isIdentifier($str) {
+		return preg_match('/^[a-z_][a-z0-9._]*$/', $str);
+	}
+
+	protected function identifierQuotes($str) {
+		return preg_replace_callback('/[a-z_][a-z0-9._]*/', function($matches) {
+			$res = array();
+			foreach(explode('.', $matches[0]) as $substr)
+				$res[] = '`'.$substr.'`';
+			return implode('.', $res);
+		}, $str);
+	}
 	
-	protected static function parseConditions($conditions) {
+	/*protected static function parseConditions($conditions) {
 		$res = array();
 
 		if(is_array($conditions)) {
@@ -203,71 +366,124 @@ class DAL {
 		}
 		else
 			return $conditions;
-	}
+	}*/
 	
 	/* BUILDERS */
-	public function buildSelect() {
-		if($this->select)
-			return $this->select;
-		else
+	protected function buildColumns() {
+		$select = array();
+		if(!$this->columns)
 			return '*';
+		else {
+			foreach($this->columns as $alias=>$table) {
+				if($alias !== $table) {
+					if($this->isIdentifier($table))
+						$select[] = $this->identifierQuotes($table).' AS '.$this->identifierQuotes($alias);
+					else
+						$select[] = $table.' AS '.$this->identifierQuotes($alias);
+				}
+				else {
+					if($this->isIdentifier($table))
+						$select[] = $this->identifierQuotes($table);
+					else
+						$select[] = $table;
+				}
+			}
+		}
+		return implode(', ', $select);
 	}
-	public function buildTables() {
-		$tables = array();
-		foreach($this->tables as $table=>$alias)
-			if($alias)
-				$tables[] = '`'.$table.'` '.$alias;
-			else
-				$tables[] = '`'.$table.'`';
-		return implode(', ', $tables);
-	}
-	public function buildWhere($default=null) {
-		if(!$default)
-			$default = $this->table;
 
+	protected function getDefaultTable() {
+		if(count($this->tables) === 1)
+			return array_keys($this->tables)[0];
+		else
+			return null;
+	}
+
+	protected function buildWhere($default=null) {
+		// d($this->where);
 		$params = array();
-		$r = static::processConditions($this->where, 'and', false, $default);
+		$r = $this->processConditions($this->where, 'and', false, $this->getDefaultTable());
+		// d($r);
 		if($r[0])
 			return array(' WHERE '.$r[0], $r[1]);
 		else
 			return array('', array());
 	}
-	public function buildGroupby() {
-		if($this->groupBy)
-			return ' GROUP BY '.$this->groupBy;
+
+	protected function buildGroupby() {
+		if(!$this->groupBy)
+			return;
+
+		$res = array();
+
+		foreach(explode(',', $this->groupBy) as $column) {
+			if($this->isIdentifier(trim($column)))
+				$res[] = $this->replace(trim($column));
+			else
+				$res[] = trim($column);
+		}
+
+		return ' GROUP BY '.implode(', ', $res);
 	}
-	public function buildOrderby($default=null) {
+
+	protected function buildOrderby() {
 		if(!$this->orderBy)
-			return '';
+			return;
 
-		$orderBy = ' ORDER BY ';
-		if(!is_array($this->orderBy))
-			$orders = array($this->orderBy);
-		else
-			$orders = $this->orderBy;
-				
-		$orderBy .= implode(', ', $orders);
-		return $orderBy;
+		$res = array();
+
+		foreach(explode(',', $this->orderBy) as $orderbystr) {
+			$orderbystr = trim($orderbystr);
+
+			preg_match('/(.*?) (ASC|DESC)?$/i', $orderbystr, $matches);
+
+			if(isset($matches[2])) {
+				$direction = $matches[2];
+				$column = $matches[1];
+
+				if($this->isIdentifier($column))
+					$res[] = $this->replace($column).' '.$direction;
+				else
+					$res[] = $column.' '.$direction;
+			}
+			else {
+				$column = $columnstr;
+
+				if($this->isIdentifier($column))
+					$res[] = $this->replace($column);
+				else
+					$res[] = $column;
+			}
+		}
+
+		return ' ORDER BY '.implode(', ', $res);
 	}
 
-	public function buildJointures() {
+	protected function buildJointures() {
 		$params = array();
 		$jointures = '';
-		foreach($this->joins as $jointure) {
+		// if($this->joins)
+		// d($this->joins);
+		foreach($this->joins as $alias=>$jointure) {
+			// d($jointure);
 			$type = $jointure[0];
-			$table = \Coxis\Utils\Tools::array_get(array_keys($jointure[1]), 0);
-			$conditions = \Coxis\Utils\Tools::array_get(array_values($jointure[1]), 0);
-			$res = $this->buildJointure($type, $table, $conditions);
+			// $table = array_keys($jointure[1])[0];
+			// $conditions = array_values($jointure[1])[0];
+			// $table = $jointure[1][0];
+			// $conditions = $jointure[1][1];
+			$table = $jointure[1];
+			$conditions = $jointure[2];
+			$alias = $alias !== $table ? $alias:null;
+			$res = $this->buildJointure($type, $table, $conditions, $alias);
 			$jointures .= $res[0];
 			$params = array_merge($params, $res[1]);
 		}
 		return array($jointures, $params);
 	}
 
-	public function buildJointure($type, $table, $conditions) {
+	protected function buildJointure($type, $table, $conditions, $alias=null) {
 		$params = array();
 		$jointure = '';
-		$r = static::processConditions($conditions);
 		switch($type) {
 			case 'leftjoin':
 				$jointure = ' LEFT JOIN ';
@@ -279,12 +495,28 @@ class DAL {
 				$jointure = ' INNER JOIN ';
 				break;
 		}
-		$jointure .= $table.' ON '.$r[0];
-		$params = array_merge($params, $r[1]);
+		// if(static::isIdentifier($table))
+		// 	$table = $this->identifierQuotes($table);
+		// $table = preg_replace_callback('/(^[a-z_][a-z0-9._]*)| ([a-z_][a-z0-9._]*$)/', function($matches) {
+		#(...) a
+		#actu
+		#actu a
+		if($alias !== null)
+			$table = $table.' '.$alias;
+		$table = preg_replace_callback('/(^[a-z_][a-z0-9._]*)| ([a-z_][a-z0-9._]*$)/', function($matches) {
+				return $this->identifierQuotes($matches[0]);
+		}, $table);
+		// d($table);
+		$jointure .= $table;
+		if($conditions) {
+			$r = $this->processConditions($conditions);
+			$jointure .= ' ON '.$r[0];
+			$params = array_merge($params, $r[1]);
+		}
 		return array($jointure, $params);
 	}
 
-	public function buildLimit() {
+	protected function buildLimit() {
 		if(!$this->limit && !$this->offset)
 			return '';
 
@@ -294,23 +526,31 @@ class DAL {
 			if($this->limit)
 				$limit .= ', '.$this->limit;
 			else
-				$limit .= ', 99999999';
+				$limit .= ', 18446744073709551615';
 		}
 		else
 			$limit .= $this->limit;
 		return $limit;
 	}
 
+	public function buildTables($with_alias=true) {
+		$tables = array();
+		if(!$this->tables)
+			throw new \Exception('Must set tables with method from($tables) before running the query.');
+		foreach($this->tables as $alias=>$table) {
+			if($alias !== $table && $with_alias)
+				$tables[] = '`'.$table.'` `'.$alias.'`';
+			else
+				$tables[] = '`'.$table.'`';
+		}
+		return implode(', ', $tables);
+	}
+
 	public function buildSQL() {
 		$params = array();
 
-		$table = $this->table;
-		if(!$this->selects)
-			$select = '*';
-		elseif(is_array($this->selects))
-			$select = implode(', ', $this->selects);
-		else
-			$select = $this->selects;
+		$tables = $this->buildTables();
+		$columns = $this->buildColumns();
 		$orderBy = $this->buildOrderBy();
 		$limit = $this->buildLimit();
 		$groupby = $this->buildGroupby();
@@ -319,86 +559,106 @@ class DAL {
 		$params = array_merge($params, $joinparams);
 		
 		list($where, $whereparams) = $this->buildWhere();
+		// d($where, $this->where);
 		$params = array_merge($params, $whereparams);
 
-
-		return array('SELECT '.$select.' FROM '.$table.$jointures.$where.$groupby.$orderBy.$limit, $params);
-	}
-
-	public function buildDeleteSQL($tables=null) {
-		$params = array();
-
-		$table = $this->table;
-		if(!$tables)
-			$tables = array($table);
-		foreach($tables as $k=>$deltable)
-			$tables[$k] = '`'.$deltable.'`';
-
-		$limit = $this->buildLimit();
-
-		list($jointures, $joinparams) = $this->buildJointures();
-		$params = array_merge($params, $joinparams);
-		
-		list($where, $whereparams) = $this->buildWhere();
-		$params = array_merge($params, $whereparams);
-
-		return array('DELETE '.implode(', ', $tables).' FROM '.$table.$jointures.$where.$limit, $params);
-	}
-
-	public function buildInsertSQL($values) {
-		if(sizeof($values) == 0)
-			throw new Exception('Insert values should not be empty.');
-
-		$params = array();
-		$table = $this->table;
-
-		$columns = array();
-		foreach($values as $k=>$v)
-			$columns[] = $table.'.`'.$k.'`';
-		$str = ' ('.implode(', ', $columns).') VALUES ('.implode(', ', array_fill(0, sizeof($values), '?')).')';
-		$params = array_merge($params, array_values($values));
-		
-		return array('INSERT INTO '.$table.$str, $params);
+		$this->params = $params;
+		return 'SELECT '.$columns.' FROM '.$tables.$jointures.$where.$groupby.$orderBy.$limit;
+		// return array('SELECT '.$select.' FROM '.$table.$jointures.$where.$groupby.$orderBy.$limit, $params);
 	}
 
 	public function buildUpdateSQL($values) {
 		if(sizeof($values) == 0)
-			throw new Exception('Update values should not be empty.');
-
+			throw new \Exception('Update values should not be empty.');
 		$params = array();
-		$table = $this->table;
+
+		$tables = $this->buildTables();
+		$orderBy = $this->buildOrderBy();
 		$limit = $this->buildLimit();
 
 		list($jointures, $joinparams) = $this->buildJointures();
 		$params = array_merge($params, $joinparams);
 
 		foreach($values as $k=>$v)
-			$set[] = $table.'.`'.$k.'`=?';
+			$set[] = $this->replace($k).'=?';
 		$str = ' SET '.implode(', ', $set);
 		$params = array_merge($params, array_values($values));
 		
 		list($where, $whereparams) = $this->buildWhere();
 		$params = array_merge($params, $whereparams);
+		
 
-		return array('UPDATE '.$table.$jointures.$str.$where.$limit, $params);
+		$this->params = $params;
+		return 'UPDATE '.$tables.$jointures.$str.$where.$orderBy.$limit;
+	}
+
+	#todo verifier ce format en ligne:  DELETE `n` FROM `news` `n` left join `category` WHERE `id`>500000 ORDER BY `id` ASC LIMIT 5
+	// public function buildDeleteSQL($del_tables=null) {
+	public function buildDeleteSQL() {
+		$params = array();
+
+		$tables = $this->buildTables(false);
+		$orderBy = $this->buildOrderBy();
+		$limit = $this->buildLimit();
+
+		// list($jointures, $joinparams) = $this->buildJointures();
+		// $params = array_merge($params, $joinparams);
+		
+		list($where, $whereparams) = $this->buildWhere();
+		$params = array_merge($params, $whereparams);
+
+		$this->params = $params;
+		// if($del_tables !== null)
+		// 	return 'DELETE '.$del_tables.' FROM '.$tables.$jointures.$where.$orderBy.$limit;
+		// else
+			// return 'DELETE FROM '.$tables.$jointures.$where.$orderBy.$limit;
+			return 'DELETE FROM '.$tables.$where.$orderBy.$limit;
+	}
+
+	#todo a verifier en ligne si la query insert est complete ici?
+	public function buildInsertSQL($values) {
+		if(sizeof($values) == 0)
+			throw new \Exception('Insert values should not be empty.');
+		if($this->into === null && count($this->tables) !== 1)
+			throw new \Exception('The into table is not defined.');
+		if($this->into !== null)
+			$into = $this->into;
+		else
+			$into = array_keys($this->tables)[0];
+
+		$params = array();
+		$into = $this->identifierQuotes($into);
+
+		$cols = array();
+		foreach($values as $k=>$v)
+			$cols[] = $this->replace($k);
+		$str = ' ('.implode(', ', $cols).') VALUES ('.implode(', ', array_fill(0, sizeof($values), '?')).')';
+		$params = array_merge($params, array_values($values));
+		
+		$this->params = $params;
+		return 'INSERT INTO '.$into.$str;
 	}
 	
 	/* FUNCTIONS */
 	public function update($values) {
-		list($sql, $params) = $this->buildUpdateSQL($values);
+		$sql = $this->buildUpdateSQL($values);
+		$params = $this->getParameters();
 		return $this->db->query($sql, $params)->affected();
 	}
 	
 	public function insert($values) {
-		list($sql, $params) = $this->buildInsertSQL($values);
+		$sql = $this->buildInsertSQL($values);
+		$params = $this->getParameters();
 		return $this->db->query($sql, $params)->id();
 	}
 	
 	public function delete($tables=null) {
-		list($sql, $params) = $this->buildDeleteSQL($tables);
+		$sql = $this->buildDeleteSQL($tables);
+		$params = $this->getParameters();
 		return $this->db->query($sql, $params)->affected();
 	}
 
+	#todo use a dal clone instead of resetting everything
 	protected function _function($fct, $what=null, $group_by=null) {
 		if($what)
 			$what = '`'.$what.'`';
@@ -406,8 +666,10 @@ class DAL {
 			$what = '*';
 
 		if($group_by) {
-			$this->select(array($this->table.'.`'.$group_by.'` as groupby', $fct.'('.$what.') as '.$fct))
-				->groupBy($this->table.'.`'.$group_by.'`')
+			// $this->select($this->table.'.`'.$group_by.'` groupby', $fct.'('.$what.') '.$fct)
+				// ->groupBy($this->table.'.`'.$group_by.'`')
+			$this->select($group_by.' groupby, '.strtoupper($fct).'('.$what.') '.$fct)
+				->groupBy($group_by)
 				->offset(null)
 				->orderBy(null)
 				->limit(null);
@@ -417,7 +679,7 @@ class DAL {
 			return $res;
 		}
 		else {
-			$this->select(array($fct.'('.$what.') as '.$fct))
+			$this->select($fct.'('.$what.') '.$fct)
 				->groupBy(null)
 				->offset(null)
 				->orderBy(null)
