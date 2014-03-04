@@ -17,6 +17,6 @@ abstract class Facade {
 		if(isset(static::$class))
 			return static::$class;
 		else
-			return strtolower(NamespaceUtils::basename(get_called_class()));
+			return strtolower(\Coxis\Utils\NamespaceUtils::basename(get_called_class()));
 	}
 }

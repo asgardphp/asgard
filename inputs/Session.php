@@ -8,12 +8,12 @@ class Session extends InputsBag {
 				static::set($k, $v);
 		}
 		else
-			Tools::array_set($_SESSION, $name, $value);
+			\Coxis\Utils\Tools::array_set($_SESSION, $name, $value);
 		return parent::set($name, $value);
 	}
 	  
 	public function remove($name) {
-		Tools::array_unset($_SESSION, $name);
+		\Coxis\Utils\Tools::array_unset($_SESSION, $name);
 		return parent::remove($name);
 	}
 }

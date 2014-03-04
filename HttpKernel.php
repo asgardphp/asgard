@@ -3,8 +3,10 @@ namespace Coxis\Core;
 
 class HttpKernel {
 	public static function run() {
-		App::load();
-		static::process(\Request::inst(), true)->send();
+		App::loadDefaultApp();
+		$request = App::get('request');
+		$request->isInitial = true;
+		static::process($request, true)->send();
 	}
 
 	public static function process($request, $catch=false) {
@@ -20,15 +22,14 @@ class HttpKernel {
 			} catch(\Exception $e) {
 				if($e instanceof \Coxis\Core\ControllerException) {
 					$severity = $e->getSeverity();
-					$msg = 'Controller: '.$e->getMessage();
 					$trace = ErrorHandler::getBacktraceFromException($e);
-					ErrorHandler::log($severity, $msg, $e->getFile(), $e->getLine(), $trace);
+					ErrorHandler::log($severity, $e->getMessage(), $e->getFile(), $e->getLine(), $trace);
 				}
 				else {
 					ErrorHandler::logException($e);
 				}
 
-				$response = \Coxis\Core\Hook\Hook::trigger('exception_'.get_class($e), array($e));
+				$response = \Coxis\Core\App::get('hook')->trigger('exception_'.get_class($e), array($e));
 				if($response === null)
 					$response = static::getExceptionResponse($e);
 			}
@@ -50,7 +51,7 @@ class HttpKernel {
 			include _DIR_.'app/start.php';
 		\Coxis\Core\App::get('hook')->trigger('start');
 
-		$resolver = \Resolver::inst();
+		$resolver = \Coxis\Core\App::get('resolver');
 
 		$callback = $resolver->getCallback($request);
 		if($callback === null)
@@ -64,6 +65,7 @@ class HttpKernel {
 
 	protected static function getExceptionResponse($e) {
 		$trace = ErrorHandler::getBacktraceFromException($e);
-		return ErrorHandler::getHTTPErrorResponse($e->getMessage(), $trace);
+		$msg = $e->getMessage() ? get_class($e).': '.$e->getMessage():'Uncaught exception: '.get_class($e);
+		return ErrorHandler::getHTTPErrorResponse($msg, $trace);
 	}
 }

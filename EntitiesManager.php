@@ -6,7 +6,7 @@ class EntitiesManager {
 
 	public function get($entityClass) {
 		if(!isset($this->entities[$entityClass])) {
-			$md=Cache::get('entitiesmanager/'.$entityClass.'/definition', function() use($entityClass) {
+			$md = \Coxis\Utils\Cache::get('entitiesmanager/'.$entityClass.'/definition', function() use($entityClass) {
 				return new EntityDefinition($entityClass);
 			});
 			$this->entities[$entityClass] = $md;

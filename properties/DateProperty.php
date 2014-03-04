@@ -10,7 +10,7 @@ class DateProperty extends BaseProperty {
 	}
 
 	public function _getDefault() {
-		return new \Coxis\Utils\Date(0);
+		return new \Coxis\Utils\Date;
 	}
 
 	public function serialize($obj) {

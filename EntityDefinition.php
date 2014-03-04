@@ -1,7 +1,7 @@
 <?php
 namespace Coxis\Core;
 
-class EntityDefinition extends Hookable {
+class EntityDefinition extends \Coxis\Hook\Hookable {
 	protected $entityClass;
 
 	public $meta = array();
@@ -45,15 +45,18 @@ class EntityDefinition extends Hookable {
 		}
 		foreach($properties as $k=>$params)
 			$this->addProperty($k, $params);
-		
+
 		$entityClass::configure($this);
 	}
 
 	public function loadBehaviors() {
 		$entityClass = $this->entityClass;
-		\Hook::trigger('behaviors_pre_load', $this);
+		\Coxis\Core\App::get('hook')->trigger('behaviors_pre_load', $this);
 
-		foreach($this->behaviors as $class => $params) {
+		#not using foreach because new behaviors may be added in the loop
+		for($i=0; $i<sizeof($this->behaviors); $i++) {
+			$class = array_keys($this->behaviors)[$i];
+			$params = array_values($this->behaviors)[$i];
 			if($params)
 				$class::load($this, $params);
 		}
@@ -73,7 +76,9 @@ class EntityDefinition extends Hookable {
 		return $this->entityClass;
 	}
 
-	public function addProperty($property, $params) {
+	public function addProperty($property, $params=null) {
+		if($params === null)
+			$params = 'text';
 		if(is_string($params))
 			$params = array('type'=>$params);
 		foreach($params as $k=>$v) {

@@ -19,18 +19,12 @@ namespace Coxis\Core {
 		protected $bundle = null;
 
 		public function load($queue) {
-			$preload = \Coxis\Utils\Cache::get('bundles/'.$this->getBundle().'/preload', function() {
-				$bundle = $this->getBundle();
-				$preload = array();
-				$preload = array_merge($preload, Autoloader::fetchPreloadDir($bundle.'/Entities'));
-				$preload = array_merge($preload, Autoloader::fetchPreloadDir($bundle.'/libs'));
-				$preload = array_merge($preload, Autoloader::fetchPreloadDir($bundle.'/controllers'));
-				$preload = array_merge($preload, Autoloader::fetchPreloadDir($bundle.'/hooks'));
-				if(php_sapi_name() === 'cli')
-					$preload = array_merge($preload, Autoloader::fetchPreloadDir($bundle.'/cli'));
-				return $preload;
-			});
-			Autoloader::addPreloadedClasses($preload);
+			Autoloader::preloadDir(_COXIS_DIR_.'/entities');
+			Autoloader::preloadDir(_COXIS_DIR_.'/libs');
+			Autoloader::preloadDir(_COXIS_DIR_.'/controllers');
+			Autoloader::preloadDir(_COXIS_DIR_.'/hooks');
+			if(php_sapi_name() === 'cli')
+				Autoloader::preloadDir(_COXIS_DIR_.'/cli');
 		}
 
 		public function run() {
@@ -43,9 +37,9 @@ namespace Coxis\Core {
 
 		protected function loadLocales() {
 			$locales = \Coxis\Utils\Cache::get('bundles/'.$this->getBundle().'/locales', function() {
-				return \App::get('locale')->fetchLocalesFromDir($this->getBundle().'/locales');
+				return \Coxis\Core\App::get('locale')->fetchLocalesFromDir($this->getBundle().'/locales');
 			});
-			\App::get('locale')->addLocales($locales);
+			\Coxis\Core\App::get('locale')->addLocales($locales);
 		}
 
 		protected function loadHooks() {
@@ -62,7 +56,7 @@ namespace Coxis\Core {
 			});
 			if(!is_array($hooks))
 				return;
-			\App::get('hook')->hooks($hooks);
+			\Coxis\Core\App::get('hook')->hooks($hooks);
 		}
 
 		protected function loadCLI() {
@@ -79,7 +73,7 @@ namespace Coxis\Core {
 			});
 			if(!is_array($routes))
 				return;
-			\Coxis\Cli\Facades\CLIRouter::addRoutes($routes);
+			\Coxis\Core\App::get('clirouter')->addRoutes($routes);
 		}
 
 		protected function loadControllers() {
@@ -96,7 +90,7 @@ namespace Coxis\Core {
 			});
 			if(!is_array($routes))
 				return;
-			\Coxis\Facades\Resolver::addRoutes($routes);
+			\Coxis\Core\App::get('resolver')->addRoutes($routes);
 		}
 
 		public function setBundle($bundle) {

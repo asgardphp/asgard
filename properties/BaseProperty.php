@@ -12,38 +12,50 @@ class BaseProperty {
 		$this->params = $params;
 	}
 
-	public function __get($str_path) {
-		return \Coxis\Utils\Tools::pathGet($this->params, $str_path);
+	public function __get($what) {
+		return $this->get($what);
 	}
 
-	public function __toString() {
-		return $this->getName();
-	}
-
-	public function getName() {
-		return $this->name;
+	public function get($what) {
+		if(!isset($this->params[$what]))
+			return;
+		return $this->params[$what];
 	}
 
 	public function getParams() {
 		return $this->params;
 	}
 
+	public function getName() {
+		return $this->name;
+	}
+
+	public function __toString() {
+		return $this->getName();
+	}
+
 	public function getDefault() {
-		if(isset($this->params['default']))
-			return $this->params['default'];
-		elseif(method_exists($this, '_getDefault'))
-			return $this->_getDefault();
+		if(isset($this->params['default'])) {
+			if(is_callable($this->params['default']))
+				return $this->params['default']();
+			else
+				return $this->params['default'];
+		}
 		else
-			return '';
+			return $this->_getDefault();
+	}
+
+	public function _getDefault() {
+		return '';
 	}
 
 	public function getRules() {
-		$res = $this->params;
-		$res[$res['type']] = true;
-		unset($res['type']);
-		unset($res['setHook']);
-		if($this->i18n)
-			$res['is_array'] = true;
+		$res = isset($this->params['validation']) ? $this->params['validation']:array();
+		if(!is_array($res))
+			$res = array('validation' => $res);
+		if($this->get('required'))
+			$res['required'] = true;
+
 		return $res;
 	}
 

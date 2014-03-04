@@ -25,7 +25,7 @@ abstract class InputsBag implements \ArrayAccess {
 	}
 
 	public function get($name, $default=null) {
-		return Tools::array_get($this->inputs, $name, $default);
+		return \Coxis\Utils\Tools::array_get($this->inputs, $name, $default);
 	}
 
 	public function set($name, $value=null) {
@@ -34,16 +34,16 @@ abstract class InputsBag implements \ArrayAccess {
 				$this->set($k, $v);
 		}
 		else
-			Tools::array_set($this->inputs, $name, $value);
+			\Coxis\Utils\Tools::array_set($this->inputs, $name, $value);
 		return $this;
 	}
 
 	public function has($name) {
-		return Tools::array_isset($this->inputs, $name);
+		return \Coxis\Utils\Tools::array_isset($this->inputs, $name);
 	}
 
 	public function remove($name) {
-		Tools::array_unset($this->inputs, $name);
+		\Coxis\Utils\Tools::array_unset($this->inputs, $name);
 		return $this;
 	}
 

@@ -1,9 +1,15 @@
 <?php
 namespace Coxis\Core;
 
-class Controller extends Viewable {
+class Controller extends \Coxis\Hook\Hookable {
+	protected $_view;
 	public $request;
 	public $response;
+
+	public static function widget($action, $args=array()) {
+		$controller = new static;
+		return $controller->doRun($action, $args);
+	}
 
 	public static function fetchRoutes() {
 		$routes = array();
@@ -64,7 +70,7 @@ class Controller extends Viewable {
 	}
 	
 	public static function url_for($action, $params=array(), $relative=false) {
-		return \URL::url_for(array(get_called_class(), $action), $params, $relative);
+		return \Coxis\Core\App::get('url')->url_for(array(get_called_class(), $action), $params, $relative);
 	}
 
 	public static function run($controllerClassName, $actionShortname, $request=null, $response=null) {
@@ -110,5 +116,61 @@ class Controller extends Viewable {
 		}
 		else
 			return $controller->response;
+	}
+
+	public static function staticDoRun($class, $method, $params=array()) {
+		$controller = new $class;
+		return $controller->doRun($method, $params);
+	}
+
+	public function doRun($method, $params=array()) {
+		$this->_view = null;
+	
+		if(!is_array($params))
+			$params = array($params);
+
+		ob_start();
+		$result = call_user_func_array(array($this, $method), $params);
+		$controllerBuffer =  ob_get_clean();
+
+		if($result !== null)
+			return $result;
+		if($controllerBuffer)
+			return $controllerBuffer;
+		elseif($this->_view !== false) {
+			if($this->_view instanceof View)
+				return $this->_view->render();
+			else {
+				$method = preg_replace('/Action$/', '', $method);
+				if($this->_view === null && !$this->setRelativeView($method.'.php'))
+					return null;
+				return $this->renderView($this->_view, $this);
+			}
+		}
+		return null;
+	}
+	
+	protected function renderView($_view, $_args=array()) {
+		foreach($_args as $_key=>$_value)
+			$$_key = $_value;
+
+		ob_start();
+		include($_view);
+		return ob_get_clean();
+	}
+
+	public function noView() {
+		$this->_view = false;
+	}
+	
+	public function setView($view) {
+		$this->_view = $view;
+	}
+	
+	public function setRelativeView($view) {
+		$reflection = new \ReflectionObject($this);
+		$dir = dirname($reflection->getFileName());
+		$this->setView($dir.'/../views/'.strtolower(preg_replace('/Controller$/i', '', \Coxis\Utils\NamespaceUtils::basename(get_class($this)))).'/'.$view);
+		return file_exists($dir.'/../views/'.strtolower(preg_replace('/Controller$/i', '', \Coxis\Utils\NamespaceUtils::basename(get_class($this)))).'/'.$view);
 	}
 }

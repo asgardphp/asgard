@@ -11,8 +11,8 @@ abstract class Entity {
 		'properties'	=>	array(),
 	);
 
-	public function __construct($param='') {
-		$chain = new HookChain();
+	public function __construct($param=null) {
+		$chain = new \Coxis\Hook\HookChain();
 		$chain->found = false;
 		$this->triggerChain($chain, 'construct', array($this, $param));
 		if(!$chain->found) {
@@ -41,7 +41,7 @@ abstract class Entity {
 	}
 
 	public static function __callStatic($name, $arguments) {
-		$chain = new HookChain();
+		$chain = new \Coxis\Hook\HookChain();
 		$chain->found = false;
 		$res = static::triggerChain($chain, 'callStatic', array($name, $arguments));
 		if(!$chain->found)
@@ -51,7 +51,7 @@ abstract class Entity {
 	}
 
 	public function __call($name, $arguments) {
-		$chain = new HookChain;
+		$chain = new \Coxis\Hook\HookChain;
 		$chain->found = false;
 		$res = static::triggerChain($chain, 'call', array($this, $name, $arguments));
 		if(!$chain->found) {
@@ -69,7 +69,7 @@ abstract class Entity {
 	public static function configure($entityDefinition) {}
 
 	public static function getDefinition() {
-		return \EntitiesManager::get(get_called_class());
+		return \Coxis\Core\App::get('entitiesmanager')->get(get_called_class());
 	}
 
 	public function loadDefault() {
@@ -97,7 +97,7 @@ abstract class Entity {
 			}
 		}
 		
-		$chain = new HookChain;
+		$chain = new \Coxis\Hook\HookChain;
 		$this->triggerChain($chain, 'save', array($this));
 		if(!$chain->executed)
 			throw new \Exception('Cannot save non-persistent Entities');
@@ -106,7 +106,7 @@ abstract class Entity {
 	}
 	
 	public function destroy() {
-		$chain = new HookChain;
+		$chain = new \Coxis\Hook\HookChain;
 		$this->triggerChain($chain, 'destroy', array($this));
 		if(!$chain->executed)
 			throw new \Exception('Cannot destroy non-persistent Entities');
@@ -118,7 +118,7 @@ abstract class Entity {
 	}
 	
 	/* VALIDATION */
-	public function getValidator() {
+	protected function getValidator() {
 		$constrains = array();
 		$entity = $this;
 		$this->trigger('constrains', array(&$constrains), function($chain, &$constrains) use($entity) {
@@ -150,60 +150,88 @@ abstract class Entity {
 	}
 
 	/* ACCESSORS */
-	public function set($name, $value=null, $lang=null, $raw=false) {
+	public function _set($name, $value=null, $lang=null) {
 		if(is_array($name)) {
-			$raw = $lang;
 			$lang = $value;
 			$vars = $name;
-			foreach($vars as $k=>$v)
-				$this->set($k, $v, $lang, $raw);
+			foreach($vars as $name=>$value)
+				$this->_set($name, $value, $lang);
+			return $this;
 		}
-		else {
-			if(static::getDefinition()->hasProperty($name)) {
-				if(!$raw && static::getDefinition()->property($name)->setHook) {
-					$hook = static::getDefinition()->property($name)->setHook;
-					$value = call_user_func_array($hook, array($value));
-				}
 
-				if(static::getDefinition()->property($name)->i18n) {
-					if(!$lang)
-						$lang = \Config::get('locale');
-					if($lang == 'all')
-						foreach($value as $one => $v)
-							if($raw)
-								$this->data['properties'][$name][$one] = $v;
-							else
-								$this->data['properties'][$name][$one] = static::getDefinition()->property($name)->set($v, $this);
-					elseif($raw)
-						$this->data['properties'][$name][$lang] = $value;
-					else
-						$this->data['properties'][$name][$lang] = static::getDefinition()->property($name)->set($value, $this);
+		if(static::getDefinition()->hasProperty($name)) {
+			if(static::getDefinition()->property($name)->i18n) {
+				if(!$lang)
+					$lang = \Coxis\Core\App::get('config')->get('locale');
+				if($lang == 'all') {
+					foreach($value as $one => $v)
+						$this->data['properties'][$name][$one] = $v;
 				}
-				elseif($raw)
-					$this->data['properties'][$name] = $value;
 				else
-					$this->data['properties'][$name] = static::getDefinition()->property($name)->set($value, $this);
-			}
-			elseif(!$raw && isset(static::getDefinition()->meta['hooks']['set'][$name])) {
-				$hook = static::getDefinition()->meta['hooks']['set'][$name];
-				$hook($this, $value);
+					$this->data['properties'][$name][$lang] = $value;
 			}
 			else
-				$this->data[$name] = $value;
+				$this->data['properties'][$name] = $value;
 		}
+		else
+			$this->data[$name] = $value;
+				
+		return $this;
+	}
+
+	public function set($name, $value=null, $lang=null, $hook=true) {
+		if($hook)
+			$this->trigger('set', array($this, $name, $value, $lang));
+
+		if(is_array($name)) {
+			$lang = $value;
+			$vars = $name;
+			foreach($vars as $name=>$value)
+				$this->set($name, $value, $lang, false);
+			return $this;
+		}
+
+		if(static::getDefinition()->hasProperty($name)) {
+			if(static::getDefinition()->property($name)->setHook) {
+				$hook = static::getDefinition()->property($name)->setHook;
+				$value = call_user_func_array($hook, array($value));
+			}
+
+			if(static::getDefinition()->property($name)->i18n) {
+				if(!$lang)
+					$lang = \Coxis\Core\App::get('config')->get('locale');
+				if($lang == 'all') {
+					$val = array();
+					foreach($value as $one => $v)
+						$val[$one] = static::getDefinition()->property($name)->set($v, $this);
+					$value = $val;
+				}
+				else
+					$value = static::getDefinition()->property($name)->set($value, $this);
+			}
+			else
+				$value = static::getDefinition()->property($name)->set($value, $this);
+
+			if(static::getDefinition()->property($name)->i18n && $lang != 'all')
+				$this->data['properties'][$name][$lang] = $value;
+			else
+				$this->data['properties'][$name] = $value;
+		}
+		else
+			$this->data[$name] = $value;
 				
 		return $this;
 	}
 	
 	public function get($name, $lang=null) {
 		if(!$lang)
-			$lang = \Config::get('locale');
+			$lang = \Coxis\Core\App::get('config')->get('locale');
 
 		$res = static::trigger('get', array($this, $name, $lang), function($chain, $entity, $name, $lang) {
 			if($entity::hasProperty($name)) {
 				if($entity::property($name)->i18n) {
 					if($lang == 'all') {
-						$langs = \Config::get('locales');
+						$langs = \Coxis\Core\App::get('config')->get('locales');
 						$res = array();
 						foreach($langs as $lang)
 							$res[$lang] = $entity->get($name, $lang);
@@ -227,10 +255,10 @@ abstract class Entity {
 		$vars = array();
 		
 		foreach($attrs as $attr) {
-			if(!isset($this->data['properties'][$attr]))
-				$vars[$attr] = null;
-			else
+			if(isset($this->data['properties'][$attr]))
 				$vars[$attr] = $this->data['properties'][$attr];
+			else
+				$vars[$attr] = null;
 		}
 		
 		return $vars;
@@ -329,5 +357,12 @@ abstract class Entity {
 
 	public static function hookAfter($hookName, $cb) {
 		return static::getDefinition()->hookAfter($hookName, $cb);
+	}
+
+	/* utils functions */
+	public static function EntitiesToArray($entities) {
+		foreach($entities as $k=>$v)
+			$entities[$k] = json_decode($v->toJSON());
+		return json_encode($entities);
 	}
 }

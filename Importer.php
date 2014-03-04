@@ -99,17 +99,19 @@ class Importer {
 				return static::loadClassFile($this->basedir.$path, $class);
 
 			#lookup for global classes
-			if(\Coxis\Utils\NamespaceUtils::dirname($class) == '.') {
+			if(\Coxis\Core\App::get('config')->get('global_namespace') && \Coxis\Utils\NamespaceUtils::dirname($class) == '.') {
 				$classes = array();
 				
 				#check if there is any corresponding class already loaded
-				foreach(array_merge(get_declared_classes(), get_declared_interfaces()) as $v)
+				foreach(array_merge(get_declared_classes(), get_declared_interfaces()) as $v) {
 					if(strtolower(\Coxis\Utils\NamespaceUtils::basename($class)) == strtolower(\Coxis\Utils\NamespaceUtils::basename($v)))
 						return static::createAlias($v, $class);
+				}
 				
-				foreach(Autoloader::$preloaded as $v)
+				foreach(Autoloader::$preloaded as $v) {
 					if(strtolower(\Coxis\Utils\NamespaceUtils::basename($class)) == $v[0])
 						$classes[] = $v;
+				}
 				if(sizeof($classes) == 1)
 					return static::loadClassFile($classes[0][1], $class);
 				#if multiple classes, don't load

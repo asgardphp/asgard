@@ -88,7 +88,7 @@ class Response {
 		while(ob_get_level())
 			ob_end_clean();
 		\Coxis\Core\App::get('hook')->trigger('end');
-		\Coxis\Core\Response::sendHeaders($headers);
+		\Coxis\Core\Coxis\Core\App::get('response')->sendHeaders($headers);
 		echo $content;
         if(\Coxis\Core\App::get('config')->get('profiler'))
                 \Coxis\Utils\Profiler::report();
@@ -102,7 +102,7 @@ class Response {
 	
 	public function redirect($url='', $relative=true) {
 		if($relative && !preg_match('/^http:\/\//', $url))
-			$this->headers['Location'] = \URL::to($url);
+			$this->headers['Location'] = \Coxis\Core\App::get('url')->to($url);
 		else
 			$this->headers['Location'] = $url;
 		return $this;

@@ -1,6 +1,6 @@
 <?php
-if(version_compare(PHP_VERSION, '5.3.0') < 0)
-	die('You need PHP ≥ 5.3');
+if(version_compare(PHP_VERSION, '5.4.0') < 0)
+	die('You need PHP ≥ 5.4');
 
 define('_COXIS_START_', time()+microtime());
 set_include_path(get_include_path() . PATH_SEPARATOR . _DIR_);

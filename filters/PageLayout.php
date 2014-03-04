@@ -25,11 +25,11 @@ class PageLayout extends Filter {
 		$htmllayout = $controller->htmlLayout;
 
 		if(is_array($layout) && sizeof($layout) >= 2 && $result !== null)
-			$result = Viewable::staticDoRun($layout[0], $layout[1], $result);
+			$result = \Coxis\Core\Controller::staticDoRun($layout[0], $layout[1], $result);
 		elseif($htmllayout !== true)
 			$htmllayout = false;
 
 		if($htmllayout !== false)
-			$result = \Coxis\Core\Viewable::staticRender('app/general/views/default/html.php', array('content'=>$result));
+			$result = \Coxis\Core\View::renderTemplate('app/general/views/default/html.php', array('content'=>$result));
 	}
 }

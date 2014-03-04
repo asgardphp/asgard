@@ -3,7 +3,6 @@ namespace Coxis\Core;
 
 class Facades {
 	static $inst;
-	protected $facades = array();
 	protected $app;
 
 	function __construct($app=null) {
@@ -19,16 +18,11 @@ class Facades {
 		return static::$inst;
 	}
 
-	public function all() {
-		return $this->facades;
-	}
-
 	public function register($alias, $class, $cb=null) {
 		if(!$cb)
 			$cb = array($class, 'callback');
 		if(!$this->app->has(strtolower($alias)))
 			$this->app->set(strtolower($alias), $cb); #create instance
 		$this->app->get('importer')->alias($class, $alias); #class alias
-		$this->facades[$alias] = array($class, $cb);
 	}
 }

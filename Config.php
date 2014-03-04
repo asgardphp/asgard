@@ -4,9 +4,11 @@ namespace Coxis\Core;
 class Config {
 	protected $config = array();
 	
-	function __construct($dir=null) {
-		if($dir)
-			$this->loadConfigDir($dir);
+	function __construct($config=null) {
+		if(is_string($config))
+			$this->loadConfigDir($config);
+		elseif(is_array($config))
+			$this->load($config);
 	}
 
 	public function loadConfigDir($dir) {
@@ -28,13 +30,13 @@ class Config {
 	}
 	
 	public function set($str_path, $value) {
-		\Coxis\Utils\Tools::pathSet($this->config, $str_path, $value);
+		\Coxis\Utils\Tools::string_array_set($this->config, $str_path, $value);
 
-		if(\Coxis\Core\App::has('hook'))
+		if(\Coxis\Core\App::hasInstance() && \Coxis\Core\App::has('hook'))
 			\Coxis\Core\App::get('hook')->trigger(array('Config/Set/'.$str_path, $value));
 	}
 	
 	public function get($str_path) {
-		return \Coxis\Utils\Tools::pathGet($this->config, $str_path);
+		return \Coxis\Utils\Tools::string_array_get($this->config, $str_path);
 	}
 }

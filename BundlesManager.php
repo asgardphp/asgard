@@ -2,15 +2,15 @@
 namespace Coxis\Core;
 
 class BundlesManager {
-	protected static $instance = null;
+	// protected static $instance = null;
 	protected $bundles = array();
 	protected $loaded = false;
 
-	public static function instance() {
-		if(!static::$instance)
-			static::$instance = new static;
-		return static::$instance;
-	}
+	// public static function instance() {
+	// 	if(!static::$instance)
+	// 		static::$instance = new static;
+	// 	return static::$instance;
+	// }
 
 	public static function loadEntityFixtures($bundle_path) {
 		if(file_exists($bundle_path.'/data')) {

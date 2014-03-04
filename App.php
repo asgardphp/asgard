@@ -5,34 +5,37 @@ class App {
 	protected static $instance;
 	protected $instances = array();
 	protected $registry = array();
-	static $loaded = false;
+	protected $loaded = false;
 
 	public static function setDefaultEnvironment() {
 		if(!defined('_ENV_')) {
-			if(PHP_SAPI == 'cli' || \Server::get('HTTP_HOST') == '127.0.0.1' || \Server::get('HTTP_HOST') == 'localhost')
+			if(PHP_SAPI == 'cli' || \Coxis\Core\App::get('server')->get('HTTP_HOST') == '127.0.0.1' || \Coxis\Core\App::get('server')->get('HTTP_HOST') == 'localhost')
 				define('_ENV_', 'dev');
 			else
 				define('_ENV_', 'prod');
 		}
 	}
 
-	public static function load() {
-		if(static::$loaded)
+	public static function loadDefaultApp($config=null) {
+		static::instance($config)->load();
+	}
+
+	public function load() {
+		if($this->loaded)
 			return;
 		
 		static::setDefaultEnvironment();
-		$app = static::instance();
-		if(file_exists(_DIR_.'app/load.php'))
-			include _DIR_.'app/load.php';
-		BundlesManager::instance()->loadBundles($app->get('config')->get('bundles'));
-		
-		\Request::inst()->isInitial = true;
-		$app->get('locale')->importLocales('locales');
 
-		static::$loaded = true;
+		include _DIR_.'app/load.php';
+
+		$bundles = $this->get('config')->get('bundles');
+		$bundlesmanager = new BundlesManager;
+		$bundlesmanager->loadBundles($bundles);
+
+		$this->loaded = true;
 	}
 
-	function __construct() {
+	function __construct($config=null) {
 		#default instances
 		$this->_set('importer', function() {
 			return new \Coxis\Core\Importer;
@@ -45,7 +48,7 @@ class App {
 			return new \Coxis\Hook\Hook;
 		});
 		$this->_set('request', function() {
-			return \Coxis\Core\Request::createFromGlobals();
+			return \Coxis\Core\Coxis\Core\App::get('request')->createFromGlobals();
 		});
 		$this->_set('url', function() {
 			return \Coxis\Core\App::get('request')->url;
@@ -56,11 +59,18 @@ class App {
 		$this->_set('facades', function() {
 			return \Coxis\Core\Facades::inst();
 		});
+
+		if($config)
+			$this->config = $config;
 	}
 
-	public static function instance() {
-		if(!isset(static::$instance))
-			static::$instance = new static;
+	public static function hasInstance() {
+		return isset(static::$instance);
+	}
+
+	public static function instance($new=false, $config=null) {
+		if(!isset(static::$instance) || $new)
+			static::$instance = new static($config);
 		return static::$instance;
 	}
 
@@ -94,7 +104,7 @@ class App {
 	}
 
 	public function __set($name, $value) {
-		return $this->set($name, $value);
+		return $this->_set($name, $value);
 	}
 
 	public static function has($class) {
