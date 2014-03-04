@@ -1,15 +1,10 @@
 <?php
 namespace Coxis\Form;
 
-class Bundle extends BundleLoader {
+class Bundle extends \Coxis\Core\BundleLoader {
 	public function load($queue) {
-		$preload = \Coxis\Utils\Cache::get('bundles/'.$this->getBundle().'/preload', function() {
-			$bundle = $this->getBundle();
-			$preload = array();
-			Autoloader::preloadDir(dirname(__FILE__));
-			return $preload;
-		});
-		Autoloader::addPreloadedClasses($preload);
+		\Coxis\Core\Autoloader::preloadDir(dirname(__FILE__));
+
 		parent::load($queue);
 	}
 }

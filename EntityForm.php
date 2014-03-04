@@ -5,6 +5,40 @@ class EntityForm extends Form {
 	protected $entity;
 	protected $i18n = false;
 
+	function __construct(
+		$entity, 
+		$params=array()
+	) {
+		$this->entity = $entity;
+
+		$this->i18n = isset($params['i18n']) && $params['i18n'];
+	
+		$fields = array();
+		foreach($entity->properties() as $name=>$properties) {
+			if(isset($params['only']) && !in_array($name, $params['only']))
+					continue;
+			if(isset($params['except']) && in_array($name, $params['except']))
+					continue;
+			if($properties->editable === false || $properties->form_editable === false)
+				continue;
+
+			if($this->i18n && $properties->i18n) {
+				$i18ngroup = array();
+				foreach(\Config::get('locales') as $locale)
+					$i18ngroup[$locale] = $this->getNewField($entity, $name, $properties, $locale);
+				$fields[$name] = $i18ngroup;
+			}
+			else
+				$fields[$name] = $this->getNewField($entity, $name, $properties);
+		}
+
+		parent::__construct(
+			isset($params['name']) ? $params['name']:$entity->getEntityName(),
+			$params,
+			$fields
+		);
+	}
+
 	public function getNewField($entity, $name, $properties, $locale=null) {
 		$field_params = array();
 
@@ -40,9 +74,6 @@ class EntityForm extends Form {
 
 		$field = new $field_class($field_params);
 
-		if($properties->type == 'longtext')
-			$field->setDefaultRender('wysiwyg');
-
 		return $field;
 	}
 
@@ -68,40 +99,6 @@ class EntityForm extends Form {
 				'default'	=>	($this->entity->isOld() ? $this->entity->$name()->ids():array()),
 			)), $name);
 		}
-	}
-
-	function __construct(
-		$entity, 
-		$params=array()
-	) {
-		$this->entity = $entity;
-
-		$this->i18n = isset($params['i18n']) && $params['i18n'];
-	
-		$fields = array();
-		foreach($entity->properties() as $name=>$properties) {
-			if(isset($params['only']) && !in_array($name, $params['only']))
-					continue;
-			if(isset($params['except']) && in_array($name, $params['except']))
-					continue;
-			if($properties->editable === false || $properties->form_editable === false)
-				continue;
-
-			if($this->i18n && $properties->i18n) {
-				$i18ngroup = array();
-				foreach(\Config::get('locales') as $locale)
-					$i18ngroup[$locale] = $this->getNewField($entity, $name, $properties, $locale);
-				$fields[$name] = $i18ngroup;
-			}
-			else
-				$fields[$name] = $this->getNewField($entity, $name, $properties);
-		}
-
-		parent::__construct(
-			isset($params['name']) ? $params['name']:$entity->getEntityName(),
-			$params,
-			$fields
-		);
 	}
 	
 	public function errors($field=null) {
@@ -194,9 +191,11 @@ class EntityForm extends Form {
 		if(is_a($group, 'Coxis\Form\EntityForm') || is_subclass_of($group, 'Coxis\Form\EntityForm'))
 			$group->entity->save();
 
-		if(is_subclass_of($group, 'Coxis\Form\AbstractGroup'))
-			foreach($group->fields as $name=>$field)
+		if(is_subclass_of($group, 'Coxis\Form\AbstractGroup')) {
+			foreach($group->fields as $name=>$field) {
 				if(is_subclass_of($field, 'Coxis\Form\AbstractGroup'))
 					$this->_save($field);
+			}
+		}
 	}
 }

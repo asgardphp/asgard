@@ -77,7 +77,7 @@ class Form extends AbstractGroup {
 	}
 
 	public function uploadSuccess() {
-		return \Server::get('CONTENT_LENGTH') <= (int)ini_get('post_max_size')*1024*1024;
+		return \Coxis\Core\App::get('server')->get('CONTENT_LENGTH') <= (int)ini_get('post_max_size')*1024*1024;
 	}
 
 	public function setRenderCallback($name, $callback) {
@@ -141,32 +141,32 @@ class Form extends AbstractGroup {
 		$files = array();
 			
 		if($this->groupName) {
-			if(\File::get($this->groupName) !== null)
-				$raw = \File::get($this->groupName);
+			if(\Coxis\Core\App::get('file')->get($this->groupName) !== null)
+				$raw = \Coxis\Core\App::get('file')->get($this->groupName);
 			else
 				$raw = array();
 		}
 		else
-			$raw = \File::all();
+			$raw = \Coxis\Core\App::get('file')->all();
 
 		$files = $this->parseFiles($raw);
 
 		$this->data = array();
 		if($this->groupName) {
 				$this->setData(
-					\POST::get($this->groupName, array()),
+					\Coxis\Core\App::get('post')->get($this->groupName, array()),
 					$files
 				);
 		}
 		else
-			$this->setData(\POST::all(), $files);
+			$this->setData(\Coxis\Core\App::get('post')->all(), $files);
 
 		return $this;
 	}
 	
 	public function open($params=array()) {
 		$params = array_merge($this->params, $params);
-		$action = isset($params['action']) && $params['action'] ? $params['action']:\URL::full();
+		$action = isset($params['action']) && $params['action'] ? $params['action']:\Coxis\Core\App::get('url')->full();
 		$method = isset($params['method']) ? $params['method']:'post';
 		$enctype = isset($params['enctype']) ? $params['enctype']:($this->hasFile() ? ' enctype="multipart/form-data"':'');
 		$attrs = '';

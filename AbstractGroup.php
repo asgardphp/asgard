@@ -15,8 +15,10 @@ abstract class AbstractGroup extends \Coxis\Hook\Hookable implements \ArrayAcces
 	}
 
 	public function setErrors($errors) {
-		foreach($errors as $name=>$error)
-			$this->fields[$name]->setErrors($error);
+		foreach($errors as $name=>$error) {
+			if(isset($this->fields[$name]))
+				$this->fields[$name]->setErrors($error);
+		}
 	}
 
 	public function getFields() {
@@ -44,15 +46,15 @@ abstract class AbstractGroup extends \Coxis\Hook\Hookable implements \ArrayAcces
 	}
 	
 	public function isSent() {
-		$method = strtolower(\Request::method());
+		$method = strtolower(\Coxis\Core\App::get('request')->method());
 		if($this->dad)
 			return $this->dad->isSent();
 		else {
 			if($this->groupName) {
 				if($method == 'post' || $method == 'put')
-					return \POST::has($this->groupName);
+					return \Coxis\Core\App::get('post')->has($this->groupName);
 				elseif($method == 'get')
-					return \POST::has($this->groupName);
+					return \Coxis\Core\App::get('post')->has($this->groupName);
 				else
 					return false;
 			}

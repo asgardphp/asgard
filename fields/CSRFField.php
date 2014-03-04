@@ -6,22 +6,22 @@ class CSRFField extends \Coxis\Form\Fields\HiddenField {
 
 		$this->default_render = function($field, $options) {
 			$token = $this->generateToken();
-			return HTMLWidget::getWidget('Coxis\Form\Widgets\HiddenWidget', array($field->getName(), $token, $options))->render();
+			return \Coxis\Form\Widgets\HTMLWidget::getWidget('Coxis\Form\Widgets\HiddenWidget', array($field->getName(), $token, $options))->render();
 		};
 	}
 
 	protected function generateToken() {
-		if(\Coxis\Core\Facades\Session::has('_csrf_token'))
-			return \Coxis\Core\Facades\Session::get('_csrf_token');
+		if(\Coxis\Core\App::get('session')->has('_csrf_token'))
+			return \Coxis\Core\App::get('session')->get('_csrf_token');
 		else {
-			$token = Tools::randstr();
-			\Coxis\Core\Facades\Session::set('_csrf_token', $token);
+			$token = \Coxis\Utils\Tools::randstr();
+			\Coxis\Core\App::get('session')->set('_csrf_token', $token);
 			return $token;
 		}
 	}
 
 	public function error($attr, $value) {
-		if($this->value != \Coxis\Core\Facades\Session::get('_csrf_token'))
+		if($this->value != \Coxis\Core\App::get('session')->get('_csrf_token'))
 			return __('CSRF token is invalid.');
 	}
 }
