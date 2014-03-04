@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Auth;
+namespace Asgard\Auth;
 
 class NotAuthenticatedException extends \Exception {
 	

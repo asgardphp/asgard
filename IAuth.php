@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Auth;
+namespace Asgard\Auth;
 
 interface IAuth {
 	public static function isConnected();

@@ -1,11 +1,11 @@
 {
-	"name": "coxis/auth",
+	"name": "asgard/auth",
 	"license": "MIT",
 	"authors": [{
 		"name": "Michel Hognerud",
 		"email": "michel@hognerud.net"
 	}],
     "autoload": {
-        "psr-0": {"Coxis\\Auth": "../.."}
+        "psr-0": {"Asgard\\Auth": "../.."}
     }
 }
