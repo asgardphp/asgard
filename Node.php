@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Xpath;
+namespace Asgard\Xpath;
 
 class Node {
 	protected $domnode;

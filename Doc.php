@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Xpath;
+namespace Asgard\Xpath;
 
 class Doc {
 	protected $code;
