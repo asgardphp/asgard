@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\DB\Tests;
+namespace Asgard\DB\Tests;
 
 class DALTest extends \PHPUnit_Framework_TestCase {
 	protected $db;
@@ -11,11 +11,11 @@ class DALTest extends \PHPUnit_Framework_TestCase {
 
 		require_once 'app/load.php';
 
-		$db = new \Coxis\DB\DB(array(
+		$db = new \Asgard\DB\DB(array(
 			'host' => 'localhost',
 			'user' => 'root',
 			'password' => '',
-			'database' => 'coxis',
+			'database' => 'asgard',
 		));
 		$db->import(dirname(__FILE__).'/sql/dal.sql');
 	}
@@ -69,15 +69,15 @@ sum
 	buildDeleteSQL
 */
 	protected function getDAL() {
-		$db = new \Coxis\DB\DB(array(
+		$db = new \Asgard\DB\DB(array(
 			'host' => 'localhost',
 			'user' => 'root',
 			'password' => '',
-			'database' => 'coxis',
+			'database' => 'asgard',
 		));
 		if(!$this->db)
 			$this->db = $db;
-		return new \Coxis\DB\DAL($this->db);
+		return new \Asgard\DB\DAL($this->db);
 	}
 
 	public function test1() {
@@ -199,7 +199,7 @@ $dal
 
 		/* NEXT, QUERY AND GET */
 		$query = $this->getDAL()->query('SELECT * FROM news');
-		$this->assertInstanceOf('Coxis\DB\Query', $query);
+		$this->assertInstanceOf('Asgard\DB\Query', $query);
 		$data = $query->all();
 		$this->assertCount(3, $data);
 
@@ -231,7 +231,7 @@ $dal
 		$dal = $this->getDAL()->from('news');
 		$dal->paginate(3, 10);
 		$this->assertEquals('SELECT * FROM `news` LIMIT 20, 10', $dal->buildSQL());
-		$this->assertInstanceOf('Coxis\Utils\Paginator', $dal->getPaginator());
+		$this->assertInstanceOf('Asgard\Utils\Paginator', $dal->getPaginator());
 
 		/* COUNT */
 		$this->assertEquals(3, $this->getDAL()->from('news')->count());

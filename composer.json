@@ -1,11 +1,11 @@
 {
-	"name": "coxis/db",
+	"name": "asgard/db",
 	"license": "MIT",
 	"authors": [{
 		"name": "Michel Hognerud",
 		"email": "michel@hognerud.net"
 	}],
     "autoload": {
-        "psr-0": {"Coxis\\DB": "../.."}
+        "psr-0": {"Asgard\\DB": "../.."}
     }
 }

@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\DB;
+namespace Asgard\DB;
 
 class BuildCol {
 	protected $name;
@@ -185,7 +185,7 @@ class Table {
 	public function primary($keys) {
 		try {
 			$this->db->query('ALTER TABLE  `'.$this->name.'` DROP PRIMARY KEY');
-		} catch(\Coxis\DB\DBException $e) {}
+		} catch(\Asgard\DB\DBException $e) {}
 	
 		if(!is_array($keys))
 			$keys = array($keys);
@@ -328,7 +328,7 @@ class Column {
 	protected function getType() {
 		$r = $this->db->query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
-                 WHERE TABLE_SCHEMA = '".\Coxis\Core\App::get('config')->get('database/database')."' 
+                 WHERE TABLE_SCHEMA = '".\Asgard\Core\App::get('config')->get('database/database')."' 
                  AND  TABLE_NAME = '$this->table'
 		 AND COLUMN_NAME = '$this->name'")->first();
 		 
@@ -338,7 +338,7 @@ class Column {
 	protected function getNullable() {
 		$r = $this->db->query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
-                 WHERE TABLE_SCHEMA = '".\Coxis\Core\App::get('config')->get('database/database')."' 
+                 WHERE TABLE_SCHEMA = '".\Asgard\Core\App::get('config')->get('database/database')."' 
                  AND  TABLE_NAME = '$this->table'
 		 AND COLUMN_NAME = '$this->name'")->first();
 		 
@@ -348,7 +348,7 @@ class Column {
 	protected function getDefault() {
 		$r = $this->db->query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
-                 WHERE TABLE_SCHEMA = '".\Coxis\Core\App::get('config')->get('database/database')."' 
+                 WHERE TABLE_SCHEMA = '".\Asgard\Core\App::get('config')->get('database/database')."' 
                  AND  TABLE_NAME = '$this->table'
 		 AND COLUMN_NAME = '$this->name'")->first();
 		 
@@ -358,7 +358,7 @@ class Column {
 	protected function getAutoincrement() {
 		$r = $this->db->query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
-                 WHERE TABLE_SCHEMA = '".\Coxis\Core\App::get('config')->get('database/database')."' 
+                 WHERE TABLE_SCHEMA = '".\Asgard\Core\App::get('config')->get('database/database')."' 
                  AND  TABLE_NAME = '$this->table'
 		 AND COLUMN_NAME = '$this->name'")->first();
 		 
@@ -369,7 +369,7 @@ class Column {
 		$sql = 'alter table `'.$this->table.'` drop index `'.$this->name.'`';
 		try {
 		$this->db->query($sql);
-		} catch(\Coxis\DB\DBException $e) {}
+		} catch(\Asgard\DB\DBException $e) {}
 		
 		return $this;
 	}

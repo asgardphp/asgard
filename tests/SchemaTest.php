@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\DB\Tests;
+namespace Asgard\DB\Tests;
 
 class SchemaTest extends \PHPUnit_Framework_TestCase {
 	protected $db;
@@ -12,7 +12,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 	
 	public function setUp(){
 		$db = $this->getDB();
-		$database = 'coxis';
+		$database = 'asgard';
 		try {
 			$db->query('DROP DATABASE `'.$database.'`');
 		} catch(Exception $e) {}
@@ -22,11 +22,11 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 
 	protected function getDB() {
 		if(!$this->db) {
-			$this->db = new \Coxis\DB\DB(array(
+			$this->db = new \Asgard\DB\DB(array(
 				'host' => 'localhost',
 				'user' => 'root',
 				'password' => '',
-				'database' => 'coxis',
+				'database' => 'asgard',
 			));
 		}
 		return $this->db;
@@ -60,14 +60,14 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 	protected function tableExists($table) {
 		return $this->getDB()->query("SELECT * 
                  FROM INFORMATION_SCHEMA.TABLES 
-                 WHERE TABLE_SCHEMA = '".\Coxis\Core\App::get('config')->get('database/database')."' 
+                 WHERE TABLE_SCHEMA = '".\Asgard\Core\App::get('config')->get('database/database')."' 
                  AND  TABLE_NAME = '$table'")->count() > 0;
 	}
 		
 	protected function columnExists($table, $column) {
 		return $this->getDB()->query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
-                 WHERE TABLE_SCHEMA = '".\Coxis\Core\App::get('config')->get('database/database')."' 
+                 WHERE TABLE_SCHEMA = '".\Asgard\Core\App::get('config')->get('database/database')."' 
                  AND  TABLE_NAME = '$table'
 		 AND COLUMN_NAME = '$column'")->count() > 0;
 	}
@@ -75,7 +75,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 	protected function isAutoincrement($table, $column) {
 		return $this->getDB()->query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
-                 WHERE TABLE_SCHEMA = '".\Coxis\Core\App::get('config')->get('database/database')."' 
+                 WHERE TABLE_SCHEMA = '".\Asgard\Core\App::get('config')->get('database/database')."' 
                  AND  TABLE_NAME = '$table'
 		 AND COLUMN_NAME = '$column'
 		 AND EXTRA LIKE '%auto_increment%'")->count() > 0;
@@ -84,7 +84,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 	protected function isNullable($table, $column) {
 		return $this->getDB()->query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
-                 WHERE TABLE_SCHEMA = '".\Coxis\Core\App::get('config')->get('database/database')."' 
+                 WHERE TABLE_SCHEMA = '".\Asgard\Core\App::get('config')->get('database/database')."' 
                  AND  TABLE_NAME = '$table'
 		 AND COLUMN_NAME = '$column'
 		 AND IS_NULLABLE = 'YES'")->count() > 0;
@@ -93,7 +93,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 	protected function getDefault($table, $column) {
 		$r = $this->getDB()->query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
-                 WHERE TABLE_SCHEMA = '".\Coxis\Core\App::get('config')->get('database/database')."' 
+                 WHERE TABLE_SCHEMA = '".\Asgard\Core\App::get('config')->get('database/database')."' 
                  AND  TABLE_NAME = '$table'
 		 AND COLUMN_NAME = '$column'")->first();
 		return $r['COLUMN_DEFAULT'];
@@ -102,7 +102,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 	protected function getDataType($table, $column) {
 		$r = $this->getDB()->query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
-                 WHERE TABLE_SCHEMA = '".\Coxis\Core\App::get('config')->get('database/database')."' 
+                 WHERE TABLE_SCHEMA = '".\Asgard\Core\App::get('config')->get('database/database')."' 
                  AND  TABLE_NAME = '$table'
 		 AND COLUMN_NAME = '$column'")->first();
 		return $r['DATA_TYPE'];
@@ -111,7 +111,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 	protected function getType($table, $column) {
 		$r = $this->getDB()->query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
-                 WHERE TABLE_SCHEMA = '".\Coxis\Core\App::get('config')->get('database/database')."' 
+                 WHERE TABLE_SCHEMA = '".\Asgard\Core\App::get('config')->get('database/database')."' 
                  AND  TABLE_NAME = '$table'
 		 AND COLUMN_NAME = '$column'")->first();
 		return $r['COLUMN_TYPE'];
@@ -120,7 +120,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 	protected function getLength($table, $column) {
 		$r = $this->getDB()->query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
-                 WHERE TABLE_SCHEMA = '".\Coxis\Core\App::get('config')->get('database/database')."' 
+                 WHERE TABLE_SCHEMA = '".\Asgard\Core\App::get('config')->get('database/database')."' 
                  AND  TABLE_NAME = '$table'
 		 AND COLUMN_NAME = '$column'")->first();
 		return $r['CHARACTER_MAXIMUM_LENGTH'];
@@ -129,7 +129,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 	protected function isPrimary() {
 		return $this->getDB()->query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
-                 WHERE TABLE_SCHEMA = '".\Coxis\Core\App::get('config')->get('database/database')."' 
+                 WHERE TABLE_SCHEMA = '".\Asgard\Core\App::get('config')->get('database/database')."' 
                  AND  TABLE_NAME = '$table'
 		 AND COLUMN_NAME = '$column'
 		 AND COLUMN_KEY = 'PRI'")->count() > 0;
@@ -138,7 +138,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 	protected function isUnique() {
 		return $this->getDB()->query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
-                 WHERE TABLE_SCHEMA = '".\Coxis\Core\App::get('config')->get('database/database')."' 
+                 WHERE TABLE_SCHEMA = '".\Asgard\Core\App::get('config')->get('database/database')."' 
                  AND  TABLE_NAME = '$table'
 		 AND COLUMN_NAME = '$column'
 		 AND COLUMN_KEY = 'UNI'")->count() > 0;
@@ -147,7 +147,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 	protected function isIndex() {
 		return $this->getDB()->query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
-                 WHERE TABLE_SCHEMA = '".\Coxis\Core\App::get('config')->get('database/database')."' 
+                 WHERE TABLE_SCHEMA = '".\Asgard\Core\App::get('config')->get('database/database')."' 
                  AND  TABLE_NAME = '$table'
 		 AND COLUMN_NAME = '$column'
 		 AND COLUMN_KEY = 'MUL'")->count() > 0;
@@ -193,7 +193,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 //~ );
 	
 	public function test0() {
-		$schema = new \Coxis\DB\Schema($this->getDB());
+		$schema = new \Asgard\DB\Schema($this->getDB());
 		$schema->create('test', function($table) {
 			$table->add('id', 'int', 11)
 				->autoincrement();
@@ -207,7 +207,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 	}
 	
 	public function test1() {
-		$schema = new \Coxis\DB\Schema($this->getDB());
+		$schema = new \Asgard\DB\Schema($this->getDB());
 		$schema->create('test', function($table) {
 			$table->add('id', 'int', 11);
 		});
@@ -216,7 +216,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 	}
 	
 	public function test2() {
-		$schema = new \Coxis\DB\Schema($this->getDB());
+		$schema = new \Asgard\DB\Schema($this->getDB());
 		$schema->create('test', function($table) {
 			$table->add('id', 'int', 11);
 		});
@@ -225,7 +225,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 	}
 	
 	public function test3() {
-		$schema = new \Coxis\DB\Schema($this->getDB());
+		$schema = new \Asgard\DB\Schema($this->getDB());
 		$schema->create('test', function($table) {
 			$table->add('id', 'int', 11);
 		});
@@ -236,7 +236,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 	}
 	
 	public function test4() {
-		$schema = new \Coxis\DB\Schema($this->getDB());
+		$schema = new \Asgard\DB\Schema($this->getDB());
 		$schema->create('test', function($table) {
 			$table->add('id', 'int', 11);
 			$table->add('title', 'text');
@@ -246,7 +246,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 	}
 	
 	public function test5() {
-		$schema = new \Coxis\DB\Schema($this->getDB());
+		$schema = new \Asgard\DB\Schema($this->getDB());
 		$schema->create('test', function($table) {
 			$table->add('id', 'int', 11);
 			$table->add('title', 'text');
@@ -256,7 +256,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 	}
 	
 	public function test6() {
-		$schema = new \Coxis\DB\Schema($this->getDB());
+		$schema = new \Asgard\DB\Schema($this->getDB());
 		$schema->create('test', function($table) {
 			$table->add('id', 'int', 11);
 			$table->add('title', 'text');
@@ -273,7 +273,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 	}
 	
 	public function test7() {
-		$schema = new \Coxis\DB\Schema($this->getDB());
+		$schema = new \Asgard\DB\Schema($this->getDB());
 		$schema->create('test', function($table) {
 			$table->add('id', 'int', 11);
 			$table->add('title', 'varchar', 50);
@@ -287,7 +287,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 	}
 	
 	public function test8() {
-		$schema = new \Coxis\DB\Schema($this->getDB());
+		$schema = new \Asgard\DB\Schema($this->getDB());
 		$schema->create('test', function($table) {
 			$table->add('id', 'int', 11);
 			$table->add('title', 'varchar', 50);
@@ -301,7 +301,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 	}
 	
 	public function test9() {
-		$schema = new \Coxis\DB\Schema($this->getDB());
+		$schema = new \Asgard\DB\Schema($this->getDB());
 		$schema->create('test', function($table) {
 			$table->add('id', 'int', 11);
 			$table->add('title', 'varchar', 50);

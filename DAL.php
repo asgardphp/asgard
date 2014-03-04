@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\DB;
+namespace Asgard\DB;
 
 class DAL {
 	public $db = null;
@@ -164,7 +164,7 @@ class DAL {
 	public function getPaginator() {
 		if($this->page === null || $this->per_page === null)
 			return;
-		return new \Coxis\Utils\Paginator($this->count(), $this->page, $this->per_page);
+		return new \Asgard\Utils\Paginator($this->count(), $this->page, $this->per_page);
 	}
 
 	/* SETTERS */
@@ -305,7 +305,7 @@ class DAL {
 		if($brackets)
 			$result = '('.$result.')';
 		
-		return array($result, \Coxis\Utils\Tools::flateArray($pdoparams));
+		return array($result, \Asgard\Utils\Tools::flateArray($pdoparams));
 	}
 
 	#todo revemo
@@ -684,7 +684,7 @@ class DAL {
 				->offset(null)
 				->orderBy(null)
 				->limit(null);
-			return \Coxis\Utils\Tools::array_get($this->first(), $fct);
+			return \Asgard\Utils\Tools::array_get($this->first(), $fct);
 		}
 	}
 	

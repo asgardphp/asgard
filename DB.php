@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\DB;
+namespace Asgard\DB;
 
 class DB {
 	protected $db;

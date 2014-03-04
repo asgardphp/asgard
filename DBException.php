@@ -1,4 +1,4 @@
 <?php
-namespace Coxis\DB;
+namespace Asgard\DB;
 
 class DBException extends \Exception {}

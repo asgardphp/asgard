@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\DB\Tests;
+namespace Asgard\DB\Tests;
 
 class DBTest extends \PHPUnit_Framework_TestCase {
 	public static function setUpBeforeClass() {
@@ -9,17 +9,17 @@ class DBTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function test1() {
-		$db = new \Coxis\DB\DB(array(
+		$db = new \Asgard\DB\DB(array(
 			'host' => 'localhost',
 			'user' => 'root',
 			'password' => '',
-			'database' => 'coxis',
+			'database' => 'asgard',
 		));
-		$db2 = new \Coxis\DB\DB(array(
+		$db2 = new \Asgard\DB\DB(array(
 			'host' => 'localhost',
 			'user' => 'root',
 			'password' => '',
-			'database' => 'coxis',
+			'database' => 'asgard',
 		));
 
 		$this->assertTrue($db->getDB() instanceof \PDO);
