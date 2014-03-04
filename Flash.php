@@ -5,12 +5,12 @@ class Flash {
 	protected $messages = array('success' => array(), 'error' => array());
 
 	function __construct() {
-		if(\Coxis\Core\Facades\Session::has('messages'))
-			$this->messages = \Coxis\Core\Facades\Session::get('messages');
+		if(\Coxis\Core\App::get('session')->has('messages'))
+			$this->messages = \Coxis\Core\App::get('session')->get('messages');
 	}
 
 	protected function persist() {
-		\Coxis\Core\Facades\Session::set('messages', $this->messages);
+		\Coxis\Core\App::get('session')->set('messages', $this->messages);
 	}
 
 	public function addSuccess($message) {

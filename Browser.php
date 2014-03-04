@@ -80,12 +80,10 @@ class Browser {
 
 	protected function merge(&$arr1, &$arr2) {
 		foreach($arr2 as $k=>$v) {
-			if(is_array($arr1[$k]) && is_array($arr2[$k])) {
+			if(is_array($arr1[$k]) && is_array($arr2[$k]))
 				$this->merge($arr1[$k], $arr2[$k]);
-			}
-			elseif($arr1[$k] !== $arr2[$k]) {
+			elseif($arr1[$k] !== $arr2[$k])
 				$arr1[$k] = $arr2[$k];
-			}
 		}
 	}
 }

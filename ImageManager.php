@@ -41,7 +41,6 @@ class ImageManager {
 		imagesavealpha($new, true);
 		$trans_colour = imagecolorallocatealpha($new, 0, 0, 0, 127);
 		imagefill($new, 0, 0, $trans_colour);
-		//$src = static::create($input);
 		$src = $this->rsc;
 
 		imagecopyresampled($new, $src, 0, 0, 0, 0, $width, $height, $orig_width, $orig_height);

@@ -37,7 +37,7 @@ class Debug {
 		if(!$backtrace)
 			$backtrace = debug_backtrace();
 
-		$jquery = App::get('url')->to('js/jquery.js');
+		$jquery = \Coxis\Core\App::get('url')->to('js/jquery.js');
 			
 		$r = '<b>Backtrace</b><br>'."\n";
 		$r .= <<<EOT
@@ -168,7 +168,7 @@ EOT;
 	}
 
 	public static function getHTMLRequest() {
-		$r = App::get('request');
+		$r = \Coxis\Core\App::get('request');
 		$res = '<b>Request</b><br>';
 		$res .= '<div>';
 

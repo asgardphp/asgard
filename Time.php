@@ -26,23 +26,27 @@ class Time {
 		return $this->format('d/m/Y');
 	}
 
+	public static function dateEscape($str) {
+		return '\\'.implode('\\', str_split($str));
+	}
+
 	public function format($format) {
-		$format = preg_replace('/(?<!\\\\)M/', Tools::dateEscape(Tools::$shortMonths[date('M', $this->timestamp)]), $format); #Jan
-		$format = preg_replace('/(?<!\\\\)F/', Tools::dateEscape(Tools::$months[date('F', $this->timestamp)]), $format); #January
-		$format = preg_replace('/(?<!\\\\)D/', Tools::dateEscape(Tools::$shortDays[date('D', $this->timestamp)]), $format); #Mon
-		$format = preg_replace('/(?<!\\\\)l/', Tools::dateEscape(Tools::$days[date('l', $this->timestamp)]), $format); #Monday
+		$format = preg_replace('/(?<!\\\\)M/', static::dateEscape(__(date('M', $this->timestamp))), $format); #Jan
+		$format = preg_replace('/(?<!\\\\)F/', static::dateEscape(__(date('F', $this->timestamp))), $format); #January
+		$format = preg_replace('/(?<!\\\\)D/', static::dateEscape(__(date('D', $this->timestamp))), $format); #Mon
+		$format = preg_replace('/(?<!\\\\)l/', static::dateEscape(__(date('l', $this->timestamp))), $format); #Monday
 		return date($format, $this->timestamp);
 	}
 
 	public static function dateToSQLFormat($date) {
-		if($date=='')
+		if($date == '')
 			return '';
 		list($d, $m, $y) = explode('/', $date);
 		return $y.'-'.$m.'-'.$d;
 	}
 	
 	public static function SQLFormatToDate($date) {
-		if($date=='')
+		if($date == '')
 			return '';
 		list($y, $m, $d) = explode('-', $date);
 		return $d.'/'.$m.'/'.$y;

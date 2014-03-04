@@ -68,15 +68,18 @@ class FileManager {
 	}
 
 	public static function unlink($file) {
-		if(file_exists(_DIR_.$file)) {
-			if(is_dir(_DIR_.$file))
-				static::rmdir($file);
+		if(!file_exists($file)) {
+			if(file_exists(_DIR_.$file))
+				$file = _DIR_.$file;
 			else
-				unlink($file);
-			return true;
+				return false;
 		}
+
+		if(is_dir(_DIR_.$file))
+			static::rmdir($file);
 		else
-			return false;
+			unlink($file);
+		return true;
 	}
 	
 	public static function mkdir($dir, $absolute=false) {

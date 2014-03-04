@@ -22,7 +22,6 @@ class Field {
                         break;
                     case 'submit':
                     case 'image':
-                        // ...
                         $this->value = $inputValue;
                         break;
                     case 'radio':
@@ -76,7 +75,6 @@ class Field {
                 if(!is_array($this->value))
                     $this->value = array();
                 if($node->getAttribute('checked') == 'checked')
-                    // $this->value[] = $inputValue;
                     $this->value = $inputValue;
                 break;
         }
