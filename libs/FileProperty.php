@@ -10,8 +10,6 @@ class FileProperty extends \Coxis\Core\Properties\BaseProperty {
 			$rules['filerequired'] = $rules['required'];
 			unset($rules['required']);
 		}
-		unset($rules['dir']);
-		unset($rules['multiple']);
 		if(!isset($rules['allowed']))
 			$rules['allowed'] = static::$defaultallowed;
 

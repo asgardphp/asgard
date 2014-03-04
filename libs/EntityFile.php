@@ -32,18 +32,18 @@ class EntityFile {
 		return pathinfo($name, PATHINFO_EXTENSION);
 	}
 
-	public function notAllowed() {
+	public function allowed() {
 		if(!$this->exists())
-			return false;
+			return true;
 		$property = $this->property;
 		
 		if(!in_array($this->extension(), $property::$defaultallowed))
-			return $this->extension();
-		return false;
+			return false;
+		return true;
 	}
 
-	public function allowed() {
-		return !$this->notAllowed();
+	public function notAllowed() {
+		return !$this->allowed();
 	}
 	
 	public function exists() {
@@ -66,14 +66,18 @@ class EntityFile {
 		$file = $this->file;
 		if(is_array($file))
 			return $file['path'];
-		elseif($file)
-			return $this->dir($absolute).$file;
+		elseif($file) {
+			if(file_exists($file))
+				return $file;
+			else
+				return $this->dir($absolute).$file;
+		}
 		else
 			return $default;
 	}
 	
 	public function url($default=null) {
-		return \URL::to($this->get($default, false));
+		return \Coxis\Core\App::get('url')->to($this->get($default, false));
 	}
 	
 	public function save() {
@@ -100,7 +104,6 @@ class EntityFile {
 			\Coxis\Imagecache\Libs\ImageCache::clearFile($path);
 		}
 		$this->file = null;
-		$this->entity->save(null, true);
 		
 		return $this;
 	}

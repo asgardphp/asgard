@@ -14,33 +14,41 @@ class FilesBehavior implements \Coxis\Core\Behavior {
 
 		#$article->hasFile('image')
 		$entityDefinition->addMethod('hasFile', function($entity, $file) {
-			return $entity::hasProperty($file) && $entity::property($file)->type == 'file';
+			return $entity::hasProperty($file) && $entity::property($file) instanceof Libs\FileProperty;
 		});
-		#Article::files()
-		$entityDefinition->addStaticMethod('files', function($name, $args) use($entityName) {
+		#Article::fileProperties()
+		$entityDefinition->addStaticMethod('fileProperties', function() use($entityName) {
 			$res = array();
-			foreach($entityName::properties() as $name=>$property)
-				if($property->type == 'file')
+			foreach($entityName::properties() as $name=>$property) {
+				if($property instanceof Libs\FileProperty)
 					$res[$name] = $property;
+			}
+			return $res;
+		});
+		#$article->files()
+		$entityDefinition->addMethod('files', function($entity) {
+			$res = array();
+			foreach($entity->toArrayRaw() as $name=>$value) {
+				if($entity->hasFile($name))
+					$res[$name] = $value;
+			}
 			return $res;
 		});
 
 		$entityDefinition->hookBefore('save', function($chain, $entity) {
-			foreach($entity::properties() as $name=>$property)
-				if($property->type == 'file')
-					$entity->$name->save();
+			foreach($entity->files() as $file)
+				$file->save();
 		});
 
 		$entityDefinition->hookOn('destroy', function($chain, $entity) {
-			foreach($entity::properties() as $name=>$property)
-				if($property->type == 'file')
-					$entity->$name->delete();
+			foreach($entity->files() as $file)
+				$file->delete();
 		});
 	}
 	
-	public static function loadValidationRules() {
-		if(!\Validation::ruleExists('filerequired')) {
-			\Validation::register('filerequired', function($attribute, $value, $params, $validator) {
+	protected static function loadValidationRules() {
+		if(!\Coxis\Core\App::get('validation')->ruleExists('filerequired')) {
+			\Coxis\Core\App::get('validation')->register('filerequired', function($attribute, $value, $params, $validator) {
 				if(!$params[0])
 					return;
 				$msg = false;
@@ -49,34 +57,42 @@ class FilesBehavior implements \Coxis\Core\Behavior {
 				elseif(!$value->exists())
 					$msg = $validator->getMessage('fileexists', $attribute, __('The file ":attribute" does not exist.'));
 				if($msg) {
-					return \Validation::format($msg, array(
+					return \Coxis\Core\App::get('validation')->format($msg, array(
 						'attribute'	=>	$attribute,
 					));
 				}
 			});
 		}
 		
-		if(!\Validation::ruleExists('image')) {
-			\Validation::register('image', function($attribute, $value, $params, $validator) {
-				try {
-					$mime = mime_content_type($value['tmp_name']);
-					if(!in_array($mime, array('image/jpeg', 'image/png', 'image/gif'))) {
-						$msg = $validator->getMessage('image', $attribute, __('The file ":attribute" must be an image.'));
-						return \Validation::format($msg, array(
-							'attribute'	=>	$attribute,
-						));
-					}
-				} catch(\ErrorException $e) {}
+		if(!\Coxis\Core\App::get('validation')->ruleExists('image')) {
+			\Coxis\Core\App::get('validation')->register('image', function($attribute, $value, $params, $validator) {
+				if(!$value->exists())
+					return;
+
+	            $finfo = \finfo_open(FILEINFO_MIME);
+	            $mime = \finfo_file($finfo, $value->get(null, true));
+	            \finfo_close($finfo);
+	            list($mime) = explode(';', $mime);
+
+				if(!in_array($mime, array('image/jpeg', 'image/png', 'image/gif'))) {
+					$msg = $validator->getMessage('image', $attribute, __('The file ":attribute" must be an image.'));
+					return \Coxis\Validation\Validation::format($msg, array(
+						'attribute'	=>	$attribute,
+					));
+				}
 			});
 		}
 
-		if(!\Validation::ruleExists('allowed')) {
-			\Validation::register('allowed', function($attribute, $value, $params, $validator) {
-				if($ext = $value->notAllowed()) {
+		if(!\Coxis\Core\App::get('validation')->ruleExists('allowed')) {
+			\Coxis\Core\App::get('validation')->register('allowed', function($attribute, $value, $params, $validator) {
+				if(!$value->exists())
+					return;
+
+				if(!in_array($value->extension(), $params[0])) {
 					$msg = $validator->getMessage('image', $attribute, __('This type of file is not allowed ":ext".'));
-					return \Validation::format($msg, array(
+					return \Coxis\Core\App::get('validation')->format($msg, array(
 						'attribute'	=>	$attribute,
-						'ext'	=>	$ext,
+						'ext'	=>	$value->extension(),
 					));
 				}
 			});
