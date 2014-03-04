@@ -1,8 +1,8 @@
 <?php
-namespace Coxis\Utils\Facades;
+namespace Asgard\Utils\Facades;
 
-abstract class HTML extends \Coxis\Core\Facade {
+abstract class HTML extends \Asgard\Core\Facade {
 	public static function callback() {
-		return new \Coxis\Utils\HTML;
+		return new \Asgard\Utils\HTML;
 	}
 }

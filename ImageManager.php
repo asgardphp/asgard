@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Utils;
+namespace Asgard\Utils;
 
 class ImageManager {
 	var $src;

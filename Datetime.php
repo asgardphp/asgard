@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Utils;
+namespace Asgard\Utils;
 
 class Datetime extends Time {
 	public function __toString() {

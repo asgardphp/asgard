@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Utils;
+namespace Asgard\Utils;
 
 class Paginator {
 	public $per_page;
@@ -45,7 +45,7 @@ class Paginator {
 		if($this->page > 1)
 			$r .= '<a href="'.$this->getPrev().'">«</a>';
 		for($i=1; $i<=$this->getPages(); $i++)
-			$r .= '<a href="'.\Coxis\Core\App::get('url')->full(array('page'=>$i)).'"'.($this->page ==$i ? ' class="active"':'').'>'.$i.'</a>';
+			$r .= '<a href="'.\Asgard\Core\App::get('url')->full(array('page'=>$i)).'"'.($this->page ==$i ? ' class="active"':'').'>'.$i.'</a>';
 		if($this->page < $this->getPages())
 			$r .= '<a href="'.$this->getNext().'">»</a>';
 		return $r;
@@ -60,10 +60,10 @@ class Paginator {
 	}
 	
 	public function getPrev() {
-		return \Coxis\Core\App::get('url')->full(array('page'=>$this->page-1));
+		return \Asgard\Core\App::get('url')->full(array('page'=>$this->page-1));
 	}
 	
 	public function getNext() {
-		return \Coxis\Core\App::get('url')->full(array('page'=>$this->page+1));
+		return \Asgard\Core\App::get('url')->full(array('page'=>$this->page+1));
 	}
 }

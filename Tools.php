@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Utils;
+namespace Asgard\Utils;
 
 class Tools {
 	public static function is_function($f) {
@@ -273,11 +273,11 @@ class Tools {
 	// 	return implode('/', $relPath);
 	// }
 
-	// public static function coxis_array_merge(&$a,$b){
+	// public static function asgard_array_merge(&$a,$b){
 	//     foreach($b as $child=>$value) {
 	//         if(isset($a[$child])) {
 	//             if(is_array($a[$child]) && is_array($value))
-	//                 static::coxis_array_merge($a[$child], $value);
+	//                 static::asgard_array_merge($a[$child], $value);
 	//         }
 	//         else
 	//             $a[$child] = $value;
@@ -285,7 +285,7 @@ class Tools {
 	// }
 
 	// public static function hash($pwd) {
-	// 	return sha1(\Coxis\Core\App::get('config')->get('salt').$pwd);
+	// 	return sha1(\Asgard\Core\App::get('config')->get('salt').$pwd);
 	// }
 	
 	// public static function prependHttp($url) {

@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Utils;
+namespace Asgard\Utils;
 
 class Debug {
 	public static function d() {
@@ -7,7 +7,7 @@ class Debug {
 	}
 
 	public static function dWithTrace($trace) {
-		if(!\Coxis\Core\App::get('config')->get('debug'))
+		if(!\Asgard\Core\App::get('config')->get('debug'))
 			return;
 		while(ob_get_length())
 			ob_end_clean();
@@ -37,7 +37,7 @@ class Debug {
 		if(!$backtrace)
 			$backtrace = debug_backtrace();
 
-		$jquery = \Coxis\Core\App::get('url')->to('js/jquery.js');
+		$jquery = \Asgard\Core\App::get('url')->to('js/jquery.js');
 			
 		$r = '<b>Backtrace</b><br>'."\n";
 		$r .= <<<EOT
@@ -100,11 +100,11 @@ EOT;
 				foreach($next['args'] as $arg) {
 					$r .= '<li>';
 					if(is_array($arg))
-						$str = \Coxis\Utils\Tools::var_dump_to_string($arg);
+						$str = \Asgard\Utils\Tools::var_dump_to_string($arg);
 					elseif(is_string($arg))
 						$str = $arg;
 					else
-						$str = \Coxis\Utils\Tools::var_dump_to_string($arg);
+						$str = \Asgard\Utils\Tools::var_dump_to_string($arg);
 					$r .= '<pre>'.$str.'</pre>';
 					$r .= "</li>\n";
 				}
@@ -168,7 +168,7 @@ EOT;
 	}
 
 	public static function getHTMLRequest() {
-		$r = \Coxis\Core\App::get('request');
+		$r = \Asgard\Core\App::get('request');
 		$res = '<b>Request</b><br>';
 		$res .= '<div>';
 
@@ -178,11 +178,11 @@ EOT;
 			foreach($r->get->all() as $k=>$v) {
 				$res .= '<li>'.$k.': ';
 				if(is_array($v))
-					$str = \Coxis\Utils\Tools::var_dump_to_string($v);
+					$str = \Asgard\Utils\Tools::var_dump_to_string($v);
 				elseif(is_string($v))
 					$str = $v;
 				else
-					$str = \Coxis\Utils\Tools::var_dump_to_string($v);
+					$str = \Asgard\Utils\Tools::var_dump_to_string($v);
 				$res .= '<pre>'.$str.'</pre>';
 				$res .= "</li>\n";
 			}
@@ -195,11 +195,11 @@ EOT;
 			foreach($r->post->all() as $k=>$v) {
 				$res .= '<li>'.$k.': ';
 				if(is_array($v))
-					$str = \Coxis\Utils\Tools::var_dump_to_string($v);
+					$str = \Asgard\Utils\Tools::var_dump_to_string($v);
 				elseif(is_string($v))
 					$str = $v;
 				else
-					$str = \Coxis\Utils\Tools::var_dump_to_string($v);
+					$str = \Asgard\Utils\Tools::var_dump_to_string($v);
 				$res .= '<pre>'.$str.'</pre>';
 				$res .= "</li>\n";
 			}
@@ -212,11 +212,11 @@ EOT;
 			foreach($r->file->all() as $k=>$v) {
 				$res .= '<li>'.$k.': ';
 				if(is_array($v))
-					$str = \Coxis\Utils\Tools::var_dump_to_string($v);
+					$str = \Asgard\Utils\Tools::var_dump_to_string($v);
 				elseif(is_string($v))
 					$str = $v;
 				else
-					$str = \Coxis\Utils\Tools::var_dump_to_string($v);
+					$str = \Asgard\Utils\Tools::var_dump_to_string($v);
 				$res .= '<pre>'.$str.'</pre>';
 				$res .= "</li>\n";
 			}
@@ -229,11 +229,11 @@ EOT;
 			foreach($r->cookie->all() as $k=>$v) {
 				$res .= '<li>'.$k.': ';
 				if(is_array($v))
-					$str = \Coxis\Utils\Tools::var_dump_to_string($v);
+					$str = \Asgard\Utils\Tools::var_dump_to_string($v);
 				elseif(is_string($v))
 					$str = $v;
 				else
-					$str = \Coxis\Utils\Tools::var_dump_to_string($v);
+					$str = \Asgard\Utils\Tools::var_dump_to_string($v);
 				$res .= '<pre>'.$str.'</pre>';
 				$res .= "</li>\n";
 			}
@@ -246,11 +246,11 @@ EOT;
 			foreach($r->session->all() as $k=>$v) {
 				$res .= '<li>'.$k.': ';
 				if(is_array($v))
-					$str = \Coxis\Utils\Tools::var_dump_to_string($v);
+					$str = \Asgard\Utils\Tools::var_dump_to_string($v);
 				elseif(is_string($v))
 					$str = $v;
 				else
-					$str = \Coxis\Utils\Tools::var_dump_to_string($v);
+					$str = \Asgard\Utils\Tools::var_dump_to_string($v);
 				$res .= '<pre>'.$str.'</pre>';
 				$res .= "</li>\n";
 			}
@@ -263,11 +263,11 @@ EOT;
 			foreach($r->server->all() as $k=>$v) {
 				$res .= '<li>'.$k.': ';
 				if(is_array($v))
-					$str = \Coxis\Utils\Tools::var_dump_to_string($v);
+					$str = \Asgard\Utils\Tools::var_dump_to_string($v);
 				elseif(is_string($v))
 					$str = $v;
 				else
-					$str = \Coxis\Utils\Tools::var_dump_to_string($v);
+					$str = \Asgard\Utils\Tools::var_dump_to_string($v);
 				$res .= '<pre>'.$str.'</pre>';
 				$res .= "</li>\n";
 			}

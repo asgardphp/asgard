@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Utils;
+namespace Asgard\Utils;
 
 class HTML {
 	protected $include_js = array();
@@ -82,12 +82,12 @@ class HTML {
 	
 	public function printJSInclude() {
 		foreach($this->include_js as $js)
-			echo '<script type="text/javascript" src="'.\Coxis\Core\App::get('url')->to($js).'"></script>'."\n";
+			echo '<script type="text/javascript" src="'.\Asgard\Core\App::get('url')->to($js).'"></script>'."\n";
 	}
 	
 	public function printCSSInclude() {
 		foreach($this->include_css as $css)
-			echo '<link rel="stylesheet" href="'.\Coxis\Core\App::get('url')->to($css).'"/>'."\n";
+			echo '<link rel="stylesheet" href="'.\Asgard\Core\App::get('url')->to($css).'"/>'."\n";
 	}
 	
 	public function printJSCode() {
@@ -133,7 +133,7 @@ class HTML {
 				$files .= ($files ? ',':'').$js;
 		}
 		if($files)
-			echo '<script type="text/javascript" src="'.\Coxis\Core\App::get('url')->to('min/index.php?f='.$files).'"></script>';
+			echo '<script type="text/javascript" src="'.\Asgard\Core\App::get('url')->to('min/index.php?f='.$files).'"></script>';
 		return;
 	}
 
@@ -146,7 +146,7 @@ class HTML {
 				$files .= ($files ? ',':'').$css;
 		}
 		if($files)
-			echo '<link rel="stylesheet" href="'.\Coxis\Core\App::get('url')->to('min/index.php?f='.$files).'"/>';
+			echo '<link rel="stylesheet" href="'.\Asgard\Core\App::get('url')->to('min/index.php?f='.$files).'"/>';
 		return;
 	}
 	

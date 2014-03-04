@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Utils;
+namespace Asgard\Utils;
 
 class Browser {
 	public $session = array();
@@ -36,7 +36,7 @@ class Browser {
 			parse_str($infos['query'], $get);
 			$url = preg_replace('/(\?.*)$/', '', $url);
 		}
-		$request = new \Coxis\Core\Request;
+		$request = new \Asgard\Core\Request;
 		$request->setMethod($method);
 		$request->get->setAll($get);
 		$request->post->setAll($post);
@@ -52,7 +52,7 @@ class Browser {
 		$request->url->setServer('localhost');
 		$request->url->setRoot('');
 
-		$res = \Coxis\Core\HttpKernel::process($request, true);
+		$res = \Asgard\Core\HttpKernel::process($request, true);
 
 		$this->last = $res;
 		$this->cookies = $request->cookie->all();

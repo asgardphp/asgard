@@ -1,16 +1,16 @@
 <?php
-namespace Coxis\Utils;
+namespace Asgard\Utils;
 
 class Flash {
 	protected $messages = array('success' => array(), 'error' => array());
 
 	function __construct() {
-		if(\Coxis\Core\App::get('session')->has('messages'))
-			$this->messages = \Coxis\Core\App::get('session')->get('messages');
+		if(\Asgard\Core\App::get('session')->has('messages'))
+			$this->messages = \Asgard\Core\App::get('session')->get('messages');
 	}
 
 	protected function persist() {
-		\Coxis\Core\App::get('session')->set('messages', $this->messages);
+		\Asgard\Core\App::get('session')->set('messages', $this->messages);
 	}
 
 	public function addSuccess($message) {

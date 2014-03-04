@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Utils;
+namespace Asgard\Utils;
 
 /***************************************************************************
  *                         RSS 2.0 generation class

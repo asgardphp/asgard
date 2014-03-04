@@ -1,12 +1,12 @@
 <?php
-namespace Coxis\Utils;
+namespace Asgard\Utils;
 
 class Locale {
 	protected $default = 'en';
 	public $locales = array();
 
 	function __construct() {
-		static::setLocale(\Coxis\Core\App::get('config')->get('locale'));
+		static::setLocale(\Asgard\Core\App::get('config')->get('locale'));
 	}
 
 	public function addLocales($locales) {
@@ -28,11 +28,11 @@ class Locale {
 	}
 
 	public static function setLocale($locale) {
-		\Coxis\Core\App::get('config')->set('locale', $locale);
+		\Asgard\Core\App::get('config')->set('locale', $locale);
 	}
 
 	public function translate($key, $params=array()) {
-		$locale = \Coxis\Core\App::get('config')->get('locale');
+		$locale = \Asgard\Core\App::get('config')->get('locale');
 		if(isset($this->locales[$locale][$key]) && $this->locales[$locale][$key])
 			$str = $this->locales[$locale][$key];
 		elseif(isset($this->locales[$this->default][$key]) && $this->locales[$this->default][$key])
