@@ -1,5 +1,5 @@
 <?php
-class DateField extends \Coxis\Form\Fields\Field {
+class DateField extends \Asgard\Form\Fields\Field {
 	protected $default_render = 'date';
 	protected $data_type = 'date';
 

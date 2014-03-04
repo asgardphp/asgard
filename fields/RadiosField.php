@@ -1,4 +1,4 @@
 <?php
-class RadiosField extends \Coxis\Form\Fields\Field {
+class RadiosField extends \Asgard\Form\Fields\Field {
 
 }

@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Form\Widgets;
+namespace Asgard\Form\Widgets;
 
 abstract class HTMLWidget {
 	protected $label;
@@ -32,8 +32,8 @@ abstract class HTMLWidget {
 	}
 
 	public static function __callStatic($name, $args) {
-		return \Coxis\Core\App::instance()->make('Coxis\Form\Widgets\\'.$name, $args, function() use($name, $args) {
-			$class = 'Coxis\Form\Widgets\\'.$name.'Widget';
+		return \Asgard\Core\App::instance()->make('Asgard\Form\Widgets\\'.$name, $args, function() use($name, $args) {
+			$class = 'Asgard\Form\Widgets\\'.$name.'Widget';
 			$reflector = new \ReflectionClass($class);
 			$widget = $reflector->newInstanceArgs($args);
 			return $widget;

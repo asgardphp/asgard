@@ -1,14 +1,14 @@
 <?php
-namespace Coxis\Form\Widgets;
+namespace Asgard\Form\Widgets;
 
-class TextWidget extends \Coxis\Form\Widgets\HTMLWidget {
+class TextWidget extends \Asgard\Form\Widgets\HTMLWidget {
 	public function render($options=array()) {
 		$options = $this->options+$options;
 		
 		$attrs = array();
 		if(isset($options['attrs']))
 			$attrs = $options['attrs'];
-		return \Coxis\Form\HTMLHelper::tag('input', array(
+		return \Asgard\Form\HTMLHelper::tag('input', array(
 			'type'	=>	'text',
 			'name'	=>	$this->name,
 			'value'	=>	$this->value,

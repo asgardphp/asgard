@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Form;
+namespace Asgard\Form;
 
 class EntityForm extends Form {
 	protected $entity;
@@ -49,25 +49,25 @@ class EntityForm extends Form {
 		elseif($entity->isOld())
 			$field_params['default'] = $entity->get($name, $locale);
 
-		$field_type = 'Coxis\Form\Fields\TextField';
+		$field_type = 'Asgard\Form\Fields\TextField';
 		if($properties->type == 'boolean')
-			$field_type = 'Coxis\Form\Fields\BooleanField';
+			$field_type = 'Asgard\Form\Fields\BooleanField';
 		elseif($properties->type == 'file') {
 			if($properties->multiple)
-				$field_type = 'Coxis\Form\Fields\MultipleFileField';
+				$field_type = 'Asgard\Form\Fields\MultipleFileField';
 			else
-				$field_type = 'Coxis\Form\Fields\FileField';
+				$field_type = 'Asgard\Form\Fields\FileField';
 		}
 		elseif($properties->type == 'date')
-			$field_type = 'Coxis\Form\Fields\DateField';
+			$field_type = 'Asgard\Form\Fields\DateField';
 
 		if($properties->in) {
 			foreach($properties->in as $v)
 				$field_params['choices'][$v] = $v;
 			if($properties->multiple)
-				$field_type = 'Coxis\Form\Fields\MultipleselectField';
+				$field_type = 'Asgard\Form\Fields\MultipleselectField';
 			else
-				$field_type = 'Coxis\Form\Fields\SelectField';
+				$field_type = 'Asgard\Form\Fields\SelectField';
 		}
 
 		$field_class = $field_type;
@@ -108,14 +108,14 @@ class EntityForm extends Form {
 		if(!$field)
 			$field = $this;
 
-		if(is_subclass_of($field, 'Coxis\Form\AbstractGroup')) {
-			if($field instanceof \Coxis\Form\EntityForm)
+		if(is_subclass_of($field, 'Asgard\Form\AbstractGroup')) {
+			if($field instanceof \Asgard\Form\EntityForm)
 				$errors = $field->my_errors();
-			elseif($field instanceof \Coxis\Form\Form)
+			elseif($field instanceof \Asgard\Form\Form)
 				$errors = $field->errors();
 				
 			foreach($field as $name=>$sub_field) {
-				if(is_subclass_of($sub_field, 'Coxis\Form\AbstractGroup')) {
+				if(is_subclass_of($sub_field, 'Asgard\Form\AbstractGroup')) {
 					$field_errors = $this->errors($sub_field);
 					if(sizeof($field_errors) > 0)
 						$errors[$sub_field->name] = $field_errors;
@@ -188,12 +188,12 @@ class EntityForm extends Form {
 		if(!$group)
 			$group = $this;
 
-		if(is_a($group, 'Coxis\Form\EntityForm') || is_subclass_of($group, 'Coxis\Form\EntityForm'))
+		if(is_a($group, 'Asgard\Form\EntityForm') || is_subclass_of($group, 'Asgard\Form\EntityForm'))
 			$group->entity->save();
 
-		if(is_subclass_of($group, 'Coxis\Form\AbstractGroup')) {
+		if(is_subclass_of($group, 'Asgard\Form\AbstractGroup')) {
 			foreach($group->fields as $name=>$field) {
-				if(is_subclass_of($field, 'Coxis\Form\AbstractGroup'))
+				if(is_subclass_of($field, 'Asgard\Form\AbstractGroup'))
 					$this->_save($field);
 			}
 		}

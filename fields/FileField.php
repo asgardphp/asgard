@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Form\Fields;
+namespace Asgard\Form\Fields;
 
 class FileField extends Field {
 	protected $default_render = 'file';

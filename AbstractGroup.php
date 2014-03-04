@@ -1,7 +1,7 @@
 <?php
-namespace Coxis\Form;
+namespace Asgard\Form;
 
-abstract class AbstractGroup extends \Coxis\Hook\Hookable implements \ArrayAccess, \Iterator {
+abstract class AbstractGroup extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 	protected $groupName = null;
 	protected $dad;
 	public $data = array();
@@ -46,15 +46,15 @@ abstract class AbstractGroup extends \Coxis\Hook\Hookable implements \ArrayAcces
 	}
 	
 	public function isSent() {
-		$method = strtolower(\Coxis\Core\App::get('request')->method());
+		$method = strtolower(\Asgard\Core\App::get('request')->method());
 		if($this->dad)
 			return $this->dad->isSent();
 		else {
 			if($this->groupName) {
 				if($method == 'post' || $method == 'put')
-					return \Coxis\Core\App::get('post')->has($this->groupName);
+					return \Asgard\Core\App::get('post')->has($this->groupName);
 				elseif($method == 'get')
-					return \Coxis\Core\App::get('post')->has($this->groupName);
+					return \Asgard\Core\App::get('post')->has($this->groupName);
 				else
 					return false;
 			}
@@ -70,7 +70,7 @@ abstract class AbstractGroup extends \Coxis\Hook\Hookable implements \ArrayAcces
 					(isset($this->files[$name]) ? $this->files[$name]:array())
 				);
 			}
-			elseif(is_object($fields) && is_subclass_of($fields, 'Coxis\Form\Fields\Field')) {
+			elseif(is_object($fields) && is_subclass_of($fields, 'Asgard\Form\Fields\Field')) {
 				if(in_array($name, array('groupName', 'dad', 'data', 'fields', 'params', 'files'), true))
 					throw new \Exception('Can\'t use keyword "'.$name.'" for form field');
 				$field = $fields;
@@ -84,7 +84,7 @@ abstract class AbstractGroup extends \Coxis\Hook\Hookable implements \ArrayAcces
 					
 				return $field;
 			}
-			elseif($fields instanceof \Coxis\Form\AbstractGroup) {
+			elseif($fields instanceof \Asgard\Form\AbstractGroup) {
 				$form = $fields;
 				$form->setName($name);
 				$form->setDad($this);
@@ -151,9 +151,9 @@ abstract class AbstractGroup extends \Coxis\Hook\Hookable implements \ArrayAcces
 		$res = array();
 		
 		foreach($this->fields as $field)
-			if($field instanceof \Coxis\Form\Fields\Field)
+			if($field instanceof \Asgard\Form\Fields\Field)
 				$res[$field->name] = $field->getValue();
-			elseif($field instanceof \Coxis\Form\Group)
+			elseif($field instanceof \Asgard\Form\Group)
 				$res[$field->groupName] = $field->getData();
 		
 		return $res;
@@ -163,11 +163,11 @@ abstract class AbstractGroup extends \Coxis\Hook\Hookable implements \ArrayAcces
 		if($this->hasfile === true)
 			return true;
 		foreach($this->fields as $name=>$field) {
-			if(is_subclass_of($field, 'Coxis\Form\AbstractGroup')) {
+			if(is_subclass_of($field, 'Asgard\Form\AbstractGroup')) {
 				if($field->hasFile())
 					return true;
 			}
-			elseif($field instanceof \Coxis\Form\Fields\FileField)
+			elseif($field instanceof \Asgard\Form\Fields\FileField)
 				return true;
 		}
 		
@@ -176,14 +176,14 @@ abstract class AbstractGroup extends \Coxis\Hook\Hookable implements \ArrayAcces
 	
 	protected function updateChilds() {
 		foreach($this->fields as $name=>$field) {
-			if($field instanceof \Coxis\Form\AbstractGroup) {
+			if($field instanceof \Asgard\Form\AbstractGroup) {
 				$field->setData(
 					(isset($this->data[$name]) ? $this->data[$name]:array()),
 					(isset($this->files[$name]) ? $this->files[$name]:array())
 				);
 			}
-			elseif($field instanceof \Coxis\Form\Fields\Field) {
-				if($field instanceof \Coxis\Form\Fields\FileField) {
+			elseif($field instanceof \Asgard\Form\Fields\Field) {
+				if($field instanceof \Asgard\Form\Fields\FileField) {
 					if(isset($this->files[$name]))
 						$field->setValue($this->files[$name]);
 				}
@@ -208,7 +208,7 @@ abstract class AbstractGroup extends \Coxis\Hook\Hookable implements \ArrayAcces
 		$errors = array();
 	
 		foreach($this->fields as $name=>$field)
-			if($field instanceof \Coxis\Form\AbstractGroup) {
+			if($field instanceof \Asgard\Form\AbstractGroup) {
 				$errors[$name] = $field->errors();
 				if(sizeof($errors[$name]) == 0)
 					unset($errors[$name]);
@@ -222,12 +222,12 @@ abstract class AbstractGroup extends \Coxis\Hook\Hookable implements \ArrayAcces
 	}
 	
 	public function my_errors() {
-		$validator = new \Coxis\Validation\Validator();
+		$validator = new \Asgard\Validation\Validator();
 		$constrains = array();
 		$messages = array();
 		
 		foreach($this->fields as $name=>$field) {
-			if(is_subclass_of($field, 'Coxis\Form\Fields\Field')) {
+			if(is_subclass_of($field, 'Asgard\Form\Fields\Field')) {
 				if($field_rules = $field->getValidationRules())
 					$constrains[$name] = $field_rules;
 				if($field_messages = $field->getValidationMessages())
@@ -261,9 +261,9 @@ abstract class AbstractGroup extends \Coxis\Hook\Hookable implements \ArrayAcces
 		if(!$group)
 			$group = $this;
 			
-		if($group instanceof \Coxis\Form\AbstractGroup)
+		if($group instanceof \Asgard\Form\AbstractGroup)
 			foreach($group->fields as $name=>$field)
-				if($field instanceof \Coxis\Form\AbstractGroup)
+				if($field instanceof \Asgard\Form\AbstractGroup)
 					$field->_save($field);
 	}
 	

@@ -1,5 +1,5 @@
 <?php
-class MultipleSelectField extends \Coxis\Form\Fields\Field {
+class MultipleSelectField extends \Asgard\Form\Fields\Field {
 	protected $default_render = 'checkboxes';
 
 	public function getChoices() {

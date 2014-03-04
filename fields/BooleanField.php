@@ -1,5 +1,5 @@
 <?php
-class BooleanField extends \Coxis\Form\Fields\Field {
+class BooleanField extends \Asgard\Form\Fields\Field {
 	protected $default_render = 'checkbox';
 
 	public function getValue() {

@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Form\Fields;
+namespace Asgard\Form\Fields;
 
 class DayField extends Field {
 	function __construct($params=array()) {

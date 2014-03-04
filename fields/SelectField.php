@@ -1,5 +1,5 @@
 <?php
-class SelectField extends \Coxis\Form\Fields\Field {
+class SelectField extends \Asgard\Form\Fields\Field {
 	protected $default_render = 'select';
 
 	public function getChoices() {

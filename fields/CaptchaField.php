@@ -1,5 +1,5 @@
 <?php
-class CaptchaField extends \Coxis\Form\Fields\Field {
+class CaptchaField extends \Asgard\Form\Fields\Field {
 	function __construct($options=array()) {
 		parent::__construct($options);
 		$this->options['validation']['captcha_check'] = array($this, 'error');

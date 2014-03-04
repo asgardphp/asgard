@@ -1,7 +1,7 @@
 <?php
-namespace Coxis\Form\Widgets;
+namespace Asgard\Form\Widgets;
 
-class CheckboxWidget extends \Coxis\Form\Widgets\HTMLWidget {
+class CheckboxWidget extends \Asgard\Form\Widgets\HTMLWidget {
 	public function render($options=array()) {
 		$options = $this->options+$options;
 

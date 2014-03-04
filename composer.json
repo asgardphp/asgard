@@ -1,15 +1,15 @@
 {
-	"name": "coxis/form",
+	"name": "asgard/form",
 	"license": "MIT",
 	"authors": [{
 		"name": "Michel Hognerud",
 		"email": "michel@hognerud.net"
 	}],
     "autoload": {
-        "psr-0": {"Coxis\\Form": "../.."}
+        "psr-0": {"Asgard\\Form": "../.."}
     },
     "suggest": {
-        "coxis/ckeditor": "dev-master",
-        "coxis/captcha": "dev-master"
+        "asgard/ckeditor": "dev-master",
+        "asgard/captcha": "dev-master"
     }
 }

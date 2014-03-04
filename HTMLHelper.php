@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Form;
+namespace Asgard\Form;
 
 class HTMLHelper {
 	public static function tag($tag, $attrs, $inner=null) {

@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Form;
+namespace Asgard\Form;
 
 class Form extends AbstractGroup {
 	public $params = array(
@@ -33,7 +33,7 @@ class Form extends AbstractGroup {
 			$this->setFields($param3);
 		}
 
-		$this->add('_csrf_token', '\Coxis\Form\Fields\CSRF');
+		$this->add('_csrf_token', '\Asgard\Form\Fields\CSRF');
 	}
 	
 	public function setDad($dad) {
@@ -45,19 +45,19 @@ class Form extends AbstractGroup {
 		if($this->dad)
 			return $this->dad->render($render_callback, $field, $options);
 
-		if(\Coxis\Utils\Tools::is_function($render_callback))
+		if(\Asgard\Utils\Tools::is_function($render_callback))
 			$cb = $render_callback;
 		elseif(isset($this->render_callbacks[$render_callback]))
 			$cb = $this->render_callbacks[$render_callback];
 		else {
 			$cb = function($field, $options=array()) use($render_callback) {
-				$widget = $this->trigger('Coxis\Form\Widgets\\'.$render_callback);
+				$widget = $this->trigger('Asgard\Form\Widgets\\'.$render_callback);
 				if($widget === null) {
-					$widget = \Coxis\Core\App::get('hook')->trigger('Coxis\Form\Widgets\\'.$render_callback, array(), function() use($render_callback) {
-						return 'Coxis\Form\Widgets\\'.$render_callback.'Widget';
+					$widget = \Asgard\Core\App::get('hook')->trigger('Asgard\Form\Widgets\\'.$render_callback, array(), function() use($render_callback) {
+						return 'Asgard\Form\Widgets\\'.$render_callback.'Widget';
 					});
 				}
-				return \Coxis\Form\Widgets\HTMLWidget::getWidget($widget, array($field->getName(), $field->getValue(), $options));
+				return \Asgard\Form\Widgets\HTMLWidget::getWidget($widget, array($field->getName(), $field->getValue(), $options));
 			};
 		}
 
@@ -77,7 +77,7 @@ class Form extends AbstractGroup {
 	}
 
 	public function uploadSuccess() {
-		return \Coxis\Core\App::get('server')->get('CONTENT_LENGTH') <= (int)ini_get('post_max_size')*1024*1024;
+		return \Asgard\Core\App::get('server')->get('CONTENT_LENGTH') <= (int)ini_get('post_max_size')*1024*1024;
 	}
 
 	public function setRenderCallback($name, $callback) {
@@ -141,32 +141,32 @@ class Form extends AbstractGroup {
 		$files = array();
 			
 		if($this->groupName) {
-			if(\Coxis\Core\App::get('file')->get($this->groupName) !== null)
-				$raw = \Coxis\Core\App::get('file')->get($this->groupName);
+			if(\Asgard\Core\App::get('file')->get($this->groupName) !== null)
+				$raw = \Asgard\Core\App::get('file')->get($this->groupName);
 			else
 				$raw = array();
 		}
 		else
-			$raw = \Coxis\Core\App::get('file')->all();
+			$raw = \Asgard\Core\App::get('file')->all();
 
 		$files = $this->parseFiles($raw);
 
 		$this->data = array();
 		if($this->groupName) {
 				$this->setData(
-					\Coxis\Core\App::get('post')->get($this->groupName, array()),
+					\Asgard\Core\App::get('post')->get($this->groupName, array()),
 					$files
 				);
 		}
 		else
-			$this->setData(\Coxis\Core\App::get('post')->all(), $files);
+			$this->setData(\Asgard\Core\App::get('post')->all(), $files);
 
 		return $this;
 	}
 	
 	public function open($params=array()) {
 		$params = array_merge($this->params, $params);
-		$action = isset($params['action']) && $params['action'] ? $params['action']:\Coxis\Core\App::get('url')->full();
+		$action = isset($params['action']) && $params['action'] ? $params['action']:\Asgard\Core\App::get('url')->full();
 		$method = isset($params['method']) ? $params['method']:'post';
 		$enctype = isset($params['enctype']) ? $params['enctype']:($this->hasFile() ? ' enctype="multipart/form-data"':'');
 		$attrs = '';
@@ -199,7 +199,7 @@ class Form extends AbstractGroup {
 			return;
 		$gen_errors = array();
 		foreach($this->errors as $field_name=>$errors) {
-			if(!$this->has($field_name) || is_subclass_of($this->$field_name, 'Coxis\Form\Fields\HiddenField'))
+			if(!$this->has($field_name) || is_subclass_of($this->$field_name, 'Asgard\Form\Fields\HiddenField'))
 				$gen_errors[$field_name] = $errors;
 		}
 		return $gen_errors;
@@ -210,7 +210,7 @@ class Form extends AbstractGroup {
 	// 		return;
 	// 	$error_found = false;
 	// 	foreach($this->errors as $field_name=>$errors) {
-	// 		if(!$this->has($field_name) || is_subclass_of($this->$field_name, 'Coxis\Form\Fields\HiddenField')) {
+	// 		if(!$this->has($field_name) || is_subclass_of($this->$field_name, 'Asgard\Form\Fields\HiddenField')) {
 	// 			if(!$error_found) {
 	// 				echo '<ul>';
 	// 				$error_found = true;

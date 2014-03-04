@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Form;
+namespace Asgard\Form;
 
 class Group extends AbstractGroup {
 	function __construct($fields, $dad=null, $name=null, $data=null, $files=null) {	
