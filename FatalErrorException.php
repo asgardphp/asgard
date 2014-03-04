@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core;
+namespace Asgard\Core;
 
 class FatalErrorException extends \ErrorException {
 }

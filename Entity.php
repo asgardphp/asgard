@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core;
+namespace Asgard\Core;
 
 class EntityException extends \Exception {
 	public $errors = array();
@@ -12,7 +12,7 @@ abstract class Entity {
 	);
 
 	public function __construct($param=null) {
-		$chain = new \Coxis\Hook\HookChain();
+		$chain = new \Asgard\Hook\HookChain();
 		$chain->found = false;
 		$this->triggerChain($chain, 'construct', array($this, $param));
 		if(!$chain->found) {
@@ -41,7 +41,7 @@ abstract class Entity {
 	}
 
 	public static function __callStatic($name, $arguments) {
-		$chain = new \Coxis\Hook\HookChain();
+		$chain = new \Asgard\Hook\HookChain();
 		$chain->found = false;
 		$res = static::triggerChain($chain, 'callStatic', array($name, $arguments));
 		if(!$chain->found)
@@ -51,7 +51,7 @@ abstract class Entity {
 	}
 
 	public function __call($name, $arguments) {
-		$chain = new \Coxis\Hook\HookChain;
+		$chain = new \Asgard\Hook\HookChain;
 		$chain->found = false;
 		$res = static::triggerChain($chain, 'call', array($this, $name, $arguments));
 		if(!$chain->found) {
@@ -69,7 +69,7 @@ abstract class Entity {
 	public static function configure($entityDefinition) {}
 
 	public static function getDefinition() {
-		return \Coxis\Core\App::get('entitiesmanager')->get(get_called_class());
+		return \Asgard\Core\App::get('entitiesmanager')->get(get_called_class());
 	}
 
 	public function loadDefault() {
@@ -90,14 +90,14 @@ abstract class Entity {
 		if(!$force) {
 			#validate params and files
 			if($errors = $this->errors()) {
-				$msg = implode("\n", \Coxis\Utils\Tools::flateArray($errors));
+				$msg = implode("\n", \Asgard\Utils\Tools::flateArray($errors));
 				$e = new EntityException($msg);
 				$e->errors = $errors;
 				throw $e;
 			}
 		}
 		
-		$chain = new \Coxis\Hook\HookChain;
+		$chain = new \Asgard\Hook\HookChain;
 		$this->triggerChain($chain, 'save', array($this));
 		if(!$chain->executed)
 			throw new \Exception('Cannot save non-persistent Entities');
@@ -106,7 +106,7 @@ abstract class Entity {
 	}
 	
 	public function destroy() {
-		$chain = new \Coxis\Hook\HookChain;
+		$chain = new \Asgard\Hook\HookChain;
 		$this->triggerChain($chain, 'destroy', array($this));
 		if(!$chain->executed)
 			throw new \Exception('Cannot destroy non-persistent Entities');
@@ -128,7 +128,7 @@ abstract class Entity {
 		
 		$messages = static::getDefinition()->messages();
 		
-		$validator = new \Coxis\Validation\Validator($constrains, $messages);
+		$validator = new \Asgard\Validation\Validator($constrains, $messages);
 		$validator->entity = $this;
 
 		return $validator;
@@ -162,7 +162,7 @@ abstract class Entity {
 		if(static::getDefinition()->hasProperty($name)) {
 			if(static::getDefinition()->property($name)->i18n) {
 				if(!$lang)
-					$lang = \Coxis\Core\App::get('config')->get('locale');
+					$lang = \Asgard\Core\App::get('config')->get('locale');
 				if($lang == 'all') {
 					foreach($value as $one => $v)
 						$this->data['properties'][$name][$one] = $v;
@@ -199,7 +199,7 @@ abstract class Entity {
 
 			if(static::getDefinition()->property($name)->i18n) {
 				if(!$lang)
-					$lang = \Coxis\Core\App::get('config')->get('locale');
+					$lang = \Asgard\Core\App::get('config')->get('locale');
 				if($lang == 'all') {
 					$val = array();
 					foreach($value as $one => $v)
@@ -225,13 +225,13 @@ abstract class Entity {
 	
 	public function get($name, $lang=null) {
 		if(!$lang)
-			$lang = \Coxis\Core\App::get('config')->get('locale');
+			$lang = \Asgard\Core\App::get('config')->get('locale');
 
 		$res = static::trigger('get', array($this, $name, $lang), function($chain, $entity, $name, $lang) {
 			if($entity::hasProperty($name)) {
 				if($entity::property($name)->i18n) {
 					if($lang == 'all') {
-						$langs = \Coxis\Core\App::get('config')->get('locales');
+						$langs = \Asgard\Core\App::get('config')->get('locales');
 						$res = array();
 						foreach($langs as $lang)
 							$res[$lang] = $entity->get($name, $lang);
@@ -307,7 +307,7 @@ abstract class Entity {
 	
 	/* Definition */
 	public static function getEntityName() {
-		return \Coxis\Utils\NamespaceUtils::basename(strtolower(get_called_class()));
+		return \Asgard\Utils\NamespaceUtils::basename(strtolower(get_called_class()));
 	}
 
 	public static function hasProperty($name) {

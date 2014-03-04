@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core\Properties;
+namespace Asgard\Core\Properties;
 
 class ArrayProperty extends BaseProperty {
 	public function getRules() {

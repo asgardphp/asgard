@@ -1,9 +1,9 @@
 <?php
-namespace Coxis\Core\Exceptions;
+namespace Asgard\Core\Exceptions;
 
-class NotFoundException extends \Coxis\Core\ControllerException {
+class NotFoundException extends \Asgard\Core\ControllerException {
 	function __construct($msg='') {
-		$response = new \Coxis\Core\Response(404);
+		$response = new \Asgard\Core\Response(404);
 		parent::__construct($msg, $response);
 	}
 }

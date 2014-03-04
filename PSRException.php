@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core;
+namespace Asgard\Core;
 
 class PSRException extends \Exception {
 	protected $severity;

@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core;
+namespace Asgard\Core;
 
 class Request implements \ArrayAccess {
 	public $get;
@@ -19,14 +19,14 @@ class Request implements \ArrayAccess {
 	);
 
 	function __construct() {
-		$this->url = new \Coxis\Core\URL($this);
-		$this->get = new \Coxis\Core\Inputs\GET;
-		$this->post = new \Coxis\Core\Inputs\POST;
-		$this->file = new \Coxis\Core\Inputs\File;
-		$this->server = new \Coxis\Core\Inputs\Server;
-		$this->cookie = new \Coxis\Core\Inputs\Cookie;
-		$this->session = new \Coxis\Core\Inputs\Session;
-		$this->argv = new \Coxis\Core\Inputs\ARGV;
+		$this->url = new \Asgard\Core\URL($this);
+		$this->get = new \Asgard\Core\Inputs\GET;
+		$this->post = new \Asgard\Core\Inputs\POST;
+		$this->file = new \Asgard\Core\Inputs\File;
+		$this->server = new \Asgard\Core\Inputs\Server;
+		$this->cookie = new \Asgard\Core\Inputs\Cookie;
+		$this->session = new \Asgard\Core\Inputs\Session;
+		$this->argv = new \Asgard\Core\Inputs\ARGV;
 	}
 
 	public static function createFromGlobals() {
@@ -78,7 +78,7 @@ class Request implements \ArrayAccess {
 	}
 
 	public function setURL($server, $root, $url) {
-		$this->url = new \Coxis\Core\URL($this, $server, $root, $url);
+		$this->url = new \Asgard\Core\URL($this, $server, $root, $url);
 	}
 
 	public function process() {

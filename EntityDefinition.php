@@ -1,7 +1,7 @@
 <?php
-namespace Coxis\Core;
+namespace Asgard\Core;
 
-class EntityDefinition extends \Coxis\Hook\Hookable {
+class EntityDefinition extends \Asgard\Hook\Hookable {
 	protected $entityClass;
 
 	public $meta = array();
@@ -38,9 +38,9 @@ class EntityDefinition extends \Coxis\Hook\Hookable {
 		foreach($clone as $k=>$v) {
 			if(is_int($k)) {
 				$properties = 
-					\Coxis\Utils\Tools::array_before($properties, $k) +
+					\Asgard\Utils\Tools::array_before($properties, $k) +
 					array($v => array()) +
-					\Coxis\Utils\Tools::array_after($properties, $k);
+					\Asgard\Utils\Tools::array_after($properties, $k);
 			}
 		}
 		foreach($properties as $k=>$params)
@@ -51,7 +51,7 @@ class EntityDefinition extends \Coxis\Hook\Hookable {
 
 	public function loadBehaviors() {
 		$entityClass = $this->entityClass;
-		\Coxis\Core\App::get('hook')->trigger('behaviors_pre_load', $this);
+		\Asgard\Core\App::get('hook')->trigger('behaviors_pre_load', $this);
 
 		#not using foreach because new behaviors may be added in the loop
 		for($i=0; $i<sizeof($this->behaviors); $i++) {
@@ -95,7 +95,7 @@ class EntityDefinition extends \Coxis\Hook\Hookable {
 		}
 
 		$propertyClass = $this->trigger('propertyClass', array($params['type']), function($chain, $type) {
-			return '\Coxis\Core\Properties\\'.ucfirst($type).'Property';
+			return '\Asgard\Core\Properties\\'.ucfirst($type).'Property';
 		});
 
 		$this->properties[$property] = new $propertyClass($this->entityClass, $property, $params);

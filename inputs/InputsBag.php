@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core\Inputs;
+namespace Asgard\Core\Inputs;
 
 abstract class InputsBag implements \ArrayAccess {
 	protected $inputs;
@@ -25,7 +25,7 @@ abstract class InputsBag implements \ArrayAccess {
 	}
 
 	public function get($name, $default=null) {
-		return \Coxis\Utils\Tools::array_get($this->inputs, $name, $default);
+		return \Asgard\Utils\Tools::array_get($this->inputs, $name, $default);
 	}
 
 	public function set($name, $value=null) {
@@ -34,16 +34,16 @@ abstract class InputsBag implements \ArrayAccess {
 				$this->set($k, $v);
 		}
 		else
-			\Coxis\Utils\Tools::array_set($this->inputs, $name, $value);
+			\Asgard\Utils\Tools::array_set($this->inputs, $name, $value);
 		return $this;
 	}
 
 	public function has($name) {
-		return \Coxis\Utils\Tools::array_isset($this->inputs, $name);
+		return \Asgard\Utils\Tools::array_isset($this->inputs, $name);
 	}
 
 	public function remove($name) {
-		\Coxis\Utils\Tools::array_unset($this->inputs, $name);
+		\Asgard\Utils\Tools::array_unset($this->inputs, $name);
 		return $this;
 	}
 

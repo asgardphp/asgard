@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core\Inputs;
+namespace Asgard\Core\Inputs;
 
 class GET extends InputsBag {
 	// function __construct() {

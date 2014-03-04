@@ -1,7 +1,7 @@
 <?php
-namespace Coxis\Core;
+namespace Asgard\Core;
 
-class ControllerException extends \Coxis\Core\PSRException {
+class ControllerException extends \Asgard\Core\PSRException {
 	public $response;
 
 	function __construct($msg='', $response=null, $severity=null) {
@@ -13,7 +13,7 @@ class ControllerException extends \Coxis\Core\PSRException {
 		if($this->response)	
 			return $this->response;
 		else
-			return new \Coxis\Core\Responde(500);
+			return new \Asgard\Core\Responde(500);
 	}
 
 	public function setResponse($response) {

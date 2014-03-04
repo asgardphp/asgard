@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core;
+namespace Asgard\Core;
 
 abstract class Facade {
 	public static function __callStatic($name, $args) {
@@ -17,6 +17,6 @@ abstract class Facade {
 		if(isset(static::$class))
 			return static::$class;
 		else
-			return strtolower(\Coxis\Utils\NamespaceUtils::basename(get_called_class()));
+			return strtolower(\Asgard\Utils\NamespaceUtils::basename(get_called_class()));
 	}
 }

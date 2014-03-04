@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core;
+namespace Asgard\Core;
 
 class Importer {
 	public $from = '';
@@ -23,7 +23,7 @@ class Importer {
 			$import = trim($import);
 			
 			$class = $what;
-			$alias = \Coxis\Utils\NamespaceUtils::basename($class);
+			$alias = \Asgard\Utils\NamespaceUtils::basename($class);
 			$vals = explode(' as ', $import);
 			if(isset($vals[1])) {
 				$class = trim($vals[0]);
@@ -47,7 +47,7 @@ class Importer {
 			$intoNamespace = '';
 
 		if(!$alias && $alias !== false) 
-			$alias = ($intoNamespace ? $intoNamespace.'\\':'').\Coxis\Utils\NamespaceUtils::basename($class);
+			$alias = ($intoNamespace ? $intoNamespace.'\\':'').\Asgard\Utils\NamespaceUtils::basename($class);
 
 		#look for the class
 		if($res=$this->loadClass($class)) {
@@ -57,14 +57,14 @@ class Importer {
 		}
 		#go to upper level
 		else {
-			$dir = \Coxis\Utils\NamespaceUtils::dirname($class);
+			$dir = \Asgard\Utils\NamespaceUtils::dirname($class);
 
 			if($dir != '.') {
-				$base = \Coxis\Utils\NamespaceUtils::basename($class);
-				if(\Coxis\Utils\NamespaceUtils::dirname($dir) == '.')
+				$base = \Asgard\Utils\NamespaceUtils::basename($class);
+				if(\Asgard\Utils\NamespaceUtils::dirname($dir) == '.')
 					$next = $base;
 				else
-					$next = str_replace(DIRECTORY_SEPARATOR, '\\', \Coxis\Utils\NamespaceUtils::dirname($dir)).'\\'.$base;
+					$next = str_replace(DIRECTORY_SEPARATOR, '\\', \Asgard\Utils\NamespaceUtils::dirname($dir)).'\\'.$base;
 
 				return static::_import($next, array('into'=>$intoNamespace, 'as'=>$alias));
 			}
@@ -99,17 +99,17 @@ class Importer {
 				return static::loadClassFile($this->basedir.$path, $class);
 
 			#lookup for global classes
-			if(\Coxis\Core\App::get('config')->get('global_namespace') && \Coxis\Utils\NamespaceUtils::dirname($class) == '.') {
+			if(\Asgard\Core\App::get('config')->get('global_namespace') && \Asgard\Utils\NamespaceUtils::dirname($class) == '.') {
 				$classes = array();
 				
 				#check if there is any corresponding class already loaded
 				foreach(array_merge(get_declared_classes(), get_declared_interfaces()) as $v) {
-					if(strtolower(\Coxis\Utils\NamespaceUtils::basename($class)) == strtolower(\Coxis\Utils\NamespaceUtils::basename($v)))
+					if(strtolower(\Asgard\Utils\NamespaceUtils::basename($class)) == strtolower(\Asgard\Utils\NamespaceUtils::basename($v)))
 						return static::createAlias($v, $class);
 				}
 				
 				foreach(Autoloader::$preloaded as $v) {
-					if(strtolower(\Coxis\Utils\NamespaceUtils::basename($class)) == $v[0])
+					if(strtolower(\Asgard\Utils\NamespaceUtils::basename($class)) == $v[0])
 						$classes[] = $v;
 				}
 				if(sizeof($classes) == 1)
@@ -136,7 +136,7 @@ class Importer {
 		$after = array_merge(get_declared_classes(), get_declared_interfaces());
 		
 		$diff = array_diff($after, $before);
-		$result = \Coxis\Utils\Tools::array_get(array_values($diff), sizeof($diff)-1);
+		$result = \Asgard\Utils\Tools::array_get(array_values($diff), sizeof($diff)-1);
 		if(!$result) {
 			foreach(array_merge(get_declared_classes(), get_declared_interfaces()) as $class) {
 				$reflector = new \ReflectionClass($class);
@@ -152,8 +152,8 @@ class Importer {
 	}
 	
 	public static function class2path($class) {
-		$className = \Coxis\Utils\NamespaceUtils::basename($class);
-		$namespace = strtolower(\Coxis\Utils\NamespaceUtils::dirname($class));
+		$className = \Asgard\Utils\NamespaceUtils::basename($class);
+		$namespace = strtolower(\Asgard\Utils\NamespaceUtils::dirname($class));
 
 		$namespace = str_replace('\\', DIRECTORY_SEPARATOR , $namespace );
 
@@ -167,7 +167,7 @@ class Importer {
 	}
 
 	public static function createAlias($loadedClass, $class) {
-		if(strtolower(\Coxis\Utils\NamespaceUtils::basename($class)) != strtolower(\Coxis\Utils\NamespaceUtils::basename($loadedClass)))
+		if(strtolower(\Asgard\Utils\NamespaceUtils::basename($class)) != strtolower(\Asgard\Utils\NamespaceUtils::basename($loadedClass)))
 			return false;
 		try {
 			if($loadedClass !== $class)

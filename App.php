@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core;
+namespace Asgard\Core;
 
 class App {
 	protected static $instance;
@@ -9,7 +9,7 @@ class App {
 
 	public static function setDefaultEnvironment() {
 		if(!defined('_ENV_')) {
-			if(PHP_SAPI == 'cli' || \Coxis\Core\App::get('server')->get('HTTP_HOST') == '127.0.0.1' || \Coxis\Core\App::get('server')->get('HTTP_HOST') == 'localhost')
+			if(PHP_SAPI == 'cli' || \Asgard\Core\App::get('server')->get('HTTP_HOST') == '127.0.0.1' || \Asgard\Core\App::get('server')->get('HTTP_HOST') == 'localhost')
 				define('_ENV_', 'dev');
 			else
 				define('_ENV_', 'prod');
@@ -38,26 +38,26 @@ class App {
 	function __construct($config=null) {
 		#default instances
 		$this->_set('importer', function() {
-			return new \Coxis\Core\Importer;
+			return new \Asgard\Core\Importer;
 		});
 		$this->_set('config', function() {
-			return new \Coxis\Core\Config('config');
+			return new \Asgard\Core\Config('config');
 		});
 		#used in errorhandler..
 		$this->_set('hook', function() {
-			return new \Coxis\Hook\Hook;
+			return new \Asgard\Hook\Hook;
 		});
 		$this->_set('request', function() {
-			return \Coxis\Core\Coxis\Core\App::get('request')->createFromGlobals();
+			return \Asgard\Core\Asgard\Core\App::get('request')->createFromGlobals();
 		});
 		$this->_set('url', function() {
-			return \Coxis\Core\App::get('request')->url;
+			return \Asgard\Core\App::get('request')->url;
 		});
 		$this->_set('response', function() {
-			return new \Coxis\Core\Response;
+			return new \Asgard\Core\Response;
 		});
 		$this->_set('facades', function() {
-			return \Coxis\Core\Facades::inst();
+			return \Asgard\Core\Facades::inst();
 		});
 
 		if($config)

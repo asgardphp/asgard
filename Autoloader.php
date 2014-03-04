@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core;
+namespace Asgard\Core;
 
 class Autoloader {
 	public static $map = array(
@@ -21,7 +21,7 @@ class Autoloader {
 	}
 
 	public static function addPreloadedClasses($classes) {
-		if(!\Coxis\Core\App::get('config')->get('global_namespace') || !\Coxis\Core\App::get('config')->get('preload'))
+		if(!\Asgard\Core\App::get('config')->get('global_namespace') || !\Asgard\Core\App::get('config')->get('preload'))
 			return;
 		foreach($classes as $class)
 			static::$preloaded[] = $class;
@@ -30,21 +30,21 @@ class Autoloader {
 	}
 
 	public static function preloadClass($class, $file) {
-		if(!\Coxis\Core\App::get('config')->get('global_namespace') || !\Coxis\Core\App::get('config')->get('preload'))
+		if(!\Asgard\Core\App::get('config')->get('global_namespace') || !\Asgard\Core\App::get('config')->get('preload'))
 			return;
 		if(!array_search(realpath($file), static::$preloaded));
 			static::$preloaded[] = array(strtolower($class), realpath($file));
 	}
 	
 	public static function preloadDir($file) {
-		if(!\Coxis\Core\App::get('config')->get('global_namespace') || !\Coxis\Core\App::get('config')->get('preload'))
+		if(!\Asgard\Core\App::get('config')->get('global_namespace') || !\Asgard\Core\App::get('config')->get('preload'))
 			return array();
 
 		static::$preloaded = array_unique(static::fetchPreloadDir($file), SORT_REGULAR);
 	}
 
 	public static function fetchPreloadDir($file) {
-		return \Coxis\Utils\Cache::get('Coxis\Core\Autoloader\preloadDir\\'.$file, function() use($file) {
+		return \Asgard\Utils\Cache::get('Asgard\Core\Autoloader\preloadDir\\'.$file, function() use($file) {
 			$preload = array();
 			if(is_dir($file) && !strpos($file, '.') !== 0) {
 				foreach(glob($file.'/*') as $sub_file)
@@ -65,9 +65,9 @@ class Autoloader {
 		if(class_exists($class))
 			return;
 		
-		$dir = \Coxis\Utils\NamespaceUtils::dirname($class);
+		$dir = \Asgard\Utils\NamespaceUtils::dirname($class);
 
-		if(\Coxis\Core\App::hasInstance())
+		if(\Asgard\Core\App::hasInstance())
 			$importer = App::get('importer');
 		else
 			$importer = new Importer;

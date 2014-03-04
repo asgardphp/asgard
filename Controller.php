@@ -1,7 +1,7 @@
 <?php
-namespace Coxis\Core;
+namespace Asgard\Core;
 
-class Controller extends \Coxis\Hook\Hookable {
+class Controller extends \Asgard\Hook\Hookable {
 	protected $_view;
 	public $request;
 	public $response;
@@ -70,7 +70,7 @@ class Controller extends \Coxis\Hook\Hookable {
 	}
 	
 	public static function url_for($action, $params=array(), $relative=false) {
-		return \Coxis\Core\App::get('url')->url_for(array(get_called_class(), $action), $params, $relative);
+		return \Asgard\Core\App::get('url')->url_for(array(get_called_class(), $action), $params, $relative);
 	}
 
 	public static function run($controllerClassName, $actionShortname, $request=null, $response=null) {
@@ -170,7 +170,7 @@ class Controller extends \Coxis\Hook\Hookable {
 	public function setRelativeView($view) {
 		$reflection = new \ReflectionObject($this);
 		$dir = dirname($reflection->getFileName());
-		$this->setView($dir.'/../views/'.strtolower(preg_replace('/Controller$/i', '', \Coxis\Utils\NamespaceUtils::basename(get_class($this)))).'/'.$view);
-		return file_exists($dir.'/../views/'.strtolower(preg_replace('/Controller$/i', '', \Coxis\Utils\NamespaceUtils::basename(get_class($this)))).'/'.$view);
+		$this->setView($dir.'/../views/'.strtolower(preg_replace('/Controller$/i', '', \Asgard\Utils\NamespaceUtils::basename(get_class($this)))).'/'.$view);
+		return file_exists($dir.'/../views/'.strtolower(preg_replace('/Controller$/i', '', \Asgard\Utils\NamespaceUtils::basename(get_class($this)))).'/'.$view);
 	}
 }

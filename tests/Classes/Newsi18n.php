@@ -1,7 +1,7 @@
 <?php
-namespace Coxis\Core\Tests\Classes;
+namespace Asgard\Core\Tests\Classes;
 
-class Newsi18n extends \Coxis\Core\Entity {
+class Newsi18n extends \Asgard\Core\Entity {
 	public static $properties = array(
 		'title' => array(
 			'i18n' => true,
@@ -10,7 +10,7 @@ class Newsi18n extends \Coxis\Core\Entity {
 	);
 
 	public static $behaviors = array(
-		'Coxis\Behaviors\PageBehavior',
+		'Asgard\Behaviors\PageBehavior',
 	);
 
 	public function __toString() {

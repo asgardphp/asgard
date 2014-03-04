@@ -1,10 +1,10 @@
 <?php
-namespace Coxis\Core\Tests\Classes;
+namespace Asgard\Core\Tests\Classes;
 
-class NewsHook extends \Coxis\Core\Entity {
+class NewsHook extends \Asgard\Core\Entity {
 	public static $properties = array(
 		'title' => array(
-			'setHook' => array('Coxis\Core\Tests\Classes\NewsHook', 'reverse'),
+			'setHook' => array('Asgard\Core\Tests\Classes\NewsHook', 'reverse'),
 		),
 	);
 

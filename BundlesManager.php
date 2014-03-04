@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core;
+namespace Asgard\Core;
 
 class BundlesManager {
 	// protected static $instance = null;
@@ -15,7 +15,7 @@ class BundlesManager {
 	public static function loadEntityFixtures($bundle_path) {
 		if(file_exists($bundle_path.'/data')) {
 			foreach(glob($bundle_path.'/data/*.entities.yml') as $file)
-				\Coxis\ORM\Libs\ORMManager::loadEntityFixtures($file);
+				\Asgard\ORM\Libs\ORMManager::loadEntityFixtures($file);
 		}
 	}
 
@@ -48,7 +48,7 @@ class BundlesManager {
 		}
 		if($count > 0) {
 			foreach(get_declared_classes() as $class) {
-				if(!is_subclass_of($class, 'Coxis\Core\BundleLoader'))
+				if(!is_subclass_of($class, 'Asgard\Core\BundleLoader'))
 					continue;
 				$reflector = new \Addendum\ReflectionAnnotatedClass($class);
 				$dir = dirname($reflector->getFileName());
@@ -60,7 +60,7 @@ class BundlesManager {
 		}
 		foreach($bundles as $bundle=>$obj) {
 			if($obj === null) {
-				$obj = new \Coxis\Core\BundleLoader;
+				$obj = new \Asgard\Core\BundleLoader;
 				$obj->setBundle($bundle);
 			}
 			$this->bundles[] = $obj;

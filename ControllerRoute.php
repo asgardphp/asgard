@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core;
+namespace Asgard\Core;
 
 class ControllerRoute extends Route {
 	protected $controller;
@@ -9,7 +9,7 @@ class ControllerRoute extends Route {
 		$this->controller = $controller;
 		$this->action = $action;
 
-		parent::__construct($route, array('Coxis\Core\Controller', 'run'), array(), $options);
+		parent::__construct($route, array('Asgard\Core\Controller', 'run'), array(), $options);
 	}
 
 	public function getController() {

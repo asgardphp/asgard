@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core\Properties;
+namespace Asgard\Core\Properties;
 
 class BooleanProperty extends BaseProperty {
 	public function getRules() {

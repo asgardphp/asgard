@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core\Inputs;
+namespace Asgard\Core\Inputs;
 
 class Session extends InputsBag {
 	public function set($name, $value=null) {
@@ -8,12 +8,12 @@ class Session extends InputsBag {
 				static::set($k, $v);
 		}
 		else
-			\Coxis\Utils\Tools::array_set($_SESSION, $name, $value);
+			\Asgard\Utils\Tools::array_set($_SESSION, $name, $value);
 		return parent::set($name, $value);
 	}
 	  
 	public function remove($name) {
-		\Coxis\Utils\Tools::array_unset($_SESSION, $name);
+		\Asgard\Utils\Tools::array_unset($_SESSION, $name);
 		return parent::remove($name);
 	}
 }

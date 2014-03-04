@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core;
+namespace Asgard\Core;
 
 class Resolver {
 	protected $routes = array();
@@ -113,7 +113,7 @@ class Resolver {
 		$request_key = md5(serialize(array($request->method(), $request->url->get())));
 
 		$routes = $this->routes;
-		$results = \Coxis\Utils\Cache::get('Router/requests/'.$request_key, function() use($routes, $request) {
+		$results = \Asgard\Utils\Cache::get('Router/requests/'.$request_key, function() use($routes, $request) {
 			static::sortRoutes($routes);
 			/* PARSE ALL ROUTES */
 			foreach($routes as $r) {

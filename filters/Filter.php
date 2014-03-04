@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core\Filters;
+namespace Asgard\Core\Filters;
 class Filter {
 	protected $controller;
 	protected $params;

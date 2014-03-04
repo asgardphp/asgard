@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core\Properties;
+namespace Asgard\Core\Properties;
 
 class DateProperty extends BaseProperty {
 	public function getRules() {
@@ -10,7 +10,7 @@ class DateProperty extends BaseProperty {
 	}
 
 	public function _getDefault() {
-		return new \Coxis\Utils\Date;
+		return new \Asgard\Utils\Date;
 	}
 
 	public function serialize($obj) {
@@ -28,14 +28,14 @@ class DateProperty extends BaseProperty {
 			$str = '1970-01-01';
 		list($y, $m, $d) = explode('-', $str);
 		$str = $d.'/'.$m.'/'.$y;
-		return \Coxis\Utils\Date::fromDate($str);
+		return \Asgard\Utils\Date::fromDate($str);
 	}
 
 	public function set($val) {
 		if(!$val)
 			return null;
 		if(preg_match('/[0-9]{2}\/[0-9]{2}\/[0-9]{4}/', $val))
-			return \Coxis\Utils\Date::fromDate($val);
+			return \Asgard\Utils\Date::fromDate($val);
 		else
 			return $val;
 	}

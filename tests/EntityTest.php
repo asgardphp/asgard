@@ -1,22 +1,22 @@
 <?php
-namespace Coxis\Core\Tests;
+namespace Asgard\Core\Tests;
 
 class EntityTest extends \PHPUnit_Framework_TestCase {
 	public static function setUpBeforeClass() {
 		if(!defined('_ENV_'))
 			define('_ENV_', 'test');
 		require_once(_CORE_DIR_.'core.php');
-		\Coxis\Core\App::instance(true)->config->set('bundles', array(
-			_COXIS_DIR_.'core',
+		\Asgard\Core\App::instance(true)->config->set('bundles', array(
+			_ASGARD_DIR_.'core',
 		));
-		\Coxis\Core\App::loadDefaultApp();
+		\Asgard\Core\App::loadDefaultApp();
 	}
 
 	public function test1() {
 		$news = new Classes\News(array(
 			'title' => 'Test Title',
 			'content' => 'Test Content',
-			'published' => new \Coxis\Utils\Date(mktime(0, 0, 0, 9, 9, 2009)),
+			'published' => new \Asgard\Utils\Date(mktime(0, 0, 0, 9, 9, 2009)),
 		));
 		$this->assertEquals('Test Title', $news->title);
 		$this->assertEquals('Test Content', $news->content);
@@ -50,7 +50,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 
 		#property
 		$property = Classes\News::property('title');
-		$this->assertTrue($property instanceof \Coxis\Core\Properties\TextProperty);
+		$this->assertTrue($property instanceof \Asgard\Core\Properties\TextProperty);
 		$this->assertEquals('title', $property->getName());
 		$this->assertEquals('text', $property->type);
 
@@ -87,7 +87,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 			array(
 				'title' => 'bla',
 				'content' => 'Test Content',
-				'published' => new \Coxis\Utils\Date(mktime(0, 0, 0, 9, 9, 2009)),
+				'published' => new \Asgard\Utils\Date(mktime(0, 0, 0, 9, 9, 2009)),
 				'another_property' => ''
 			),
 			$news->toArrayRaw()
@@ -98,17 +98,17 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 			new Classes\News(array(
 				'title' => 'Title 1',
 				'content' => 'Content 1',
-				'published' => new \Coxis\Utils\Date(mktime(0, 0, 0, 9, 9, 2009)),
+				'published' => new \Asgard\Utils\Date(mktime(0, 0, 0, 9, 9, 2009)),
 			)),
 			new Classes\News(array(
 				'title' => 'Title 2',
 				'content' => 'Content 2',
-				'published' => new \Coxis\Utils\Date(mktime(0, 0, 0, 9, 9, 2009)),
+				'published' => new \Asgard\Utils\Date(mktime(0, 0, 0, 9, 9, 2009)),
 			)),
 			new Classes\News(array(
 				'title' => 'Title 3',
 				'content' => 'Content 3',
-				'published' => new \Coxis\Utils\Date(mktime(0, 0, 0, 9, 9, 2009)),
+				'published' => new \Asgard\Utils\Date(mktime(0, 0, 0, 9, 9, 2009)),
 			)),
 		);
 		$this->assertEquals(

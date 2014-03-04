@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core;
+namespace Asgard\Core;
 
 class ErrorHandler {
 	protected static $reservedMemory;
@@ -10,9 +10,9 @@ class ErrorHandler {
 		static::$reservedMemory = str_repeat('a', 10240);
 		static::$errorAtStart = error_get_last();
 
-		set_error_handler(array('Coxis\Core\ErrorHandler', 'phpErrorHandler'));
-		set_exception_handler(array('Coxis\Core\ErrorHandler', 'exceptionHandler'));
-		register_shutdown_function(array('Coxis\Core\ErrorHandler', 'shutdownFunction'));
+		set_error_handler(array('Asgard\Core\ErrorHandler', 'phpErrorHandler'));
+		set_exception_handler(array('Asgard\Core\ErrorHandler', 'exceptionHandler'));
+		register_shutdown_function(array('Asgard\Core\ErrorHandler', 'shutdownFunction'));
 	}
 
 	public static function getErrorAtStart() {
@@ -193,7 +193,7 @@ class ErrorHandler {
 		$result = '';
 		if($msg)
 			$result .= $msg."\n\n";
-		$result .= \Coxis\Utils\Debug::getReport($backtrace);
+		$result .= \Asgard\Utils\Debug::getReport($backtrace);
 		echo $result;
 	}
 
@@ -203,7 +203,7 @@ class ErrorHandler {
 			$result .= '<b>Message</b><br>'."\n";
 			$result .= $msg."<hr>\n";
 		}
-		$result .= \Coxis\Utils\Debug::getReport($backtrace);
+		$result .= \Asgard\Utils\Debug::getReport($backtrace);
 	
 		App::get('response')->setCode(500);
 		if(App::get('config')->get('debug'))

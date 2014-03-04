@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core;
+namespace Asgard\Core;
 
 class Response {
 	public $content;
@@ -71,7 +71,7 @@ class Response {
 	}
 
 	public function send($kill=true) {
-		\Coxis\Core\App::get('hook')->trigger('output');
+		\Asgard\Core\App::get('hook')->trigger('output');
 
 		$headers = array();
 		if(array_key_exists($this->code, static::$codes))
@@ -87,11 +87,11 @@ class Response {
 	protected function doSend($headers, $content, $kill) {
 		while(ob_get_level())
 			ob_end_clean();
-		\Coxis\Core\App::get('hook')->trigger('end');
-		\Coxis\Core\Coxis\Core\App::get('response')->sendHeaders($headers);
+		\Asgard\Core\App::get('hook')->trigger('end');
+		\Asgard\Core\Asgard\Core\App::get('response')->sendHeaders($headers);
 		echo $content;
-        if(\Coxis\Core\App::get('config')->get('profiler'))
-                \Coxis\Utils\Profiler::report();
+        if(\Asgard\Core\App::get('config')->get('profiler'))
+                \Asgard\Utils\Profiler::report();
 		if($kill)
 			exit();
 	}
@@ -102,7 +102,7 @@ class Response {
 	
 	public function redirect($url='', $relative=true) {
 		if($relative && !preg_match('/^http:\/\//', $url))
-			$this->headers['Location'] = \Coxis\Core\App::get('url')->to($url);
+			$this->headers['Location'] = \Asgard\Core\App::get('url')->to($url);
 		else
 			$this->headers['Location'] = $url;
 		return $this;

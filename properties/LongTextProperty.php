@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core\Properties;
+namespace Asgard\Core\Properties;
 
 class LongTextProperty extends BaseProperty {
 	public function getSQLType() {

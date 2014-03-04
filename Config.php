@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core;
+namespace Asgard\Core;
 
 class Config {
 	protected $config = array();
@@ -30,13 +30,13 @@ class Config {
 	}
 	
 	public function set($str_path, $value) {
-		\Coxis\Utils\Tools::string_array_set($this->config, $str_path, $value);
+		\Asgard\Utils\Tools::string_array_set($this->config, $str_path, $value);
 
-		if(\Coxis\Core\App::hasInstance() && \Coxis\Core\App::has('hook'))
-			\Coxis\Core\App::get('hook')->trigger(array('Config/Set/'.$str_path, $value));
+		if(\Asgard\Core\App::hasInstance() && \Asgard\Core\App::has('hook'))
+			\Asgard\Core\App::get('hook')->trigger(array('Config/Set/'.$str_path, $value));
 	}
 	
 	public function get($str_path) {
-		return \Coxis\Utils\Tools::string_array_get($this->config, $str_path);
+		return \Asgard\Utils\Tools::string_array_get($this->config, $str_path);
 	}
 }

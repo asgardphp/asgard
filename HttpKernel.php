@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core;
+namespace Asgard\Core;
 
 class HttpKernel {
 	public static function run() {
@@ -20,7 +20,7 @@ class HttpKernel {
 			try {
 				$response = static::processRaw($request);
 			} catch(\Exception $e) {
-				if($e instanceof \Coxis\Core\ControllerException) {
+				if($e instanceof \Asgard\Core\ControllerException) {
 					$severity = $e->getSeverity();
 					$trace = ErrorHandler::getBacktraceFromException($e);
 					ErrorHandler::log($severity, $e->getMessage(), $e->getFile(), $e->getLine(), $trace);
@@ -29,14 +29,14 @@ class HttpKernel {
 					ErrorHandler::logException($e);
 				}
 
-				$response = \Coxis\Core\App::get('hook')->trigger('exception_'.get_class($e), array($e));
+				$response = \Asgard\Core\App::get('hook')->trigger('exception_'.get_class($e), array($e));
 				if($response === null)
 					$response = static::getExceptionResponse($e);
 			}
 		}
 
 		try {
-			\Coxis\Core\App::get('hook')->trigger('frontcontroller_end', array($response));
+			\Asgard\Core\App::get('hook')->trigger('frontcontroller_end', array($response));
 		} catch(\Exception $e) {
 			ErrorHandler::logException($e);
 		}
@@ -49,13 +49,13 @@ class HttpKernel {
 	protected static function processRaw($request, $catch=true) {
 		if(file_exists(_DIR_.'app/start.php'))
 			include _DIR_.'app/start.php';
-		\Coxis\Core\App::get('hook')->trigger('start');
+		\Asgard\Core\App::get('hook')->trigger('start');
 
-		$resolver = \Coxis\Core\App::get('resolver');
+		$resolver = \Asgard\Core\App::get('resolver');
 
 		$callback = $resolver->getCallback($request);
 		if($callback === null)
-			throw new \Coxis\Core\Exceptions\NotFoundException;
+			throw new \Asgard\Core\Exceptions\NotFoundException;
 		$arguments = $resolver->getArguments($request);
 
 		$response = call_user_func_array($callback, array_merge($arguments, array($request)));

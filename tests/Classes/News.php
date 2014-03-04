@@ -1,7 +1,7 @@
 <?php
-namespace Coxis\Core\Tests\Classes;
+namespace Asgard\Core\Tests\Classes;
 
-class News extends \Coxis\Core\Entity {
+class News extends \Asgard\Core\Entity {
 	public static $properties = array(
 		'title' => array(
 			'validation' => array(

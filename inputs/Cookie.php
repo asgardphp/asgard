@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core\Inputs;
+namespace Asgard\Core\Inputs;
 
 class COOKIE extends InputsBag {
 	public function set($what, $value=null) {#, $time=null, $path='/'

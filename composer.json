@@ -1,31 +1,31 @@
 {
-	"name": "coxis/core",
+	"name": "asgard/core",
 	"license": "MIT",
 	"authors": [{
 		"name": "Michel Hognerud",
 		"email": "michel@hognerud.net"
 	}],
     "autoload": {
-        "psr-0": {"Coxis\\Core": "../.."}
+        "psr-0": {"Asgard\\Core": "../.."}
     },
     "require": {
         "niktux/addendum": "dev-master",
         "symfony/yaml": "dev-master",
-        "coxis/auth": "dev-master",
-        "coxis/behaviors": "dev-master",
-        "coxis/cli": "dev-master",
-        "coxis/db": "dev-master",
-        "coxis/files": "dev-master",
-        "coxis/form": "dev-master",
-        "coxis/hook": "dev-master",
-        "coxis/orm": "dev-master",
-        "coxis/utils": "dev-master",
-        "coxis/Validation": "dev-master"
+        "asgard/auth": "dev-master",
+        "asgard/behaviors": "dev-master",
+        "asgard/cli": "dev-master",
+        "asgard/db": "dev-master",
+        "asgard/files": "dev-master",
+        "asgard/form": "dev-master",
+        "asgard/hook": "dev-master",
+        "asgard/orm": "dev-master",
+        "asgard/utils": "dev-master",
+        "asgard/Validation": "dev-master"
     },
     "suggest": {
-        "coxis/seo": "dev-master",
-        "coxis/js": "dev-master",
-        "coxis/minify": "dev-master",
+        "asgard/seo": "dev-master",
+        "asgard/js": "dev-master",
+        "asgard/minify": "dev-master",
         "psr/log": "1.0.0"
     }
 }

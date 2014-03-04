@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core\Properties;
+namespace Asgard\Core\Properties;
 
 class DatetimeProperty extends BaseProperty {
 	public function getRules() {
@@ -10,7 +10,7 @@ class DatetimeProperty extends BaseProperty {
 	}
 
 	public function _getDefault() {
-		return new \Coxis\Utils\Datetime;
+		return new \Asgard\Utils\Datetime;
 	}
 
 	public function serialize($obj) {
@@ -23,7 +23,7 @@ class DatetimeProperty extends BaseProperty {
 		try {
 			preg_match('/([0-9]+)-([0-9]+)-([0-9]+) ([0-9]+):([0-9]+):([0-9]+)/', $str, $r);
 			$t = mktime($r[4], $r[5], $r[6], $r[2], $r[3], $r[1]);
-			return new \Coxis\Utils\Datetime($t);
+			return new \Asgard\Utils\Datetime($t);
 		}
 		catch(\Exception $e) {
 			return $this->_getDefault();
@@ -37,7 +37,7 @@ class DatetimeProperty extends BaseProperty {
 		if(!$b)
 			return null;
 		$t = mktime($r[4], $r[5], $r[6], $r[2], $r[1], $r[3]);
-		return new \Coxis\Utils\Datetime($t);
+		return new \Asgard\Utils\Datetime($t);
 	}
 
 	public function getSQLType() {

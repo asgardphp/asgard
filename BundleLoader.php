@@ -14,17 +14,17 @@ namespace {
 	class Annotate_Description extends Addendum\Annotation {}
 }
 
-namespace Coxis\Core {
+namespace Asgard\Core {
 	class BundleLoader {
 		protected $bundle = null;
 
 		public function load($queue) {
-			Autoloader::preloadDir(_COXIS_DIR_.'/entities');
-			Autoloader::preloadDir(_COXIS_DIR_.'/libs');
-			Autoloader::preloadDir(_COXIS_DIR_.'/controllers');
-			Autoloader::preloadDir(_COXIS_DIR_.'/hooks');
+			Autoloader::preloadDir(_ASGARD_DIR_.'/entities');
+			Autoloader::preloadDir(_ASGARD_DIR_.'/libs');
+			Autoloader::preloadDir(_ASGARD_DIR_.'/controllers');
+			Autoloader::preloadDir(_ASGARD_DIR_.'/hooks');
 			if(php_sapi_name() === 'cli')
-				Autoloader::preloadDir(_COXIS_DIR_.'/cli');
+				Autoloader::preloadDir(_ASGARD_DIR_.'/cli');
 		}
 
 		public function run() {
@@ -36,19 +36,19 @@ namespace Coxis\Core {
 		}
 
 		protected function loadLocales() {
-			$locales = \Coxis\Utils\Cache::get('bundles/'.$this->getBundle().'/locales', function() {
-				return \Coxis\Core\App::get('locale')->fetchLocalesFromDir($this->getBundle().'/locales');
+			$locales = \Asgard\Utils\Cache::get('bundles/'.$this->getBundle().'/locales', function() {
+				return \Asgard\Core\App::get('locale')->fetchLocalesFromDir($this->getBundle().'/locales');
 			});
-			\Coxis\Core\App::get('locale')->addLocales($locales);
+			\Asgard\Core\App::get('locale')->addLocales($locales);
 		}
 
 		protected function loadHooks() {
-			$hooks = \Coxis\Utils\Cache::get('bundles/'.$this->getBundle().'/hooks', function() {
+			$hooks = \Asgard\Utils\Cache::get('bundles/'.$this->getBundle().'/hooks', function() {
 				$hooks = array();
 				if(file_exists($this->getBundle().'/hooks/')) {
 					foreach(glob($this->getBundle().'/hooks/*.php') as $filename) {
-						$class = \Coxis\Core\Importer::loadClassFile($filename);
-						if(is_subclass_of($class, 'Coxis\Hook\HooksContainer'))
+						$class = \Asgard\Core\Importer::loadClassFile($filename);
+						if(is_subclass_of($class, 'Asgard\Hook\HooksContainer'))
 							$hooks = array_merge($hooks, $class::fetchHooks());
 					}
 				}
@@ -56,16 +56,16 @@ namespace Coxis\Core {
 			});
 			if(!is_array($hooks))
 				return;
-			\Coxis\Core\App::get('hook')->hooks($hooks);
+			\Asgard\Core\App::get('hook')->hooks($hooks);
 		}
 
 		protected function loadCLI() {
-			$routes = \Coxis\Utils\Cache::get('bundles/'.$this->getBundle().'/cli', function() {
+			$routes = \Asgard\Utils\Cache::get('bundles/'.$this->getBundle().'/cli', function() {
 				$routes = array();
 				if(file_exists($this->getBundle().'/cli/')) {
 					foreach(glob($this->getBundle().'/cli/*.php') as $filename) {
-						$class = \Coxis\Core\Importer::loadClassFile($filename);
-						if(is_subclass_of($class, 'Coxis\Cli\CLIController'))
+						$class = \Asgard\Core\Importer::loadClassFile($filename);
+						if(is_subclass_of($class, 'Asgard\Cli\CLIController'))
 							$routes = array_merge($routes, $class::fetchRoutes());
 					}
 				}
@@ -73,16 +73,16 @@ namespace Coxis\Core {
 			});
 			if(!is_array($routes))
 				return;
-			\Coxis\Core\App::get('clirouter')->addRoutes($routes);
+			\Asgard\Core\App::get('clirouter')->addRoutes($routes);
 		}
 
 		protected function loadControllers() {
-			$routes = \Coxis\Utils\Cache::get('bundles/'.$this->getBundle().'/controllers', function() {
+			$routes = \Asgard\Utils\Cache::get('bundles/'.$this->getBundle().'/controllers', function() {
 				$routes = array();
 				if(file_exists($this->getBundle().'/controllers/')) {
 					foreach(glob($this->getBundle().'/controllers/*.php') as $k=>$filename) {
-						$class = \Coxis\Core\Importer::loadClassFile($filename);
-						if(is_subclass_of($class, 'Coxis\Core\Controller'))
+						$class = \Asgard\Core\Importer::loadClassFile($filename);
+						if(is_subclass_of($class, 'Asgard\Core\Controller'))
 							$routes = array_merge($routes, $class::fetchRoutes());
 					}
 				}
@@ -90,7 +90,7 @@ namespace Coxis\Core {
 			});
 			if(!is_array($routes))
 				return;
-			\Coxis\Core\App::get('resolver')->addRoutes($routes);
+			\Asgard\Core\App::get('resolver')->addRoutes($routes);
 		}
 
 		public function setBundle($bundle) {

@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core\Filters;
+namespace Asgard\Core\Filters;
 class PageCaching extends Filter {
 	public function getAfterPriority() {
 		return 1000;
@@ -7,12 +7,12 @@ class PageCaching extends Filter {
 
 	public function before($chain) {
 		$key = $this->key = $this->calculateKey();
-		if($r = \Coxis\Utils\Cache::get($key))
+		if($r = \Asgard\Utils\Cache::get($key))
 			return $r;
 	}
 
 	public function after($chain, $controller, $result) {
-		\Coxis\Utils\Cache::set($this->key, $result);
+		\Asgard\Utils\Cache::set($this->key, $result);
 	}
 
 	protected function calculateKey() {

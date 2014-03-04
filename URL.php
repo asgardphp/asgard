@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Core;
+namespace Asgard\Core;
 
 class URL {
 	public $request;
@@ -89,30 +89,30 @@ class URL {
 		if(is_array($what)) {
 			$controller = strtolower($what[0]);
 			$action = strtolower($what[1]);
-			foreach(\Coxis\Core\App::get('resolver')->getRoutes() as $route_params) {
+			foreach(\Asgard\Core\App::get('resolver')->getRoutes() as $route_params) {
 				$route = $route_params->getRoute();
 				if(strtolower($route_params->getController()) == $controller && strtolower($route_params->getAction()) == $action) {
 					if($route_params->get('host'))
-						return 'http://'.$route_params->get('host').'/'.\Coxis\Core\App::get('resolver')->buildRoute($route, $params);
+						return 'http://'.$route_params->get('host').'/'.\Asgard\Core\App::get('resolver')->buildRoute($route, $params);
 					elseif($relative)
-						return \Coxis\Core\App::get('resolver')->buildRoute($route, $params);
+						return \Asgard\Core\App::get('resolver')->buildRoute($route, $params);
 					else
-						return $this->to(\Coxis\Core\App::get('resolver')->buildRoute($route, $params));
+						return $this->to(\Asgard\Core\App::get('resolver')->buildRoute($route, $params));
 				}
 			}
 		}
 		#route
 		else {
 			$what = strtolower($what);
-			foreach(\Coxis\Core\App::get('resolver')->getRoutes() as $route_params) {
+			foreach(\Asgard\Core\App::get('resolver')->getRoutes() as $route_params) {
 				$route = $route_params->getRoute();
 				if($route_params->get('name') != null && strtolower($route_params->get('name')) == $what) {
 					if($route_params->get('host'))
-						return 'http://'.$route_params->get('host').'/'.\Coxis\Core\App::get('resolver')->buildRoute($route, $params);
+						return 'http://'.$route_params->get('host').'/'.\Asgard\Core\App::get('resolver')->buildRoute($route, $params);
 					elseif($relative)
-						return \Coxis\Core\App::get('resolver')->buildRoute($route, $params);
+						return \Asgard\Core\App::get('resolver')->buildRoute($route, $params);
 					else
-						return $this->to(\Coxis\Core\App::get('resolver')->buildRoute($route, $params));
+						return $this->to(\Asgard\Core\App::get('resolver')->buildRoute($route, $params));
 				}
 			}
 		}
