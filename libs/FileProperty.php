@@ -1,7 +1,7 @@
 <?php
-namespace Coxis\Files\Libs;
+namespace Asgard\Files\Libs;
 
-class FileProperty extends \Coxis\Core\Properties\BaseProperty {
+class FileProperty extends \Asgard\Core\Properties\BaseProperty {
 	public static $defaultallowed = array('pdf', 'doc', 'jpg', 'jpeg', 'png', 'docx', 'gif', 'rtf', 'ppt', 'xls', 'zip', 'txt');
 
 	public function getRules() {
@@ -22,9 +22,9 @@ class FileProperty extends \Coxis\Core\Properties\BaseProperty {
 
 	public function getDefault($entity=null) {
 		if($this->multiple)
-			return new \Coxis\Files\Libs\EntityMultipleFile($entity, $this->name, array());
+			return new \Asgard\Files\Libs\EntityMultipleFile($entity, $this->name, array());
 		else
-			return new \Coxis\Files\Libs\EntityFile($entity, $this->name, null);
+			return new \Asgard\Files\Libs\EntityFile($entity, $this->name, null);
 	}
 
 	public function serialize($obj) {
@@ -37,11 +37,11 @@ class FileProperty extends \Coxis\Core\Properties\BaseProperty {
 	public function unserialize($str, $entity=null) {
 		if($this->multiple)
 			try {
-				return new \Coxis\Files\Libs\EntityMultipleFile($entity, $this->name, unserialize($str));
+				return new \Asgard\Files\Libs\EntityMultipleFile($entity, $this->name, unserialize($str));
 			} catch(\Exception $e) {
 				return $this->getDefault($entity);
 			}
-		return new \Coxis\Files\Libs\EntityFile($entity, $this->name, $str);
+		return new \Asgard\Files\Libs\EntityFile($entity, $this->name, $str);
 	}
 
 	public function set($val, $entity=null) {
@@ -49,8 +49,8 @@ class FileProperty extends \Coxis\Core\Properties\BaseProperty {
 			return $val;
 
 		if($this->multiple)
-			return new \Coxis\Files\Libs\EntityMultipleFile($entity, $this->name, $val);
+			return new \Asgard\Files\Libs\EntityMultipleFile($entity, $this->name, $val);
 		else
-			return new \Coxis\Files\Libs\EntityFile($entity, $this->name, $val);
+			return new \Asgard\Files\Libs\EntityFile($entity, $this->name, $val);
 	}
 }

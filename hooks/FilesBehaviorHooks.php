@@ -1,12 +1,12 @@
 <?php
-namespace Coxis\Files\Hooks;
+namespace Asgard\Files\Hooks;
 
-class FilesBehaviorHooks extends \Coxis\Hook\HooksContainer {
+class FilesBehaviorHooks extends \Asgard\Hook\HooksContainer {
 	/**
 	@Hook('behaviors_pre_load')
 	**/
 	public static function behaviors_pre_load($chain, $entityDefinition) {
-		if(!isset($entityDefinition->behaviors['Coxis\Files\FilesBehavior']))
-			$entityDefinition->behaviors['Coxis\Files\FilesBehavior'] = true;
+		if(!isset($entityDefinition->behaviors['Asgard\Files\FilesBehavior']))
+			$entityDefinition->behaviors['Asgard\Files\FilesBehavior'] = true;
 	}
 }

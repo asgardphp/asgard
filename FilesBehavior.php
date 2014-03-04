@@ -1,7 +1,7 @@
 <?php
-namespace Coxis\Files;
+namespace Asgard\Files;
 
-class FilesBehavior implements \Coxis\Core\Behavior {
+class FilesBehavior implements \Asgard\Core\Behavior {
 	public static function load($entityDefinition, $params=null) {
 		$entityName = $entityDefinition->getClass();
 
@@ -9,7 +9,7 @@ class FilesBehavior implements \Coxis\Core\Behavior {
 	
 		$entityDefinition->hookBefore('propertyClass', function($chain, $type) {
 			if($type == 'file')
-				return '\Coxis\Files\Libs\FileProperty';
+				return '\Asgard\Files\Libs\FileProperty';
 		});
 
 		#$article->hasFile('image')
@@ -47,8 +47,8 @@ class FilesBehavior implements \Coxis\Core\Behavior {
 	}
 	
 	protected static function loadValidationRules() {
-		if(!\Coxis\Core\App::get('validation')->ruleExists('filerequired')) {
-			\Coxis\Core\App::get('validation')->register('filerequired', function($attribute, $value, $params, $validator) {
+		if(!\Asgard\Core\App::get('validation')->ruleExists('filerequired')) {
+			\Asgard\Core\App::get('validation')->register('filerequired', function($attribute, $value, $params, $validator) {
 				if(!$params[0])
 					return;
 				$msg = false;
@@ -57,15 +57,15 @@ class FilesBehavior implements \Coxis\Core\Behavior {
 				elseif(!$value->exists())
 					$msg = $validator->getMessage('fileexists', $attribute, __('The file ":attribute" does not exist.'));
 				if($msg) {
-					return \Coxis\Core\App::get('validation')->format($msg, array(
+					return \Asgard\Core\App::get('validation')->format($msg, array(
 						'attribute'	=>	$attribute,
 					));
 				}
 			});
 		}
 		
-		if(!\Coxis\Core\App::get('validation')->ruleExists('image')) {
-			\Coxis\Core\App::get('validation')->register('image', function($attribute, $value, $params, $validator) {
+		if(!\Asgard\Core\App::get('validation')->ruleExists('image')) {
+			\Asgard\Core\App::get('validation')->register('image', function($attribute, $value, $params, $validator) {
 				if(!$value->exists())
 					return;
 
@@ -76,21 +76,21 @@ class FilesBehavior implements \Coxis\Core\Behavior {
 
 				if(!in_array($mime, array('image/jpeg', 'image/png', 'image/gif'))) {
 					$msg = $validator->getMessage('image', $attribute, __('The file ":attribute" must be an image.'));
-					return \Coxis\Validation\Validation::format($msg, array(
+					return \Asgard\Validation\Validation::format($msg, array(
 						'attribute'	=>	$attribute,
 					));
 				}
 			});
 		}
 
-		if(!\Coxis\Core\App::get('validation')->ruleExists('allowed')) {
-			\Coxis\Core\App::get('validation')->register('allowed', function($attribute, $value, $params, $validator) {
+		if(!\Asgard\Core\App::get('validation')->ruleExists('allowed')) {
+			\Asgard\Core\App::get('validation')->register('allowed', function($attribute, $value, $params, $validator) {
 				if(!$value->exists())
 					return;
 
 				if(!in_array($value->extension(), $params[0])) {
 					$msg = $validator->getMessage('image', $attribute, __('This type of file is not allowed ":ext".'));
-					return \Coxis\Core\App::get('validation')->format($msg, array(
+					return \Asgard\Core\App::get('validation')->format($msg, array(
 						'attribute'	=>	$attribute,
 						'ext'	=>	$value->extension(),
 					));

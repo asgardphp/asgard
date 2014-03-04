@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Files\Tests;
+namespace Asgard\Files\Tests;
 
 class FilesTest extends \PHPUnit_Framework_TestCase {
 	public static function setUpBeforeClass() {
@@ -7,16 +7,16 @@ class FilesTest extends \PHPUnit_Framework_TestCase {
 			define('_ENV_', 'test');
 		require_once(_CORE_DIR_.'core.php');
 
-		\Coxis\Core\App::instance(true)->config->set('bundles', array(
-			_COXIS_DIR_.'core',
-			_COXIS_DIR_.'files',
+		\Asgard\Core\App::instance(true)->config->set('bundles', array(
+			_ASGARD_DIR_.'core',
+			_ASGARD_DIR_.'files',
 		));
-		\Coxis\Core\App::loadDefaultApp();
+		\Asgard\Core\App::loadDefaultApp();
 	}
 
 	public static function tearDownAfteClass() {
 		d();
-		\Coxis\Utils\FileManager::unlink('web/upload/image.jpg');
+		\Asgard\Utils\FileManager::unlink('web/upload/image.jpg');
 	}
 	
 	public function test1() {
@@ -29,7 +29,7 @@ class FilesTest extends \PHPUnit_Framework_TestCase {
 		
 		$files = Entities\News::fileProperties();
 		$this->assertCount(1, $files);
-		$this->assertInstanceOf('Coxis\Files\Libs\FileProperty', $files['image']);
+		$this->assertInstanceOf('Asgard\Files\Libs\FileProperty', $files['image']);
 
 		$this->assertCount(0, $news->errors());
 
@@ -62,7 +62,7 @@ class FilesTest extends \PHPUnit_Framework_TestCase {
 		*/
 
 		$dst = 'web/upload/image.jpg';
-		\Coxis\Utils\FileManager::unlink($dst);
+		\Asgard\Utils\FileManager::unlink($dst);
 
 		#save
 		$news->save();

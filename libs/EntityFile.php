@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Files\Libs;
+namespace Asgard\Files\Libs;
 
 class EntityFile {
 	public $entity;
@@ -77,7 +77,7 @@ class EntityFile {
 	}
 	
 	public function url($default=null) {
-		return \Coxis\Core\App::get('url')->to($this->get($default, false));
+		return \Asgard\Core\App::get('url')->to($this->get($default, false));
 	}
 	
 	public function save() {
@@ -87,10 +87,10 @@ class EntityFile {
 		if($this->type() == 'image') {
 			if(!($format = $this->format()))
 				$format = IMAGETYPE_JPEG;
-			$filename = \Coxis\Utils\ImageManager::load($file['path'])->save($to, $format);
+			$filename = \Asgard\Utils\ImageManager::load($file['path'])->save($to, $format);
 		}
 		else
-			$filename = \Coxis\Utils\FileManager::move($file['path'], $to);
+			$filename = \Asgard\Utils\FileManager::move($file['path'], $to);
 		
 		$this->file = $filename;
 		$this->saved = true;
@@ -100,8 +100,8 @@ class EntityFile {
 	
 	public function delete() {
 		if($path = $this->get()) {
-			\Coxis\Utils\FileManager::unlink(_WEB_DIR_.$path);
-			\Coxis\Imagecache\Libs\ImageCache::clearFile($path);
+			\Asgard\Utils\FileManager::unlink(_WEB_DIR_.$path);
+			\Asgard\Imagecache\Libs\ImageCache::clearFile($path);
 		}
 		$this->file = null;
 		

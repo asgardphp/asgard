@@ -1,5 +1,5 @@
 <?php
-namespace Coxis\Files\Libs;
+namespace Asgard\Files\Libs;
 
 class EntityMultipleFile {
 	public $entity;

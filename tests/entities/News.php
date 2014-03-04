@@ -1,7 +1,7 @@
 <?php
-namespace Coxis\Files\Tests\Entities;
+namespace Asgard\Files\Tests\Entities;
 
-class News extends \Coxis\Core\Entity {
+class News extends \Asgard\Core\Entity {
 	public static $properties = array(
 		'title',
 		'image' => array(
