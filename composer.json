@@ -6,6 +6,6 @@
 		"email": "michel@hognerud.net"
 	}],
     "autoload": {
-        "psr-0": {"Asgard\\Hook": "../.."}
+        "psr-4": {"Asgard\\Hook\\": "."}
     }
 }
