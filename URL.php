@@ -3,13 +3,13 @@ namespace Asgard\Core;
 
 class URL {
 	public $request;
-	public $server;
+	public $host;
 	public $root;
 	public $url;
 
-	function __construct($request, $server=null, $root=null, $url=null) {
+	function __construct($request, $host=null, $root=null, $url=null) {
 		$this->request = $request;
-		$this->server = $server;
+		$this->host = $host;
 		$this->root = $root;
 		$this->url = $url;
 	}
@@ -22,8 +22,8 @@ class URL {
 		return $this->url = $url;
 	}
 	
-	public function setServer($server) {
-		return $this->server = $server;
+	public function setHost($host) {
+		return $this->host = $host;
 	}
 	
 	public function setRoot($root) {
@@ -42,7 +42,7 @@ class URL {
 	}
 	
 	public function base() {
-		$res = $this->server().'/';
+		$res = $this->host().'/';
 		if($this->root())
 			$res .= $this->root().'/';
 		return $res;
@@ -52,7 +52,7 @@ class URL {
 		$parse = parse_url($base);
 		if(!isset($parse['path']))
 			$parse['path'] = '/';
-		$this->setServer($parse['host']);
+		$this->setHost($parse['host']);
 		$this->setRoot($parse['path']);
 	}
 	
@@ -70,16 +70,9 @@ class URL {
 		return $result;
 	}
 	
-	public function server() {
-		if($this->host() !== null)
-			return 'http://'.$this->host();
-		else
-			return '';
-	}
-	
 	public function host() {
-		if($this->server !== null)
-			return $this->server;
+		if($this->host !== null)
+			return 'http://'.$this->host;
 		else
 			return '';
 	}

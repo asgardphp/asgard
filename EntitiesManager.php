@@ -6,7 +6,7 @@ class EntitiesManager {
 
 	public function get($entityClass) {
 		if(!isset($this->entities[$entityClass])) {
-			$md = \Asgard\Utils\Cache::get('entitiesmanager/'.$entityClass.'/definition', function() use($entityClass) {
+			$md = \Asgard\Core\App::get('cache')->get('entitiesmanager/'.$entityClass.'/definition', function() use($entityClass) {
 				return new EntityDefinition($entityClass);
 			});
 			$this->entities[$entityClass] = $md;

@@ -1,6 +1,8 @@
 <?php
 namespace Asgard\Core;
 
+// require_once dirname(__FILE__).'Importer.php';
+
 class Autoloader {
 	public static $map = array(
 		// 'Something'	=>	'there/somewhere.php',
@@ -71,6 +73,6 @@ class Autoloader {
 			$importer = App::get('importer');
 		else
 			$importer = new Importer;
-		$importer->_import($class, array('into'=>$dir));
+		$importer->importClass($class, array('into'=>$dir));
 	}
 }

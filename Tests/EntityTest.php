@@ -182,13 +182,5 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 		));
 		$this->assertEquals(strrev('Test Title'), $news->title);
 
-
-/*
-todo
-		save
-		destroy
-		create
-*/
-
 	}
 }

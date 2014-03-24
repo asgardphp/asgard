@@ -8,7 +8,6 @@ class Request implements \ArrayAccess {
 	public $server;
 	public $cookie;
 	public $session;
-	public $argv;
 	public $data = '';
 	public $url;
 
@@ -25,23 +24,21 @@ class Request implements \ArrayAccess {
 		$this->file = new \Asgard\Core\Inputs\File;
 		$this->server = new \Asgard\Core\Inputs\Server;
 		$this->cookie = new \Asgard\Core\Inputs\Cookie;
+		$this->header = new \Asgard\Core\Inputs\Header;
 		$this->session = new \Asgard\Core\Inputs\Session;
-		$this->argv = new \Asgard\Core\Inputs\ARGV;
 	}
 
 	public static function createFromGlobals() {
-		global $argv;
-
 		$request = new static;
 		$request->get->_setAll($_GET);
 		$request->post->_setAll($_POST);
 		$request->file->_setAll($_FILES);
 		$request->cookie->_setAll($_COOKIE);
+		$request->header->_setAll(\Asgard\Utils\Tools::getallheaders());
 		$request->server->_setAll($_SERVER);
-		$request->argv->_setAll($argv);
 		try {
 			$request->sessionStart();
-			$request->session->_setAll($_SESSION);
+			$request->session->_setAll(isset($_SESSION) ? $_SESSION:array());
 		} catch(\ErrorException $e) {}
 		$request->body = file_get_contents('php://input');
 
@@ -62,8 +59,6 @@ class Request implements \ArrayAccess {
 
 		$request->setURL($server, $root, $url);
 
-		$request->process();
-
 		return $request;
 	}
 
@@ -79,9 +74,7 @@ class Request implements \ArrayAccess {
 
 	public function setURL($server, $root, $url) {
 		$this->url = new \Asgard\Core\URL($this, $server, $root, $url);
-	}
 
-	public function process() {
 		preg_match('/\.([a-zA-Z0-9]{1,5})$/', $this->url->get(), $matches);
 		if(isset($matches[1]))
 			$this->setParam('format', $matches[1]);
@@ -91,6 +84,7 @@ class Request implements \ArrayAccess {
 	public function getParam($name) {
 		return $this->params[$name];
 	}
+
 	public function setParam($name, $value=null) {
 		if(is_array($name)) {
 			foreach($name as $k=>$v)
@@ -107,12 +101,15 @@ class Request implements \ArrayAccess {
 		else
 			$this->params[$offset] = $value;
 	}
+
 	public function offsetExists($offset) {
 		return isset($this->params[$offset]);
 	}
+
 	public function offsetUnset($offset) {
 		unset($this->params[$offset]);
 	}
+	
 	public function offsetGet($offset) {
 		return isset($this->params[$offset]) ? $this->params[$offset] : null;
 	}
@@ -128,7 +125,7 @@ class Request implements \ArrayAccess {
 	}
 
 	public function method() {
-		return isset($this->server['REQUEST_METHOD']) ? $this->server['REQUEST_METHOD']:'GET';
+		return isset($this->server['REQUEST_METHOD']) ? strtoupper($this->server['REQUEST_METHOD']):'GET';
 	}
 
 	public function setMethod($value) {

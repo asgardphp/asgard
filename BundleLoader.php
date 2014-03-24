@@ -36,14 +36,14 @@ namespace Asgard\Core {
 		}
 
 		protected function loadLocales() {
-			$locales = \Asgard\Utils\Cache::get('bundles/'.$this->getBundle().'/locales', function() {
+			$locales = \Asgard\Core\App::get('cache')->get('bundles/'.$this->getBundle().'/locales', function() {
 				return \Asgard\Core\App::get('locale')->fetchLocalesFromDir($this->getBundle().'/locales');
 			});
 			\Asgard\Core\App::get('locale')->addLocales($locales);
 		}
 
 		protected function loadHooks() {
-			$hooks = \Asgard\Utils\Cache::get('bundles/'.$this->getBundle().'/hooks', function() {
+			$hooks = \Asgard\Core\App::get('cache')->get('bundles/'.$this->getBundle().'/hooks', function() {
 				$hooks = array();
 				if(file_exists($this->getBundle().'/hooks/')) {
 					foreach(glob($this->getBundle().'/hooks/*.php') as $filename) {
@@ -60,7 +60,7 @@ namespace Asgard\Core {
 		}
 
 		protected function loadCLI() {
-			$routes = \Asgard\Utils\Cache::get('bundles/'.$this->getBundle().'/cli', function() {
+			$routes = \Asgard\Core\App::get('cache')->get('bundles/'.$this->getBundle().'/cli', function() {
 				$routes = array();
 				if(file_exists($this->getBundle().'/cli/')) {
 					foreach(glob($this->getBundle().'/cli/*.php') as $filename) {
@@ -77,7 +77,7 @@ namespace Asgard\Core {
 		}
 
 		protected function loadControllers() {
-			$routes = \Asgard\Utils\Cache::get('bundles/'.$this->getBundle().'/controllers', function() {
+			$routes = \Asgard\Core\App::get('cache')->get('bundles/'.$this->getBundle().'/controllers', function() {
 				$routes = array();
 				if(file_exists($this->getBundle().'/controllers/')) {
 					foreach(glob($this->getBundle().'/controllers/*.php') as $k=>$filename) {

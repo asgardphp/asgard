@@ -6,7 +6,7 @@
 		"email": "michel@hognerud.net"
 	}],
     "autoload": {
-        "psr-0": {"Asgard\\Core": "../.."}
+        "psr-4": {"Asgard\\Core\\": "."}
     },
     "require": {
         "niktux/addendum": "dev-master",

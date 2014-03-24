@@ -15,7 +15,7 @@ class BundlesManager {
 	public static function loadEntityFixtures($bundle_path) {
 		if(file_exists($bundle_path.'/data')) {
 			foreach(glob($bundle_path.'/data/*.entities.yml') as $file)
-				\Asgard\ORM\Libs\ORMManager::loadEntityFixtures($file);
+				\Asgard\Orm\Libs\ORMManager::loadEntityFixtures($file);
 		}
 	}
 

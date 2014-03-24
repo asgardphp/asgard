@@ -9,17 +9,20 @@ abstract class InputsBag implements \ArrayAccess {
 	}
 
 	public function offsetSet($offset, $value) {
-		if (is_null($offset))
+		if(is_null($offset))
 			$this->inputs[] = $value;
 		else
 			$this->inputs[$offset] = $value;
 	}
+
 	public function offsetExists($offset) {
 		return isset($this->inputs[$offset]);
 	}
+
 	public function offsetUnset($offset) {
 		unset($this->inputs[$offset]);
 	}
+	
 	public function offsetGet($offset) {
 		return isset($this->inputs[$offset]) ? $this->inputs[$offset] : null;
 	}

@@ -31,6 +31,7 @@ class App {
 		$bundles = $this->get('config')->get('bundles');
 		$bundlesmanager = new BundlesManager;
 		$bundlesmanager->loadBundles($bundles);
+		$this->_set('bundlesmanager', $bundlesmanager);
 
 		$this->loaded = true;
 	}
@@ -48,7 +49,7 @@ class App {
 			return new \Asgard\Hook\Hook;
 		});
 		$this->_set('request', function() {
-			return \Asgard\Core\Asgard\Core\App::get('request')->createFromGlobals();
+			return \Asgard\Core\Request::createFromGlobals();
 		});
 		$this->_set('url', function() {
 			return \Asgard\Core\App::get('request')->url;

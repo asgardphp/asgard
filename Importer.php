@@ -38,7 +38,7 @@ class Importer {
 		return $this;
 	}
 	
-	public function _import($class, $params=array()) {
+	public function importClass($class, $params=array()) {
 		$class = preg_replace('/^\\\+/', '', $class);
 		$alias = isset($params['as']) ? $params['as']:null;
 		$intoNamespace= isset($params['into']) ? $params['into']:null;
@@ -66,7 +66,7 @@ class Importer {
 				else
 					$next = str_replace(DIRECTORY_SEPARATOR, '\\', \Asgard\Utils\NamespaceUtils::dirname($dir)).'\\'.$base;
 
-				return static::_import($next, array('into'=>$intoNamespace, 'as'=>$alias));
+				return static::importClass($next, array('into'=>$intoNamespace, 'as'=>$alias));
 			}
 		
 			return false;
@@ -151,7 +151,7 @@ class Importer {
 		return $result;
 	}
 	
-	public static function class2path($class) {
+	protected static function class2path($class) {
 		$className = \Asgard\Utils\NamespaceUtils::basename($class);
 		$namespace = strtolower(\Asgard\Utils\NamespaceUtils::dirname($class));
 
@@ -166,12 +166,12 @@ class Importer {
 		return $path.'.php';
 	}
 
-	public static function createAlias($loadedClass, $class) {
-		if(strtolower(\Asgard\Utils\NamespaceUtils::basename($class)) != strtolower(\Asgard\Utils\NamespaceUtils::basename($loadedClass)))
+	protected static function createAlias($class, $alias) {
+		if(strtolower(\Asgard\Utils\NamespaceUtils::basename($alias)) != strtolower(\Asgard\Utils\NamespaceUtils::basename($class)))
 			return false;
 		try {
-			if($loadedClass !== $class)
-				class_alias($loadedClass, $class);
+			if($class !== $alias)
+				class_alias($class, $alias);
 			return true;
 		} catch(\ErrorException $e) {
 			return false;

@@ -45,7 +45,7 @@ abstract class Entity {
 		$chain->found = false;
 		$res = static::triggerChain($chain, 'callStatic', array($name, $arguments));
 		if(!$chain->found)
-			throw new \Exception('Static method '.$name.' does not exist for Entity '.static::getEntityName());
+			throw new \Exception('Static method '.$name.' does not exist for entity '.get_called_class());
 
 		return $res;
 	}
@@ -58,7 +58,7 @@ abstract class Entity {
 			try {
 				return static::__callStatic($name, $arguments);
 			} catch(\ErrorException $e) {
-				throw new \Exception('Method '.$name.' does not exist for Entity '.static::getEntityName());
+				throw new \Exception('Method '.$name.' does not exist for entity '.get_called_class());
 			}
 		}
 

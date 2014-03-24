@@ -113,7 +113,7 @@ class Resolver {
 		$request_key = md5(serialize(array($request->method(), $request->url->get())));
 
 		$routes = $this->routes;
-		$results = \Asgard\Utils\Cache::get('Router/requests/'.$request_key, function() use($routes, $request) {
+		$results = \Asgard\Core\App::get('cache')->get('Router/requests/'.$request_key, function() use($routes, $request) {
 			static::sortRoutes($routes);
 			/* PARSE ALL ROUTES */
 			foreach($routes as $r) {

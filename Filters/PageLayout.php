@@ -12,8 +12,7 @@ class PageLayout extends Filter {
 		if(!is_string($result))
 			return;
 
-		if(\Asgard\Utils\Tools::array_get(\Asgard\Utils\Tools::getallheaders(), 'X-Requested-With') == 'XMLHttpRequest'
-			|| \Asgard\Utils\Tools::array_get(\Asgard\Utils\Tools::getallheaders(), 'x-requested-with') == 'XMLHttpRequest')
+		if($controller->request->header->get('x-requested-with') == 'XMLHttpRequest')
 			return;
 
 		try {

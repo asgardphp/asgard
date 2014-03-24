@@ -99,12 +99,14 @@ class EntityDefinition extends \Asgard\Hook\Hookable {
 		});
 
 		$this->properties[$property] = new $propertyClass($this->entityClass, $property, $params);
+		// if($property == 'created_at')
+		// 	d($this->properties, count($this->properties));
 		if(!isset($this->properties[$property]->params['position']))
 			$this->properties[$property]->params['position'] = count($this->properties);
 		uasort($this->properties, function($a, $b) {
-			if($a->position===null)
+			if($a->position === null)
 				return 1;
-			if($b->position===null)
+			if($b->position === null)
 				return -1;
 			return $a->position > $b->position;
 		});

@@ -3,21 +3,9 @@ namespace Asgard\Core;
 
 class Bundle extends BundleLoader {
 	public function load($queue) {
-	/*	$preload = \Asgard\Utils\Cache::get('bundles/'.$this->getBundle().'/preload', function() {
-			$bundle = $this->getBundle();
-			$preload = array();
-			Autoloader::preloadDir(dirname(__FILE__));
-			Autoloader::preloadDir(_ASGARD_DIR_.'/db');
-			Autoloader::preloadDir(_ASGARD_DIR_.'/auth');
-			return $preload;
-		});
-		Autoloader::addPreloadedClasses($preload);*/
-
-
 		Autoloader::preloadDir(dirname(__FILE__));
 		Autoloader::preloadDir(_ASGARD_DIR_.'/db');
 		Autoloader::preloadDir(_ASGARD_DIR_.'/auth');
-
 
 		\Asgard\Core\App::instance()->register('importer', function() { return new \Asgard\Core\Importer; } );
 		\Asgard\Core\App::instance()->register('hook', function() { return new \Asgard\Hook\Hook; } );
@@ -39,7 +27,9 @@ class Bundle extends BundleLoader {
 		\Asgard\Core\App::instance()->register('server', function() { return \Asgard\Core\App::instance()->get('request')->server; } );
 		\Asgard\Core\App::instance()->register('clirouter', function() { return new \Asgard\Cli\Router; } );
 		\Asgard\Core\App::instance()->register('html', function() { return new \Asgard\Utils\HTML; });
-		\Asgard\Core\App::instance()->register('db', function() { return new \Asgard\DB\DB(Asgard\Core\App::get('config')->get('database')); } );
+		\Asgard\Core\App::instance()->register('db', function() { return new \Asgard\Db\DB(Asgard\Core\App::get('config')->get('database')); } );
+		\Asgard\Core\App::instance()->register('schema', function() { return new \Asgard\Db\Schema(Asgard\Core\App::get('db')); } );
+		\Asgard\Core\App::instance()->register('cache', function() { $driver = \Asgard\Core\App::get('config')->get('cache_driver'); return new $driver; } );
 
 		parent::load($queue);
 	}
