@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\DB;
+namespace Asgard\Db;
 
 class DAL {
 	public $db = null;
@@ -18,7 +18,7 @@ class DAL {
 	public $page = null;
 	public $per_page = null;
 
-	protected $rsc = null;
+	protected $query = null;
 
 	function __construct($db, $tables=null) {
 		$this->db = $db;
@@ -102,22 +102,10 @@ class DAL {
 		return $this->join('innerjoin', $table, $conditions);
 	}
 
-	// public function rsc() {
-	// 	$query = $this->buildSQL();
-	// 	return $this->query($query[0], $query[1]);
-	// }
-
-	// public function rsc() {
-	// 	$query = $this->buildSQL();
-	// 	$params = $this->getParameters();
-	// 	// d($query);
-	// 	return $this->query($query, $params)->rsc();
-	// }
-
 	public function next() {
-		if($this->rsc === null)
-			$this->rsc = $this->query();
-		return $this->rsc->next();
+		if($this->query === null)
+			$this->query = $this->query();
+		return $this->query->next();
 	}
 	
 	public function reset() {
@@ -168,8 +156,6 @@ class DAL {
 	}
 
 	/* SETTERS */
-	#todo ajouter test pour $columns en string ou array
-		#et verifier si necessaire pour les autres fonctions
 	public function select($columns) {
 		$this->columns = array();
 		return $this->addSelect($columns);
@@ -261,11 +247,8 @@ class DAL {
 		$string_conditions = '';
 		
 		if(!is_array($params)) {
-			// d($params); #todo remove the block
 			if($condition == 'and')
 				return array($this->replace($params, $table), array());
-				// return array($params, array());
-				// d($params);
 			else
 				return array($this->replace($condition, $table), array());
 		}
@@ -274,10 +257,8 @@ class DAL {
 
 		foreach($params as $key=>$value) {
 			if(!is_array($value)) {
-		// d($value);
 				if(is_int($key))
 					$string_conditions[] = $this->replace($value);
-					// $string_conditions[] = $value;
 				else {
 					$res = $this->replace($key);
 					if(static::isIdentifier($key))
@@ -308,32 +289,19 @@ class DAL {
 		return array($result, \Asgard\Utils\Tools::flateArray($pdoparams));
 	}
 
-	#todo revemo
 	public function removeJointure($alias) {
 		unset($this->joins[$alias]);
 		return $this;
 	}
 	
 	protected function replace($condition) {
-		// d($condition);
 		$condition = preg_replace_callback('/[a-z_][a-z0-9._]*(?![^\(]*\))/', function($matches) {
-			// d($matches, $this->identifierQuotes($matches[0]));
-			// return 'test';
-
 			if(strpos($matches[0], '.')===false && count($this->joins) > 0 && count($this->tables)===1)
 				$matches[0] = array_keys($this->tables)[0].'.'.$matches[0];
 
 			return $this->identifierQuotes($matches[0]);
 		}, $condition);
-		// d($condition);
 
-		// if(strpos($condition, '?') === false) {
-		// 	if(preg_match('/^[a-zA-Z0-9_]+$/', $condition))
-		// 		$condition = '`'.$condition.'` = ?';
-		// 	else
-		// 		$condition = $condition.' = ?';
-		// }
-		
 		return $condition;
 	}
 
@@ -592,7 +560,6 @@ class DAL {
 		return 'UPDATE '.$tables.$jointures.$str.$where.$orderBy.$limit;
 	}
 
-	#todo verifier ce format en ligne:  DELETE `n` FROM `news` `n` left join `category` WHERE `id`>500000 ORDER BY `id` ASC LIMIT 5
 	// public function buildDeleteSQL($del_tables=null) {
 	public function buildDeleteSQL() {
 		$params = array();
@@ -615,7 +582,6 @@ class DAL {
 			return 'DELETE FROM '.$tables.$where.$orderBy.$limit;
 	}
 
-	#todo a verifier en ligne si la query insert est complete ici?
 	public function buildInsertSQL($values) {
 		if(sizeof($values) == 0)
 			throw new \Exception('Insert values should not be empty.');
@@ -658,33 +624,29 @@ class DAL {
 		return $this->db->query($sql, $params)->affected();
 	}
 
-	#todo use a dal clone instead of resetting everything
 	protected function _function($fct, $what=null, $group_by=null) {
-		if($what)
-			$what = '`'.$what.'`';
-		else
+		if($what === null)
 			$what = '*';
 
+		$dal = clone $this;
 		if($group_by) {
-			// $this->select($this->table.'.`'.$group_by.'` groupby', $fct.'('.$what.') '.$fct)
-				// ->groupBy($this->table.'.`'.$group_by.'`')
-			$this->select($group_by.' groupby, '.strtoupper($fct).'('.$what.') '.$fct)
+			$dal->select($group_by.' groupby, '.strtoupper($fct).'('.$what.') '.$fct)
 				->groupBy($group_by)
 				->offset(null)
 				->orderBy(null)
 				->limit(null);
 			$res = array();
-			foreach($this->get() as $v)
+			foreach($dal->get() as $v)
 				$res[$v['groupby']] = $v[$fct];
 			return $res;
 		}
 		else {
-			$this->select($fct.'('.$what.') '.$fct)
+			$dal->select($fct.'('.$what.') '.$fct)
 				->groupBy(null)
 				->offset(null)
 				->orderBy(null)
 				->limit(null);
-			return \Asgard\Utils\Tools::array_get($this->first(), $fct);
+			return \Asgard\Utils\Tools::array_get($dal->first(), $fct);
 		}
 	}
 	

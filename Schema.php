@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\DB;
+namespace Asgard\Db;
 
 class BuildCol {
 	protected $name;
@@ -185,7 +185,7 @@ class Table {
 	public function primary($keys) {
 		try {
 			$this->db->query('ALTER TABLE  `'.$this->name.'` DROP PRIMARY KEY');
-		} catch(\Asgard\DB\DBException $e) {}
+		} catch(\Asgard\Db\DBException $e) {}
 	
 		if(!is_array($keys))
 			$keys = array($keys);
@@ -241,30 +241,37 @@ class Column {
 		$table = $this->table;
 		$oldcol = $this->name;
 		$newcol = isset($params['name']) ? $params['name']:$this->name;
+
 		$type = isset($params['type']) ? $params['type']:$this->getType();
+
 		$nullable = isset($params['nullable']) ? $params['nullable']:$this->getNullable();
 		if($nullable)
 			$nullable = 'NULL';
 		else
 			$nullable = 'NOT NULL';
+
 		$default = isset($params['default']) ? $params['default']:$this->getDefault();
 		if($default)
 			$default = "DEFAULT '$default'";
 		else
 			$default = '';
+
 		$autoincrement = isset($params['autoincrement']) ? $params['autoincrement']:$this->getAutoincrement();
 		if($autoincrement)
 			$autoincrement = 'auto_increment';
 		else
 			$autoincrement = '';
+
+		$after = '';
+		if(isset($params['after'])) {
+			if($params['after'] === false)
+				$after = 'FIRST';
+			else
+				$after = ' AFTER `'.$params['after'].'`';
+		}
 		
-		
-		
-		$sql = 'ALTER TABLE `'.$table.'` CHANGE `'.$oldcol.'` `'.$newcol.'` '.$type.' '.$default.' '.$nullable.' '.$autoincrement;
-		//~ d($sql);
+		$sql = 'ALTER TABLE `'.$table.'` CHANGE `'.$oldcol.'` `'.$newcol.'` '.$type.' '.$default.' '.$nullable.' '.$autoincrement.' '.$after;
 		$this->db->query($sql);
-		//~ ALTER TABLE `test` CHANGE `title2` `title3` varchar(100) DEFAULT 'bob' NOT NULL auto_increment
-		//~ ALTER TABLE `test` CHANGE `title2` `title3` varchar(100) NOT NULL auto_increment DEFAULT 'bob'
 	}
 	
 	public function type($type, $length=null) {
@@ -309,6 +316,18 @@ class Column {
 	
 	public function def($val) {
 		$this->change(array('default'=>$val));
+		
+		return $this;
+	}
+	
+	public function first() {
+		$this->change(array('after'=>false));
+		
+		return $this;
+	}
+	
+	public function after($what) {
+		$this->change(array('after'=>$what));
 		
 		return $this;
 	}
@@ -369,7 +388,7 @@ class Column {
 		$sql = 'alter table `'.$this->table.'` drop index `'.$this->name.'`';
 		try {
 		$this->db->query($sql);
-		} catch(\Asgard\DB\DBException $e) {}
+		} catch(\Asgard\Db\DBException $e) {}
 		
 		return $this;
 	}

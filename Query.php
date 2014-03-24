@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\DB;
+namespace Asgard\Db;
 
 class Query {
 	protected $db;

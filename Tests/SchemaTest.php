@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\DB\Tests;
+namespace Asgard\Db\Tests;
 
 class SchemaTest extends \PHPUnit_Framework_TestCase {
 	protected $db;
@@ -22,7 +22,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 
 	protected function getDB() {
 		if(!$this->db) {
-			$this->db = new \Asgard\DB\DB(array(
+			$this->db = new \Asgard\Db\DB(array(
 				'host' => 'localhost',
 				'user' => 'root',
 				'password' => '',
@@ -193,7 +193,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 //~ );
 	
 	public function test0() {
-		$schema = new \Asgard\DB\Schema($this->getDB());
+		$schema = new \Asgard\Db\Schema($this->getDB());
 		$schema->create('test', function($table) {
 			$table->add('id', 'int', 11)
 				->autoincrement();
@@ -207,7 +207,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 	}
 	
 	public function test1() {
-		$schema = new \Asgard\DB\Schema($this->getDB());
+		$schema = new \Asgard\Db\Schema($this->getDB());
 		$schema->create('test', function($table) {
 			$table->add('id', 'int', 11);
 		});
@@ -216,7 +216,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 	}
 	
 	public function test2() {
-		$schema = new \Asgard\DB\Schema($this->getDB());
+		$schema = new \Asgard\Db\Schema($this->getDB());
 		$schema->create('test', function($table) {
 			$table->add('id', 'int', 11);
 		});
@@ -225,7 +225,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 	}
 	
 	public function test3() {
-		$schema = new \Asgard\DB\Schema($this->getDB());
+		$schema = new \Asgard\Db\Schema($this->getDB());
 		$schema->create('test', function($table) {
 			$table->add('id', 'int', 11);
 		});
@@ -236,7 +236,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 	}
 	
 	public function test4() {
-		$schema = new \Asgard\DB\Schema($this->getDB());
+		$schema = new \Asgard\Db\Schema($this->getDB());
 		$schema->create('test', function($table) {
 			$table->add('id', 'int', 11);
 			$table->add('title', 'text');
@@ -246,7 +246,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 	}
 	
 	public function test5() {
-		$schema = new \Asgard\DB\Schema($this->getDB());
+		$schema = new \Asgard\Db\Schema($this->getDB());
 		$schema->create('test', function($table) {
 			$table->add('id', 'int', 11);
 			$table->add('title', 'text');
@@ -256,7 +256,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 	}
 	
 	public function test6() {
-		$schema = new \Asgard\DB\Schema($this->getDB());
+		$schema = new \Asgard\Db\Schema($this->getDB());
 		$schema->create('test', function($table) {
 			$table->add('id', 'int', 11);
 			$table->add('title', 'text');
@@ -273,7 +273,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 	}
 	
 	public function test7() {
-		$schema = new \Asgard\DB\Schema($this->getDB());
+		$schema = new \Asgard\Db\Schema($this->getDB());
 		$schema->create('test', function($table) {
 			$table->add('id', 'int', 11);
 			$table->add('title', 'varchar', 50);
@@ -287,7 +287,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 	}
 	
 	public function test8() {
-		$schema = new \Asgard\DB\Schema($this->getDB());
+		$schema = new \Asgard\Db\Schema($this->getDB());
 		$schema->create('test', function($table) {
 			$table->add('id', 'int', 11);
 			$table->add('title', 'varchar', 50);
@@ -301,7 +301,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 	}
 	
 	public function test9() {
-		$schema = new \Asgard\DB\Schema($this->getDB());
+		$schema = new \Asgard\Db\Schema($this->getDB());
 		$schema->create('test', function($table) {
 			$table->add('id', 'int', 11);
 			$table->add('title', 'varchar', 50);

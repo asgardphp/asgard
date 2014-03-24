@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\DB\Tests;
+namespace Asgard\Db\Tests;
 
 class DBTest extends \PHPUnit_Framework_TestCase {
 	public static function setUpBeforeClass() {
@@ -9,13 +9,13 @@ class DBTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function test1() {
-		$db = new \Asgard\DB\DB(array(
+		$db = new \Asgard\Db\DB(array(
 			'host' => 'localhost',
 			'user' => 'root',
 			'password' => '',
 			'database' => 'asgard',
 		));
-		$db2 = new \Asgard\DB\DB(array(
+		$db2 = new \Asgard\Db\DB(array(
 			'host' => 'localhost',
 			'user' => 'root',
 			'password' => '',

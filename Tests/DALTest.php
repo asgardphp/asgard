@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\DB\Tests;
+namespace Asgard\Db\Tests;
 
 class DALTest extends \PHPUnit_Framework_TestCase {
 	protected $db;
@@ -11,7 +11,7 @@ class DALTest extends \PHPUnit_Framework_TestCase {
 
 		require_once 'app/load.php';
 
-		$db = new \Asgard\DB\DB(array(
+		$db = new \Asgard\Db\DB(array(
 			'host' => 'localhost',
 			'user' => 'root',
 			'password' => '',
@@ -69,7 +69,7 @@ sum
 	buildDeleteSQL
 */
 	protected function getDAL() {
-		$db = new \Asgard\DB\DB(array(
+		$db = new \Asgard\Db\DB(array(
 			'host' => 'localhost',
 			'user' => 'root',
 			'password' => '',
@@ -77,7 +77,7 @@ sum
 		));
 		if(!$this->db)
 			$this->db = $db;
-		return new \Asgard\DB\DAL($this->db);
+		return new \Asgard\Db\DAL($this->db);
 	}
 
 	public function test1() {
@@ -175,31 +175,10 @@ sum
 				't.id=news.id',
 			)
 		))->buildSQL());
-#todo subqueries
-#from is not necessary, ex select 123 AS a
-#context des subqueries independant
-#toutes les chaines de caracteres doivent passer par les parametres
-
-/*
-$dal
-	->select(new S('? AS a', (new DAL)->from('a')))
-	->from(new S('? a', (new DAL)->from('a')))
-	->where(new S('COUNT(?) = 1', (new DAL)->from('b')))
-	->where(array(
-		// 'COUNT(?) = 1' => (new DAL)->from('b'),
-		// '? = ?' => array((new DAL)->from('b'), 1),
-		new S('COUNT(?) = 1', (new DAL)->from('b')),
-		new S('COUNT(?) = ?', array((new DAL)->from('b'), 1)),
-		new S('COUNT(?) = a', (new DAL)->from('b')),
-		#COUNT((SELECT * FROM b)) = 'a'
-	))
-	->leftjoin('? a', , '1=1')
-	->leftjoin(new S('? a', (new DAL)->from(a)), '1=1')
-*/
 
 		/* NEXT, QUERY AND GET */
 		$query = $this->getDAL()->query('SELECT * FROM news');
-		$this->assertInstanceOf('Asgard\DB\Query', $query);
+		$this->assertInstanceOf('Asgard\Db\Query', $query);
 		$data = $query->all();
 		$this->assertCount(3, $data);
 

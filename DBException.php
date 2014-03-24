@@ -1,4 +1,4 @@
 <?php
-namespace Asgard\DB;
+namespace Asgard\Db;
 
 class DBException extends \Exception {}

@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\DB;
+namespace Asgard\Db;
 
 class DB {
 	protected $db;
@@ -24,6 +24,8 @@ class DB {
 	}
 	
 	public function import($file) {
+		if(!file_exists($file = realpath($file)))
+			throw new \Exception('File '.$file.' does not exist.');
 		$host = $this->config['host'];
 		$user = $this->config['user'];
 		$pwd = $this->config['password'];
