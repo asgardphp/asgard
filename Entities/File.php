@@ -1,7 +1,7 @@
 <?php
 namespace Asgard\Data\Entities;
 
-class File extends BaseData {
+class File extends Base {
 	public static $properties = array(
 		'key',
 		'value'    => array(
