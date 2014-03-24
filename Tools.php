@@ -6,11 +6,11 @@ class Tools {
 	    return (is_object($f) && ($f instanceof \Closure));
 	}
 
-	public static function getallheaders() { 
-		$headers = ''; 
+	public static function getallheaders() {
+		$headers = array();
 		foreach($_SERVER as $name => $value) {
 			if(substr($name, 0, 5) == 'HTTP_')
-				$headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+				$headers[str_replace(' ', '-', strtolower(str_replace('_', ' ', substr($name, 5))))] = $value;
 		}
 		return $headers; 
 	}
@@ -251,6 +251,10 @@ class Tools {
 		return $result;
 	}
 
+	public static function hash($pwd) {
+		return sha1(\Asgard\Core\App::get('config')->get('salt').$pwd);
+	}
+
 	// public static function getRelativePath($from, $to) {
 	// 	$from     = explode('/', $from);
 	// 	$to       = explode('/', $to);
@@ -282,10 +286,6 @@ class Tools {
 	//         else
 	//             $a[$child] = $value;
 	//     }
-	// }
-
-	// public static function hash($pwd) {
-	// 	return sha1(\Asgard\Core\App::get('config')->get('salt').$pwd);
 	// }
 	
 	// public static function prependHttp($url) {

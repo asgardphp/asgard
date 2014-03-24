@@ -2,24 +2,44 @@
 namespace Asgard\Utils;
 
 class Browser {
-	public $session = array();
-	public $cookies = array();
-	public $last;
+	protected $session = array();
+	protected $cookies = array();
+	protected $last;
 
-	public function get($url='', $body='') {
-		return $this->req($url, 'GET', array(), array(), $body);
+	public function resetCookies() {
+		$this->cookies = array();
 	}
 
-	public function post($url='', $post=array(), $files=array(), $body='') {
-		return $this->req($url, 'POST', $post, $files, $body);
+	public function setCookie($key, $value) {
+		$this->cookies[$key] = $value;
 	}
 
-	public function put($url='', $post=array(), $files=array(), $body='') {
-		return $this->req($url, 'PUT', $post, $files, $body);
+	public function resetSession() {
+		$this->session = array();
 	}
 
-	public function delete($url='', $body='') {
-		return $this->req($url, 'DELETE', array(), array(), $body);
+	public function setSession($key, $value) {
+		$this->session[$key] = $value;
+	}
+
+	public function getLast() {
+		return $this->last;
+	}
+
+	public function get($url='', $body='', $headers=array()) {
+		return $this->req($url, 'GET', array(), array(), $body, $headers);
+	}
+
+	public function post($url='', $post=array(), $files=array(), $body='', $headers=array()) {
+		return $this->req($url, 'POST', $post, $files, $body, $headers);
+	}
+
+	public function put($url='', $post=array(), $files=array(), $body='', $headers=array()) {
+		return $this->req($url, 'PUT', $post, $files, $body, $headers);
+	}
+
+	public function delete($url='', $body='', $headers=array()) {
+		return $this->req($url, 'DELETE', array(), array(), $body, $headers);
 	}
 
 	public function req(
@@ -27,7 +47,8 @@ class Browser {
 			$method='GET',
 			$post=array(),
 			$file=array(),
-			$body=''
+			$body='',
+			$headers=array()
 		) {
 		#build request
 		$get = array();
@@ -41,6 +62,7 @@ class Browser {
 		$request->get->setAll($get);
 		$request->post->setAll($post);
 		$request->file->setAll($file);
+		$request->header->setAll($headers);
 		$request->cookie->setAll($this->cookies);
 		$request->session->setAll($this->session);
 		if(sizeof($post))
@@ -49,7 +71,7 @@ class Browser {
 			$request->body = $body;
 
 		$request->url->setURL($url);
-		$request->url->setServer('localhost');
+		$request->url->setHost('localhost');
 		$request->url->setRoot('');
 
 		$res = \Asgard\Core\HttpKernel::process($request, true);

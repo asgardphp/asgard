@@ -7,4 +7,8 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		
 		parent::load($queue);
 	}
+
+	public function run() {
+		\Asgard\Core\App::get('locale')->importLocales('locales');
+	}
 }
