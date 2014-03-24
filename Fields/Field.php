@@ -24,14 +24,15 @@ abstract class Field {
 	}
 
 	public function getValidationRules() {
-		$validation = isset($field->options['validation']) ? $field->options['validation']:array();
-		if(isset($field->options['choices']))
-			$constrains[$name]['in'] = array_keys($field->options['choices']);
+		$validation = isset($this->options['validation']) ? $this->options['validation']:array();
+		if(isset($this->options['choices']))
+			$constrains[$name]['in'] = array_keys($this->options['choices']);
+
 		return $validation;
 	}
 
 	public function getValidationMessages() {
-		$messages = isset($field->options['messages']) ? $field->options['messages']:array();
+		$messages = isset($this->options['messages']) ? $this->options['messages']:array();
 		return $messages;
 	}
 
@@ -101,7 +102,7 @@ abstract class Field {
 	
 	public function getName() {
 		$parents = $this->getParents();
-		
+	
 		if(sizeof($parents) > 0) {
 			$id = $parents[0];
 			for($i=1; $i<sizeof($parents); $i++)

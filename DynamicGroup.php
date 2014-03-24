@@ -1,39 +1,55 @@
 <?php
 namespace Asgard\Form;
 
-class DynamicGroup extends \Asgard\Form\AbstractGroup {
-	protected $cb;
-	protected $default_render;
+class DynamicGroup extends Group {
+	protected $_cb;
+	protected $_default_render;
 
 	function __construct($cb, $default_render=null) {
-		$this->cb = $cb;
-		$this->default_render = $default_render;
+		$this->_cb = $cb;
+		$this->_default_render = $default_render;
 	}
 
 	public function setDefaultRender($default_render) {
-		$this->default_render = $default_render;
+		$this->_default_render = $default_render;
 	}
 
 	public function setData($data, $files) {
-		$this->data = array_values($data);
-		$this->files = array_values($files);
+		$this->_data = array_values($data);
+		$this->_files = array_values($files);
 
-		#merge data/files everywhere in form?
-		\Asgard\Utils\Tools::asgard_array_merge($data, $files);
+		static::mergeDataFiles($data, $files);
 		
-		foreach($data as $k=>$v) 
-			$this->newField($k, $v);
+		foreach($data as $name=>$data)
+			$this->newField($name, $data);
 		
 		$this->updateChilds();
 
 		return $this;
 	}
 
-	public function newField($name=null, $data=null) {
-		// return;
+	public function def($field=null) {
+		$default_render = $this->_default_render;
+		if($default_render === null)
+			return $field->def();
+		else
+			return $default_render($field);
+	}
+
+	public function renderTemplate($offset='') {
+		$randstr = \Asgard\Utils\Tools::randstr(10);
+		$jq = $this->renderNew('{{'.$randstr.'}}');
+		$jq = addcslashes($jq, "'");
+		$jq = str_replace("\r\n", "\n", $jq);
+		$jq = str_replace("\n", "\\\n", $jq);
+		$jq = str_replace('{{'.$randstr.'}}', $offset, $jq);
+		return $jq;
+	}
+
+	protected function newField($name=null, $data=null) {
 		if($name !== null && isset($this[$name]))
 			return;
-		$cb = $this->cb;
+		$cb = $this->_cb;
 		$newelement = $cb($data);
 		if(!$newelement)
 			return;
@@ -41,24 +57,8 @@ class DynamicGroup extends \Asgard\Form\AbstractGroup {
 		return $newelement;
 	}
 
-	public function def($field=null) {
-		$default_render = $this->default_render;
-		if($default_render === null)
-			throw new \Exception('No default render callback for this DynamicGroup');
-
-		// if(!isset($this[$offset]))
-		// 	$this->newField($offset);
-		// $field = $this[$offset];
-
-		// $r = $default_render($this[$offset]);
-		$r = $default_render($field);
-		return $r;
-	}
-
-	public function renderNew($offset=null) {
-		$default_render = $this->default_render;
-		if($default_render === null)
-			throw new \Exception('No default render callback for this DynamicGroup');
+	protected function renderNew($offset=null) {
+		$default_render = $this->_default_render;
 
 		if($offset === null)
 			$offset = $this->size();
@@ -70,18 +70,24 @@ class DynamicGroup extends \Asgard\Form\AbstractGroup {
 		if(!$field)
 			return;
 
-		$r = $default_render($field);
+		if($default_render === null)
+			$r = $field->def();
+		else
+			$r = $default_render($field);
+
 		unset($this[$offset]);
+
 		return $r;
 	}
 
-	public function renderjQuery($offset) {
-		$randstr = Tools::randstr(10);
-		$jq = $this->renderNew('{{'.$randstr.'}}');
-		$jq = addcslashes($jq, "'");
-		$jq = str_replace("\r\n", "\n", $jq);
-		$jq = str_replace("\n", "\\\n", $jq);
-		$jq = str_replace('{{'.$randstr.'}}', $offset, $jq);
-		return $jq;
+	protected static function mergeDataFiles(&$data, $files) {
+	    foreach($files as $child=>$value) {
+	        if(isset($data[$child])) {
+	            if(is_array($data[$child]) && is_array($value))
+	                static::asgard_array_merge($data[$child], $value);
+	        }
+	        else
+	            $data[$child] = $value;
+	    }
 	}
 }

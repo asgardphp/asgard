@@ -15,9 +15,9 @@ class WysiwygWidget extends \Asgard\Form\Widgets\HTMLWidget {
 		if(!isset($options['config']))
 			$options['config'] = \Asgard\Core\App::get('url')->to('ckeditor/ckeditor/config.js');
 		
-		\Asgard\Core\App::get('html')->include_js('ckeditor/ckeditor/ckeditor.js');
-		\Asgard\Core\App::get('html')->include_js('ckeditor/ckeditor/_samples/sample.js');
-		\Asgard\Core\App::get('html')->include_css('ckeditor/ckeditor/_samples/sample.css');
+		\Asgard\Core\App::get('html')->includeJS('ckeditor/ckeditor/ckeditor.js');
+		\Asgard\Core\App::get('html')->includeJS('ckeditor/ckeditor/_samples/sample.js');
+		\Asgard\Core\App::get('html')->includeCSS('ckeditor/ckeditor/_samples/sample.css');
 		return \Asgard\Form\HTMLHelper::tag('textarea', array(
 			'name'	=>	$this->name,
 			'id'	=>	$id,

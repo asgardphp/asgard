@@ -1,4 +1,6 @@
 <?php
+namespace Asgard\Form\Fields;
+
 class CSRFField extends \Asgard\Form\Fields\HiddenField {
 	function __construct($options=array()) {
 		parent::__construct($options);
@@ -11,17 +13,21 @@ class CSRFField extends \Asgard\Form\Fields\HiddenField {
 	}
 
 	protected function generateToken() {
-		if(\Asgard\Core\App::get('session')->has('_csrf_token'))
-			return \Asgard\Core\App::get('session')->get('_csrf_token');
+		if($this->dad->getRequest()->session->has('_csrf_token'))
+			$this->dad->getRequest()->session->get('_csrf_token');
 		else {
 			$token = \Asgard\Utils\Tools::randstr();
-			\Asgard\Core\App::get('session')->set('_csrf_token', $token);
+			$this->dad->getRequest()->session->set('_csrf_token', $token);
 			return $token;
 		}
 	}
 
 	public function error($attr, $value) {
-		if($this->value != \Asgard\Core\App::get('session')->get('_csrf_token'))
-			return __('CSRF token is invalid.');
+		if($this->value != $this->dad->getRequest()->session->get('_csrf_token')) {
+			if(function_exists('__'))
+				return __('CSRF token is invalid.');
+			else
+				return 'CSRF token is invalid.';
+		}
 	}
 }

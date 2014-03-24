@@ -2,34 +2,34 @@
 namespace Asgard\Form;
 
 class EntityForm extends Form {
-	protected $entity;
-	protected $i18n = false;
+	protected $_entity;
+	protected $_i18n = false;
 
 	function __construct(
 		$entity, 
 		$params=array()
 	) {
-		$this->entity = $entity;
+		$this->_entity = $entity;
 
-		$this->i18n = isset($params['i18n']) && $params['i18n'];
+		$this->_i18n = isset($params['i18n']) && $params['i18n'];
 	
 		$fields = array();
 		foreach($entity->properties() as $name=>$properties) {
 			if(isset($params['only']) && !in_array($name, $params['only']))
-					continue;
+				continue;
 			if(isset($params['except']) && in_array($name, $params['except']))
-					continue;
+				continue;
 			if($properties->editable === false || $properties->form_editable === false)
 				continue;
 
-			if($this->i18n && $properties->i18n) {
+			if($this->_i18n && $properties->i18n) {
 				$i18ngroup = array();
-				foreach(\Config::get('locales') as $locale)
-					$i18ngroup[$locale] = $this->getNewField($entity, $name, $properties, $locale);
+				foreach(\Asgard\Core\App::get('config')->get('locales') as $locale)
+					$i18ngroup[$locale] = $this->addAttributeField($entity, $name, $properties, $locale);
 				$fields[$name] = $i18ngroup;
 			}
 			else
-				$fields[$name] = $this->getNewField($entity, $name, $properties);
+				$fields[$name] = $this->addAttributeField($entity, $name, $properties);
 		}
 
 		parent::__construct(
@@ -39,14 +39,15 @@ class EntityForm extends Form {
 		);
 	}
 
-	public function getNewField($entity, $name, $properties, $locale=null) {
+	protected function addAttributeField($entity, $name, $properties, $locale=null) {
 		$field_params = array();
 
 		$field_params['form'] = $this;
 
 		if($properties->form_hidden)
 			$field_params['default'] = '';
-		elseif($entity->isOld())
+		// elseif($entity->isOld())
+		elseif($entity->get($name, $locale) !== null)
 			$field_params['default'] = $entity->get($name, $locale);
 
 		$field_type = 'Asgard\Form\Fields\TextField';
@@ -78,25 +79,25 @@ class EntityForm extends Form {
 	}
 
 	public function addRelation($name) {
-		$entity = $this->entity;
+		$entity = $this->_entity;
 		$relation = $entity::getDefinition()->relations[$name];
 
 		$ids = array(''=>__('Choose'));
-		foreach($relation['Entity']::all() as $v)
+		foreach($relation['entity']::all() as $v)
 			$ids[$v->id] = (string)$v;
 				
 		if($relation['has'] == 'one') {
-			$this->addField(new SelectField(array(
+			$this->addField(new Fields\SelectField(array(
 				'type'	=>	'integer',
 				'choices'		=>	$ids,
-				'default'	=>	($this->entity->isOld() && $this->entity->$name ? $this->entity->$name->id:null),
+				'default'	=>	($this->_entity->isOld() && $this->_entity->$name ? $this->_entity->$name->id:null),
 			)), $name);
 		}
 		elseif($relation['has'] == 'many') {
-			$this->addField(new MultipleSelectField(array(
+			$this->addField(new Fields\MultipleSelectField(array(
 				'type'	=>	'integer',
 				'choices'		=>	$ids,
-				'default'	=>	($this->entity->isOld() ? $this->entity->$name()->ids():array()),
+				'default'	=>	($this->_entity->isOld() ? $this->_entity->$name()->ids():array()),
 			)), $name);
 		}
 	}
@@ -108,14 +109,14 @@ class EntityForm extends Form {
 		if(!$field)
 			$field = $this;
 
-		if(is_subclass_of($field, 'Asgard\Form\AbstractGroup')) {
+		if(is_subclass_of($field, 'Asgard\Form\Group')) {
 			if($field instanceof \Asgard\Form\EntityForm)
 				$errors = $field->my_errors();
 			elseif($field instanceof \Asgard\Form\Form)
 				$errors = $field->errors();
 				
 			foreach($field as $name=>$sub_field) {
-				if(is_subclass_of($sub_field, 'Asgard\Form\AbstractGroup')) {
+				if(is_subclass_of($sub_field, 'Asgard\Form\Group')) {
 					$field_errors = $this->errors($sub_field);
 					if(sizeof($field_errors) > 0)
 						$errors[$sub_field->name] = $field_errors;
@@ -124,27 +125,27 @@ class EntityForm extends Form {
 		}
 		
 		$this->setErrors($errors);
-		$this->errors = $errors;
+		$this->_errors = $errors;
 
 		return $errors;
 	}
 	
 	public function getEntity() {
-		return $this->entity;
+		return $this->_entity;
 	}
 	
-	public function my_errors() {
+	protected function my_errors() {
 		$data = $this->getData();
 		$data = array_filter($data, function($v) {
 			return $v !== null; 
 		});
-		if($this->i18n)
-			$this->entity->set($data, 'all');
+		if($this->_i18n)
+			$this->_entity->set($data, 'all');
 		else
-			$this->entity->set($data);
+			$this->_entity->set($data);
 
 		$errors = array();
-		foreach($this->files as $name=>$f) {
+		foreach($this->_files as $name=>$f) {
 			switch($f['error']) {
 				case UPLOAD_ERR_INI_SIZE:
 					$errors[$name][] = __('The uploaded file exceeds the max filesize.');
@@ -167,7 +168,7 @@ class EntityForm extends Form {
 			}
 		}
 
-		return array_merge($errors, parent::my_errors(), $this->entity->errors());
+		return array_merge($errors, parent::my_errors(), $this->_entity->errors());
 	}
 	
 	public function save() {
@@ -181,20 +182,20 @@ class EntityForm extends Form {
 	
 		$this->trigger('pre_save');
 	
-		return $this->_save();
+		return $this->doSave();
 	}
 	
-	public function _save($group=null) {
+	protected function doSave($group=null) {
 		if(!$group)
 			$group = $this;
 
-		if(is_a($group, 'Asgard\Form\EntityForm') || is_subclass_of($group, 'Asgard\Form\EntityForm'))
-			$group->entity->save();
+		if($group instanceof static)
+			$group->_entity->save();
 
-		if(is_subclass_of($group, 'Asgard\Form\AbstractGroup')) {
-			foreach($group->fields as $name=>$field) {
-				if(is_subclass_of($field, 'Asgard\Form\AbstractGroup'))
-					$this->_save($field);
+		if($group instanceof Group) {
+			foreach($group->getFields() as $name=>$field) {
+				if($field instanceof Group)
+					$this->doSave($field);
 			}
 		}
 	}

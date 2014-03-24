@@ -13,13 +13,8 @@ class HTMLHelper {
 		if($inner === null)
 			return $str;
 
-		if(is_callable($inner))
-			$str .= $inner();
-		else
-			$str .= $inner;
-
-		$str .= '</'.$tag.'>';
+		$str .= $inner;
 		
-		return $str;
+		return $str.'</'.$tag.'>';
 	}
 }

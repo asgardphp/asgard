@@ -9,7 +9,7 @@ class FileWidget extends \Asgard\Form\Widgets\HTMLWidget {
 		if(isset($options['attrs']))
 			$attrs = $options['attrs'];
 
-		$str = HTMLHelper::tag('input', array(
+		$str = \Asgard\Form\HTMLHelper::tag('input', array(
 			'type'	=>	'file',
 			'name'	=>	$this->name,
 			'id'	=>	isset($options['id']) ? $options['id']:null,
