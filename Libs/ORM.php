@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\ORM\Libs;
+namespace Asgard\Orm\Libs;
 
 class ORM {
 	protected $entity;
@@ -114,7 +114,7 @@ class ORM {
 
 	public function getDAL() {
 		$current_entity = $this->entity;
-		$dal = new \Asgard\DB\DAL(\Asgard\Core\App::get('db'));
+		$dal = new \Asgard\Db\DAL(\Asgard\Core\App::get('db'));
 		$table = $this->getTable();
 		$dal->orderBy($this->orderBy);
 		$dal->limit($this->limit);
@@ -139,9 +139,8 @@ class ORM {
 				))
 			));
 		}
-		else {
+		else
 			$dal->from($table);
-		}
 
 		$table = $current_entity::getTable();
 		$this->recursiveJointures($dal, $this->join, $current_entity, $table);
@@ -150,30 +149,52 @@ class ORM {
 	}
 
 	public function recursiveJointures($dal, $jointures, $current_entity, $table) {
-		foreach($jointures as $k=>$relation) {
+		$alias = null;
+		foreach($jointures as $relation) {
 			if(is_array($relation)) {
-				$relationName = \Asgard\Utils\Tools::array_get(array_keys($relation), 0);
-				$recJoins = \Asgard\Utils\Tools::array_get(array_values($relation), 0);
-				$relation = $current_entity::getDefinition()->relations[$relationName];
-				$entity = $relation['entity'];
+				foreach($relation as $k=>$v) {
+					if(is_numeric($k)) {
+						if(!$v instanceof EntityRelation) {
+							if(strpos($v, ' '))
+								list($v, $alias) = explode(' ', $v);
+							$relation = $current_entity::getDefinition()->relations[$v];
+						}
+						$this->jointure($dal, $relation, $alias, $current_entity, $table);
+					}
+					else {
+						$relationName = $k;
+						if(strpos($relationName, ' '))
+							list($relationName, $alias) = explode(' ', $relationName);
+						$recJoins = $v;
+						$relation = $current_entity::getDefinition()->relations[$relationName];
+						$entity = $relation['entity'];
 
-				$this->jointure($dal, $relation, $current_entity, $table);
-				$this->recursiveJointures($dal, $recJoins, $entity, $relation->name);
+						$this->jointure($dal, $relation, $alias, $current_entity, $table);
+						if(!is_array($recJoins))
+							$recJoins = array($recJoins);
+						$this->recursiveJointures($dal, $recJoins, $entity, $relation->name);
+					}
+				}
 			}
 			else {
-				if(!$relation instanceof EntityRelation)
+				if(!$relation instanceof EntityRelation) {
+					if(strpos($relation, ' '))
+						list($relation, $alias) = explode(' ', $relation);
 					$relation = $current_entity::getDefinition()->relations[$relation];
-				$this->jointure($dal, $relation, $current_entity, $table);
+				}
+				$this->jointure($dal, $relation, $alias, $current_entity, $table);
 			}
 		}
 	}
 
-	public function jointure($dal, $relation, $current_entity, $ref_table) {
+	protected function jointure($dal, $relation, $alias, $current_entity, $ref_table) {
 		if($relation['polymorphic'])
 			$relation_entity = $relation['real_entity'];
 		else
 			$relation_entity = $relation['entity'];
 		$relationName = $relation->name;
+		if($alias === null)
+			$alias = $relationName;
 
 		switch($relation['type']) {
 			case 'hasOne':
@@ -181,8 +202,8 @@ class ORM {
 				$link = $relation['link'];
 				$table = $relation_entity::getTable();
 				$dal->rightjoin(array(
-					$table.' '.$relationName => $this->processConditions(array(
-						$ref_table.'.'.$link.' = '.$relationName.'.id'
+					$table.' '.$alias => $this->processConditions(array(
+						$ref_table.'.'.$link.' = '.$alias.'.id'
 					))
 				));
 				break;
@@ -190,8 +211,8 @@ class ORM {
 				$link = $relation['link'];
 				$table = $relation_entity::getTable();
 				$dal->rightjoin(array(
-					$table.' '.$relationName => $this->processConditions(array(
-						$ref_table.'.id'.' = '.$relationName.'.'.$link
+					$table.' '.$alias => $this->processConditions(array(
+						$ref_table.'.id'.' = '.$alias.'.'.$link
 					))
 				));
 				break;
@@ -202,8 +223,8 @@ class ORM {
 					))
 				));
 				$dal->rightjoin(array(
-					$relation_entity::getTable().' '.$relationName => $this->processConditions(array(
-						$relation['join_table'].'.'.$relation['link_b'].' = '.$relationName.'.id',
+					$relation_entity::getTable().' '.$alias => $this->processConditions(array(
+						$relation['join_table'].'.'.$relation['link_b'].' = '.$alias.'.id',
 					))
 				));
 				break;
@@ -320,7 +341,7 @@ class ORM {
 		$entities = array();
 		$entity = $this->entity;
 		
-		$dal = new \Asgard\DB\DAL(\Asgard\Core\App::get('db'));
+		$dal = new \Asgard\Db\DAL(\Asgard\Core\App::get('db'));
 		$rows = $dal->query($sql, $args)->all();
 		foreach($rows as $row)
 			$entities[] = ORMHandler::unserializeSet(new $entity, $row);

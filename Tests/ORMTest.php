@@ -12,10 +12,10 @@ class ORMTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	public function test1() {
-		\Asgard\Core\App::get('db')->import(realpath(dirname(__FILE__).'/sql/test1.sql'));
+		\Asgard\Core\App::get('db')->import(realpath(dirname(__FILE__).'/sql/ormtest.sql'));
 
 		#load
-		$cat = Asgard\ORM\Tests\Entities\Category::load(1);
+		$cat = Asgard\Orm\Tests\Entities\Category::load(1);
 		$this->assertEquals(1, $cat->id);
 		$this->assertEquals('General', $cat->title);
 
@@ -23,9 +23,9 @@ class ORMTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals(2, $cat->news()->count());
 
 		#orderBy
-		$this->assertEquals(2, Asgard\ORM\Tests\Entities\Category::first()->id); #default order is id DESC
-		$this->assertEquals(2, Asgard\ORM\Tests\Entities\Category::orderBy('id DESC')->first()->id);
-		$this->assertEquals(1, Asgard\ORM\Tests\Entities\Category::orderBy('id ASC')->first()->id);
+		$this->assertEquals(2, Asgard\Orm\Tests\Entities\Category::first()->id); #default order is id DESC
+		$this->assertEquals(2, Asgard\Orm\Tests\Entities\Category::orderBy('id DESC')->first()->id);
+		$this->assertEquals(1, Asgard\Orm\Tests\Entities\Category::orderBy('id ASC')->first()->id);
 
 		#relation shortcut
 		$this->assertEquals(2, sizeof($cat->news));
@@ -36,28 +36,23 @@ class ORMTest extends PHPUnit_Framework_TestCase {
 		#joinToEntity
 		$this->assertEquals(
 			1, 
-			Asgard\ORM\Tests\Entities\News::joinToEntity('category', $cat)->where('title', 'Welcome!')->first()->id
+			Asgard\Orm\Tests\Entities\News::joinToEntity('category', $cat)->where('title', 'Welcome!')->first()->id
 		);
-		$author = Asgard\ORM\Tests\Entities\Category::load(2);
+		$author = Asgard\Orm\Tests\Entities\Category::load(2);
 		$this->assertEquals(
 			2, 
-			Asgard\ORM\Tests\Entities\News::joinToEntity('category', $cat)->joinToEntity('author', $author)->where('author.name', 'Joe')->first()->id
+			Asgard\Orm\Tests\Entities\News::joinToEntity('category', $cat)->joinToEntity('author', $author)->where('author.name', 'Joe')->first()->id
 		);
 		$this->assertEquals(
 			null,
-			Asgard\ORM\Tests\Entities\News::joinToEntity('category', $cat)->joinToEntity('author', $author)->where('author.name', 'Bob')->first()
+			Asgard\Orm\Tests\Entities\News::joinToEntity('category', $cat)->joinToEntity('author', $author)->where('author.name', 'Bob')->first()
 		);
-		#todo provide only id for entity
-		/*$this->assertEquals(
-			2, 
-			Asgard\ORM\Tests\Entities\News::joinToEntity('category', 1)->joinToEntity('author', 2)->where('author.name', 'Joe')->first()->id
-		);*/
 
 		#stats functions
-		$this->assertEquals(2.6667, Asgard\ORM\Tests\Entities\News::avg('score'));
-		$this->assertEquals(8, Asgard\ORM\Tests\Entities\News::sum('score'));
-		$this->assertEquals(5, Asgard\ORM\Tests\Entities\News::max('score'));
-		$this->assertEquals(1, Asgard\ORM\Tests\Entities\News::min('score'));
+		$this->assertEquals(2.6667, Asgard\Orm\Tests\Entities\News::avg('score'));
+		$this->assertEquals(8, Asgard\Orm\Tests\Entities\News::sum('score'));
+		$this->assertEquals(5, Asgard\Orm\Tests\Entities\News::max('score'));
+		$this->assertEquals(1, Asgard\Orm\Tests\Entities\News::min('score'));
 
 		#relations cascade
 		$this->assertEquals(2, sizeof($cat->news()->author));
@@ -66,25 +61,16 @@ class ORMTest extends PHPUnit_Framework_TestCase {
 		#join
 		$this->assertEquals(
 			2, 
-			Asgard\ORM\Tests\Entities\Author::orm()
+			Asgard\Orm\Tests\Entities\Author::orm()
 			->join('news')
 			->where('news.title', '1000th visitor!')
 			->first()
 			->id
 		);
-		#todo probleme si deux relations s'appellent "news"
-			/*Asgard\ORM\Tests\Entities\Author::orm()
-			->join('news')
-			->join(array(
-				'comments' => 'news'
-			)
-			->where('news.title', '1000th visitor!')
-			->first()
-			->id*/
 
 		#next
 		$news = array();
-		$orm = Asgard\ORM\Tests\Entities\News::orm();
+		$orm = Asgard\Orm\Tests\Entities\News::orm();
 		while($n = $orm->next())
 			$news[] = $n;
 		$this->assertEquals(3, sizeof($news));
@@ -92,41 +78,51 @@ class ORMTest extends PHPUnit_Framework_TestCase {
 		#values
 		$this->assertEquals(
 			array('Welcome!', '1000th visitor!', 'Important'),
-			Asgard\ORM\Tests\Entities\News::orderBy('id ASC')->values('title')
+			Asgard\Orm\Tests\Entities\News::orderBy('id ASC')->values('title')
 		);
 
 		#ids
 		$this->assertEquals(
 			array(1, 2, 3),
-			Asgard\ORM\Tests\Entities\News::orderBy('id ASC')->ids()
+			Asgard\Orm\Tests\Entities\News::orderBy('id ASC')->ids()
 		);
 
 		#with
-		$cats = Asgard\ORM\Tests\Entities\Category::with('news')->get();
+		$cats = Asgard\Orm\Tests\Entities\Category::with('news')->get();
 		$this->assertEquals(1, sizeof($cats[0]->data['news']));
 		$this->assertEquals(2, sizeof($cats[1]->data['news']));
 
-		$cats = Asgard\ORM\Tests\Entities\Category::with('news', function($orm) {
+		$cats = Asgard\Orm\Tests\Entities\Category::with('news', function($orm) {
 			$orm->with('author');
 		})->get();
 		$this->assertEquals(1, $cats[0]->data['news'][0]->data['author']->id);
 
 		#selectQuery
-		$cats = Asgard\ORM\Tests\Entities\Category::selectQuery('SELECT * FROM category WHERE title=?', array('General'));
+		$cats = Asgard\Orm\Tests\Entities\Category::selectQuery('SELECT * FROM category WHERE title=?', array('General'));
 		$this->assertEquals(1, $cats[0]->id);
 
 		#paginate
-		$orm = Asgard\ORM\Tests\Entities\News::paginate(1, 2);
+		$orm = Asgard\Orm\Tests\Entities\News::paginate(1, 2);
 		$paginator = $orm->getPaginator();
 		$this->assertTrue($paginator instanceof \Asgard\Utils\Paginator);
 		$this->assertEquals(2, sizeof($orm->get()));
-		$this->assertEquals(1, sizeof(Asgard\ORM\Tests\Entities\News::paginate(2, 2)->get()));
+		$this->assertEquals(1, sizeof(Asgard\Orm\Tests\Entities\News::paginate(2, 2)->get()));
 
 		#offset
-		$this->assertEquals(3, Asgard\ORM\Tests\Entities\News::orderBy('id ASC')->offset(2)->first()->id);
+		$this->assertEquals(3, Asgard\Orm\Tests\Entities\News::orderBy('id ASC')->offset(2)->first()->id);
 
 		#limit
-		$this->assertEquals(2, sizeof(Asgard\ORM\Tests\Entities\News::limit(2)->get()));
+		$this->assertEquals(2, sizeof(Asgard\Orm\Tests\Entities\News::limit(2)->get()));
+
+		#two jointures with the same name
+		$r = Asgard\Orm\Tests\Entities\News::first()
+		->join(array(
+			'author' => 'news n1',
+			'category' => 'news n2',
+		))
+		->where('n2.title', 'Welcome!')
+		->get();
+		$this->assertCount(2, $r);
 
 		#
 
@@ -174,7 +170,7 @@ class ORMTest extends PHPUnit_Framework_TestCase {
 		return;
 
 		#get all the authors in page 1 (10 per page), which belong to news that have score > 3 and belongs to category "general", and with their comments, and all in english only.
-		$authors = Asgard\ORM\Tests\Entities\Categoryi18n::loadByName('general') #from the category "general"
+		$authors = Asgard\Orm\Tests\Entities\Categoryi18n::loadByName('general') #from the category "general"
 		->news() #get the news
 		->where('score > 3') #whose score is greater than 3
 		->author() #the authors from the previous news

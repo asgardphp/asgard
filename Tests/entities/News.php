@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\ORM\Tests\Entities;
+namespace Asgard\Orm\Tests\Entities;
 
 class News extends \Asgard\Core\Entity {
 	public static $properties = array(
@@ -9,11 +9,11 @@ class News extends \Asgard\Core\Entity {
 
 	public static $relations = array(
 		'category' => array(
-			'entity' => 'Asgard\ORM\Tests\Entities\Category',
+			'entity' => 'Asgard\Orm\Tests\Entities\Category',
 			'has' => 'one'
 		),
 		'author' => array(
-			'entity' => 'Asgard\ORM\Tests\Entities\Author',
+			'entity' => 'Asgard\Orm\Tests\Entities\Author',
 			'has' => 'one'
 		),
 	);

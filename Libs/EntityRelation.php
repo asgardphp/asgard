@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\ORM\Libs;
+namespace Asgard\Orm\Libs;
 
 class EntityRelation implements \ArrayAccess {
 	protected $entityClass;

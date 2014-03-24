@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\ORM\Hooks;
+namespace Asgard\Orm\Hooks;
 
 class ORMBehaviorHooks extends \Asgard\Hook\HooksContainer {
 	/**
@@ -7,6 +7,6 @@ class ORMBehaviorHooks extends \Asgard\Hook\HooksContainer {
 	**/
 	public static function behaviors_pre_load($chain, $entityDefinition) {
 		if(!isset($entityDefinition->behaviors['orm']))
-			$entityDefinition->behaviors['Asgard\ORM\ORMBehavior'] = true;
+			$entityDefinition->behaviors['Asgard\Orm\ORMBehavior'] = true;
 	}
 }

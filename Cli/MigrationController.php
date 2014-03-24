@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\ORM\CLI;
+namespace Asgard\Orm\CLI;
 
 class MigrationController extends \Asgard\Cli\CLIController {
 	/**
@@ -18,13 +18,13 @@ class MigrationController extends \Asgard\Cli\CLIController {
 	@Description('Automatically build a migration from the Entities')
 	*/
 	public function diffAction($request) {
-		if(!ORMManager::uptodate())
+		if(!\Asgard\Orm\Libs\ORMManager::uptodate())
 			die('You must run all migrations before using diff.');
 			
-		FileManager::mkdir('migrations');
+		\Asgard\Utils\FileManager::mkdir('migrations');
 		echo 'Running diff..'."\n";
 	
-		echo 'New migration: '.ORMManager::diff(true);
+		echo 'New migration: '.\Asgard\Orm\Libs\ORMManager::diff(true);
 	}
 
 	/**
@@ -33,9 +33,9 @@ class MigrationController extends \Asgard\Cli\CLIController {
 	@Description('Automatically process migrations')
 	*/
 	public function migrateAction($request) {
-		CLIRouter::run('Asgard\Cli\DB', 'backup', $request);
+		\Asgard\Core\App::get('clirouter')->run('Asgard\Cli\DBController', 'backup', $request);
 		echo 'Migrating...'."\n";
 
-		ORMManager::migrate(true);
+		\Asgard\Orm\Libs\ORMManager::migrate(true);
 	}
 }

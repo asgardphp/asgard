@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\ORM\Libs;
+namespace Asgard\Orm\Libs;
 
 class ORMManager {
 	public static function loadEntityFixtures($file) {
@@ -55,15 +55,16 @@ class ORMManager {
 	}
 
 	protected static function _diff() {
-		$bundles = BundlesManager::instance()->getBundlesPath();
+		$bundles = \Asgard\Core\App::get('bundlesmanager')->getBundlesPath();
 		
-		foreach($bundles as $bundle)
+		foreach($bundles as $bundle) {
 			foreach(glob($bundle.'/Entities/*.php') as $entity)
-				\Importer::loadClassFile($entity);
+				\Asgard\Core\Importer::loadClassFile($entity);
+		}
 
 		$newSchemas = array();
 		$oldSchemas = array();
-		$tables = DB::query('SHOW TABLES')->all();
+		$tables = \Asgard\Core\App::get('db')->query('SHOW TABLES')->all();
 		foreach($tables as $k=>$v) {
 			$table = \Asgard\Utils\Tools::array_get(array_values($v), 0);
 			$oldSchemas[$table] = static::tableSchema($table);
@@ -178,6 +179,10 @@ class ORMManager {
 					return 1;
 				});
 
+				$i = 0;
+				foreach($schema as $k=>$col)
+					$schema[$k]['position'] = $i++;
+
 				$newSchemas[$class::getTable()] = $schema;
 			}
 		}
@@ -189,17 +194,14 @@ class ORMManager {
 
 		return array($up, $down);
 	}
-	
+
 	private static function diffBetween($newSchemas, $oldSchemas, $down=false) {
 		$migrations = array();
-		$migration = '';
 		foreach($newSchemas as $class=>$schema) {
 			$table = $class;
 			if(!in_array($class, array_keys($oldSchemas))) {
-				if(!$down) {
-					$migration = static::buildTableFor($class, $newSchemas[$class]);
-					$migrations[] = $migration;
-				}
+				if(!$down)
+					$migrations[] = static::buildTableFor($class, $newSchemas[$class]);
 				continue;
 			}
 			$tableSchema = $oldSchemas[$class];
@@ -207,26 +209,28 @@ class ORMManager {
 			$oldcols = array_diff(array_keys($tableSchema), array_keys($schema));
 			$newcols = array_diff(array_keys($schema), array_keys($tableSchema));
 			$colsmigration = '';
-			foreach(array_keys($schema) as $col) {
-				if(!in_array($col, array_keys($tableSchema))) {
+			foreach(array_keys($schema) as $k=>$col) {
+				if(!in_array($col, array_keys($tableSchema)))
 					$colsmigration .=  static::buildColumnFor($table, $col, $schema[$col]);
-				}
 				else {
 					$diff = array_diff_assoc($schema[$col], $tableSchema[$col]);
-					unset($diff['position']);
+					if(isset($diff['position'])) {
+						if($k === 0)
+							$diff['after'] = false;
+						else
+							$diff['after'] = array_keys($schema)[$k-1];
+						unset($diff['position']);
+					}
 					if($diff)
 						$colsmigration .=  static::updateColumn($table, $col, $diff);
 				}
 			}
 			foreach(array_keys($tableSchema) as $col) {
-				if(!in_array($col, array_keys($schema))) {
+				if(!in_array($col, array_keys($schema)))
 					$colsmigration .=  static::dropColumn($col);
-				}
 			}
-			if($colsmigration) {
-				$migration = "Schema::table('$table', function(\$table) {".$colsmigration."\n});";
-				$migrations[] = $migration;
-			}
+			if($colsmigration)
+				$migrations[] = "\Asgard\Core\App::get('schema')->table('$table', function(\$table) {".$colsmigration."\n});";
 		}
 		return $migrations;
 	}
@@ -237,10 +241,10 @@ class ORMManager {
 		if(!sizeof($migrations))
 			return;
 		
-		DB::beginTransaction();
+		\Asgard\Core\App::get('db')->beginTransaction();
 		foreach($migrations as $migration)
 			$last = static::runMigration($migration, $verbose);
-		DB::commit();
+		\Asgard\Core\App::get('db')->commit();
 			
 		file_put_contents('migrations/migrate_version', $last);
 	}
@@ -289,16 +293,24 @@ class '.$filename.'_'.$i.' {
 		$migration = "\n\t\$table->col('$col')";
 		if(isset($diff['type']))
 			$migration .= "\n		->type('$diff[type]')";
-		if(isset($diff['nullable']))
+		if(isset($diff['after'])) {
+			if($diff['after'] === false)
+				$migration .= "\n		->first()";
+			else
+				$migration .= "\n		->after('$diff[after]')";
+		}
+		if(isset($diff['nullable'])) {
 			if($diff['nullable'])
 				$migration .= "\n		->nullable()";
 			else
 				$migration .= "\n		->NotNullable()";
-		if(isset($diff['auto_increment']))
+		}
+		if(isset($diff['auto_increment'])) {
 			if($diff['auto_increment'])
 				$migration .= "\n		->autoincrement()";
 			else
 				$migration .= "\n		->notAutoincrement()";
+		}
 		if(isset($diff['default'])) {
 			if($diff['default'] === false)
 				$migration .= "\n		->def(false)";
@@ -343,7 +355,7 @@ class '.$filename.'_'.$i.' {
 	private static function buildTableFor($class, $definition) {
 		$table = $class;
 		
-		$migration = "Schema::create('$table', function(".'$table'.") {";
+		$migration = "\Asgard\Core\App::get('schema')->create('$table', function(".'$table'.") {";
 		foreach($definition as $col=>$col_definition)
 			$migration .= "\t".static::buildColumnFor($table, $col, $col_definition);
 		$migration .= "\n});";
@@ -368,12 +380,14 @@ class '.$filename.'_'.$i.' {
 	private static function tableSchema($table) {
 		$structure = array();
 		try{
-			$res = DB::query('Describe `'.$table.'`')->all();
+			$res = \Asgard\Core\App::get('db')->query('Describe `'.$table.'`')->all();
 		} catch(\Exception $e) {
 			return null;
 		}
+		$position = 0;
 		foreach($res as $one) {
 			$col = array();
+			$col['position'] = $position++;
 			$col['type'] = $one['Type'];
 			$col['default'] = $one['Default'];
 			$col['nullable'] = $one['Null'] == 'YES';

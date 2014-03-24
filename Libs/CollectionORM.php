@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\ORM\Libs;
+namespace Asgard\Orm\Libs;
 
 class CollectionORM extends ORM implements \Asgard\Core\Collection {
 	protected $parent;
