@@ -20,7 +20,7 @@ class DAL {
 
 	protected $query = null;
 
-	function __construct($db, $tables=null) {
+	public function __construct($db, $tables=null) {
 		$this->db = $db;
 		$this->addFrom($tables);
 	}

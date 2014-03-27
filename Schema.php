@@ -9,7 +9,7 @@ class BuildCol {
 	protected $autoincrement = false;
 	protected $def;
 	
-	function __construct($table, $name, $type, $length=null) {
+	public function __construct($table, $name, $type, $length=null) {
 		$this->table = $table;
 		$this->name = $name;
 		$this->type = $type;
@@ -71,7 +71,7 @@ class BuildTable {
 	protected $indexes = array();
 	protected $uniques = array();
 	
-	function __construct($name) {
+	public function __construct($name) {
 		$this->name = $name;
 	}
 	
@@ -161,7 +161,7 @@ class Table {
 	protected $db;
 	protected $name;
 	
-	function __construct($db, $name) {
+	public function __construct($db, $name) {
 		$this->db = $db;
 		$this->name = $name;
 	}
@@ -206,7 +206,7 @@ class Column {
 	protected $type;
 	protected $length;
 	
-	function __construct($db, $table, $name, $type=null, $length=null) {
+	public function __construct($db, $table, $name, $type=null, $length=null) {
 		$this->db = $db;
 		$this->table = $table;
 		$this->name = $name;
@@ -418,12 +418,12 @@ class Column {
 class Schema {
 	protected $db;
 
-	function __construct($db) {
+	public function __construct($db) {
 		$this->db = $db;
 	}
 
 	public function dropAll() {
-		$tables = Tools::flateArray($this->db->query('SHOW TABLES')->all());
+		$tables = \Asgard\Utils\Tools::flateArray($this->db->query('SHOW TABLES')->all());
 		foreach($tables as $table)
 			$this->db->query('DROP TABLE '.$table);
 	}

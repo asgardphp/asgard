@@ -24,7 +24,7 @@ class DBTest extends \PHPUnit_Framework_TestCase {
 
 		$this->assertTrue($db->getDB() instanceof \PDO);
 
-		$db->import(dirname(__FILE__).'/sql/test1.sql');
+		$db->import(__dir__.'/sql/test1.sql');
 		$db->query('SELECT title FROM news WHERE id=?', array(1));
 
 		$this->assertEquals('The first news!', $db->query('SELECT title FROM news')->first()['title']);

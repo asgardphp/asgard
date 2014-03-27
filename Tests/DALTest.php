@@ -17,7 +17,7 @@ class DALTest extends \PHPUnit_Framework_TestCase {
 			'password' => '',
 			'database' => 'asgard',
 		));
-		$db->import(dirname(__FILE__).'/sql/dal.sql');
+		$db->import(__dir__.'/sql/dal.sql');
 	}
 
 /*

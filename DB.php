@@ -24,13 +24,13 @@ class DB {
 	}
 	
 	public function import($file) {
-		if(!file_exists($file = realpath($file)))
+		if(!file_exists(realpath($file)))
 			throw new \Exception('File '.$file.' does not exist.');
 		$host = $this->config['host'];
 		$user = $this->config['user'];
 		$pwd = $this->config['password'];
 		$db = $this->config['database'];
-		$cmd = 'mysql -h '.$host.' -u '.$user.($pwd ? ' -p'.$pwd:'').' '.$db.' < '.$file;
+		$cmd = 'mysql -h '.$host.' -u '.$user.($pwd ? ' -p'.$pwd:'').' '.$db.' < '.realpath($file);
 		return exec($cmd);
 	}
 
