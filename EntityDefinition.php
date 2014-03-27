@@ -10,7 +10,7 @@ class EntityDefinition extends \Asgard\Hook\Hookable {
 	public $relations = array();
 	public $messages = array();
 
-	function __construct($entityClass) {
+	public function __construct($entityClass) {
 		$reflectionClass = new \ReflectionClass($entityClass);
 		if(!$reflectionClass->IsInstantiable())
 			return;

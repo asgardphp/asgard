@@ -4,7 +4,7 @@ namespace Asgard\Core;
 class Config {
 	protected $config = array();
 	
-	function __construct($config=null) {
+	public function __construct($config=null) {
 		if(is_string($config))
 			$this->loadConfigDir($config);
 		elseif(is_array($config))
@@ -20,7 +20,7 @@ class Config {
 		$config = require $filename;
 		if(isset($config['all']))
 			$this->load($config['all']);
-		if(isset($config[_ENV_]))
+		if(defined('_ENV_') && isset($config[_ENV_]))
 			$this->load($config[_ENV_]);
 	}
 	

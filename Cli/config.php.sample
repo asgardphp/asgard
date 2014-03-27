@@ -1,0 +1,51 @@
+<?php
+return array(
+	'all' => array(
+		'log_php_errors' => false,
+		'global_namespace' => false,
+		'preload' => false,
+		'log' => false,
+		'debug' => false,
+		'key'	=>	'_KEY_',
+		'bundles' => array(
+			_DIR_.'app',
+			_ASGARD_DIR_.'core',
+			_ASGARD_DIR_.'orm',
+			_ASGARD_DIR_.'auth',
+			_ASGARD_DIR_.'behaviors',
+			_ASGARD_DIR_.'cli',
+			_ASGARD_DIR_.'db',
+			_ASGARD_DIR_.'files',
+			_ASGARD_DIR_.'form',
+			_ASGARD_DIR_.'hook',
+			_ASGARD_DIR_.'orm',
+			_ASGARD_DIR_.'utils',
+			_ASGARD_DIR_.'validation',
+		),
+		'imagecache'	=>	false,
+		'locale'	=>	'en',
+		'locales'	=>	array(
+			'fr', 'en'
+		),
+		'cache'	=>	array(
+			'method'	=>	'apc',
+			// 'method'	=>	'file',
+		),
+		'profiler'	=>	false,
+		'error_display' => true,
+		'debug' => true,
+	),
+	'dev'	=>	array(
+		'phpcache'	=>	false,
+		// 'phpcache'	=>	true,
+		'profiler'	=>	false,
+		// 'profiler'	=>	true,
+	),
+	'test'	=>	array(
+		'phpcache'	=>	false,
+	),
+	'prod'	=>	array(
+		'debug' => false,
+		'error_display' => false,
+	),
+);

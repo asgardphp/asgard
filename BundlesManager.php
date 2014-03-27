@@ -12,17 +12,21 @@ class BundlesManager {
 	// 	return static::$instance;
 	// }
 
-	public static function loadEntityFixtures($bundle_path) {
+	public function __construct() {
+		$this->bundles[] = new Bundle;
+	}
+
+	public function loadEntityFixtures($bundle_path) {
 		if(file_exists($bundle_path.'/data')) {
 			foreach(glob($bundle_path.'/data/*.entities.yml') as $file)
 				\Asgard\Orm\Libs\ORMManager::loadEntityFixtures($file);
 		}
 	}
 
-	public static function loadEntityFixturesAll() {
-		foreach(static::instance()->getBundlesPath() as $bundle)
-			static::loadEntityFixtures($bundle);
-	}
+	// public function loadEntityFixturesAll() {
+	// 	foreach($this->getBundlesPath() as $bundle)
+	// 		$this->loadEntityFixtures($bundle);
+	// }
 
 	public function addBundles($_bundles) {
 		$count = sizeof($_bundles);
@@ -62,6 +66,10 @@ class BundlesManager {
 			if($obj === null) {
 				$obj = new \Asgard\Core\BundleLoader;
 				$obj->setBundle($bundle);
+			}
+			foreach($this->bundles as $b) {
+				if($b->getBundle() === $obj->getBundle())
+					continue 2;
 			}
 			$this->bundles[] = $obj;
 		}

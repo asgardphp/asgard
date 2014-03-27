@@ -6,7 +6,7 @@ class BaseProperty {
 	protected $name = null;
 	public $params = array();
 
-	function __construct($entity, $name, $params) {
+	public function __construct($entity, $name, $params) {
 		$this->entity = $entity;
 		$this->name = $name;
 		$this->params = $params;

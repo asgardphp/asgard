@@ -36,29 +36,23 @@ class App {
 		$this->loaded = true;
 	}
 
-	function __construct($config=null) {
-		#default instances
-		$this->_set('importer', function() {
-			return new \Asgard\Core\Importer;
-		});
+	public function __construct($config=null) {
+		#needed for loading bundles
 		$this->_set('config', function() {
 			return new \Asgard\Core\Config('config');
 		});
-		#used in errorhandler..
 		$this->_set('hook', function() {
 			return new \Asgard\Hook\Hook;
 		});
-		$this->_set('request', function() {
-			return \Asgard\Core\Request::createFromGlobals();
+		$this->_set('cache', function() {
+			$driver = \Asgard\Core\App::get('config')->get('cache_driver');
+			return new $driver;
 		});
-		$this->_set('url', function() {
-			return \Asgard\Core\App::get('request')->url;
+		$this->_set('locale', function() {
+			return new \Asgard\Utils\Locale;
 		});
-		$this->_set('response', function() {
-			return new \Asgard\Core\Response;
-		});
-		$this->_set('facades', function() {
-			return \Asgard\Core\Facades::inst();
+		$this->_set('importer', function() {
+			return new \Asgard\Core\Importer;
 		});
 
 		if($config)
@@ -127,8 +121,11 @@ class App {
 		else {
 			if($default instanceof \Closure)
 				return call_user_func_array($default, $params);
-			else
+			else {
+				if($default === null)
+					throw new \Exception('There is no constructor for "'.$name.'".');
 				return $default;
+			}
 		}
 	}
 

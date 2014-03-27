@@ -10,34 +10,30 @@ class DatetimeProperty extends BaseProperty {
 	}
 
 	public function _getDefault() {
-		return new \Asgard\Utils\Datetime;
+		return \Carbon\Carbon::now();
 	}
 
 	public function serialize($obj) {
 		if($obj == null)
 			return '';
-		return date('Y-m-d H:i:s', $obj->timestamp);
+		return $obj->format('Y-m-d H:i:s');
 	}
 
 	public function unserialize($str) {
-		try {
-			preg_match('/([0-9]+)-([0-9]+)-([0-9]+) ([0-9]+):([0-9]+):([0-9]+)/', $str, $r);
-			$t = mktime($r[4], $r[5], $r[6], $r[2], $r[3], $r[1]);
-			return new \Asgard\Utils\Datetime($t);
-		}
-		catch(\Exception $e) {
-			return $this->_getDefault();
-		}
+		return \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $str);
 	}
 
 	public function set($val) {
-		if(!$val)
-			return null;
-		$b = preg_match('/([0-9]+)\/([0-9]+)\/([0-9]+) ([0-9]+):([0-9]+):([0-9]+)/', $val, $r);
-		if(!$b)
-			return null;
-		$t = mktime($r[4], $r[5], $r[6], $r[2], $r[1], $r[3]);
-		return new \Asgard\Utils\Datetime($t);
+		if($val instanceof \Carbon\Carbon)
+			return $val;
+		elseif(is_string($val)) {
+			try {
+				return \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $val);
+			} catch(\Exception $e) {
+				return $val;
+			}
+		}
+		return $val;
 	}
 
 	public function getSQLType() {

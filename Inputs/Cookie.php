@@ -36,7 +36,8 @@ class COOKIE extends InputsBag {
 	}
 	
 	public function remove($what, $path='/') {
-		setcookie($what, false, -10000, $path);
+		if(!headers_sent())
+			setcookie($what, false, -10000, $path);
 		return parent::remove($what);
 	}
 }

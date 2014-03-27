@@ -6,7 +6,6 @@ define('_ASGARD_START_', time()+microtime());
 set_include_path(get_include_path() . PATH_SEPARATOR . _DIR_);
 
 require_once _VENDOR_DIR_.'autoload.php'; #composer autoloader
-spl_autoload_register(array('Asgard\Core\Autoloader', 'loadClass')); #asgard autoloader
 
 \Asgard\Core\ErrorHandler::initialize();
 

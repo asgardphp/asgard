@@ -10,6 +10,7 @@
     },
     "require": {
         "niktux/addendum": "dev-master",
+        "nesbot/Carbon": "*",
         "symfony/yaml": "dev-master",
         "asgard/auth": "dev-master",
         "asgard/behaviors": "dev-master",
@@ -21,6 +22,9 @@
         "asgard/orm": "dev-master",
         "asgard/utils": "dev-master",
         "asgard/Validation": "dev-master"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "3.7.*"
     },
     "suggest": {
         "asgard/seo": "dev-master",

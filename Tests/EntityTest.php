@@ -16,7 +16,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 		$news = new Classes\News(array(
 			'title' => 'Test Title',
 			'content' => 'Test Content',
-			'published' => new \Asgard\Utils\Date(mktime(0, 0, 0, 9, 9, 2009)),
+			'published' => \Carbon\Carbon::create(2009, 9, 9),
 		));
 		$this->assertEquals('Test Title', $news->title);
 		$this->assertEquals('Test Content', $news->content);
@@ -69,14 +69,14 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 
 		#toJSON
 		$json = $news->toJSON();
-		$this->assertEquals('{"title":"bla","content":"Test Content","published":"09\/09\/2009","another_property":""}', $news->toJSON());
+		$this->assertEquals('{"title":"bla","content":"Test Content","published":"2009-09-09","another_property":""}', $news->toJSON());
 
 		#toArray
 		$this->assertEquals(
 			array(
 				'title' => 'bla',
 				'content' => 'Test Content',
-				'published' => '09/09/2009',
+				'published' => '2009-09-09',
 				'another_property' => ''
 			),
 			$news->toArray()
@@ -87,7 +87,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 			array(
 				'title' => 'bla',
 				'content' => 'Test Content',
-				'published' => new \Asgard\Utils\Date(mktime(0, 0, 0, 9, 9, 2009)),
+				'published' => \Carbon\Carbon::create(2009, 9, 9),
 				'another_property' => ''
 			),
 			$news->toArrayRaw()
@@ -98,21 +98,21 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 			new Classes\News(array(
 				'title' => 'Title 1',
 				'content' => 'Content 1',
-				'published' => new \Asgard\Utils\Date(mktime(0, 0, 0, 9, 9, 2009)),
+				'published' => \Carbon\Carbon::create(2009, 9, 9),
 			)),
 			new Classes\News(array(
 				'title' => 'Title 2',
 				'content' => 'Content 2',
-				'published' => new \Asgard\Utils\Date(mktime(0, 0, 0, 9, 9, 2009)),
+				'published' => \Carbon\Carbon::create(2009, 9, 9),
 			)),
 			new Classes\News(array(
 				'title' => 'Title 3',
 				'content' => 'Content 3',
-				'published' => new \Asgard\Utils\Date(mktime(0, 0, 0, 9, 9, 2009)),
+				'published' => \Carbon\Carbon::create(2009, 9, 9),
 			)),
 		);
 		$this->assertEquals(
-			'[{"title":"Title 1","content":"Content 1","published":"09\/09\/2009","another_property":""},{"title":"Title 2","content":"Content 2","published":"09\/09\/2009","another_property":""},{"title":"Title 3","content":"Content 3","published":"09\/09\/2009","another_property":""}]',
+			'[{"title":"Title 1","content":"Content 1","published":"2009-09-09","another_property":""},{"title":"Title 2","content":"Content 2","published":"2009-09-09","another_property":""},{"title":"Title 3","content":"Content 3","published":"2009-09-09","another_property":""}]',
 			Classes\News::arrayToJSON($news)
 		);
 
@@ -123,7 +123,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 		));
 		$this->assertTrue($news->valid());
 		$news = new Classes\News(array(
-			'title' => '',
+			'title' => null,
 			'content' => 'Test Content',
 		));
 		$this->assertFalse($news->valid());
@@ -132,7 +132,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals(
 			array(
 				'title' => array(
-					'The field "title" is required.'
+					'required' => 'Title is required.'
 				)
 			),
 			$news->errors()

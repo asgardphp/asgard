@@ -19,7 +19,7 @@ class Response {
 		500 => 'Internal Server Error',
 	);
 
-	function __construct($code = 200) {
+	public function __construct($code = 200) {
 		$this->code = $code;
 	}
 

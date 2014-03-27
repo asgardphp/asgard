@@ -17,7 +17,7 @@ class Request implements \ArrayAccess {
 		'format'	=>	'html',
 	);
 
-	function __construct() {
+	public function __construct() {
 		$this->url = new \Asgard\Core\URL($this);
 		$this->get = new \Asgard\Core\Inputs\GET;
 		$this->post = new \Asgard\Core\Inputs\POST;

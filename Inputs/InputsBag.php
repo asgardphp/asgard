@@ -4,7 +4,7 @@ namespace Asgard\Core\Inputs;
 abstract class InputsBag implements \ArrayAccess {
 	protected $inputs;
 
-	function __construct($inputs=array()) {
+	public function __construct($inputs=array()) {
 		$this->inputs = $inputs;
 	}
 

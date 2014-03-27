@@ -4,7 +4,7 @@ namespace Asgard\Core;
 class PSRException extends \Exception {
 	protected $severity;
 
-	function __construct($message=null, $severity=null) {
+	public function __construct($message=null, $severity=null) {
 		if($severity === null)
 			$severity = \Psr\Log\LogLevel::ERROR;
 		$this->severity = $severity;

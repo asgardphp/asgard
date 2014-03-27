@@ -7,7 +7,7 @@ class URL {
 	public $root;
 	public $url;
 
-	function __construct($request, $host=null, $root=null, $url=null) {
+	public function __construct($request, $host=null, $root=null, $url=null) {
 		$this->request = $request;
 		$this->host = $host;
 		$this->root = $root;

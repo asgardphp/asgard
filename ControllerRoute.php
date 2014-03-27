@@ -5,7 +5,7 @@ class ControllerRoute extends Route {
 	protected $controller;
 	protected $action;
 
-	function __construct($route, $controller, $action, $options=array()) {
+	public function __construct($route, $controller, $action, $options=array()) {
 		$this->controller = $controller;
 		$this->action = $action;
 

@@ -19,12 +19,14 @@ namespace Asgard\Core {
 		protected $bundle = null;
 
 		public function load($queue) {
-			Autoloader::preloadDir(_ASGARD_DIR_.'/entities');
-			Autoloader::preloadDir(_ASGARD_DIR_.'/libs');
-			Autoloader::preloadDir(_ASGARD_DIR_.'/controllers');
-			Autoloader::preloadDir(_ASGARD_DIR_.'/hooks');
-			if(php_sapi_name() === 'cli')
-				Autoloader::preloadDir(_ASGARD_DIR_.'/cli');
+			if(\Asgard\Core\App::get('autoloader')) {
+				\Asgard\Core\App::get('autoloader')->preloadDir(_ASGARD_DIR_.'/entities');
+				\Asgard\Core\App::get('autoloader')->preloadDir(_ASGARD_DIR_.'/libs');
+				\Asgard\Core\App::get('autoloader')->preloadDir(_ASGARD_DIR_.'/controllers');
+				\Asgard\Core\App::get('autoloader')->preloadDir(_ASGARD_DIR_.'/hooks');
+				if(php_sapi_name() === 'cli')
+					\Asgard\Core\App::get('autoloader')->preloadDir(_ASGARD_DIR_.'/cli');
+			}
 		}
 
 		public function run() {
@@ -47,7 +49,7 @@ namespace Asgard\Core {
 				$hooks = array();
 				if(file_exists($this->getBundle().'/hooks/')) {
 					foreach(glob($this->getBundle().'/hooks/*.php') as $filename) {
-						$class = \Asgard\Core\Importer::loadClassFile($filename);
+						$class = \Asgard\Core\Autoloader::loadClassFile($filename);
 						if(is_subclass_of($class, 'Asgard\Hook\HooksContainer'))
 							$hooks = array_merge($hooks, $class::fetchHooks());
 					}
@@ -64,7 +66,7 @@ namespace Asgard\Core {
 				$routes = array();
 				if(file_exists($this->getBundle().'/cli/')) {
 					foreach(glob($this->getBundle().'/cli/*.php') as $filename) {
-						$class = \Asgard\Core\Importer::loadClassFile($filename);
+						$class = \Asgard\Core\Autoloader::loadClassFile($filename);
 						if(is_subclass_of($class, 'Asgard\Cli\CLIController'))
 							$routes = array_merge($routes, $class::fetchRoutes());
 					}
@@ -81,7 +83,7 @@ namespace Asgard\Core {
 				$routes = array();
 				if(file_exists($this->getBundle().'/controllers/')) {
 					foreach(glob($this->getBundle().'/controllers/*.php') as $k=>$filename) {
-						$class = \Asgard\Core\Importer::loadClassFile($filename);
+						$class = \Asgard\Core\Autoloader::loadClassFile($filename);
 						if(is_subclass_of($class, 'Asgard\Core\Controller'))
 							$routes = array_merge($routes, $class::fetchRoutes());
 					}
@@ -94,15 +96,15 @@ namespace Asgard\Core {
 		}
 
 		public function setBundle($bundle) {
-			$this->bundle = $bundle;
+			$this->bundle = realpath($bundle);
 		}
 
 		public function getBundle() {
-			if($this->bundle !== null)
-				return $this->bundle;
-
-			$reflector = new \ReflectionClass(get_called_class());
-			return dirname($reflector->getFileName());
+			if($this->bundle == null) {
+				$reflector = new \ReflectionClass(get_called_class());
+				$this->bundle = dirname($reflector->getFileName());
+			}
+			return $this->bundle;
 		}
 	}
 }

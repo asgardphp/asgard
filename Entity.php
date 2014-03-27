@@ -128,14 +128,18 @@ abstract class Entity {
 		
 		$messages = static::getDefinition()->messages();
 		
-		$validator = new \Asgard\Validation\Validator($constrains, $messages);
-		$validator->entity = $this;
+		$validator = new \Asgard\Validation\Validator();
+		$validator->attributes($constrains);
+		$validator->ruleMessages($messages);
+		#todo messages
+		// d($constrains);
 
 		return $validator;
 	}
 	
 	public function valid() {
-		return !$this->errors();
+		$data = $this->toArrayRaw();
+		return $this->getValidator()->valid($data);
 	}
 	
 	public function errors() {
@@ -145,8 +149,14 @@ abstract class Entity {
 		$this->trigger('validation', array($this, &$data, &$errors), function($chain, $entity, &$data, &$errors) {
 			$errors = $entity->getValidator()->errors($data);
 		});
-				
-		return $errors;
+
+		$e = array();
+		foreach($data as $property=>$value) {
+			if($propertyErrors = $errors->attribute($property)->errors())
+				$e[$property] = $propertyErrors;
+		}
+
+		return $e;
 	}
 
 	/* ACCESSORS */
@@ -269,11 +279,17 @@ abstract class Entity {
 		
 		foreach($this->properties() as $name=>$property) {
 			$vars[$name] = $this->$property;
-			if(is_object($vars[$name])) {
-				if(method_exists($vars[$name], 'toArray'))
-					$vars[$name] = $vars[$name]->toArray();
-				elseif(method_exists($vars[$name], '__toString'))
-					$vars[$name] = $vars[$name]->__toString();
+			if(method_exists($property, 'toArray'))
+				$vars[$name] = $property->toArray($vars[$name]);
+			elseif(method_exists($property, 'toString'))
+				$vars[$name] = $property->toString($vars[$name]);
+			else {
+				if(is_object($vars[$name])) {
+					if(method_exists($vars[$name], 'toArray'))
+						$vars[$name] = $vars[$name]->toArray();
+					elseif(method_exists($vars[$name], '__toString'))
+						$vars[$name] = $vars[$name]->__toString();
+				}	
 			}
 		}
 		

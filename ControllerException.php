@@ -4,7 +4,7 @@ namespace Asgard\Core;
 class ControllerException extends \Asgard\Core\PSRException {
 	public $response;
 
-	function __construct($msg='', $response=null, $severity=null) {
+	public function __construct($msg='', $response=null, $severity=null) {
 		$this->response = $response;
 		parent::__construct($msg, $severity);
 	}

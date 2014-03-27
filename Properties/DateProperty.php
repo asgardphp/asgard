@@ -10,37 +10,35 @@ class DateProperty extends BaseProperty {
 	}
 
 	public function _getDefault() {
-		return new \Asgard\Utils\Date;
+		return \Carbon\Carbon::now();
 	}
 
 	public function serialize($obj) {
 		if($obj == null)
 			return '';
-		if(!is_object($obj))
-			return '';
-		$d = $obj->date();
-		list($d, $m, $y) = explode('/', $d);
-		return $y.'-'.$m.'-'.$d;
+		return $obj->format('Y-m-d');
 	}
 
 	public function unserialize($str) {
-		if($str == null)
-			$str = '1970-01-01';
-		list($y, $m, $d) = explode('-', $str);
-		$str = $d.'/'.$m.'/'.$y;
-		return \Asgard\Utils\Date::fromDate($str);
+		return \Carbon\Carbon::createFromFormat('Y-m-d', $str);
 	}
 
 	public function set($val) {
-		if(!$val)
-			return null;
-		if(preg_match('/[0-9]{2}\/[0-9]{2}\/[0-9]{4}/', $val))
-			return \Asgard\Utils\Date::fromDate($val);
-		else
+		if($val instanceof \Carbon\Carbon)
 			return $val;
+		elseif(is_string($val)) {
+			try {
+				return \Carbon\Carbon::createFromFormat('Y-m-d', $val);
+			} catch(\Exception $e) {}
+		}
+		return $val;
 	}
 
 	public function getSQLType() {
 		return 'date';
+	}
+
+	public function toString($obj) {
+		return $obj->format('Y-m-d');
 	}
 }

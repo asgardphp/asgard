@@ -5,7 +5,7 @@ class Facades {
 	static $inst;
 	protected $app;
 
-	function __construct($app=null) {
+	public function __construct($app=null) {
 		if($app === null)
 			$this->app = App::instance();
 		else

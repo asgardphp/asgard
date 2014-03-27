@@ -4,7 +4,7 @@ class Filter {
 	protected $controller;
 	protected $params;
 
-	function __construct($params=array(), $controller=null) {
+	public function __construct($params=array(), $controller=null) {
 		$this->controller = $controller;
 		$this->params = $params;
 	}
