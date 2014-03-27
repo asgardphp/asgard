@@ -25,7 +25,7 @@ class FileCache implements CacheInterface {
 			return include $this->path.$file.'.php';
 		} catch(\ErrorException $e) {}
 
-		if(Tools::is_function($default)) {
+		if(\Asgard\Utils::Tools::is_function($default)) {
 			$r = $default();
 			static::set($identifier, $r);
 			return $r;
