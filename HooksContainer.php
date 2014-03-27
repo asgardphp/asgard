@@ -2,7 +2,7 @@
 namespace Asgard\Hook;
 
 class HooksContainer {
-	function __construct() {
+	public function __construct() {
 		$this->noView();
 	}
 

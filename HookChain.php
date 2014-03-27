@@ -6,7 +6,7 @@ class HookChain {
 	protected $continue = true;
 	public $executed = 0;
 
-	function __construct($calls=array()) {
+	public function __construct($calls=array()) {
 		$this->calls = $calls;
 	}
 
