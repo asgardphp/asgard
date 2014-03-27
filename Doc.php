@@ -5,7 +5,7 @@ class Doc {
 	protected $code;
 	protected $xpath;
 
-	function __construct($code, $type='html') {
+	public function __construct($code, $type='html') {
 		$this->code = $code;
 		$this->xpath = static::toXpath($code, $type);
 	}

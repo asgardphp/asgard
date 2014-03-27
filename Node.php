@@ -5,7 +5,7 @@ class Node {
 	protected $domnode;
 	protected $xpath;
 
-	function __construct($domnode) {
+	public function __construct($domnode) {
 		if(!$domnode)
 			return;
 		$this->domnode = $domnode;

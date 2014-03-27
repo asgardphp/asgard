@@ -9,7 +9,7 @@ class XpathTest extends \PHPUnit_Framework_TestCase {
 	}
 	
 	public function test1() {
-		$html = file_get_contents(dirname(__FILE__).'/page.html');
+		$html = file_get_contents(__dir__.'/page.html');
 		$doc = new \Asgard\Xpath\Doc($html);
 
 		$this->assertInstanceOf('DOMXpath', $doc->getXpath());
