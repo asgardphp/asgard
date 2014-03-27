@@ -29,6 +29,8 @@ class BundlesManager {
 	// }
 
 	public function addBundles($_bundles) {
+		if(!is_array($_bundles))
+			$_bundles = array();
 		$count = sizeof($_bundles);
 		$bundles = array();
 		foreach($_bundles as $k=>$v) {

@@ -45,7 +45,9 @@ class App {
 			return new \Asgard\Hook\Hook;
 		});
 		$this->_set('cache', function() {
-			$driver = \Asgard\Core\App::get('config')->get('cache_driver', 'Asgard\Cache\FileCacge');
+			$driver = \Asgard\Core\App::get('config')->get('cache_driver');
+			if(!$driver)
+				$driver = 'Asgard\Cache\FileCache';
 			return new $driver;
 		});
 		$this->_set('locale', function() {
