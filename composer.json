@@ -21,7 +21,8 @@
         "asgard/hook": "dev-master",
         "asgard/orm": "dev-master",
         "asgard/utils": "dev-master",
-        "asgard/Validation": "dev-master"
+        "asgard/validation": "dev-master",
+        "asgard/cache": "dev-master"
     },
     "require-dev": {
         "phpunit/phpunit": "3.7.*"
