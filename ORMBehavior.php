@@ -10,7 +10,6 @@ class ORMBehavior implements \Asgard\Core\Behavior {
 		#Article::getTable()
 		$entityDefinition->addStaticMethod('getTable', function() use($entityName) {
 			return \Asgard\Orm\Libs\ORMHandler::getTable($entityName);
-			// $em->getTable($entityClass)
 		});
 		#Article::orm()
 		$entityDefinition->addStaticMethod('orm', function() use($ormHandler) {

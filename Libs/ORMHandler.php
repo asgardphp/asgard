@@ -4,7 +4,7 @@ namespace Asgard\Orm\Libs;
 class ORMHandler {
 	private $entity;
 
-	function __construct($entityDefinition) {
+	public function __construct($entityDefinition) {
 		$this->entity = $entityDefinition;
 		if(!isset($entityDefinition->meta['order_by']))
 			$entityDefinition->meta['order_by'] = 'id DESC';

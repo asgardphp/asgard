@@ -12,7 +12,7 @@ class ORMTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	public function test1() {
-		\Asgard\Core\App::get('db')->import(realpath(dirname(__FILE__).'/sql/ormtest.sql'));
+		\Asgard\Core\App::get('db')->import(realpath(__dir__.'/sql/ormtest.sql'));
 
 		#load
 		$cat = Asgard\Orm\Tests\Entities\Category::load(1);

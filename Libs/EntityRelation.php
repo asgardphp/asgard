@@ -6,7 +6,7 @@ class EntityRelation implements \ArrayAccess {
 	public $name;
 	public $params = array();
 
-	function __construct($entityDefinition, $name, $params) {
+	public function __construct($entityDefinition, $name, $params) {
 		$entityClass = $entityDefinition->getClass();
 		$this->entityClass = $entityClass;
 		$this->params = $params;

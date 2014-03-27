@@ -14,7 +14,7 @@ class ORM {
 
 	protected $tmp_dal = null;
 		
-	function __construct($entity) {
+	public function __construct($entity) {
 		$this->entity = $entity;
 
 		$this->orderBy($entity::getDefinition()->meta['order_by']);
@@ -112,9 +112,13 @@ class ORM {
 		return static::get();
 	}
 
+	public function getDB() {
+		return \Asgard\Core\App::get('db');
+	}
+
 	public function getDAL() {
 		$current_entity = $this->entity;
-		$dal = new \Asgard\Db\DAL(\Asgard\Core\App::get('db'));
+		$dal = new \Asgard\Db\DAL($this->getDB());
 		$table = $this->getTable();
 		$dal->orderBy($this->orderBy);
 		$dal->limit($this->limit);
@@ -341,7 +345,7 @@ class ORM {
 		$entities = array();
 		$entity = $this->entity;
 		
-		$dal = new \Asgard\Db\DAL(\Asgard\Core\App::get('db'));
+		$dal = new \Asgard\Db\DAL($this->getDB());
 		$rows = $dal->query($sql, $args)->all();
 		foreach($rows as $row)
 			$entities[] = ORMHandler::unserializeSet(new $entity, $row);

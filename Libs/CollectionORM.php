@@ -5,7 +5,7 @@ class CollectionORM extends ORM implements \Asgard\Core\Collection {
 	protected $parent;
 	protected $relation;
 
-	function __construct($entity, $relation_name) {
+	public function __construct($entity, $relation_name) {
 		$this->parent = $entity;
 
 		$this->relation = $entity->getDefinition()->relations[$relation_name];

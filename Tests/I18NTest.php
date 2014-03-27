@@ -13,7 +13,7 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 		));
 		\Asgard\Core\App::loadDefaultApp();
 
-		\Asgard\Core\App::get('db')->import(realpath(dirname(__FILE__).'/sql/i18ntest.sql'));
+		\Asgard\Core\App::get('db')->import(realpath(__dir__.'/sql/i18ntest.sql'));
 	}
 
 	#get default
