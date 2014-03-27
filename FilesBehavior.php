@@ -5,7 +5,9 @@ class FilesBehavior implements \Asgard\Core\Behavior {
 	public static function load($entityDefinition, $params=null) {
 		$entityName = $entityDefinition->getClass();
 
-		static::loadValidationRules();
+		// static::loadValidationRules();
+		// d(\Asgard\Core\App::instance());
+		\Asgard\Core\App::get('rulesregistry')->registerNamespace('Asgard\Files\Rules');
 	
 		$entityDefinition->hookBefore('propertyClass', function($chain, $type) {
 			if($type == 'file')
@@ -46,6 +48,7 @@ class FilesBehavior implements \Asgard\Core\Behavior {
 		});
 	}
 	
+	/*
 	protected static function loadValidationRules() {
 		if(!\Asgard\Core\App::get('validation')->ruleExists('filerequired')) {
 			\Asgard\Core\App::get('validation')->register('filerequired', function($attribute, $value, $params, $validator) {
@@ -98,4 +101,5 @@ class FilesBehavior implements \Asgard\Core\Behavior {
 			});
 		}
 	}
+	*/
 }

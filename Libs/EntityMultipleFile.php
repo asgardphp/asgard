@@ -8,7 +8,7 @@ class EntityMultipleFile {
 	public $files = array();
 	public $saved = true;
 	
-	function __construct($entity, $name, $files=array()) {
+	public function __construct($entity, $name, $files=array()) {
 		if(!$entity::hasProperty($name))
 			throw new \Exception('File '.$name.' does not exist for Entity '.get_class($entity));
 

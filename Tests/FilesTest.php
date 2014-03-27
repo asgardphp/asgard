@@ -9,6 +9,7 @@ class FilesTest extends \PHPUnit_Framework_TestCase {
 
 		\Asgard\Core\App::instance(true)->config->set('bundles', array(
 			_ASGARD_DIR_.'core',
+			_ASGARD_DIR_.'validation',
 			_ASGARD_DIR_.'files',
 		));
 		\Asgard\Core\App::loadDefaultApp();
@@ -22,7 +23,7 @@ class FilesTest extends \PHPUnit_Framework_TestCase {
 	public function test1() {
 		$news = new Entities\News(array(
 			'title' => 'A news',
-			'image' => realpath(dirname(__FILE__).'/files/image.jpg'),
+			'image' => realpath(__dir__.'/files/image.jpg'),
 		));
 		$this->assertTrue($news->hasFile('image'));
 		$this->assertFalse($news->hasFile('somefile'));
@@ -33,29 +34,29 @@ class FilesTest extends \PHPUnit_Framework_TestCase {
 
 		$this->assertCount(0, $news->errors());
 
-		$news->image = realpath(dirname(__FILE__).'/files/test.txt');
-		$this->assertEquals('The file "image" must be an image.', $news->errors()['image'][0]);
+		$news->image = realpath(__DIR__.'/files/test.jpg');
+		$this->assertEquals('The file image must be an image (jpg, png or gif).', $news->errors()['image']['image']);
 
-		$news->image = realpath(dirname(__FILE__).'/files/image.txt');
-		$this->assertEquals('This type of file is not allowed "txt".', $news->errors()['image'][0]);
+		$news->image = realpath(__DIR__.'/files/image.txt');
+		$this->assertEquals('The file image must have one of the following extension: jpg, gif, png.', $news->errors()['image']['extension']);
 
 		$news->image = null;
-		$this->assertEquals('The file "image" does not exist.', $news->errors()['image'][0]);
+		$this->assertEquals('Image is required.', $news->errors()['image']['required']);
 
 		#save
 		$news = new Entities\News(array(
 			'title' => 'A news',
 			'image' => array(
-				'path' => realpath(dirname(__FILE__).'/files/image.jpg'),
+				'path' => realpath(__DIR__.'/files/image.jpg'),
 				'name' => 'image.jpg',
 			)
 		));
 		/*
 		$news = new Entities\News(array(
 			'title' => 'A news',
-			// 'image' => new File(realpath(dirname(__FILE__).'/files/image.jpg')),
+			// 'image' => new File(realpath(__dir__.'/files/image.jpg')),
 			'image' => new File(array(
-				'path' => realpath(dirname(__FILE__).'/files/image.jpg'),
+				'path' => realpath(__dir__.'/files/image.jpg'),
 				'name' => 'test.jpg',
 			))
 		));

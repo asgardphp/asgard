@@ -7,7 +7,7 @@ class EntityFile {
 	public $file;
 	public $saved = true;
 	
-	function __construct($entity, $name, $file=array()) {
+	public function __construct($entity, $name, $file=array()) {
 		if(!$entity::hasProperty($name))
 			throw new \Exception('File '.$name.' does not exist for Entity '.get_class($entity));
 

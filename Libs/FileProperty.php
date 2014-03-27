@@ -2,16 +2,12 @@
 namespace Asgard\Files\Libs;
 
 class FileProperty extends \Asgard\Core\Properties\BaseProperty {
-	public static $defaultallowed = array('pdf', 'doc', 'jpg', 'jpeg', 'png', 'docx', 'gif', 'rtf', 'ppt', 'xls', 'zip', 'txt');
+	public static $defaultextension = array('pdf', 'doc', 'jpg', 'jpeg', 'png', 'docx', 'gif', 'rtf', 'ppt', 'xls', 'zip', 'txt');
 
 	public function getRules() {
 		$rules = parent::getRules();
-		if(isset($rules['required'])) {
-			$rules['filerequired'] = $rules['required'];
-			unset($rules['required']);
-		}
-		if(!isset($rules['allowed']))
-			$rules['allowed'] = static::$defaultallowed;
+		if(!isset($rules['extension']))
+			$rules['extension'] = static::$defaultextension;
 
 		return $rules;
 	}
@@ -50,7 +46,7 @@ class FileProperty extends \Asgard\Core\Properties\BaseProperty {
 
 		if($this->multiple)
 			return new \Asgard\Files\Libs\EntityMultipleFile($entity, $this->name, $val);
-		else
+		elseif($val !== null)
 			return new \Asgard\Files\Libs\EntityFile($entity, $this->name, $val);
 	}
 }

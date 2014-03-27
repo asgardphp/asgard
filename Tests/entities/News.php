@@ -5,12 +5,12 @@ class News extends \Asgard\Core\Entity {
 	public static $properties = array(
 		'title',
 		'image' => array(
+			'required' => true,
 			'type' => 'file',
 			'filetype' => 'image',
 			'validation' => array(
-				'filerequired' => true,
-				'image' => true,
-				'allowed' => array('jpg', 'gif', 'png'),
+				'image',
+				'extension' => array('jpg', 'gif', 'png'),
 			)
 		),
 	);
