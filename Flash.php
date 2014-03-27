@@ -4,7 +4,7 @@ namespace Asgard\Utils;
 class Flash {
 	protected $messages = array('success' => array(), 'error' => array());
 
-	function __construct() {
+	public function __construct() {
 		if(\Asgard\Core\App::get('session')->has('messages'))
 			$this->messages = \Asgard\Core\App::get('session')->get('messages');
 	}

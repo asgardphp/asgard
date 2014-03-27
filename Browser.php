@@ -5,6 +5,7 @@ class Browser {
 	protected $session = array();
 	protected $cookies = array();
 	protected $last;
+	protected $catchException = false;
 
 	public function resetCookies() {
 		$this->cookies = array();
@@ -74,13 +75,17 @@ class Browser {
 		$request->url->setHost('localhost');
 		$request->url->setRoot('');
 
-		$res = \Asgard\Core\HttpKernel::process($request, true);
+		$res = \Asgard\Core\HttpKernel::process($request, $this->catchException);
 
 		$this->last = $res;
 		$this->cookies = $request->cookie->all();
 		$this->session = $request->session->all();
 
 		return $res;
+	}
+
+	public function catchException($catchException) {
+		$this->catchException = $catchException;
 	}
 
 	public function submit($item=0, $to=null, $override=array()) {

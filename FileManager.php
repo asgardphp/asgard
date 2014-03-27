@@ -92,6 +92,6 @@ class FileManager {
 
 	public static function put($file, $content) {
 		static::mkdir(dirname($file));
-		file_put_contents($file, $content);
+		return file_put_contents($file, $content);
 	}
 }

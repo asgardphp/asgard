@@ -9,7 +9,7 @@ class Email {
 	protected $html = '';
 	protected $files = array();
  
-	function __construct($to, $from, $subject, $text='', $html='') {
+	public function __construct($to, $from, $subject, $text='', $html='') {
  		$this->to = $to;
  		$this->from = $from;
 		$this->subject = $subject;

@@ -15,7 +15,7 @@ class LocaleTest extends \PHPUnit_Framework_TestCase {
 	#translation
 	public function test1() {
 		\Asgard\Core\App::get('locale')->setLocale('fr');
-		\Asgard\Core\App::get('locale')->importLocales(realpath(dirname(__FILE__).'/locales/'));
+		\Asgard\Core\App::get('locale')->importLocales(realpath(__dir__.'/locales/'));
 		$this->assertEquals(__('Hello :name!', array('name' => 'Michel')), 'Bonjour Michel !');
 	}
 }

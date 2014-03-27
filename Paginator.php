@@ -6,7 +6,7 @@ class Paginator {
 	public $total;
 	public $page;
 	
-	function __construct($total, $page=1, $per_page=10) {
+	public function __construct($total, $page=1, $per_page=10) {
 		$this->per_page	= $per_page;
 		$this->total    = $total;
 		$this->page     = $page ? $page:1;

@@ -5,7 +5,7 @@ class Locale {
 	protected $default = 'en';
 	public $locales = array();
 
-	function __construct() {
+	public function __construct() {
 		static::setLocale(\Asgard\Core\App::get('config')->get('locale'));
 	}
 

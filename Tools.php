@@ -252,7 +252,7 @@ class Tools {
 	}
 
 	public static function hash($pwd) {
-		return sha1(\Asgard\Core\App::get('config')->get('salt').$pwd);
+		return sha1(\Asgard\Core\App::get('config')->get('key').$pwd);
 	}
 
 	// public static function getRelativePath($from, $to) {

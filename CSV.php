@@ -37,7 +37,7 @@ class CSV {
 	protected $data = array();
 	protected $separator = ';';
 
-	function __construct($header = array()) {
+	public function __construct($header = array()) {
 		$this->header($header);
 	}
 
