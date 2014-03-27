@@ -9,7 +9,7 @@ class Form extends Group {
 	protected $_render_callbacks = array();
 	protected $_method = 'post';
 
-	function __construct($name=null, $params=array(), $fields=array()) {
+	public function __construct($name=null, $params=array(), $fields=array()) {
 		$this->_groupName = $name;
 		$this->_params = $params;
 		$this->fetch();

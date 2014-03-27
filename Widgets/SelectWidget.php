@@ -12,19 +12,19 @@ class SelectWidget extends \Asgard\Form\Widgets\HTMLWidget {
 		$value = $this->value;
 		$choices = isset($options['choices']) ? $options['choices']:array();
 
-		return HTMLHelper::tag('select', array(
+		return \Asgard\Form\HTMLHelper::tag('select', array(
 			'name'	=>	$this->name,
 			'id'	=>	isset($options['id']) ? $options['id']:null,
 		)+$attrs, function() use($choices, $value) {
 			$str = '';
 			foreach($choices as $k=>$v)
 				if($value == $k)
-					$str .= HTMLHelper::tag('option', array(
+					$str .= \Asgard\Form\HTMLHelper::tag('option', array(
 						'value'	=>	$k,
 						'selected'	=>	'selected',
 					), $v);
 				else
-					$str .= HTMLHelper::tag('option', array(
+					$str .= \Asgard\Form\HTMLHelper::tag('option', array(
 						'value'	=>	$k,
 					), $v);
 			return $str;

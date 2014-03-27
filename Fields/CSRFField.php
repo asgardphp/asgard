@@ -2,9 +2,14 @@
 namespace Asgard\Form\Fields;
 
 class CSRFField extends \Asgard\Form\Fields\HiddenField {
-	function __construct($options=array()) {
+	public function __construct($options=array()) {
 		parent::__construct($options);
-		$this->options['validation']['csrf_check'] = array($this, 'error');
+		$this->options['validation']['required'] = true;
+		$this->options['validation']['callback'] = array($this, 'error');
+		$this->options['messages']['required'] = 'CSRF token is invalid.';
+		$this->options['messages']['callback'] = 'CSRF token is invalid.';
+		// d($this->options);
+		// $this->options['validation']['callback'] = function($input) { d(123); };
 
 		$this->default_render = function($field, $options) {
 			$token = $this->generateToken();
@@ -23,11 +28,13 @@ class CSRFField extends \Asgard\Form\Fields\HiddenField {
 	}
 
 	public function error($attr, $value) {
-		if($this->value != $this->dad->getRequest()->session->get('_csrf_token')) {
-			if(function_exists('__'))
-				return __('CSRF token is invalid.');
-			else
-				return 'CSRF token is invalid.';
-		}
+		return $this->value == $this->dad->getRequest()->session->get('_csrf_token');
+
+		// if($this->value != $this->dad->getRequest()->session->get('_csrf_token')) {
+			// if(function_exists('__'))
+			// 	return __('CSRF token is invalid.');
+			// else
+			// 	return 'CSRF token is invalid.';
+		// }
 	}
 }

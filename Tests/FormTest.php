@@ -12,7 +12,6 @@ class FormTest extends \PHPUnit_Framework_TestCase {
 			define('_ENV_', 'test');
 		require_once(_CORE_DIR_.'core.php');
 		\Asgard\Core\App::instance(true)->config->set('bundles', array(
-			new \Asgard\Core\Bundle,
 			new \Asgard\Orm\Bundle,
 		));
 		\Asgard\Core\App::loadDefaultApp();
@@ -125,14 +124,14 @@ class FormTest extends \PHPUnit_Framework_TestCase {
 		$request->setMethod('post')->post->set('test', array(
 			'title' => 'abc',
 			'childForm' => array(
-				'content' => ''
+				'content' => null
 			)
 		));
 		$form->fetch();
 		$this->assertEquals(array(
 			'childForm' => array(
 				'content' => array(
-					'The field "content" is required.'
+					'required' => 'Content is required.'
 				)
 			)
 		), $form->errors());
@@ -141,17 +140,17 @@ class FormTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals(array(
 			'childForm' => array(
 				'content' => array(
-					'The field "content" is required.'
+					'required' => 'Content is required.'
 				)
 			),
 			'_csrf_token' => array(
-				'CSRF token is invalid.'
+				'required' => 'CSRF token is invalid.'
 			)
 		), $form->errors());
 
 		$this->assertEquals(array(
 			'_csrf_token' => array(
-				'CSRF token is invalid.'
+				'required' => 'CSRF token is invalid.'
 			)
 		), $form->getGeneralErrors());
 
@@ -206,7 +205,8 @@ class FormTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testEntityForm() {
-		\Asgard\Core\App::get('db')->import(dirname(__FILE__).'/formentities.sql');
+		$db = new \Asgard\Db\DB(\Asgard\Core\App::get('config')->get('database'));
+		$db->import(__dir__.'/formentities.sql');
 
 		$user = new Entities\User;
 		$form = new \Asgard\Form\EntityForm($user);

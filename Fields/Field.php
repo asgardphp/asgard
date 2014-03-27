@@ -11,7 +11,7 @@ abstract class Field {
 	protected $error;
 	public $form;
 
-	function __construct($options=array()) {
+	public function __construct($options=array()) {
 		$this->options = $options;
 		if(isset($options['data_type']))
 			$this->data_type = $options['data_type'];
@@ -33,6 +33,7 @@ abstract class Field {
 
 	public function getValidationMessages() {
 		$messages = isset($this->options['messages']) ? $this->options['messages']:array();
+		// d($this->options);
 		return $messages;
 	}
 

@@ -5,7 +5,7 @@ class DynamicGroup extends Group {
 	protected $_cb;
 	protected $_default_render;
 
-	function __construct($cb, $default_render=null) {
+	public function __construct($cb, $default_render=null) {
 		$this->_cb = $cb;
 		$this->_default_render = $default_render;
 	}

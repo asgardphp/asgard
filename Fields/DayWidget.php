@@ -2,7 +2,7 @@
 namespace Asgard\Form\Fields;
 
 class DayField extends Field {
-	function __construct($params=array()) {
+	public function __construct($params=array()) {
 		$params['validation']['type'] = 'integer';
 		$params['choices'] = array('Day');
 		foreach(range(1, 31) as $i)

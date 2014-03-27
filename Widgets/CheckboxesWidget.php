@@ -10,7 +10,7 @@ class CheckboxesWidget extends \Asgard\Form\Widgets\HTMLWidget {
 			$options = array();
 			if(is_array($this->field->getValue()) && in_array($k, $this->field->getValue()) || $k==$this->field->getValue())
 				$options['attrs']['checked'] = 'checked';
-			$str .= HTMLWidget::checkbox($this->field->getName().'[]', $k, $options)->render().' '.ucfirst($v).' ';
+			$str .= \Asgard\Form\HTMLWidget::checkbox($this->field->getName().'[]', $k, $options)->render().' '.ucfirst($v).' ';
 		}
 		return $str;
 	}

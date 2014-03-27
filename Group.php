@@ -11,7 +11,7 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 	protected $_hasfile;
 	protected $_request;
 
-	function __construct($fields, $dad=null, $name=null, $data=null, $files=null) {
+	public function __construct($fields, $dad=null, $name=null, $data=null, $files=null) {
 		$this->addFields($fields);
 		$this->_dad = $dad;
 		$this->_groupName = $name;
@@ -218,53 +218,71 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 		// soit tout passe par Respect
 		// ou Form se charge d'agreger les messages d'erreurs
 
-	->Form agrege les erreurs/messages avec l'iterator de respect.
-	->Pour definir les messages, utiliser ma propre api, eventuellement inspiree de respect.
+	// ->Form agrege les erreurs/messages avec l'iterator de respect.
+	// ->Pour definir les messages, utiliser ma propre api, eventuellement inspiree de respect.
 
-	->obtenir tous les champs invalides de respect
-	->generer les messages selon ceux fournis a form
+	// ->obtenir tous les champs invalides de respect
+	// ->generer les messages selon ceux fournis a form
 
-	adsf
+	// adsf
 
+	protected function getReportErrors($report) {
+		$errors = array();
+		if($report->attributes()) {
+			foreach($report->attributes() as $attribute=>$attrReport) {
+				$attrErrors = $this->getReportErrors($attrReport);
+				if($attrErrors)
+					$errors[$attribute] = $attrErrors;
+			}	
+		}
+		else
+			return $report->errors();
+		return $errors;
+	}
+
+	protected function getValidator() {
+		$validator = new \Asgard\Validation\Validator;
+		$constrains = array();
+		$messages = array();
+		
+		foreach($this->_fields as $name=>$field) {
+			if($field instanceof Fields\Field) {
+				if($field_rules = $field->getValidationRules())
+					$constrains[$name] = $field_rules;
+				if($field_messages = $field->getValidationMessages())
+					// $constrains[$name] = $field_messages;
+					$messages[$name] = $field_messages;
+			}
+		}
+
+		// d($constrains, $this->getName());
+		$validator->attributes($constrains);
+		// d($messages);
+		// if($messages)
+		// 	d($constrains, $messages);
+		$validator->attributesMessages($messages);
+		return $validator;
+	}
 
 	protected function myErrors() {
-		// $entity;
 		$data = $this->_data + $this->_files;
-		$v = new Respect\Validation\Validator;
-		foreach($this->_fields as $name=>$field) {
-			// $av = new Respect\Validation\Validator;
-			// $v->attribute($name, $av);
-			// foreach($property->getRules() as $rule)
-			$v->attribute($name, $field->getValidator(), true);
-		}
 
-		// $v->validate($entity);
+		// d(array('content'=>array('required'=>true)), $data, \Asgard\Validation\Validator::attributes($constrains)->errors($data)->errors());
+		// d($constrains, $data, \Asgard\Validation\Validator::attributes($constrains)->errors($data)->errors());
 
-		try {
-		    $v->assert($data);
-		} catch(\InvalidArgumentException $e) {
-		   return $e->findMessages($messages);
-		}
+		// if($messages)
+		// d($validator->messages, $messages, $validator->errors($data)->attribute('_csrf_token'));
+		$report = $this->getValidator()->errors($data);
+		// if($messages)
+		// d($report->attributes());
 
-		// $validator = new \Asgard\Validation\Validator;
-		// $constrains = array();
-		// $messages = array();
-		
-		// foreach($this->_fields as $name=>$field) {
-		// 	if($field instanceof Fields\Field) {
-		// 		if($field_rules = $field->getValidationRules())
-		// 			$constrains[$name] = $field_rules;
-		// 		if($field_messages = $field->getValidationMessages())
-		// 			$constrains[$name] = $field_messages;
-		// 	}
-		// }
+		// d($this->getReportErrors($report));
 
-		// $validator->setConstrains($constrains);
-		// $validator->setMessages($messages);
+		return $this->getReportErrors($report);
 
-		// $data = $this->_data + $this->_files;
-
-		// return $validator->errors($data);
+		// if($validator->errors($data)->errors())
+			// d($validator->errors($data)->errors());
+		// return $validator->errors($data)->errors();
 	}
 
 	// public function addErrors($errors) {
@@ -294,7 +312,7 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 	}
 	
 	public function isValid() {
-		return !$this->errors();
+		return $this->getValidator()->valid();
 	}
 	
 	public function remove($name) {

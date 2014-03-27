@@ -5,7 +5,7 @@ class EntityForm extends Form {
 	protected $_entity;
 	protected $_i18n = false;
 
-	function __construct(
+	public function __construct(
 		$entity, 
 		$params=array()
 	) {
@@ -168,7 +168,7 @@ class EntityForm extends Form {
 			}
 		}
 
-		return array_merge($errors, parent::my_errors(), $this->_entity->errors());
+		return array_merge($errors, parent::myErrors(), $this->_entity->errors());
 	}
 	
 	public function save() {

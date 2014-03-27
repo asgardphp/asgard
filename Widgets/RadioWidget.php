@@ -8,7 +8,7 @@ class RadioWidget extends \Asgard\Form\Widgets\HTMLWidget {
 		$attrs = array();
 		if(isset($options['attrs']))
 			$attrs = $options['attrs'];
-		return HTMLHelper::tag('input', array(
+		return \Asgard\Form\HTMLHelper::tag('input', array(
 			'type'	=>	'radio',
 			'name'	=>	$this->name,
 			'value'	=>	$this->value,

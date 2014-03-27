@@ -8,7 +8,7 @@ abstract class HTMLWidget {
 	protected $value;
 	protected $options;
 
-	function __construct($name, $value=null, $options=array()) {
+	public function __construct($name, $value=null, $options=array()) {
 		$this->name = $name;
 		$this->value = $value;
 

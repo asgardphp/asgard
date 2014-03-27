@@ -10,7 +10,7 @@ class CheckboxWidget extends \Asgard\Form\Widgets\HTMLWidget {
 			$attrs = $options['attrs'];
 		if($this->field && $this->field->getValue())
 			$attrs['checked'] = 'checked';
-		return HTMLHelper::tag('input', array(
+		return \Asgard\Form\HTMLHelper::tag('input', array(
 			'type'	=>	'checkbox',
 			'name'	=>	$this->name,
 			'value'	=>	1,
