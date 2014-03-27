@@ -1,7 +1,7 @@
 <?php
 namespace Asgard\Validation\Rules;
 
-class Any extends Rule {
+class Any extends \Asgard\Validation\Rule {
 	public $rules;
 
 	public function __construct() {

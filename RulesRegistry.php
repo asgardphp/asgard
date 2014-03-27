@@ -43,7 +43,9 @@ class RulesRegistry {
 	}
 
 	public function registerNamespace($namespace) {
-		array_unshift($this->namespaces, '\\'.$namespace.'\\');
+		$namespace = '\\'.trim($namespace, '\\').'\\';
+		if(!in_array($namespace, $this->namespaces))
+			array_unshift($this->namespaces, $namespace);
 		return $this;
 	}
 

@@ -8,8 +8,9 @@ class InputBag {
 
 	public function __construct($input) {
 		$this->input = $input;
-		if(is_object($input))
-			$input = get_object_vars($input);
+		#todo for obects
+		// if(is_object($input))
+		// 	$input = get_object_vars($input);
 		if(is_array($input)) {
 			foreach($input as $k=>$v)
 				$this->attributes[$k] = (new static($v))->setParent($this);

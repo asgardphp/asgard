@@ -1,7 +1,7 @@
 <?php
 namespace Asgard\Validation\Rules;
 
-class Equal extends Rule {
+class Equal extends \Asgard\Validation\Rule {
 	public $equal;
 
 	public function __construct($equal) {

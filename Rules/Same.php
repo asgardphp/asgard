@@ -1,7 +1,7 @@
 <?php
 namespace Asgard\Validation\Rules;
 
-class Same extends Rule {
+class Same extends \Asgard\Validation\Rule {
 	protected $as;
 
 	public function __construct($as) {
@@ -9,8 +9,6 @@ class Same extends Rule {
 	}
 
 	public function validate($input, $parentInput, $validator) {
-		// d($parentInput, $this->as, $parentInput->attribute($this->as)->input());
-		// d($input, $parentInput->attribute($this->as)->input());
 		return $input == $parentInput->attribute($this->as)->input();
 	}
 

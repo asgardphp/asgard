@@ -5,6 +5,7 @@ use Asgard\Validation\Validator as v;
 use Asgard\Validation\RulesRegistry;
 use Asgard\Validation\InputBag;
 
+#todo
 #required: have an actual rule and just return true in validrule is input is null
 #namespace
 
@@ -21,29 +22,6 @@ Bundle:
 
 #if only one error, use it as self error?
 #all: afficher les messages des sous rules?
-
-// require_once 'InputBag.php';
-// require_once 'Report.php';
-// require_once 'RulesRegistry.php';
-// require_once 'Validator.php';
-// require_once 'ValidatorException.php';
-// require_once 'Rules/Rule.php';
-// require_once 'Rules/Min.php';
-// require_once 'Rules/Same.php';
-// require_once 'Rules/Callback.php';
-// require_once 'Rules/Int.php';
-// // require_once 'Rules/Unique.php';
-// require_once 'Rules/Equal.php';
-// require_once 'Rules/LengthBetween.php';
-// require_once 'Rules/Length.php';
-// require_once 'Rules/Email.php';
-// require_once 'Rules/Date.php';
-// require_once 'Rules/Regex.php';
-// require_once 'Rules/Any.php';
-// require_once 'Rules/All.php';
-// require_once 'Rules/Contains.php';
-// require_once 'Test/Ble.php';
-// require_once 'translation/Symfony/Component/Translation/TranslatorInterface.php';
 
 class Test extends \PHPUnit_Framework_TestCase {
 	public function test1() {
@@ -86,10 +64,10 @@ class Test extends \PHPUnit_Framework_TestCase {
 		$this->assertTrue(v::attribute('user.confirm', v::same('password'))->valid(array('user' => array('password'=>123, 'confirm'=>123))));
 		$this->assertFalse(v::attribute('user.confirm', v::same('<.password'))->valid(array('user' => array('confirm'=>123), 'password'=>321)));
 		$this->assertTrue(v::attribute('user.confirm', v::same('<.password'))->valid(array('user' => array('confirm'=>123), 'password'=>123)));
-		$this->assertEquals('confirm must be same as password.', v::attribute('confirm', v::same('password'))->errors(array('password'=>123, 'confirm'=>321))->attribute('confirm')->first());
+		$this->assertEquals('Confirm must be same as password.', v::attribute('confirm', v::same('password'))->errors(array('password'=>123, 'confirm'=>321))->attribute('confirm')->first());
 
-		$this->assertEquals('score must be greater than 5.', v::attribute('score', v::min(5))->errors(array('score'=>3))->attribute('score')->first());
-		$this->assertEquals('score must be greater than 5.', v::attribute('score', v::min(5))->errors(array('score'=>3))->attribute('score')->error('min'));
+		$this->assertEquals('Score must be greater than 5.', v::attribute('score', v::min(5))->errors(array('score'=>3))->attribute('score')->first());
+		$this->assertEquals('Score must be greater than 5.', v::attribute('score', v::min(5))->errors(array('score'=>3))->attribute('score')->error('min'));
 
 		v::min(5)->assert(7);
 		try {
@@ -111,12 +89,12 @@ class Test extends \PHPUnit_Framework_TestCase {
 		$first = array();
 		foreach($report->attributes() as $attribute=>$r)
 			$first[$attribute] = $r->first();
-		$this->assertEquals(array('title'=>'title must be greater than 5.', 'content'=>'content must be greater than 5.'), $first);
+		$this->assertEquals(array('title'=>'Title must be greater than 5.', 'content'=>'Content must be greater than 5.'), $first);
 
 		$this->assertEquals('Array is not valid.', v::int(5)->errors(array())->error());
 		$this->assertEquals('Object is not valid.', v::int(5)->errors(new \stdClass)->error());
 		$this->assertEquals('"a" is not valid.', v::int(5)->errors('a')->error());
-		$this->assertEquals('score is not valid.', v::attribute('score', v::int(5))->errors(array('score'=>'a'))->error('score'));
+		$this->assertEquals('Score is not valid.', v::attribute('score', v::int(5))->errors(array('score'=>'a'))->error('score'));
 
 		$this->assertTrue(v::min(5)->errors(3)->hasError());
 		$this->assertFalse(v::min(5)->errors(7)->hasError());
@@ -143,9 +121,9 @@ class Test extends \PHPUnit_Framework_TestCase {
 		$this->assertFalse(v::email()->valid('adsfg'));
 		$this->assertEquals('"aa" must be a valid email address.', v::email()->errors('aa')->first());
 
-		$this->assertTrue(v::date()->valid('20/09/1988'));
+		$this->assertTrue(v::date()->valid('1988-09-20'));
 		$this->assertFalse(v::date()->valid('asasdf'));
-		$this->assertEquals('"aa" must be a date (dd/mm/yyyy).', v::date()->errors('aa')->first());
+		$this->assertEquals('"aa" must be a date (yyyy-mm-dd).', v::date()->errors('aa')->first());
 
 		$this->assertTrue(v::regex('/[0-9]+/')->valid('045086'));
 		$this->assertFalse(v::regex('/[0-9]+/')->valid('asdfgh'));
@@ -195,7 +173,7 @@ class Test extends \PHPUnit_Framework_TestCase {
 			'equal' => '"2" must be equal to 6.',
 		), v::min(5)->equal(6)->errors(2)->errors());
 
-		$this->assertEquals('score is not valid.', v::attribute('score', v::min(5))->errors(array('score'=>3))->first());
+		$this->assertEquals('Score is not valid.', v::attribute('score', v::min(5))->errors(array('score'=>3))->first());
 
 		#Setting a subreport
 		$report = (new v)->errors(array('users'=>array()));
@@ -223,8 +201,8 @@ class Test extends \PHPUnit_Framework_TestCase {
 
 		#rule messages
 		$v = new v;
-		$this->assertEquals('must be over min!', $v->ruleMessages(array(
-			'min' => 'must be over min!'
+		$this->assertEquals('Must be over min!', $v->ruleMessages(array(
+			'min' => 'Must be over min!'
 		))->getRuleMessage('min'));
 
 		#a supprimer? l.151/152 de Validator
@@ -253,8 +231,8 @@ class Test extends \PHPUnit_Framework_TestCase {
 
 		#merging attributes validators
 		$this->assertEquals(array(
-			'contains' => 'title must contain "a".',
-			'contains-1' => 'title must contain "b".',
+			'contains' => 'Title must contain "a".',
+			'contains-1' => 'Title must contain "b".',
 		), v::rule(v::attribute('title', v::contains('a')))->attribute('title', v::contains('b'))->errors(array('title'=>'c'))->attribute('title')->errors());
 
 		#rule not found

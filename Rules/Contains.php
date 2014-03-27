@@ -1,7 +1,7 @@
 <?php
 namespace Asgard\Validation\Rules;
 
-class Contains extends Rule {
+class Contains extends \Asgard\Validation\Rule {
 	public function __construct($contain) {
 		$this->contain = $contain;
 	}

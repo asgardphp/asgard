@@ -1,7 +1,7 @@
 <?php
 namespace Asgard\Validation\Tests;
 
-class Ble extends \Asgard\Validation\Rules\Rule {
+class Ble extends \Asgard\Validation\Rule {
 	protected $equal;
 
 	public function __construct($equal) {

@@ -1,12 +1,16 @@
 <?php
 namespace Asgard\Validation\Rules;
 
-class Date extends Rule {
+class Date extends \Asgard\Validation\Rule {
 	public function validate($input, $parentInput, $validator) {
-		return preg_match('/^[0-9]{2}\/[0-9]{2}\/[0-9]{4}$/', $input) === 1;
+		if($input instanceof \Carbon\Carbon)
+			return true;
+		if(is_string($input))
+			return preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $input) === 1;
+		return false;
 	}
 
 	public function getMessage() {
-		return ':attribute must be a date (dd/mm/yyyy).';
+		return ':attribute must be a date (yyyy-mm-dd).';
 	}
 }

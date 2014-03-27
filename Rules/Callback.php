@@ -1,7 +1,7 @@
 <?php
 namespace Asgard\Validation\Rules;
 
-class Callback extends Rule {
+class Callback extends \Asgard\Validation\Rule {
 	public $cb;
 
 	public function __construct($cb) {

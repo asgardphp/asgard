@@ -1,7 +1,7 @@
 <?php
 namespace Asgard\Validation\Rules;
 
-class Regex extends Rule {
+class Regex extends \Asgard\Validation\Rule {
 	public $pattern;
 
 	public function __construct($pattern) {

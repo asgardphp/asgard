@@ -1,7 +1,7 @@
 <?php
 namespace Asgard\Validation\Rules;
 
-class Int extends Rule {
+class Int extends \Asgard\Validation\Rule {
 	public function validate($input, $parentInput, $validator) {
 		return is_int($input);
 	}

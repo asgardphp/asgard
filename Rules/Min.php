@@ -1,7 +1,7 @@
 <?php
 namespace Asgard\Validation\Rules;
 
-class Min extends Rule {
+class Min extends \Asgard\Validation\Rule {
 	public $min;
 
 	public function __construct($min) {
