@@ -23,11 +23,6 @@ class BundlesManager {
 		}
 	}
 
-	// public function loadEntityFixturesAll() {
-	// 	foreach($this->getBundlesPath() as $bundle)
-	// 		$this->loadEntityFixtures($bundle);
-	// }
-
 	public function addBundles($_bundles) {
 		if(!is_array($_bundles))
 			$_bundles = array();
