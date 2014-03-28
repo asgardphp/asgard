@@ -9,7 +9,7 @@ class FileManager {
 		$output = $filename.'.'.$ext;
 		
 		$i=1;
-		while(file_exists(_DIR_.$output))
+		while(file_exists(__DIR__.$output))
 			$output = $filename.'_'.($i++).'.'.$ext;
 
 		return $output;
@@ -69,13 +69,13 @@ class FileManager {
 
 	public static function unlink($file) {
 		if(!file_exists($file)) {
-			if(file_exists(_DIR_.$file))
-				$file = _DIR_.$file;
+			if(file_exists(__DIR__.$file))
+				$file = __DIR__.$file;
 			else
 				return false;
 		}
 
-		if(is_dir(_DIR_.$file))
+		if(is_dir(__DIR__.$file))
 			static::rmdir($file);
 		else
 			unlink($file);
@@ -84,7 +84,7 @@ class FileManager {
 	
 	public static function mkdir($dir, $absolute=false) {
 		if(!$absolute)
-			$dir = _DIR_.$dir;
+			$dir = __DIR__.$dir;
 		if(!file_exists($dir))
 			return mkdir($dir, 0777, true);
 		return true;
