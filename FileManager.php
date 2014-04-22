@@ -9,16 +9,16 @@ class FileManager {
 		$output = $filename.'.'.$ext;
 		
 		$i=1;
-		while(file_exists(__DIR__.$output))
+		while(file_exists($output))
 			$output = $filename.'_'.($i++).'.'.$ext;
 
 		return $output;
 	}
 
-	public static function move($src, $output, $absolute=false) {
+	public static function move($src, $output) {
 		$output = static::getNewFileName($output);
 			
-		static::mkdir(dirname($output), $absolute);
+		static::mkdir(dirname($output));
 			
 		if(!copy($src, $output))
 			return false;
@@ -26,6 +26,14 @@ class FileManager {
 			unlink($src);
 			return basename($output);
 		}
+	}
+
+	public static function copy($src, $output) {
+		$output = static::getNewFileName($output);
+			
+		static::mkdir(dirname($output));
+			
+		return copy($src, $output);
 	}
 
 	public static function move_uploaded($src, $output) {
@@ -69,22 +77,20 @@ class FileManager {
 
 	public static function unlink($file) {
 		if(!file_exists($file)) {
-			if(file_exists(__DIR__.$file))
-				$file = __DIR__.$file;
+			if(file_exists($file))
+				$file = $file;
 			else
 				return false;
 		}
 
-		if(is_dir(__DIR__.$file))
+		if(is_dir($file))
 			static::rmdir($file);
 		else
 			unlink($file);
 		return true;
 	}
 	
-	public static function mkdir($dir, $absolute=false) {
-		if(!$absolute)
-			$dir = __DIR__.$dir;
+	public static function mkdir($dir) {
 		if(!file_exists($dir))
 			return mkdir($dir, 0777, true);
 		return true;

@@ -7,5 +7,8 @@
 	}],
     "autoload": {
         "psr-4": {"Asgard\\Utils\\": "."}
+    },
+    "require": {
+        "symfony/translation": "dev-master"
     }
 }

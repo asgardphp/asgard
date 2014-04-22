@@ -1,8 +1,9 @@
 <?php
 namespace Asgard\Utils;
 
-class Locale {
-	protected $default = 'en';
+class Locale implements \Symfony\Component\Translation\TranslatorInterface {
+	protected $fallback = 'en';
+	protected $locale = 'en';
 	public $locales = array();
 
 	public function __construct() {
@@ -23,20 +24,25 @@ class Locale {
 		return $this->locales;
 	}
 
-	public function setDefault($locale) {
-		$this->default = $locale;
+	public function setFallback($locale) {
+		$this->fallback = $locale;
 	}
 
-	public static function setLocale($locale) {
-		\Asgard\Core\App::get('config')->set('locale', $locale);
+	public function setLocale($locale) {
+		$this->locale = $locale;
 	}
 
-	public function translate($key, $params=array()) {
-		$locale = \Asgard\Core\App::get('config')->get('locale');
+	public function getLocale() {
+		return $this->locale;
+	}
+
+	public function trans($key, array $params = array(), $domain = null, $locale = null) {
+		if($locale == null)
+			$locale = $this->getLocale();
 		if(isset($this->locales[$locale][$key]) && $this->locales[$locale][$key])
 			$str = $this->locales[$locale][$key];
-		elseif(isset($this->locales[$this->default][$key]) && $this->locales[$this->default][$key])
-			$str = $this->locales[$this->default][$key];
+		elseif(isset($this->locales[$this->fallback][$key]) && $this->locales[$this->fallback][$key])
+			$str = $this->locales[$this->fallback][$key];
 		else
 			$str = $key;
 	
@@ -44,6 +50,9 @@ class Locale {
 			$str = str_replace(':'.$k, $v, $str);
 		
 		return $str;
+	}
+
+	public function transChoice($key, $number, array $params = array(), $domain = null, $locale = null) {
 	}
 	
 	public function importLocales($dir) {
