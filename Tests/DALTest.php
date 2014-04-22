@@ -9,8 +9,6 @@ class DALTest extends \PHPUnit_Framework_TestCase {
 			define('_ENV_', 'test');
 		require _VENDOR_DIR_.'autoload.php';
 
-		require_once 'app/load.php';
-
 		$db = new \Asgard\Db\DB(array(
 			'host' => 'localhost',
 			'user' => 'root',
