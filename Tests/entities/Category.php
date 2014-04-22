@@ -7,10 +7,18 @@ class Category extends \Asgard\Core\Entity {
 		'description',
 	);
 
+	public static $behaviors = array(
+		'Asgard\Orm\ORMBehavior'
+	);
+
 	public static $relations = array(
 		'news' => array(
 			'entity' => 'Asgard\Orm\Tests\Entities\News',
-			'has' => 'many'
+			'has' => 'many',
+			'validation' => array(
+				'relationrequired',
+				'morethan' => 3
+			)
 		),
 	);
 }

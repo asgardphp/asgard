@@ -7,6 +7,7 @@ class ORMTest extends PHPUnit_Framework_TestCase {
 		\Asgard\Core\App::instance(true)->config->set('bundles', array(
 			_ASGARD_DIR_.'core',
 			_ASGARD_DIR_.'orm',
+			_ASGARD_DIR_.'validation',
 		));
 		\Asgard\Core\App::loadDefaultApp();
 	}
@@ -123,6 +124,22 @@ class ORMTest extends PHPUnit_Framework_TestCase {
 		->where('n2.title', 'Welcome!')
 		->get();
 		$this->assertCount(2, $r);
+
+		#validation
+		\Asgard\Core\App::get('rulesregistry')->registerNamespace('Asgard\Orm\Validation');
+		$cat = Asgard\Orm\Tests\Entities\Category::load(1);
+		$this->assertEquals(array(
+			'news' => array(
+				'morethan' => 'News must have more than 3 elements.'
+			)
+		), $cat->errors());
+		$cat = new Asgard\Orm\Tests\Entities\Category;
+		$this->assertEquals(array(
+			'news' => array(
+				'relationrequired' => 'News is required.',
+				'morethan' => 'News must have more than 3 elements.'
+			)
+		), $cat->errors());
 
 		#
 

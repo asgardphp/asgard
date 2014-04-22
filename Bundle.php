@@ -7,4 +7,9 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		
 		parent::load($queue);
 	}
+
+	public function run() {
+		\Asgard\Core\App::get('rulesregistry')->registerNamespace('Asgard\Orm\Validation');
+		parent::run();
+	}
 }

@@ -78,6 +78,11 @@ class ORMBehavior implements \Asgard\Core\Behavior {
 			return $res;
 		});
 
+		$entityDefinition->hookOn('constrains', function($chain, &$constrains) use($entityDefinition) {
+			foreach($entityDefinition->relations() as $name=>$relation)
+				$constrains[$name] = $relation->getRules();
+		});
+
 		// $em->load($entityClass, $id)
 		$entityDefinition->hookOn('construct', function($chain, $entity, $id) use($ormHandler) {
 			$ormHandler->construct($chain, $entity, $id);
@@ -108,7 +113,7 @@ class ORMBehavior implements \Asgard\Core\Behavior {
 				if($rel instanceof \Asgard\Core\Collection)
 					return $rel->get();
 				else
-					return $rel;
+					return $rel->first();
 			}
 		});
 	}

@@ -5,6 +5,10 @@ class Commentaire extends \Asgard\Core\Entity {
 	public static $properties = array(
 		'titre',
 	);
+
+	public static $behaviors = array(
+		'Asgard\Orm\ORMBehavior'
+	);
 	
 	public static $relations = array(
 		'actualite'	=>	array(

@@ -6,6 +6,10 @@ class Author extends \Asgard\Core\Entity {
 		'name',
 	);
 
+	public static $behaviors = array(
+		'Asgard\Orm\ORMBehavior'
+	);
+
 	public static $relations = array(
 		'news' => array(
 			'entity' => 'Asgard\Orm\Tests\Entities\News',

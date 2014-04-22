@@ -27,6 +27,10 @@ class Actualite extends \Asgard\Core\Entity {
 			)
 		),
 	);
+
+	public static $behaviors = array(
+		'Asgard\Orm\ORMBehavior'
+	);
 	
 	public static $relations = array(
 		'commentaires'	=>	array(

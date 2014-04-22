@@ -7,9 +7,9 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 			define('_ENV_', 'test');
 		require_once(_CORE_DIR_.'core.php');
 		\Asgard\Core\App::instance(true)->config->set('bundles', array(
-			_ASGARD_DIR_.'core',
 			// _ASGARD_DIR_.'files',
-			_ASGARD_DIR_.'orm',
+			new \Asgard\Orm\Bundle,
+			new \Asgard\Validation\Bundle,
 		));
 		\Asgard\Core\App::loadDefaultApp();
 
@@ -51,7 +51,6 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 		\Asgard\Core\App::get('locale')->setLocale('en');
 		$actu = new \Asgard\Orm\Tests\I18Nentities\Actualite(2);
 		$actu->test = 'Hi';
-		// d($actu->data['properties']);
 		$actu->save(null, true);
 		$dal = new \Asgard\Db\DAL(\Asgard\Core\App::get('db'), \Asgard\Core\App::get('config')->get('database/prefix').'actualite_translation');
 		$r = $dal->where(array('locale'=>'en', 'id'=>2))->first();

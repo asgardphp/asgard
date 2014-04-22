@@ -120,4 +120,14 @@ class EntityRelation implements \ArrayAccess {
     public function offsetGet($offset) {
         return isset($this->params[$offset]) ? $this->params[$offset] : null;
     }
+
+	public function getRules() {
+		$res = isset($this->params['validation']) ? $this->params['validation']:array();
+		if(!is_array($res))
+			$res = array('validation' => $res);
+		if(isset($this->params['required']))
+			$res['relationrequired'] = $this->params['required'];
+
+		return $res;
+	}
 }

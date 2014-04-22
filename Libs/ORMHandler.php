@@ -116,8 +116,8 @@ class ORMHandler {
 		switch($relation_type) {
 			case 'hasOne':
 			case 'belongsTo':
-				if($entity->isNew())
-					return;
+				// if($entity->isNew())
+				// 	return;
 
 				$link = $rel['link'];
 				if($rel['polymorphic']) {
@@ -125,11 +125,11 @@ class ORMHandler {
 					if(!$relEntity)
 						return;
 				}
-				return $relEntity::where(array('id' => $entity->$link))->first();
+				return $relEntity::where(array('id' => $entity->$link));
 			case 'hasMany':
 			case 'HMABT':
-				if($entity->isNew())
-					return;
+				// if($entity->isNew())
+				// 	return;
 
 				$collection = new \Asgard\Orm\Libs\CollectionORM($entity, $name);
 				return $collection;
@@ -182,17 +182,24 @@ class ORMHandler {
 	}
 
 	public function save($entity) {
-		$vars = $entity->toArrayRaw();
-		
+		// $vars = $entity->toArrayRaw();
 		#apply filters before saving
-		foreach($vars as $col => $var) {
-			if($entity::property($col)->i18n) {
-				foreach($var as $k=>$v)
-					$vars[$col][$k] = $entity::property($col)->serialize($v);
+		foreach($entity->propertyNames() as $name) {
+			if(isset($entity->data['properties'][$name]))
+				$value = $entity->data['properties'][$name];
+			else
+				$value = null;
+			
+			if($entity::property($name)->i18n) {
+				foreach($value as $k=>$v)
+					$vars[$name][$k] = $entity::property($name)->serialize($v);
 			}
 			else
-				$vars[$col] = $entity::property($col)->serialize($var);
+				$vars[$name] = $entity::property($name)->serialize($value);
 		}
+		
+		// foreach($vars as $col => $var) {
+		// }
 		
 		//Persist local id field
 		foreach($entity::getDefinition()->relations as $relation => $params) {
