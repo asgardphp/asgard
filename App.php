@@ -16,8 +16,8 @@ class App {
 		}
 	}
 
-	public static function loadDefaultApp($config=null) {
-		static::instance($config)->load();
+	public static function loadDefaultApp() {
+		static::instance()->load();
 	}
 
 	public function load() {
@@ -26,11 +26,18 @@ class App {
 		
 		static::setDefaultEnvironment();
 
-		include _DIR_.'app/load.php';
+		if(file_exists(_DIR_.'app/bootstrap_'.strtolower(_ENV_).'.php'))
+			include _DIR_.'app/bootstrap_'.strtolower(_ENV_).'.php';
+		if(file_exists(_DIR_.'app/bootstrap_all.php'))
+			include _DIR_.'app/bootstrap_all.php';
 
 		$bundles = $this->get('config')->get('bundles');
+		$bundlesdirs = $this->get('config')->get('bundlesdirs');
 		$bundlesmanager = new BundlesManager;
-		$bundlesmanager->loadBundles($bundles);
+		// $bundlesmanager->loadBundles($bundles);
+		$bundlesmanager->addBundles($bundles);
+		$bundlesmanager->addBundlesDirs($bundlesdirs);
+		$bundlesmanager->loadBundles();
 		$this->_set('bundlesmanager', $bundlesmanager);
 
 		$this->loaded = true;

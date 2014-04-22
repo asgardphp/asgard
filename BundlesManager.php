@@ -2,15 +2,8 @@
 namespace Asgard\Core;
 
 class BundlesManager {
-	// protected static $instance = null;
 	protected $bundles = array();
 	protected $loaded = false;
-
-	// public static function instance() {
-	// 	if(!static::$instance)
-	// 		static::$instance = new static;
-	// 	return static::$instance;
-	// }
 
 	public function __construct() {
 		$this->bundles[] = new Bundle;
@@ -21,6 +14,12 @@ class BundlesManager {
 			foreach(glob($bundle_path.'/data/*.entities.yml') as $file)
 				\Asgard\Orm\Libs\ORMManager::loadEntityFixtures($file);
 		}
+	}
+
+	public function addBundlesDirs($dirs) {
+		foreach($dirs as $dir)
+			$this->addBundles(glob($dir.'/*', GLOB_ONLYDIR));
+		return $this;
 	}
 
 	public function addBundles($_bundles) {
@@ -72,7 +71,7 @@ class BundlesManager {
 		}
 	}
 
-	public function loadBundles($_bundles) {
+	public function loadBundles($_bundles=array()) {
 		if(!$this->loaded) {
 			$this->addBundles($_bundles);
 

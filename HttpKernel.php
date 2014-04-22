@@ -3,7 +3,7 @@ namespace Asgard\Core;
 
 class HttpKernel {
 	public static function run() {
-		App::loadDefaultApp();
+		App::loadDefaultApp(true);
 		$request = App::get('request');
 		$request->isInitial = true;
 		static::process($request, true)->send();

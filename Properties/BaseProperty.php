@@ -12,6 +12,13 @@ class BaseProperty {
 		$this->params = $params;
 	}
 
+	public function required() {
+		if(isset($this->params['required']))
+			return $this->params['required'];
+		if(isset($this->params['validation']['required']))
+			return $this->params['validation']['required'];
+	}
+
 	public function __get($what) {
 		return $this->get($what);
 	}

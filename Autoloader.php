@@ -149,12 +149,8 @@ class Autoloader {
 				if(sizeof($classes) == 1)
 					return static::loadClassFile($classes[0][1], $class);
 				#if multiple classes, don't load
-				elseif(sizeof($classes) > 1) {
-					$classfiles = array();
-					foreach($classes as $classname)
-						$classfiles[] = $classname[1];
-					throw new \Exception('There are multiple classes '.$class.': '.implode(', ', $classfiles));
-				}
+				elseif(sizeof($classes) > 1)
+					return false;
 				#if no class, don't load
 				else
 					return false;
@@ -215,19 +211,6 @@ class Autoloader {
 	public function autoload($class) {
 		if(class_exists($class))
 			return;
-		
-		// $dir = \Asgard\Utils\NamespaceUtils::dirname($class);
-
-		// if(\Asgard\Core\App::hasInstance())
-		// 	$importer = App::get('importer');
-		// else
-		// 	$importer = new Importer;
-		// $importer->importClass($class, array('into'=>$dir));
-		
-		// if(\Asgard\Core\App::hasInstance())
-		// 	$importer = App::get('importer');
-		// else
-		// 	$importer = new Importer;
 		$this->importClass($class);
 	}
 }

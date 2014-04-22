@@ -7,9 +7,10 @@ return array(
 		'log' => false,
 		'debug' => false,
 		'key'	=>	'_KEY_',
-		'bundles' => array(
+		'bundlesdirs' => array(
 			_DIR_.'app',
-			_ASGARD_DIR_.'core',
+		),
+		'bundles' => array(
 			_ASGARD_DIR_.'orm',
 			_ASGARD_DIR_.'auth',
 			_ASGARD_DIR_.'behaviors',

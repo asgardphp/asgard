@@ -125,14 +125,12 @@ abstract class Entity {
 			foreach($entity->getDefinition()->properties as $name=>$property)
 				$constrains[$name] = $property->getRules();
 		});
-		
+
 		$messages = static::getDefinition()->messages();
 		
-		$validator = new \Asgard\Validation\Validator();
+		$validator = new \Asgard\Validation\Validator;
 		$validator->attributes($constrains);
 		$validator->ruleMessages($messages);
-		#todo messages
-		// d($constrains);
 
 		return $validator;
 	}
@@ -261,15 +259,16 @@ abstract class Entity {
 	}
 	
 	public function toArrayRaw() {
-		$attrs = $this->propertyNames();
 		$vars = array();
 		
-		foreach($attrs as $attr) {
+		foreach($this->propertyNames() as $attr) {
 			if(isset($this->data['properties'][$attr]))
 				$vars[$attr] = $this->data['properties'][$attr];
 			else
 				$vars[$attr] = null;
 		}
+		foreach($this->getDefinition()->relations() as $name=>$relation)
+			$vars[$name] = $this->relation($name);
 		
 		return $vars;
 	}

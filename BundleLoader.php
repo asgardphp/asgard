@@ -19,7 +19,7 @@ namespace Asgard\Core {
 		protected $bundle = null;
 
 		public function load($queue) {
-			if(\Asgard\Core\App::get('autoloader')) {
+			if(\Asgard\Core\App::has('autoloader')) {
 				\Asgard\Core\App::get('autoloader')->preloadDir(_ASGARD_DIR_.'/entities');
 				\Asgard\Core\App::get('autoloader')->preloadDir(_ASGARD_DIR_.'/libs');
 				\Asgard\Core\App::get('autoloader')->preloadDir(_ASGARD_DIR_.'/controllers');
@@ -104,7 +104,7 @@ namespace Asgard\Core {
 				$reflector = new \ReflectionClass(get_called_class());
 				$this->bundle = dirname($reflector->getFileName());
 			}
-			return $this->bundle;
+			return realpath($this->bundle);
 		}
 	}
 }
