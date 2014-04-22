@@ -120,12 +120,14 @@ class Form extends Group {
 		$this->_data = array();
 		if($this->_groupName) {
 			$this->setData(
-				$this->getRequest()->post->get($this->_groupName, array()),
-				$files
+				// $this->getRequest()->post->get($this->_groupName, array()),
+				// $files
+				$this->getRequest()->post->get($this->_groupName, array()) + $files
 			);
 		}
 		else
-			$this->setData($this->getRequest()->post->all(), $files);
+			// $this->setData($this->getRequest()->post->all(), $files);
+			$this->setData($this->getRequest()->post->all() + $files);
 
 		return $this;
 	}

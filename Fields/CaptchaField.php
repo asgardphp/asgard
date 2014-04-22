@@ -7,8 +7,8 @@ class CaptchaField extends \Asgard\Form\Fields\Field {
 		$this->options['validation']['captcha_check'] = array($this, 'error');
 
 		$this->default_render = function($field, $options) {
-			return '<img src="'.URL::to('captcha').'">'.
-				HTMLWidget::text($field->getName(), $field->getValue(), $options)->render();
+			return '<img src="'.\Asgard\Core\App::get('url')->to('captcha').'">'.
+				\Asgard\Form\Widgets\HTMLWidget::text($field->getName(), $field->getValue(), $options)->render();
 		};
 	}
 

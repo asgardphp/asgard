@@ -12,6 +12,7 @@ class FormTest extends \PHPUnit_Framework_TestCase {
 			define('_ENV_', 'test');
 		require_once(_CORE_DIR_.'core.php');
 		\Asgard\Core\App::instance(true)->config->set('bundles', array(
+			new \Asgard\Validation\Bundle,
 			new \Asgard\Orm\Bundle,
 		));
 		\Asgard\Core\App::loadDefaultApp();

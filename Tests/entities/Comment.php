@@ -8,6 +8,10 @@ class Comment extends \Asgard\Core\Entity {
 		)
 	);
 
+	public static $behaviors = array(
+		'Asgard\Orm\OrmBehavior'
+	);
+
 	public static $relations = array(
 		'user' => array(
 			'entity' => 'Asgard\Form\Tests\Entities\User',

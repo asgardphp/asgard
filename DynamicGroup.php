@@ -14,11 +14,8 @@ class DynamicGroup extends Group {
 		$this->_default_render = $default_render;
 	}
 
-	public function setData($data, $files) {
+	public function setData($data) {
 		$this->_data = array_values($data);
-		$this->_files = array_values($files);
-
-		static::mergeDataFiles($data, $files);
 		
 		foreach($data as $name=>$data)
 			$this->newField($name, $data);

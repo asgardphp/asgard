@@ -33,7 +33,6 @@ abstract class Field {
 
 	public function getValidationMessages() {
 		$messages = isset($this->options['messages']) ? $this->options['messages']:array();
-		// d($this->options);
 		return $messages;
 	}
 
@@ -90,9 +89,9 @@ abstract class Field {
 	public function getID() {
 		$parents = $this->getParents();
 		
-		if(sizeof($parents) > 0) {
+		if(count($parents) > 0) {
 			$id = $parents[0].'-';
-			for($i=1; $i<sizeof($parents); $i++)
+			for($i=1; $i<count($parents); $i++)
 				$id .= $parents[$i].'-';
 			$id .= $this->name;
 			return $id;

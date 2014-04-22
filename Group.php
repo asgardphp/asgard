@@ -5,18 +5,16 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 	protected $_groupName = null;
 	protected $_dad;
 	protected $_data = array();
-	protected $_files = array();
 	protected $_fields = array();
 	protected $_errors = array();
 	protected $_hasfile;
 	protected $_request;
 
-	public function __construct($fields, $dad=null, $name=null, $data=null, $files=null) {
+	public function __construct($fields, $dad=null, $name=null, $data=null) {
 		$this->addFields($fields);
 		$this->_dad = $dad;
 		$this->_groupName = $name;
 		$this->_data = $data;
-		$this->_files = $files;
 	}
 
 	public function render($render_callback, $field, $options=array()) {
@@ -72,8 +70,7 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 	protected function parseFields($fields, $name) {
 			if(is_array($fields)) {
 				return new static($fields, $this, $name, 
-					(isset($this->_data[$name]) ? $this->_data[$name]:array()), 
-					(isset($this->_files[$name]) ? $this->_files[$name]:array())
+					(isset($this->_data[$name]) ? $this->_data[$name]:array())
 				);
 			}
 			elseif($fields instanceof Fields\Field) {
@@ -88,8 +85,6 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 				
 				if(isset($this->_data[$name]))
 					$field->setValue($this->_data[$name]);
-				elseif(isset($this->_files[$name]))
-					$field->setValue($this->_files[$name]);
 					
 				return $field;
 			}
@@ -98,8 +93,7 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 				$group->setName($name);
 				$group->setDad($this);
 				$group->setData(
-					(isset($this->_data[$name]) ? $this->_data[$name]:array()),
-					(isset($this->_files[$name]) ? $this->_files[$name]:array())
+					(isset($this->_data[$name]) ? $this->_data[$name]:array())
 				);
 					
 				return $group;
@@ -150,9 +144,8 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 		return $this;
 	}
 	
-	public function setData($data, $files) {
+	public function setData($data) {
 		$this->_data = $data;
-		$this->_files = $files;
 		
 		$this->updateChilds();
 		
@@ -250,45 +243,23 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 				if($field_rules = $field->getValidationRules())
 					$constrains[$name] = $field_rules;
 				if($field_messages = $field->getValidationMessages())
-					// $constrains[$name] = $field_messages;
 					$messages[$name] = $field_messages;
 			}
 		}
 
-		// d($constrains, $this->getName());
 		$validator->attributes($constrains);
-		// d($messages);
-		// if($messages)
-		// 	d($constrains, $messages);
 		$validator->attributesMessages($messages);
 		return $validator;
 	}
 
 	protected function myErrors() {
-		$data = $this->_data + $this->_files;
+		$data = $this->_data;
 
-		// d(array('content'=>array('required'=>true)), $data, \Asgard\Validation\Validator::attributes($constrains)->errors($data)->errors());
-		// d($constrains, $data, \Asgard\Validation\Validator::attributes($constrains)->errors($data)->errors());
-
-		// if($messages)
-		// d($validator->messages, $messages, $validator->errors($data)->attribute('_csrf_token'));
 		$report = $this->getValidator()->errors($data);
-		// if($messages)
-		// d($report->attributes());
-
-		// d($this->getReportErrors($report));
 
 		return $this->getReportErrors($report);
-
-		// if($validator->errors($data)->errors())
-			// d($validator->errors($data)->errors());
-		// return $validator->errors($data)->errors();
 	}
 
-	// public function addErrors($errors) {
-	// 	$this->_errors = array_merge($this->_errors, $errors);
-	// }
-	
 	public function save() {
 		if($errors = $this->errors()) {
 			$e = new FormException();
@@ -396,16 +367,11 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 		foreach($this->_fields as $name=>$field) {
 			if($field instanceof \Asgard\Form\Group) {
 				$field->setData(
-					(isset($this->_data[$name]) ? $this->_data[$name]:array()),
-					(isset($this->_files[$name]) ? $this->_files[$name]:array())
+					(isset($this->_data[$name]) ? $this->_data[$name]:array())
 				);
 			}
 			elseif($field instanceof \Asgard\Form\Fields\Field) {
-				if($field instanceof \Asgard\Form\Fields\FileField) {
-					if(isset($this->_files[$name]))
-						$field->setValue($this->_files[$name]);
-				}
-				elseif(isset($this->_data[$name]))
+				if(isset($this->_data[$name]))
 					$field->setValue($this->_data[$name]);
 				else {
 					if($this->isSent()) {

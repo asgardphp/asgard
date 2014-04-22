@@ -46,7 +46,6 @@ class EntityForm extends Form {
 
 		if($properties->form_hidden)
 			$field_params['default'] = '';
-		// elseif($entity->isOld())
 		elseif($entity->get($name, $locale) !== null)
 			$field_params['default'] = $entity->get($name, $locale);
 
@@ -145,26 +144,29 @@ class EntityForm extends Form {
 			$this->_entity->set($data);
 
 		$errors = array();
-		foreach($this->_files as $name=>$f) {
-			switch($f['error']) {
-				case UPLOAD_ERR_INI_SIZE:
-					$errors[$name][] = __('The uploaded file exceeds the max filesize.');
-					break;
-				case UPLOAD_ERR_FORM_SIZE:
-					$errors[$name][] = __('The uploaded file exceeds the max filesize.');
-					break;
-				case UPLOAD_ERR_PARTIAL:
-					$errors[$name][] = __('The uploaded file was only partially uploaded.');
-					break;
-				case UPLOAD_ERR_NO_TMP_DIR:
-					$errors[$name][] = __('Missing a temporary folder.');
-					break;
-				case UPLOAD_ERR_CANT_WRITE:
-					$errors[$name][] = __('Failed to write file to disk.');
-					break;
-				case UPLOAD_ERR_EXTENSION:
-					$errors[$name][] = __('A PHP extension stopped the file upload.');
-					break;
+		foreach($this->_fields as $name=>$field) {
+			if($field instanceof Fields\FileField && isset($this->_data[$name])) {
+				$f = $this->_data[$name];
+				switch($f['error']) {
+					case UPLOAD_ERR_INI_SIZE:
+						$errors[$name][] = __('The uploaded file exceeds the max filesize.');
+						break;
+					case UPLOAD_ERR_FORM_SIZE:
+						$errors[$name][] = __('The uploaded file exceeds the max filesize.');
+						break;
+					case UPLOAD_ERR_PARTIAL:
+						$errors[$name][] = __('The uploaded file was only partially uploaded.');
+						break;
+					case UPLOAD_ERR_NO_TMP_DIR:
+						$errors[$name][] = __('Missing a temporary folder.');
+						break;
+					case UPLOAD_ERR_CANT_WRITE:
+						$errors[$name][] = __('Failed to write file to disk.');
+						break;
+					case UPLOAD_ERR_EXTENSION:
+						$errors[$name][] = __('A PHP extension stopped the file upload.');
+						break;
+				}
 			}
 		}
 
