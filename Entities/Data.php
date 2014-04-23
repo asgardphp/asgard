@@ -9,4 +9,8 @@ class Data extends Base {
 			'required'    =>    false,
 		),
 	);
+
+	public static $behaviors = array(
+		'Asgard\Orm\OrmBehavior'
+	);
 }
