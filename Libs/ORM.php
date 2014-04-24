@@ -42,12 +42,13 @@ class ORM {
 	}
 
 	public function joinToEntity($relation, $entity) {
-		if(!$relation instanceof EntityRelation) {
+		if(is_string($relation)) {
 			$current_entity = $this->entity;
 			$relation = $current_entity::getDefinition()->relations[$relation];
 		}
 
 		if($relation['polymorphic']) {
+			// d($relation);
 			$this->where(array($relation['link_type'] => $entity->getEntityName()));
 			$relation['real_entity'] = $entity->getEntityName();
 		}
