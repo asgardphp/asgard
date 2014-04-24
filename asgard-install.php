@@ -21,7 +21,8 @@ else {
 	$key = randStr(10);
 	$config = str_replace('_KEY_', $key, $config);
 
-	mkdir(_DIR_.'config');
+	if(!file_exists(_DIR_.'config'))
+		mkdir(_DIR_.'config');
 	if(file_put_contents(_DIR_.'config/config.php', $config) !== false)
 		echo 'Configuration created with success.'."\n";
 	else
