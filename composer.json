@@ -6,6 +6,6 @@
 		"email": "michel@hognerud.net"
 	}],
 	"require": {
-        "asgard/core": "dev-master",
+        "asgard/core": "dev-master"
 	}
 }
