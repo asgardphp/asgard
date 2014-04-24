@@ -4,9 +4,13 @@ namespace Asgard\Utils;
 class FileManager {
 	public static function getNewFileName($output) {
 		$fileexts = explode('.', $output);
-		$filename = implode('.', array_slice($fileexts, 0, -1));
-		$ext = $fileexts[sizeof($fileexts)-1];
-		$output = $filename.'.'.$ext;
+		if(sizeof($fileexts) > 1) {
+			$filename = implode('.', array_slice($fileexts, 0, -1));
+			$ext = $fileexts[sizeof($fileexts)-1];
+			$output = $filename.'.'.$ext;
+		}
+		else
+			$filename = $output;
 		
 		$i=1;
 		while(file_exists($output))
