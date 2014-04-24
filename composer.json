@@ -9,6 +9,7 @@
         "psr-4": {"Asgard\\Core\\": "."}
     },
     "require": {
+        "asgard/composer": "dev-master",
         "niktux/addendum": "dev-master",
         "nesbot/Carbon": "*",
         "symfony/yaml": "dev-master",
