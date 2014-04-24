@@ -9,6 +9,8 @@ class Extension extends \Asgard\Validation\Rule {
 	}
 
 	public function validate($input, $parentInput, $validator) {
+		if(!$input instanceof \Asgard\Files\Libs\EntityFile || $input->get(null, true) === null)
+			return;
 		return in_array($input->extension(), $this->extension);
 	}
 
