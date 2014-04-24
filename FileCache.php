@@ -38,6 +38,8 @@ class FileCache implements CacheInterface {
 		if(!$this->active)
 			return false;
 
+		if(!static::isSerializable($var))
+			return false;
 		if(static::sizeofvar($var) > 5*1024*1024)
 			return false;
 		try {
@@ -48,9 +50,9 @@ class FileCache implements CacheInterface {
 			else
 				$res = $ve;
 			$res = '<?php'."\n".'return '.$res.';';
-			$output = $this->path.$file.'.php';
-			\Asgard\Utils\FileManager::mkdir(dirname($output));
-			file_put_contents($output, $res);
+			$dst = $this->path.$file.'.php';
+			\Asgard\Utils\FileManager::mkdir(dirname($dst));
+			file_put_contents($dst, $res);
 		} catch(\ErrorException $e) {
 			return false;
 		}
@@ -70,5 +72,23 @@ class FileCache implements CacheInterface {
 		$r = memory_get_usage() - $start_memory;
 		unset($tmp);
 		return $r;
+	}
+
+	protected static function isSerializable($value) {
+		if(is_object($value)) {
+			if($value instanceof \Closure)
+				return false;
+			else
+				$value = (array)$value;
+		}
+
+		if(!is_array($value))
+			return true;
+		foreach($value as $element) {
+			if(!static::isSerializable($element))
+				return false;
+		}
+
+		return true;
 	}
 }
