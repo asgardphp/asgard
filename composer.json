@@ -15,7 +15,6 @@
         "symfony/yaml": "dev-master",
         "asgard/auth": "dev-master",
         "asgard/behaviors": "dev-master",
-        "asgard/cli": "dev-master",
         "asgard/db": "dev-master",
         "asgard/files": "dev-master",
         "asgard/form": "dev-master",
