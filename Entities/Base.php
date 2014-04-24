@@ -4,8 +4,8 @@ namespace Asgard\Data\Entities;
 abstract class Base extends \Asgard\Core\Entity {
 	protected static $stored = array();
 
-	public static $meta = array(
-		'table'	=>	'value',
+	public static $metas = array(
+		'table' => 'data'
 	);
 
 	public function __toString() {
