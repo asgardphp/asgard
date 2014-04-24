@@ -55,7 +55,7 @@ class RulesRegistry {
 		}
 		foreach($this->namespaces as $namespace) {
 			$class = $namespace.ucfirst($rule);
-			if(class_exists($class))
+			if(class_exists($class) && is_subclass_of($class, 'Asgard\Validation\Rule'))
 				return $class;
 		}
 		throw new \Exception('Rule "'.$rule.'" does not exist.');

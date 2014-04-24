@@ -271,7 +271,7 @@ class Validator {
 			$required = $this->required;
 		if($input->input() === null) {
 			if($required)
-				$errors['rules']['required'] = $this->buildRuleMessage('required', null, ':attribute is required.');
+				$errors['rules']['required'] = $this->buildRuleMessage('required', null, ':attribute is required.', $input->input());
 		}
 		if($input->input() !== null) {
 			$i=0; #rules may be added on the fly
@@ -285,7 +285,7 @@ class Validator {
 							while(isset($errors['rules'][$name.'-'.$j])) { $j += 1; }
 							$name = $name.'-'.$j;
 						}
-						$errors['rules'][strtolower($name)] = $this->buildRuleMessage($origName, $rule);
+						$errors['rules'][strtolower($name)] = $this->buildRuleMessage($origName, $rule, null, $input->input());
 					}
 					elseif($rule instanceof static)
 						$errors = $this->mergeErrors($errors, $rule->_errors($input));
@@ -355,7 +355,7 @@ class Validator {
 		return $this->format($message, $params);
 	}
 
-	protected function buildRuleMessage($ruleName, $rule=null, $default=null) {
+	protected function buildRuleMessage($ruleName, $rule=null, $default=null, $input=null) {
 		if($message = $this->getRuleMessage($ruleName)) {}
 		elseif($message = $this->getRegistry()->getMessage($ruleName)) {}
 		elseif($rule !== null && $message = $rule->getMessage()) {}
@@ -365,6 +365,7 @@ class Validator {
 
 		$params = array(
 			'attribute' => $this->getName(),
+			'input' => (string)$input,
 		);
 		if($rule instanceof Rule) {
 			$params = array_merge($params, get_object_vars($rule));
