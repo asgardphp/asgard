@@ -22,7 +22,8 @@ class FileCache implements CacheInterface {
 			return;
 
 		try {
-			return include $this->path.$file.'.php';
+			if(file_exists($this->path.$identifier.'.php'))
+				return include $this->path.$identifier.'.php';
 		} catch(\ErrorException $e) {}
 
 		if(\Asgard\Utils\Tools::is_function($default)) {
@@ -75,6 +76,8 @@ class FileCache implements CacheInterface {
 	}
 
 	protected static function isSerializable($value) {
+		if(is_object($value))
+			return false;
 		if(is_object($value)) {
 			if($value instanceof \Closure)
 				return false;
