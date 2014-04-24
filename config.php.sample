@@ -21,6 +21,7 @@ return array(
 			_ASGARD_DIR_.'orm',
 			_ASGARD_DIR_.'utils',
 			_ASGARD_DIR_.'validation',
+			_ASGARD_DIR_.'cache',
 		),
 		'imagecache'	=>	false,
 		'locale'	=>	'en',

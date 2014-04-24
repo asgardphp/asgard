@@ -45,7 +45,7 @@ namespace Asgard\Core {
 		}
 
 		protected function loadHooks() {
-			$hooks = \Asgard\Core\App::get('cache')->get('bundles/'.$this->getBundle().'/hooks', function() {
+			$hooks = \Asgard\Core\App::get('cache')->get('bundles/'.$this->getID().'/hooks', function() {
 				$hooks = array();
 				if(file_exists($this->getBundle().'/hooks/')) {
 					foreach(glob($this->getBundle().'/hooks/*.php') as $filename) {
@@ -62,7 +62,7 @@ namespace Asgard\Core {
 		}
 
 		protected function loadCLI() {
-			$routes = \Asgard\Core\App::get('cache')->get('bundles/'.$this->getBundle().'/cli', function() {
+			$routes = \Asgard\Core\App::get('cache')->get('bundles/'.$this->getID().'/cli', function() {
 				$routes = array();
 				if(file_exists($this->getBundle().'/Cli/')) {
 					foreach(glob($this->getBundle().'/Cli/*.php') as $filename) {
@@ -79,7 +79,7 @@ namespace Asgard\Core {
 		}
 
 		protected function loadControllers() {
-			$routes = \Asgard\Core\App::get('cache')->get('bundles/'.$this->getBundle().'/controllers', function() {
+			$routes = \Asgard\Core\App::get('cache')->get('bundles/'.$this->getID().'/controllers', function() {
 				$routes = array();
 				if(file_exists($this->getBundle().'/controllers/')) {
 					foreach(glob($this->getBundle().'/controllers/*.php') as $k=>$filename) {
@@ -97,6 +97,10 @@ namespace Asgard\Core {
 
 		public function setBundle($bundle) {
 			$this->bundle = realpath($bundle);
+		}
+
+		public function getID() {
+			return sha1($this->getBundle());
 		}
 
 		public function getBundle() {
