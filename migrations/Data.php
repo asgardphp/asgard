@@ -6,15 +6,13 @@ class Data {
 			$table->add('id', 'int(11)')
 				->autoincrement()
 				->primary();	
-			$table->add('position', 'int(11)')
-				->nullable();
 			$table->add('created_at', 'datetime')
 				->nullable();
 			$table->add('updated_at', 'datetime')
 				->nullable();
-			$table->add('question', 'varchar(255)')
+			$table->add('key', 'varchar(255)')
 				->nullable();
-			$table->add('answer', 'varchar(255)')
+			$table->add('value', 'text')
 				->nullable();
 		});
 	}
