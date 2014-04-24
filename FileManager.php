@@ -28,13 +28,31 @@ class FileManager {
 		}
 	}
 
-	public static function copy($src, $output) {
-		$output = static::getNewFileName($output);
-			
-		static::mkdir(dirname($output));
-			
-		return copy($src, $output);
+	public static function copy($src, $dst) {
+		if(is_dir($src))
+			return static::copyDir($src, $dst);
+		else {
+			$dst = static::getNewFileName($dst);
+			static::mkdir(dirname($dst));
+			return copy($src, $dst);
+		}
 	}
+
+	protected static function copyDir($src, $dst) { 
+		$r = true;
+		$dir = opendir($src);
+		static::mkdir($dst);
+		while(false !== ($file = readdir($dir))) { 
+			if(($file != '.') && ($file != '..')) { 
+				if(is_dir($src.'/'.$file))
+					$r = $r && static::copyDir($src.'/'.$file,$dst.'/'.$file); 
+				else
+					$r = $r && copy($src.'/'.$file,$dst.'/'.$file); 
+			} 
+		} 
+		closedir($dir); 
+		return $r;
+	} 
 
 	public static function move_uploaded($src, $output) {
 		$output = static::getNewFileName($output);

@@ -15,12 +15,22 @@ class Browser {
 		$this->cookies[$key] = $value;
 	}
 
+	public function getCookie($key) {
+		if(isset($this->cookies[$key]))
+			return $this->cookies[$key];
+	}
+
 	public function resetSession() {
 		$this->session = array();
 	}
 
 	public function setSession($key, $value) {
 		$this->session[$key] = $value;
+	}
+
+	public function getSession($key) {
+		if(isset($this->session[$key]))
+			return $this->session[$key];
 	}
 
 	public function getLast() {
