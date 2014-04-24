@@ -14,7 +14,6 @@ return array(
 			_ASGARD_DIR_.'orm',
 			_ASGARD_DIR_.'auth',
 			_ASGARD_DIR_.'behaviors',
-			_ASGARD_DIR_.'cli',
 			_ASGARD_DIR_.'db',
 			_ASGARD_DIR_.'files',
 			_ASGARD_DIR_.'form',
@@ -28,10 +27,7 @@ return array(
 		'locales'	=>	array(
 			'fr', 'en'
 		),
-		'cache'	=>	array(
-			'method'	=>	'apc',
-			// 'method'	=>	'file',
-		),
+		'cache_driver'	=>	'Asgard\Cache\FileCache',
 		'profiler'	=>	false,
 		'error_display' => true,
 		'debug' => true,

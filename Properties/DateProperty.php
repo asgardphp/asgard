@@ -4,9 +4,16 @@ namespace Asgard\Core\Properties;
 class DateProperty extends BaseProperty {
 	public function getRules() {
 		$rules = parent::getRules();
-		$rules['date'] = true;
+		$rules['isinstanceof'] = 'Carbon\Carbon';
 
 		return $rules;
+	}
+
+	public function getMessages() {
+		$messages = parent::getMessages();
+		$messages['instanceof'] = ':attribute must be a valid date.';
+
+		return $messages;
 	}
 
 	public function _getDefault() {

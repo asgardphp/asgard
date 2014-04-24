@@ -55,7 +55,7 @@ class App {
 			$driver = \Asgard\Core\App::get('config')->get('cache_driver');
 			if(!$driver)
 				$driver = 'Asgard\Cache\FileCache';
-			return new $driver;
+			return $this->make($driver);
 		});
 		$this->_set('locale', function() {
 			return new \Asgard\Utils\Locale;
@@ -84,10 +84,16 @@ class App {
 	}
 
 	public function _get($class) {
-		if(!isset($this->instances[$class]))
-			$this->instances[$class] = $this->make($class);
-
-		return $this->instances[$class];
+		if(!isset($this->instances[$class])) {
+			if($this->registry[$class]['save']) {
+				$this->instances[$class] = $this->make($class);
+				return $this->instances[$class];
+			}
+			else
+				return $this->make($class);
+		}
+		else
+			return $this->instances[$class];
 	}
 
 	public function __get($name) {
@@ -120,13 +126,13 @@ class App {
 		return $this->registered($class);
 	}
 
-	public function register($name, $callback) {
-		$this->registry[$name] = $callback;
+	public function register($name, $callback, $save=true) {
+		$this->registry[$name] = array('callback'=>$callback, 'save'=>$save);
 	}
 	
 	public function make($name, $params=array(), $default=null) {
 		if(isset($this->registry[$name]))
-			return call_user_func_array($this->registry[$name], $params);
+			return call_user_func_array($this->registry[$name]['callback'], $params);
 		else {
 			if($default instanceof \Closure)
 				return call_user_func_array($default, $params);

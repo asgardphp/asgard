@@ -66,6 +66,10 @@ class BaseProperty {
 		return $res;
 	}
 
+	public function getMessages() {
+		return array();
+	}
+
 	public function serialize($obj) {
 		return (string)$obj;
 	}

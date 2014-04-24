@@ -129,8 +129,8 @@ class Autoloader {
 			}
 
 			#psr
-			if(file_exists(__DIR__.($path = static::class2path($class))))
-				return static::loadClassFile(__DIR__.$path, $class);
+			if(file_exists(_DIR_.($path = static::class2path($class))))
+				return static::loadClassFile(_DIR_.$path, $class);
 
 			#lookup for global classes
 			if($this->globalNamespace && \Asgard\Utils\NamespaceUtils::dirname($class) == '.') {

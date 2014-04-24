@@ -64,10 +64,10 @@ namespace Asgard\Core {
 		protected function loadCLI() {
 			$routes = \Asgard\Core\App::get('cache')->get('bundles/'.$this->getBundle().'/cli', function() {
 				$routes = array();
-				if(file_exists($this->getBundle().'/cli/')) {
-					foreach(glob($this->getBundle().'/cli/*.php') as $filename) {
+				if(file_exists($this->getBundle().'/Cli/')) {
+					foreach(glob($this->getBundle().'/Cli/*.php') as $filename) {
 						$class = \Asgard\Core\Autoloader::loadClassFile($filename);
-						if(is_subclass_of($class, 'Asgard\Cli\CLIController'))
+						if(is_subclass_of($class, 'Asgard\Core\Cli\CLIController'))
 							$routes = array_merge($routes, $class::fetchRoutes());
 					}
 				}

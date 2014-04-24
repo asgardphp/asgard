@@ -88,7 +88,7 @@ class Response {
 		while(ob_get_level())
 			ob_end_clean();
 		\Asgard\Core\App::get('hook')->trigger('end');
-		\Asgard\Core\Asgard\Core\App::get('response')->sendHeaders($headers);
+		\Asgard\Core\App::get('response')->sendHeaders($headers);
 		echo $content;
         if(\Asgard\Core\App::get('config')->get('profiler'))
                 \Asgard\Utils\Profiler::report();
@@ -97,7 +97,7 @@ class Response {
 	}
 
 	public function back() {
-		return $this->redirect(Server::get('HTTP_REFERER'), false);
+		return $this->redirect(\Asgard\Core\App::get('server')->get('HTTP_REFERER'), false);
 	}
 	
 	public function redirect($url='', $relative=true) {

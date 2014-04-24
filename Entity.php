@@ -120,13 +120,18 @@ abstract class Entity {
 	/* VALIDATION */
 	protected function getValidator() {
 		$constrains = array();
+		$messages = array();
 		$entity = $this;
 		$this->trigger('constrains', array(&$constrains), function($chain, &$constrains) use($entity) {
 			foreach($entity->getDefinition()->properties as $name=>$property)
 				$constrains[$name] = $property->getRules();
 		});
+		$this->trigger('messages', array(&$constrains), function($chain, &$constrains) use($entity) {
+			foreach($entity->getDefinition()->properties as $name=>$property)
+				$messages[$name] = $property->getMessages();
+		});
 
-		$messages = static::getDefinition()->messages();
+		$messages = array_merge($messages, static::getDefinition()->messages());
 		
 		$validator = new \Asgard\Validation\Validator;
 		$validator->attributes($constrains);

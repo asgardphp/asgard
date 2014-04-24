@@ -13,9 +13,8 @@ class HttpKernel {
 		$previousRequest = App::instance()->request;
 		App::instance()->request = $request;
 
-		if(!$catch) {
+		if(!$catch)
 			$response = static::processRaw($request);
-		}
 		else {
 			try {
 				$response = static::processRaw($request);
@@ -25,9 +24,8 @@ class HttpKernel {
 					$trace = ErrorHandler::getBacktraceFromException($e);
 					ErrorHandler::log($severity, $e->getMessage(), $e->getFile(), $e->getLine(), $trace);
 				}
-				else {
+				else
 					ErrorHandler::logException($e);
-				}
 
 				$response = \Asgard\Core\App::get('hook')->trigger('exception_'.get_class($e), array($e));
 				if($response === null)
