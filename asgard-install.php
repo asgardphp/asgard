@@ -1,7 +1,5 @@
 <?php
 require_once 'paths.php';
-require_once _VENDOR_DIR_.'autoload.php'; #composer autoloader
-\Asgard\Core\App::loadDefaultApp();
 
 if(file_exists('config/database.php'))
 	echo 'File "config/database.php" already exists.'."\n";
@@ -28,7 +26,9 @@ else {
 	$config = str_replace('_NAME_', $name, $config);
 	$config = str_replace('_PREFIX_', $prefix, $config);
 
-	if(\Asgard\Utils\FileManager::put('config/database.php', $config) !== false)
+	if(!file_exists(_DIR_.'config'))
+		mkdir(_DIR_.'config');
+	if(file_put_contents(_DIR_.'config/database.php', $config) !== false)
 		echo 'Database configuration created with success.'."\n";
 	else
 		echo 'Database configuration creation failed.'."\n";

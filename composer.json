@@ -7,5 +7,8 @@
 	}],
     "autoload": {
         "psr-4": {"Asgard\\Db\\": "."}
+    },
+    "require": {
+        "asgard/composer": "dev-master"
     }
 }
