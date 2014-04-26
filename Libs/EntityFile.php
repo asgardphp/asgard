@@ -99,10 +99,8 @@ class EntityFile {
 	}
 	
 	public function delete() {
-		if($path = $this->get()) {
+		if($path = $this->get())
 			\Asgard\Utils\FileManager::unlink(_WEB_DIR_.$path);
-			\Asgard\Imagecache\Libs\ImageCache::clearFile($path);
-		}
 		$this->file = null;
 		
 		return $this;
