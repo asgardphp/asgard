@@ -184,10 +184,10 @@ class EntityForm extends Form {
 	
 		$this->trigger('pre_save');
 	
-		return $this->doSave();
+		return $this->_save();
 	}
 	
-	protected function doSave($group=null) {
+	protected function _save($group=null) {
 		if(!$group)
 			$group = $this;
 
@@ -197,7 +197,7 @@ class EntityForm extends Form {
 		if($group instanceof Group) {
 			foreach($group->getFields() as $name=>$field) {
 				if($field instanceof Group)
-					$this->doSave($field);
+					$group->_save($field);
 			}
 		}
 	}

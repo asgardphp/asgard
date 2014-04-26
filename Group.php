@@ -69,7 +69,7 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 
 	protected function parseFields($fields, $name) {
 			if(is_array($fields)) {
-				return new static($fields, $this, $name, 
+				return new self($fields, $this, $name, 
 					(isset($this->_data[$name]) ? $this->_data[$name]:array())
 				);
 			}
@@ -187,7 +187,7 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 		$errors = array();
 	
 		foreach($this->_fields as $name=>$field) {
-			if($field instanceof static) {
+			if($field instanceof self) {
 				$errors[$name] = $field->errors();
 				if(sizeof($errors[$name]) === 0)
 					unset($errors[$name]);
@@ -273,10 +273,10 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 	protected function _save($group=null) {
 		if(!$group)
 			$group = $this;
-			
+			static $i=0;
 		if($group instanceof \Asgard\Form\Group) {
-			foreach($group->fields as $name=>$field) {
-				if($field instanceof \Asgard\Form\Group)
+			foreach($group->_fields as $name=>$field) {
+				if($field instanceof self)
 					$field->_save($field);
 			}
 		}
