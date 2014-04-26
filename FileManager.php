@@ -32,11 +32,12 @@ class FileManager {
 		}
 	}
 
-	public static function copy($src, $dst) {
+	public static function copy($src, $dst, $rename=true) {
 		if(is_dir($src))
 			return static::copyDir($src, $dst);
 		else {
-			$dst = static::getNewFileName($dst);
+			if($rename)
+				$dst = static::getNewFileName($dst);
 			static::mkdir(dirname($dst));
 			return copy($src, $dst);
 		}

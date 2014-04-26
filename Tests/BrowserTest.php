@@ -5,12 +5,16 @@ class BrowserTest extends \PHPUnit_Framework_TestCase {
 	public static function setUpBeforeClass() {
 		if(!defined('_ENV_'))
 			define('_ENV_', 'test');
-		require_once(_CORE_DIR_.'core.php');
-		\Asgard\Core\App::instance(true)->config->set('bundles', array(
-			_ASGARD_DIR_.'core',
-			'app',
+		require_once _VENDOR_DIR_.'autoload.php';
+		\Asgard\Core\App::instance(true)->config
+		->set('bundles', array(
+			'app/general',
+		))
+		->set('bundlesdirs', array(
+			// 'app'
 		));
 		\Asgard\Core\App::loadDefaultApp();
+		// d(\Asgard\Core\App::get('resolver'));
 	}
 	
 	public function test1() {
