@@ -1,8 +1,6 @@
 <?php
 namespace Asgard\Core;
 
-// require_once __dir__.'Importer.php';
-
 class Autoloader {
 	protected $globalNamespace = false;
 	protected $preload = false;
@@ -50,44 +48,39 @@ class Autoloader {
 	}
 	
 	public function preloadDir($file) {
-		if(!$this->globalNamespace || !$this->preload)
+		if(!$this->preload)
 			return array();
 
-		$this->preloaded = array_unique($this->fetchPreloadDir($file), SORT_REGULAR);
-	}
-
-	public function fetchPreloadDir($file) {
-		return \Asgard\Utils\Cache::get('Asgard\Core\Autoloader\preloadDir\\'.$file, function() use($file) {
-			$preload = array();
-			if(is_dir($file) && !strpos($file, '.') !== 0) {
-				foreach(glob($file.'/*') as $sub_file)
-					$preload = array_merge($preload, $this->fetchPreloadDir($sub_file));
-			}
-			else {
-				if(!preg_match('/^[A-Z]{1}[a-zA-Z0-9_]+.php$/', basename($file)))
-					return array();
-				list($class) = explode('.', basename($file));
-				if(!array_search(realpath($file), $this->preloaded));
-					$preload[] = array(strtolower($class), realpath($file));
-			}
-			return $preload;
+		$preload = \Asgard\Utils\Cache::get('Asgard\Core\Autoloader\preloadDir\\'.$file, function() use($file) {
+			return $this->_preloadDir($file, false);
 		});
+		$this->preloaded = array_merge($this->preloaded, $preload);
 	}
 
-	public function importClass($class, $params=array()) {
-		$class = preg_replace('/^\\\+/', '', $class);
-		$alias = isset($params['as']) ? $params['as']:null;
-		$intoNamespace= isset($params['into']) ? $params['into']:null;
-		
-		if($intoNamespace == '.')
-			$intoNamespace = '';
+	public function _preloadDir($file, $onlyCapital=true) {
+		if(is_dir($file)) {
+			$preload = array();
+			if($onlyCapital && !preg_match('/^[A-Z]{1}/', basename($file)))
+				return array();
+			$preload = array();
+			foreach(glob($file.'/*') as $sub_file)
+				$preload = array_merge($preload, $this->_preloadDir($sub_file));
+			return $preload;
+		}
+		else {
+			if(!preg_match('/^[A-Z]{1}[a-zA-Z0-9_]+.php$/', basename($file)))
+				return array();
+			list($class) = explode('.', basename($file));
+			return array($class => $file);
+		}
+	}
 
-		if(!$alias && $alias !== false) 
-			$alias = ($intoNamespace ? $intoNamespace.'\\':'').\Asgard\Utils\NamespaceUtils::basename($class);
+	public function importClass($class, $alias=null) {
+		$class = preg_replace('/^\\\+/', '', $class);
 
 		#look for the class
 		if($res=$this->loadClass($class)) {
-			if($alias !== false)
+			if($alias !== null)
 				return static::createAlias($class, $alias);
 			return true;
 		}
@@ -102,7 +95,9 @@ class Autoloader {
 				else
 					$next = str_replace(DIRECTORY_SEPARATOR, '\\', \Asgard\Utils\NamespaceUtils::dirname($dir)).'\\'.$base;
 
-				return $this->importClass($next, array('into'=>$intoNamespace, 'as'=>$alias));
+				if($alias === null)
+					$alias = $class;
+				return $this->importClass($next, $alias);
 			}
 		
 			return false;
@@ -142,18 +137,11 @@ class Autoloader {
 						return static::createAlias($v, $class);
 				}
 				
-				foreach($this->preloaded as $v) {
-					if(strtolower(\Asgard\Utils\NamespaceUtils::basename($class)) == $v[0])
-						$classes[] = $v;
+				if($this->preload) {
+					if(isset($this->preloaded[$class]))
+						return static::loadClassFile($this->preloaded[$class], $class);
+					return false;
 				}
-				if(sizeof($classes) == 1)
-					return static::loadClassFile($classes[0][1], $class);
-				#if multiple classes, don't load
-				elseif(sizeof($classes) > 1)
-					return false;
-				#if no class, don't load
-				else
-					return false;
 			}
 		}
 		

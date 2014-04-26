@@ -4,10 +4,7 @@ namespace Asgard\Core;
 class Bundle extends BundleLoader {
 	public function load($queue) {
 		$queue->addBundle(new \Asgard\Utils\Bundle);
-
-		if(\Asgard\Core\App::has('autoloader'))
-			\Asgard\Core\App::get('autoloader')->preloadDir(__dir__);
-
+		
 		#Entities
 		\Asgard\Core\App::instance()->register('entitiesmanager', function() { return new \Asgard\Core\EntitiesManager; } );
 		#Http

@@ -11,7 +11,7 @@ class AsgardController extends CLIController {
 	}
 
 	public function getAction($request) {
-		$browser = new \Asgard\Utils\Browser;
+		$browser = $this->getBrowser();
 		echo $browser->get($request[0]);
 	}
 
@@ -148,9 +148,9 @@ class AsgardController extends CLIController {
 				}
 
 				if(!isset($bundle['entities'][$name]['front']))
-					$bundle['entities'][$name]['front'] = array();
+					$bundle['entities'][$name]['front'] = false;
 				if(!is_array($bundle['entities'][$name]['front'])) 
-					$bundle['entities'][$name]['front'] = array('index', 'details');
+					$bundle['entities'][$name]['front'] = array('index', 'show');
 			}
 
 			foreach($bundle['controllers'] as $name=>$controller) {
@@ -164,33 +164,100 @@ class AsgardController extends CLIController {
 						$bundle['controllers'][$name]['actions'][$aname]['template'] = strtolower($aname).'.php';
 					if(!isset($bundle['controllers'][$name]['actions'][$aname]['route']))
 						$bundle['controllers'][$name]['actions'][$aname]['route'] = null;
+					if(!isset($bundle['controllers'][$name]['actions'][$aname]['viewFile']))
+						$bundle['controllers'][$name]['actions'][$aname]['viewFile'] = null;
 				}
 			}
+
+			if(!isset($bundle['tests']))
+				$bundle['tests'] = false;
 
 			$bundles[$bundle_name] = $bundle;
 		}
 
+
 		foreach($bundles as $name=>$bundle) {
-			$dst = 'app/'.strtolower($name).'/';
-			static::processFile(__dir__.'/bundle_template/Bundle.php', $dst.'Bundle.php', array('bundle'=>$bundle));
-			foreach($bundle['entities'] as $name=>$entity) {
-				static::processFile(__dir__.'/bundle_template/entities/_Entity.php', $dst.'entities/'.ucfirst($bundle['entities'][$name]['meta']['name']).'.php', array('bundle'=>$bundle, 'entity'=>$entity));
-				static::processFile(__dir__.'/bundle_template/controllers/_EntityController.php', $dst.'controllers/'.ucfirst($bundle['entities'][$name]['meta']['name']).'Controller.php', array('bundle'=>$bundle, 'entity'=>$entity));
-				static::processFile(__dir__.'/bundle_template/views/_entity/index.php', $dst.'views/'.$bundle['entities'][$name]['meta']['name'].'/index.php', array('bundle'=>$bundle, 'entity'=>$entity));
-				static::processFile(__dir__.'/bundle_template/views/_entity/details.php', $dst.'views/'.$bundle['entities'][$name]['meta']['name'].'/details.php', array('bundle'=>$bundle, 'entity'=>$entity));
+			if($bundle['tests']) {
+				$generatedTests = '';
+				$tests = array();
+				$this->createAutotestFile();
 			}
 
-			foreach($bundle['controllers'] as $name=>$controller) {
-				static::processFile(__dir__.'/bundle_template/controllers/_Controller.php', $dst.'controllers/'.$controller['name'].'.php', array('bundle'=>$bundle, 'controller'=>$controller));
-				foreach($controller['actions'] as $action) {
-					if($action['template'])
-						\Asgard\Utils\FileManager::put($dst.'views/'.strtolower(preg_replace('/Controller$/', '', $controller['name'])).'/'.$action['template'], '');
+			$dst = 'app/'.strtolower($name).'/';
+			static::processFile(__DIR__.'/bundle_template/Bundle.php', $dst.'Bundle.php', array('bundle'=>$bundle));
+			foreach($bundle['entities'] as $name=>$entity) {
+				static::processFile(__DIR__.'/bundle_template/entities/_Entity.php', $dst.'entities/'.ucfirst($bundle['entities'][$name]['meta']['name']).'.php', array('bundle'=>$bundle, 'entity'=>$entity));
+				if($entity['front']) {
+					static::processFile(__DIR__.'/bundle_template/controllers/_EntityController.php', $dst.'controllers/'.ucfirst($bundle['entities'][$name]['meta']['name']).'Controller.php', array('bundle'=>$bundle, 'entity'=>$entity));
+
+					if($bundle['tests']) {
+						include_once $dst.'controllers/'.ucfirst($bundle['entities'][$name]['meta']['name']).'Controller.php';
+						$class = $bundle['namespace'].'\\Controllers\\'.ucfirst($entity['meta']['name']).'Controller';
+					}
+
+					if(in_array('index', $entity['front']) || isset($entity['front']['index'])) {
+						if(isset($entity['front']['index']))
+							\Asgard\Utils\FileManager::copy($entity['front']['index'], _DIR_.$dst.'views/'.$bundle['entities'][$name]['meta']['name'].'/index.php', false);
+						else
+							static::processFile(__DIR__.'/bundle_template/views/_entity/index.php', _DIR_.$dst.'views/'.$bundle['entities'][$name]['meta']['name'].'/index.php', array('bundle'=>$bundle, 'entity'=>$entity));
+						if($bundle['tests']) {
+							$indexRoute = $class::route_for('index');
+							$tests[$indexRoute] = '
+		$browser = $this->getBrowser();
+		$this->assertTrue($browser->get(\''.$indexRoute.'\')->isOK(), \'GET '.$indexRoute.'\');';
+						}
+					}
+					if(in_array('show', $entity['front']) || isset($entity['front']['show'])) {
+						if(isset($entity['front']['show']))
+							\Asgard\Utils\FileManager::copy($entity['front']['show'], _DIR_.$dst.'views/'.$bundle['entities'][$name]['meta']['name'].'/show.php', false);
+						else
+							static::processFile(__DIR__.'/bundle_template/views/_entity/show.php', _DIR_.$dst.'views/'.$bundle['entities'][$name]['meta']['name'].'/show.php', array('bundle'=>$bundle, 'entity'=>$entity));
+						if($bundle['tests']) {
+							$showRoute = $class::route_for('show');
+							$tests[$showRoute] = '
+		$browser = $this->getBrowser();
+		$this->assertTrue($browser->get(\''.$showRoute.'\')->isOK(), \'GET '.$showRoute.'\');';
+						}
+					}
 				}
 			}
 
+			foreach($bundle['controllers'] as $name=>$controller) {
+				static::processFile(__DIR__.'/bundle_template/controllers/_Controller.php', $dst.'controllers/'.$controller['name'].'.php', array('bundle'=>$bundle, 'controller'=>$controller));
+
+				if($bundle['tests']) {
+					include_once $dst.'controllers/'.$controller['name'].'.php';
+					$class = $bundle['namespace'].'\\Controllers\\'.ucfirst($controller['name']);
+				}
+
+				foreach($controller['actions'] as $action=>$params) {
+					if($bundle['tests']) {
+						$actionRoute = $class::route_for($action);
+						if(!$actionRoute)
+							continue;
+						$tests[$actionRoute] = '
+		$browser = $this->getBrowser();
+		$this->assertTrue($browser->get(\''.$actionRoute.'\')->isOK(), \'GET '.$actionRoute.'\');';
+					}
+					if($params['template']) {
+						$content = '';
+						if($params['viewFile'])
+							$content = file_get_contents($params['viewFile']);
+						\Asgard\Utils\FileManager::put($dst.'views/'.strtolower(preg_replace('/Controller$/', '', $controller['name'])).'/'.$params['template'], $content);
+					}
+				}
+			}
+
+			if($bundle['tests'])
+				$bundle['generatedTests'] = $tests;
+
 			\Asgard\Core\App::get('hook')->trigger('Agard\CLI\generator\bundleBuild', array(&$bundle, 'app/'.strtolower($bundle['name']).'/'));
+
+			if($bundle['tests'])
+				$this->addToAutotest($bundle['generatedTests']);
 		}
 			
+
 		echo 'Bundles created: '.implode(', ', array_keys($bundles));
 	}
 	
@@ -230,67 +297,114 @@ class AsgardController extends CLIController {
 			return var_export($value, true);
 	}
 
+	protected function createAutotestFile($dst=null) {
+		if(!$dst)
+			$dst = _DIR_.'tests/AutoTest.php';
+		if(!file_exists(__DIR__.'/sample.php.txt'))
+			copy(__DIR__.'/sample.php.txt', $dst);
+	}
+
+	protected function addToAutotest($tests, $dst=null) {
+		$res = '';
+		foreach($tests as $route=>$test) {
+			$test = trim($test);
+			if(strpos($route, ':') !== false)
+				$test = "/*\n\t\t".$test."\n"."\t\t*/";
+			$res .= "\t\t".$test."\n\n";
+		}
+
+		if(!$dst)
+			$dst = _DIR_.'tests/AutoTest.php';
+		$original = file_get_contents($dst);
+		$res = str_replace('/* Autotest - DO NOT MODIFY THIS LINE */', '/* Autotest - DO NOT MODIFY THIS LINE */'."\n".$res, $original);
+		file_put_contents($dst, $res);
+	}
+
 	public function generateTestsAction($request) {
+		exec('phpunit '._DIR_.'tests', $res);
+
+		if(strpos(implode("\n", $res), 'FAILURES!') !== false) {
+			echo 'Tests failed.';
+			return;
+		}
+
+		$tested = array_filter(explode("\n", file_get_contents(_DIR_.'tests/tested.txt')));
+		if(file_exists(_DIR_.'tests/ignore.txt'))
+			$tested = array_merge(array_filter(explode("\n", file_get_contents(_DIR_.'tests/ignore.txt'))));
+		\Asgard\Utils\FileManager::unlink(_DIR_.'tests/tested.txt');
+
 		if(isset($request['dir']))
 			$directory = $request['dir'];
 		else
 			$directory = 'app';
 
 		if(isset($request['file']))
-			$res = $request['file'];
+			$dst = $request['file'];
 		else
-			$res = 'tests/AutoTest.php';
+			$dst = null;
+		$this->createAutotestFile($dst);
 
-		copy('sample.php.txt', $res);
+		$routes = \Asgard\Core\App::get('resolver')->getRoutes();
 
-		$routes = \Router::getRoutes();
-		$routes = \BundlesManager::getRoutesFromDirectory($directory);
-		usort($routes, function($a, $b) {
-			return $a['route'] > $b['route'];
-		});
+		$res = array();
 
-		foreach($routes as $route=>$params) {
-			$method = strtolower($params['method']);
+
+		foreach($routes as $route) {
+			// $class = $route->getController();
+			// d($route);
+		// $reflection = new \Addendum\ReflectionAnnotatedClass($route->getController());
+		// $mreflection = $reflection->getMethod($route->getAction().'Action');
+		// if($annotations->getAnnotation('Test'))
+		// 	d($annotations->getAnnotation('Test')->value);
+			// d($route);
+			// $function = $route->getAction().'Action';
+
+			$annotations = new \Addendum\ReflectionAnnotatedMethod($route->getController(), $route->getAction().'Action');
+		// d(123);
+			if($annotations->getAnnotation('Test') && $annotations->getAnnotation('Test')->value === false)
+				continue;
+
+			foreach($tested as $url) {
+				if(\Asgard\Core\App::get('resolver')->matchWith($route->getRoute(), $url) !== false)
+					continue 2;
+			}
+
+			$method = strtolower($route->get('method'));
 			if(!$method)
 				$method = 'get';
 
 			#get
 			if($method === 'get' || $method === 'delete') {
-				if(strpos($params['route'], ':') !== false) {
-					// continue;
+				if(strpos($route->getRoute(), ':') !== false) {
 					#get params
-					file_put_contents($res, '
-				/*
-				$browser = new Browser;
-				$this->assertEquals(200, $browser->'.$method.'(\''.$params['route'].'\')->getCode(), \''.strtoupper($method).' '.$params['route'].'\');
-				*/
-				', FILE_APPEND);
+					$res[] = '
+		/*
+		$browser = $this->getBrowser();
+		$this->assertTrue($browser->'.$method.'(\''.$route->getRoute().'\')->isOK(), \''.strtoupper($method).' '.$route->getRoute().'\');
+		*/
+		';
 				}
 				else {
-				file_put_contents($res, '
-				$browser = new Browser;
-				$this->assertEquals(200, $browser->'.$method.'(\''.$params['route'].'\')->getCode(), \''.strtoupper($method).' '.$params['route'].'\');
-				', FILE_APPEND);
+				$res[] = '
+		$browser = $this->getBrowser();
+		$this->assertTrue($browser->'.$method.'(\''.$route->getRoute().'\')->isOK(), \''.strtoupper($method).' '.$route->getRoute().'\');
+		';
 				}
 			}
 			else {
-				// continue;
 				#post params
-				file_put_contents($res, '
-				/*
-				$browser = new Browser;
-				$this->assertEquals(200, $browser->'.$method.'(\''.strtoupper($method).' '.$params['route'].'\',
-					array(),
-					array(),
-				)->getCode(), \''.$params['route'].'\');
-				*/
-				', FILE_APPEND);
+				$res[] = '
+		/*
+		$browser = $this->getBrowser();
+		$this->assertTrue($browser->'.$method.'(\''.strtoupper($method).' '.$route->getRoute().'\',
+			array(),
+			array(),
+		)->isOK(), \''.$route->getRoute().'\');
+		*/
+		';
 			}
 		}
 
-		file_put_contents($res, '
-			}
-		}
-		', FILE_APPEND);
+		$this->addToAutotest($res, $dst);
 	}
 }

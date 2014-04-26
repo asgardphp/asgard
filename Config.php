@@ -34,6 +34,8 @@ class Config {
 
 		if(\Asgard\Core\App::hasInstance() && \Asgard\Core\App::has('hook'))
 			\Asgard\Core\App::get('hook')->trigger(array('Config/Set/'.$str_path, $value));
+		
+		return $this;
 	}
 	
 	public function get($str_path) {

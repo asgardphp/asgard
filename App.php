@@ -16,25 +16,31 @@ class App {
 		}
 	}
 
-	public static function loadDefaultApp() {
-		static::instance()->load();
+	public static function loadDefaultApp($bootstrap=true) {
+		static::instance()->load($bootstrap);
 	}
 
-	public function load() {
+	public function load($bootstrap=true) {
+		if(version_compare(PHP_VERSION, '5.4.0') < 0)
+			die('You need PHP ≥ 5.4');
+
 		if($this->loaded)
 			return;
 		
+		ob_start();
+
 		static::setDefaultEnvironment();
 
-		if(file_exists(_DIR_.'app/bootstrap_'.strtolower(_ENV_).'.php'))
-			include _DIR_.'app/bootstrap_'.strtolower(_ENV_).'.php';
-		if(file_exists(_DIR_.'app/bootstrap_all.php'))
-			include _DIR_.'app/bootstrap_all.php';
+		if($bootstrap) {
+			if(file_exists(_DIR_.'app/bootstrap_'.strtolower(_ENV_).'.php'))
+				include _DIR_.'app/bootstrap_'.strtolower(_ENV_).'.php';
+			if(file_exists(_DIR_.'app/bootstrap_all.php'))
+				include _DIR_.'app/bootstrap_all.php';
+		}
 
 		$bundles = $this->get('config')->get('bundles');
 		$bundlesdirs = $this->get('config')->get('bundlesdirs');
 		$bundlesmanager = new BundlesManager;
-		// $bundlesmanager->loadBundles($bundles);
 		$bundlesmanager->addBundles($bundles);
 		$bundlesmanager->addBundlesDirs($bundlesdirs);
 		$bundlesmanager->loadBundles();
@@ -57,8 +63,8 @@ class App {
 				$driver = 'Asgard\Cache\FileCache';
 			return $this->make($driver);
 		});
-		$this->_set('locale', function() {
-			return new \Asgard\Utils\Locale;
+		$this->_set('translator', function() {
+			return new \Asgard\Translation\Translator;
 		});
 		$this->_set('importer', function() {
 			return new \Asgard\Core\Importer;
@@ -127,6 +133,15 @@ class App {
 	}
 
 	public function register($name, $callback, $save=true) {
+		if(
+			$this->_has('config')
+			&& $this->_get('config')->get('autofacade')
+			&& preg_match('/^[a-zA-Z0-9]+$/', $name)
+			&& !class_exists(ucfirst(strtolower($name)))) {
+			$string = 'class '.ucfirst(strtolower($name)).' extends \Asgard\Core\Facade {}';
+			eval($string);
+		}
+
 		$this->registry[$name] = array('callback'=>$callback, 'save'=>$save);
 	}
 	

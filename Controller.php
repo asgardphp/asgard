@@ -26,8 +26,6 @@ class Controller extends \Asgard\Hook\Hookable {
 			if(!preg_match('/Action$/i', $method))
 				continue;
 			$method_reflection = new \Addendum\ReflectionAnnotatedMethod($class, $method);
-			if($method != 'publishAction' && $method != 'promoteAction' && $method != 'demoteAction')
-
 			if($method_reflection->getAllAnnotations('Route')) {
 				foreach($method_reflection->getAllAnnotations('Route') as $annotation) {
 					$route = Resolver::formatRoute($prefix.'/'.$annotation->value);
@@ -67,6 +65,45 @@ class Controller extends \Asgard\Hook\Hookable {
 			$this->hook('before', array($filter, 'before'), $filter->getBeforePriority());
 		if(method_exists($filter, 'after'))
 			$this->hook('after', array($filter, 'after'), $filter->getAfterPriority());
+	}
+
+	public static function route_for($action) {
+		$routes = static::routes_for($action);
+		if(!isset($routes[0]))
+			return;
+		return $routes[0];
+	}
+
+	public static function routes_for($action) {
+		$routes = array();
+		$reflection = new \Addendum\ReflectionAnnotatedClass(get_called_class());
+		
+		if($reflection->getAnnotation('Prefix'))
+			$prefix = Resolver::formatRoute($reflection->getAnnotation('Prefix')->value);
+		else
+			$prefix = '';
+
+		$method = $action.'Action';
+
+		// $class = get_called_class();
+		// $reflection = new \ReflectionClass(get_called_class());
+		// while(!$reflection->hasMethod($method)) {
+		// 	// if($reflection->getName() == 'App\Admin\Libs\Controller\EntityAdminController')
+		// 	// 	d($reflection->getMethods());
+		// 	if(!$reflection->getParentClass())
+		// 		throw new \Exception(get_called_class().' does not have action "'.$action.'"');
+		// 	else
+		// 		$reflection = $reflection->getParentClass();
+		// 		// d($reflection->getParentClass());
+		// }
+		// $class = $reflection->getName();
+
+		$method_reflection = new \Addendum\ReflectionAnnotatedMethod(get_called_class(), $method);
+		if($method_reflection->getAllAnnotations('Route')) {
+			foreach($method_reflection->getAllAnnotations('Route') as $annotation)
+				$routes[] = Resolver::formatRoute($prefix.'/'.$annotation->value);
+		}
+		return $routes;
 	}
 	
 	public static function url_for($action, $params=array(), $relative=false) {

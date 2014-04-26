@@ -3,6 +3,7 @@ namespace {
 	class Annotate_Hook extends Addendum\Annotation {}
 	class Annotate_Priority extends Addendum\Annotation {}
 	class Annotate_Prefix extends Addendum\Annotation {}
+	class Annotate_Test extends Addendum\Annotation {}
 	class Annotate_Route extends Addendum\Annotation {
 		public $name;
 		public $requirements;
@@ -19,14 +20,8 @@ namespace Asgard\Core {
 		protected $bundle = null;
 
 		public function load($queue) {
-			if(\Asgard\Core\App::has('autoloader')) {
-				\Asgard\Core\App::get('autoloader')->preloadDir(_ASGARD_DIR_.'/entities');
-				\Asgard\Core\App::get('autoloader')->preloadDir(_ASGARD_DIR_.'/libs');
-				\Asgard\Core\App::get('autoloader')->preloadDir(_ASGARD_DIR_.'/controllers');
-				\Asgard\Core\App::get('autoloader')->preloadDir(_ASGARD_DIR_.'/hooks');
-				if(php_sapi_name() === 'cli')
-					\Asgard\Core\App::get('autoloader')->preloadDir(_ASGARD_DIR_.'/cli');
-			}
+			if(\Asgard\Core\App::has('autoloader'))
+				\Asgard\Core\App::get('autoloader')->preloadDir($this->getBundle());
 		}
 
 		public function run() {
@@ -39,9 +34,9 @@ namespace Asgard\Core {
 
 		protected function loadLocales() {
 			$locales = \Asgard\Core\App::get('cache')->get('bundles/'.$this->getBundle().'/locales', function() {
-				return \Asgard\Core\App::get('locale')->fetchLocalesFromDir($this->getBundle().'/locales');
+				return \Asgard\Core\App::get('translator')->fetchLocalesFromDir($this->getBundle().'/locales');
 			});
-			\Asgard\Core\App::get('locale')->addLocales($locales);
+			\Asgard\Core\App::get('translator')->addLocales($locales);
 		}
 
 		protected function loadHooks() {

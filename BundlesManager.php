@@ -6,6 +6,7 @@ class BundlesManager {
 	protected $loaded = false;
 
 	public function __construct() {
+		$this->bundles[] = new \Asgard\Cache\Bundle;
 		$this->bundles[] = new Bundle;
 	}
 

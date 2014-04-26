@@ -21,6 +21,7 @@
         "asgard/hook": "dev-master",
         "asgard/orm": "dev-master",
         "asgard/utils": "dev-master",
+        "asgard/translation": "dev-master",
         "asgard/validation": "dev-master",
         "asgard/cache": "dev-master",
         "psr/log": "dev-master"
