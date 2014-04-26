@@ -247,7 +247,7 @@ class MigrationsManager {
 
 		\Asgard\Core\App::get('db')->beginTransaction();
 		$class = $migration;
-		include(_DIR_.'migrations/'.$migration.'.php');
+		include_once _DIR_.'migrations/'.$migration.'.php';
 		$class::up();
 		if($verbose)
 			echo 'Running '.$class."\n";

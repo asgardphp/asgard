@@ -5,7 +5,7 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 	public static function setUpBeforeClass() {
 		if(!defined('_ENV_'))
 			define('_ENV_', 'test');
-		require_once(_CORE_DIR_.'core.php');
+		require_once _VENDOR_DIR_.'autoload.php';
 		\Asgard\Core\App::instance(true)->config->set('bundles', array(
 			// _ASGARD_DIR_.'files',
 			new \Asgard\Orm\Bundle,
@@ -48,7 +48,7 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
     
 	#save english version
 	public function test5() {
-		\Asgard\Core\App::get('locale')->setLocale('en');
+		\Asgard\Core\App::get('translator')->setLocale('en');
 		$actu = new \Asgard\Orm\Tests\I18Nentities\Actualite(2);
 		$actu->test = 'Hi';
 		$actu->save(null, true);

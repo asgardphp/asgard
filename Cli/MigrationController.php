@@ -17,7 +17,7 @@ class MigrationController extends \Asgard\Core\Cli\CLIController {
 		}
 		echo 'New migration: '.$filename;
 
-		\Asgard\Core\App::get('clirouter')->run('Asgard\Cli\DBController', 'backup', $request);
+		\Asgard\Core\App::get('clirouter')->run('Asgard\Core\Cli\DBController', 'backup', $request);
 		echo 'Migrating...'."\n";
 		\Asgard\Orm\Libs\MigrationsManager::migrate($filename, true);
 	}

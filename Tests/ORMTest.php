@@ -3,7 +3,7 @@ class ORMTest extends PHPUnit_Framework_TestCase {
 	public static function setUpBeforeClass() {
 		if(!defined('_ENV_'))
 			define('_ENV_', 'test');
-		require_once(_CORE_DIR_.'core.php');
+		require_once _VENDOR_DIR_.'autoload.php';
 		\Asgard\Core\App::instance(true)->config->set('bundles', array(
 			_ASGARD_DIR_.'core',
 			_ASGARD_DIR_.'orm',
