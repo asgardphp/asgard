@@ -365,8 +365,9 @@ class Validator {
 
 		$params = array(
 			'attribute' => $this->getName(),
-			'input' => (string)$input,
 		);
+		if(is_string($input) || is_numeric($input))
+			$params['input'] = $input;
 		if($rule instanceof Rule) {
 			$params = array_merge($params, get_object_vars($rule));
 			$rule->formatParameters($params);
