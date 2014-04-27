@@ -1,5 +1,7 @@
 <?php
 require_once 'paths.php';
+require_once __DIR__.'/Query.php';
+require_once __DIR__.'/DB.php';
 
 if(file_exists('config/database.php'))
 	echo 'File "config/database.php" already exists.'."\n";
@@ -25,6 +27,26 @@ else {
 	$config = str_replace('_PASSWORD_', $password, $config);
 	$config = str_replace('_NAME_', $name, $config);
 	$config = str_replace('_PREFIX_', $prefix, $config);
+
+	try {
+		$db = new \Asgard\Db\DB(array(
+			'host' => $host,
+			'user' => $user,
+			'password' => $password,
+			'database' => $name,
+		));
+	} catch(\PDOException $e) {
+		try {
+			$db = new \Asgard\Db\DB(array(
+				'host' => $host,
+				'user' => $user,
+				'password' => $password,
+			));
+			$db->query('CREATE DATABASE `'.$name.'`');
+		} catch(\PDOException $e) {
+			echo 'The database could not be created.';
+		}
+	}
 
 	if(!file_exists(_DIR_.'config'))
 		mkdir(_DIR_.'config');
