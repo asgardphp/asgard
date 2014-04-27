@@ -321,9 +321,16 @@ class AsgardController extends CLIController {
 	}
 
 	public function generateTestsAction($request) {
-		exec('phpunit '._DIR_.'tests', $res);
+		\Asgard\Utils\FileManager::unlink(_DIR_.'tests/tested.txt');
+
+		exec('phpunit --bootstrap '._DIR_.'tests/bootstrap.php '._DIR_.'tests', $res);
 
 		if(strpos(implode("\n", $res), 'FAILURES!') !== false) {
+			echo 'Tests failed.';
+			return;
+		}
+
+		if(!file_exists(_DIR_.'tests/tested.txt')) {
 			echo 'Tests failed.';
 			return;
 		}

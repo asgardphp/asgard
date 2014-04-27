@@ -17,6 +17,7 @@ class App {
 	}
 
 	public static function loadDefaultApp($bootstrap=true) {
+		static::setDefaultEnvironment();
 		static::instance()->load($bootstrap);
 	}
 
@@ -28,8 +29,6 @@ class App {
 			return;
 		
 		ob_start();
-
-		static::setDefaultEnvironment();
 
 		if($bootstrap) {
 			if(file_exists(_DIR_.'app/bootstrap_'.strtolower(_ENV_).'.php'))
