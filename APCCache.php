@@ -3,25 +3,17 @@ namespace Asgard\Cache;
 
 class APCCache implements CacheInterface {
 	protected $path;
-	protected $active;
 
-	public function __construct($path=null, $active=true) {
+	public function __construct($path=null) {
 		$this->path = $path;
-		$this->active = $active;
 	}
 
 	public function clear() {
-		if(!$this->active)
-			return;
-
 		foreach(\apc_fetch($this->path.'/__identifiers') as $identifier)
 			apc_delete($this->path.'/'.$identifier);
 	}
 
 	public function get($identifier, $default=null) {
-		if(!$this->active)
-			return;
-
 		$success = null;
 		try {
 			$res = \apc_fetch($this->path.'/'.$identifier, $success);
@@ -29,7 +21,7 @@ class APCCache implements CacheInterface {
 		if($success)
 			return $res;
 
-		if(\Asgard\Utils\Tools::is_function($default)) {
+		if(is_callable($default)) {
 			$r = $default();
 			static::set($identifier, $r);
 			return $r;
@@ -39,9 +31,6 @@ class APCCache implements CacheInterface {
 	}
 	
 	public function set($identifier, $var) {
-		if(!$this->active)
-			return false;
-
 		try {
 			$r = apc_store($this->path.'/'.$identifier, $var);
 		} catch(\Exception $e) { return false; }
@@ -56,9 +45,6 @@ class APCCache implements CacheInterface {
 	}
 	
 	public function delete($identifier) {
-		if(!$this->active)
-			return;
-
 		$r = apc_delete($this->path.'/'.$identifier);
 		if($r) {
 			$identifiers = \apc_fetch($this->path.'/__identifiers');
