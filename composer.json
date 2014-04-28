@@ -7,5 +7,8 @@
 	}],
 	"require": {
         "asgard/core": "dev-master"
-	}
+	},
+    "autoload": {
+        "psr-4": {"Asgard\\Data\\": "."}
+    }
 }
