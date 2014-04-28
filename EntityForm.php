@@ -74,6 +74,9 @@ class EntityForm extends Form {
 
 		$field = new $field_class($field_params);
 
+		if($properties->type == 'longtext')
+			$field->setDefaultRender('textarea');
+
 		return $field;
 	}
 
