@@ -234,7 +234,7 @@ class Validator {
 			$input = $this->setInput($input);
 
 		#if input is null, return false if required, or true
-		if($input->input() === null) {
+		if($input->input() === null || $input->input() === '') {
 			if(($required = $this->required) instanceof \Closure)
 				return !$required(null, $input->parent(), $this);
 			else
@@ -269,7 +269,7 @@ class Validator {
 			$required = $this->required();
 		else
 			$required = $this->required;
-		if($input->input() === null) {
+		if($input->input() === null || $input->input() === '') {
 			if($required)
 				$errors['rules']['required'] = $this->buildRuleMessage('required', null, ':attribute is required.', $input->input());
 		}
