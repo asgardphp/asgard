@@ -180,7 +180,6 @@ class AsgardController extends CLIController {
 			if($bundle['tests']) {
 				$generatedTests = '';
 				$tests = array();
-				$this->createAutotestFile();
 			}
 
 			$dst = 'app/'.strtolower($name).'/';
@@ -254,7 +253,7 @@ class AsgardController extends CLIController {
 			\Asgard\Core\App::get('hook')->trigger('Agard\CLI\generator\bundleBuild', array(&$bundle, 'app/'.strtolower($bundle['name']).'/'));
 
 			if($bundle['tests'])
-				$this->addToAutotest($bundle['generatedTests']);
+				$this->addToTests($bundle['generatedTests'], ucfirst($bundle['name']));
 		}
 			
 
@@ -300,8 +299,31 @@ class AsgardController extends CLIController {
 	protected function createAutotestFile($dst=null) {
 		if(!$dst)
 			$dst = _DIR_.'tests/AutoTest.php';
-		if(!file_exists(__DIR__.'/sample.php.txt'))
+		if(!file_exists($dst))
 			copy(__DIR__.'/sample.php.txt', $dst);
+	}
+
+	protected function addToTests($tests, $dst) {
+		$res = '';
+		foreach($tests as $route=>$test) {
+			$test = trim($test);
+			if(strpos($route, ':') !== false)
+				$test = "/*\n\t\t".$test."\n"."\t\t*/";
+			$res .= "\t\t".$test."\n\n";
+		}
+
+		if(file_exists(_DIR_.'tests/'.$dst.'.php')) {
+			echo 'Test '.$dst.' already exists.';
+			return;
+		}
+		file_put_contents(_DIR_.'tests/'.$dst.'.php', '<?php
+namespace App\Tests;
+
+class '.$dst.' extends \Asgard\Core\Test {
+	public function test1() {
+		'.trim($res).'
+	}
+}');
 	}
 
 	protected function addToAutotest($tests, $dst=null) {
@@ -315,6 +337,7 @@ class AsgardController extends CLIController {
 
 		if(!$dst)
 			$dst = _DIR_.'tests/AutoTest.php';
+		$this->createAutotestFile($dst);
 		$original = file_get_contents($dst);
 		$res = str_replace('/* Autotest - DO NOT MODIFY THIS LINE */', '/* Autotest - DO NOT MODIFY THIS LINE */'."\n".$res, $original);
 		file_put_contents($dst, $res);
@@ -349,7 +372,6 @@ class AsgardController extends CLIController {
 			$dst = $request['file'];
 		else
 			$dst = null;
-		$this->createAutotestFile($dst);
 
 		$routes = \Asgard\Core\App::get('resolver')->getRoutes();
 

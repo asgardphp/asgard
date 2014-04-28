@@ -59,7 +59,7 @@ class App {
 		$this->_set('cache', function() {
 			$driver = \Asgard\Core\App::get('config')->get('cache_driver');
 			if(!$driver)
-				$driver = 'Asgard\Cache\FileCache';
+				$driver = 'Asgard\Cache\NullCache';
 			return $this->make($driver);
 		});
 		$this->_set('translator', function() {

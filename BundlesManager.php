@@ -82,6 +82,10 @@ class BundlesManager {
 			$this->loaded = true;
 		}
 
+		$this->runBundles();
+	}
+
+	public function runBundles() {
 		foreach($this->bundles as $b)
 			$b->run();
 	}

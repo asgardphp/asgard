@@ -85,7 +85,7 @@ abstract class Entity {
 		if($values)
 			$this->set($values);
 		
-		$this->trigger('behaviors_presave', array($this));
+		$this->trigger('presave', array($this));
 		
 		if(!$force) {
 			#validate params and files

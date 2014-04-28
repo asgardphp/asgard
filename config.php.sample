@@ -28,7 +28,7 @@ return array(
 		'locales'	=>	array(
 			'fr', 'en'
 		),
-		'cache_driver'	=>	'Asgard\Cache\FileCache',
+		'cache_driver'	=>	null,
 		'profiler'	=>	false,
 		'error_display' => true,
 		'debug' => true,
