@@ -24,7 +24,7 @@ class Validator {
 	}
 
 	#to capture the rules calls and required
-	public function __call($name, $args) {
+	public function __call($name, array $args) {
 		if($name == 'attribute')
 			return call_user_func_array(array($this, 'callAttribute'), $args);
 		if($name == 'attributes')
@@ -37,7 +37,7 @@ class Validator {
 	}
 
 	#same in static
-	public static function __callStatic($name, $args) {
+	public static function __callStatic($name, array $args) {
 		$v = new static;
 		if($name == 'attribute')
 			return call_user_func_array(array($v, 'callAttribute'), $args);
@@ -51,7 +51,7 @@ class Validator {
 	}
 
 	#to define several rules
-	public function callRules($rules) {
+	public function callRules(array $rules) {
 		foreach($rules as $key=>$value) {
 			if(is_numeric($key))
 				$this->rule($value);
@@ -82,7 +82,7 @@ class Validator {
 			$attribute = explode('.', $attribute);
 
 		$next = array_shift($attribute);
-		if(sizeof($attribute) > 0) {
+		if(count($attribute) > 0) {
 			if(!isset($this->attributes[$next])) {
 				$this->attributes[$next] = new static;
 				$this->attributes[$next]->setParent($this);
@@ -108,7 +108,7 @@ class Validator {
 		}
 	}
 
-	public function callAttributes($attributes) {
+	public function callAttributes(array $attributes) {
 		foreach($attributes as $attribute=>$rules)
 			$this->attribute($attribute, $rules);
 		return $this;
@@ -131,13 +131,13 @@ class Validator {
 		return $this;
 	}
 
-	public function ruleMessages($rules) {
+	public function ruleMessages(array $rules) {
 		foreach($rules as $rule=>$message)
 			$this->ruleMessage($rule, $message);
 		return $this;
 	}
 
-	public function attributesMessages($messages) {
+	public function attributesMessages(array $messages) {
 		foreach($messages as $attribute=>$attrMessages)
 			$this->attribute($attribute)->ruleMessages($attrMessages);
 		return $this;
@@ -150,7 +150,7 @@ class Validator {
 			return $this->parent->getRuleMessage($rule);
 	}
 
-	public function getRule($rule, $params) {
+	public function getRule($rule, array $params) {
 		#validator
 		if($rule instanceof static)
 			return $rule;
@@ -181,7 +181,7 @@ class Validator {
 			return $this->registry;
 	}
 
-	public function setRegistry($registry) {
+	public function setRegistry(RulesRegistry $registry) {
 		$this->registry = $registry;
 		return $this;
 	}
@@ -198,7 +198,7 @@ class Validator {
 		return $this->input;
 	}
 
-	public function setParent($parent) {
+	public function setParent(Validator $parent) {
 		$this->parent = $parent;
 		return $this;
 	}
@@ -303,7 +303,7 @@ class Validator {
 		return $errors;
 	}
 
-	protected function mergeErrors($errors1, $errors2) {
+	protected function mergeErrors(array $errors1, array $errors2) {
 		foreach($errors2['rules'] as $name=>$rule) {
 			if(isset($errors1['rules'][$name])) {
 				$i=1;
@@ -379,7 +379,7 @@ class Validator {
 		return $this->format($message, $params);
 	}
 
-	protected function format($message, $params) {
+	protected function format($message, array $params) {
 		foreach($params as $k=>$v) {
 			if(is_string($v) || is_numeric($v))
 				$message = str_replace(':'.$k, $v, $message);

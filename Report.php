@@ -6,7 +6,7 @@ class Report {
 	protected $rules=array();
 	protected $attributes=array();
 
-	public function __construct($errors=array()) {
+	public function __construct(array $errors=array()) {
 		if(isset($errors['self']))
 			$this->self = $errors['self'];
 		if(isset($errors['rules']))
@@ -60,7 +60,7 @@ class Report {
 		return $failed;
 	}
 
-	public function attribute($attribute, $report=null) {
+	public function attribute($attribute, Report $report=null) {
 		if(is_string($attribute))
 			$attribute = explode('.', $attribute);
 
@@ -69,14 +69,14 @@ class Report {
 			$this->attributes[$next] = new static;
 
 		if($report !== null) {
-			if(sizeof($attribute) == 0)
+			if(count($attribute) == 0)
 				$this->attributes[$next] = $report;
 			else
 				$this->attributes[$next]->attribute($attribute, $report);
 			return $this;
 		}
 		else {
-			if(sizeof($attribute) == 0)
+			if(count($attribute) == 0)
 				return $this->attributes[$next];
 			else
 				return $this->attributes[$next]->attribute($attribute);

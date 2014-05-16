@@ -8,16 +8,13 @@ class InputBag {
 
 	public function __construct($input) {
 		$this->input = $input;
-		#todo for obects
-		// if(is_object($input))
-		// 	$input = get_object_vars($input);
 		if(is_array($input)) {
 			foreach($input as $k=>$v)
 				$this->attributes[$k] = (new static($v))->setParent($this);
 		}
 	}
 
-	public function setParent($parent) {
+	public function setParent(InputBag $parent) {
 		$this->parent = $parent;
 		return $this;
 	}
@@ -38,7 +35,7 @@ class InputBag {
 			$attribute = explode('.', $attribute);
 
 		$next = array_shift($attribute);
-		if(sizeof($attribute) === 0) {
+		if(count($attribute) === 0) {
 			if(!isset($this->attributes[$next]))
 				return (new static(null))->setParent($this);
 			else

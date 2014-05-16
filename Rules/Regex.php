@@ -8,7 +8,7 @@ class Regex extends \Asgard\Validation\Rule {
 		$this->pattern = $pattern;
 	}
 
-	public function validate($input, $parentInput, $validator) {
+	public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\Validator $validator) {
 		return preg_match($this->pattern, $input) === 1;
 	}
 

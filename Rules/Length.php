@@ -8,7 +8,7 @@ class Length extends \Asgard\Validation\Rule {
 		$this->length = $length;
 	}
 
-	public function validate($input, $parentInput, $validator) {
+	public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\Validator $validator) {
 		return strlen($input) === $this->length;
 	}
 

@@ -10,7 +10,7 @@ class LengthBetween extends \Asgard\Validation\Rule {
 		$this->max = $max;
 	}
 
-	public function validate($input, $parentInput, $validator) {
+	public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\Validator $validator) {
 		if($this->min !== null && strlen($input) < $this->min)
 			return false;
 		if($this->max !== null && strlen($input) > $this->max)

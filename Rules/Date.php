@@ -2,7 +2,7 @@
 namespace Asgard\Validation\Rules;
 
 class Date extends \Asgard\Validation\Rule {
-	public function validate($input, $parentInput, $validator) {
+	public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\Validator $validator) {
 		if($input instanceof \Carbon\Carbon)
 			return true;
 		if(is_string($input))

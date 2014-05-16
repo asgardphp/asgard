@@ -6,7 +6,7 @@ class Isinstanceof extends \Asgard\Validation\Rule {
 		$this->class = $class;
 	}
 
-	public function validate($input, $parentInput, $validator) {
+	public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\Validator $validator) {
 		return $input instanceof $this->class;
 	}
 

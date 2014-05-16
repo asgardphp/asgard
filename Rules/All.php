@@ -8,7 +8,7 @@ class All extends \Asgard\Validation\Rule {
 		$this->rules = func_get_args();
 	}
 
-	public function validate($input, $parentInput, $validator) {
+	public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\Validator $validator) {
 		foreach($this->rules as $rule) {
 			if($rule instanceof \Asgard\Validation\Validator) {
 				if($rule->valid($input) === false)

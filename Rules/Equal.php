@@ -8,7 +8,7 @@ class Equal extends \Asgard\Validation\Rule {
 		$this->equal = $equal;
 	}
 
-	public function validate($input, $parentInput, $validator) {
+	public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\Validator $validator) {
 		return $input == $this->equal;
 	}
 

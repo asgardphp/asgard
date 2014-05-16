@@ -8,7 +8,7 @@ class Min extends \Asgard\Validation\Rule {
 		$this->min = $min;
 	}
 
-	public function validate($input, $parentInput, $validator) {
+	public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\Validator $validator) {
 		return $input >= $this->min;
 	}
 

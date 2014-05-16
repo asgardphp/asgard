@@ -6,7 +6,7 @@ class Contains extends \Asgard\Validation\Rule {
 		$this->contain = $contain;
 	}
 
-	public function validate($input, $parentInput, $validator) {
+	public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\Validator $validator) {
 		return strpos($input, $this->contain) !== false;
 	}
 

@@ -21,7 +21,7 @@ class RulesRegistry {
 		return $this;
 	}
 
-	public function messages($rules) {
+	public function messages(array $rules) {
 		foreach($rules as $rule=>$message)
 			$this->message($rule, $message);
 		return $this;
@@ -67,6 +67,6 @@ class RulesRegistry {
 				return $name;
 		}
 		$explode = explode('\\', get_class($rule));
-		return $explode[sizeof($explode)-1];
+		return $explode[count($explode)-1];
 	}
 }

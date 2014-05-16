@@ -5,24 +5,6 @@ use Asgard\Validation\Validator as v;
 use Asgard\Validation\RulesRegistry;
 use Asgard\Validation\InputBag;
 
-#todo
-#required: have an actual rule and just return true in validrule is input is null
-#namespace
-
-#translator/rulesregistry dependency injection, service provider
-/*
-App::get('validator') => function() {
-	$v = new Validator;
-	$v->setTranslator(App::get('translator'));
-	$v->setRegistry(App::get('rulesregistry'));
-}
-Bundle:
-	App::register('rulesregistry', function(){})
-*/
-
-#if only one error, use it as self error?
-#all: afficher les messages des sous rules?
-
 class Test extends \PHPUnit_Framework_TestCase {
 	public function test1() {
 		$v = new v;
