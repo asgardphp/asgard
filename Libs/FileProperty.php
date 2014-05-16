@@ -1,7 +1,7 @@
 <?php
 namespace Asgard\Files\Libs;
 
-class FileProperty extends \Asgard\Core\Properties\BaseProperty {
+class FileProperty extends \Asgard\Entity\Properties\BaseProperty {
 	public static $defaultextension = array('pdf', 'doc', 'jpg', 'jpeg', 'png', 'docx', 'gif', 'rtf', 'ppt', 'xls', 'zip', 'txt');
 
 	public function getRules() {

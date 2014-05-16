@@ -5,13 +5,14 @@ class FilesTest extends \PHPUnit_Framework_TestCase {
 	public static function setUpBeforeClass() {
 		if(!defined('_ENV_'))
 			define('_ENV_', 'test');
-		require_once _VENDOR_DIR_.'autoload.php';
 
 		\Asgard\Core\App::instance(true)->config->set('bundles', array(
-			_ASGARD_DIR_.'core',
-			_ASGARD_DIR_.'validation',
-			_ASGARD_DIR_.'files',
-		));
+			new \Asgard\Core\Bundle,
+			new \Asgard\Validation\Bundle,
+			new \Asgard\Files\Bundle,
+			new \Asgard\Entity\Bundle,
+		))
+		->set('bundlesdirs', array());
 		\Asgard\Core\App::loadDefaultApp(false);
 	}
 

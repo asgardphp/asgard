@@ -2,7 +2,7 @@
 namespace Asgard\Files\Rules;
 
 class Image extends \Asgard\Validation\Rule {
-	public function validate($input, $parentInput, $validator) {
+	public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\Validator $validator) {
 		if(!$input instanceof \Asgard\Files\Libs\EntityFile || $input->get(null, true) === null)
 			return;
 		$finfo = \finfo_open(FILEINFO_MIME);
