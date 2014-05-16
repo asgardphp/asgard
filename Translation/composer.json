@@ -1,0 +1,14 @@
+{
+	"name": "asgard/translation",
+	"license": "MIT",
+	"authors": [{
+		"name": "Michel Hognerud",
+		"email": "michel@hognerud.net"
+	}],
+    "autoload": {
+        "psr-4": {"Asgard\\Translation\\": "."}
+    },
+    "require": {
+        "symfony/translation": "dev-master"
+    }
+}
