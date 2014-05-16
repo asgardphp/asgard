@@ -6,11 +6,11 @@ class HookChain {
 	protected $continue = true;
 	public $executed = 0;
 
-	public function __construct($calls=array()) {
+	public function __construct(array $calls=array()) {
 		$this->calls = $calls;
 	}
 
-	public function run($args, $print) {
+	public function run(array $args, $print) {
 		foreach($this->calls as $call) {
 			$res = call_user_func_array($call, array_merge(array($this), $args));
 			$this->executed++;

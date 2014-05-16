@@ -4,57 +4,57 @@ namespace Asgard\Hook;
 class Hook {
 	public $registry = array();
 
-	public function trigger_print($name, $args=array(), $cb=null) {
+	public function trigger_print($name, array $args=array(), $cb=null) {
 		return $this->trigger($name, $args, $cb, true);
 	}
 
-	public function triggerChain_print($chain, $name, $args=array(), $cb=null) {
+	public function triggerChain_print(HookChain $chain, $name, array $args=array(), $cb=null) {
 		return $this->triggerChain($chain, $name, $args, $cb, true);
 	}
 
-	public function trigger($name, $args=array(), $cb=null, $print=false) {
-		return $this->triggerChain(new \Asgard\Hook\HookChain, $name, $args, $cb, $print);
+	public function trigger($name, array $args=array(), $cb=null, $print=false) {
+		return $this->triggerChain(new HookChain, $name, $args, $cb, $print);
 	}
 
-	public function triggerChain($chain, $name, $args=array(), $cb=null, $print=false) {
+	public function triggerChain(HookChain $chain, $name, array $args=array(), $cb=null, $print=false) {
 		if(is_string($name))
 			$name = explode('/', $name);
 
 		$chain->calls = array_merge(
 			$this->get(array_merge($name, array('before'))),
-			$cb !== null ? array($cb):array(),
 			$this->get(array_merge($name, array('on'))),
+			$cb !== null ? array($cb):array(),
 			$this->get(array_merge($name, array('after')))
 		);
-		
-		if(!is_array($args))
-			$args = array($args);
 
 		return $chain->run($args, $print);
 	}
 
-	public function getHooks($path) {
+	public function getHooks(array $path) {
 		$result = $this->registry;
-		foreach($path as $key)
+		foreach($path as $key) {
 			if(!isset($result[$key]))
-				return false;
+				return null;
 			else
 				$result = $result[$key];
+		}
+
 		return $result;
 	}
 
-	public function has($path) {
+	public function has(array $path) {
 		$result = $this->registry;
-		foreach($path as $key)
+		foreach($path as $key) {
 			if(!isset($result[$key]))
 				return false;
 			else
 				$result = $result[$key];
+		}
 		
 		return true;
 	}
 
-	protected function set($path, $cb, $priority=0) {
+	protected function set(array $path, $cb, $priority=0) {
 		$arr =& $this->registry;
 		$key = array_pop($path);
 		foreach($path as $next)
@@ -64,7 +64,7 @@ class Hook {
 		$arr[$key][$priority] = $cb;
 	}
 	
-	public function get($path=array()) {
+	public function get(array $path=array()) {
 		$result = $this->registry;
 		foreach($path as $key)
 			if(!isset($result[$key]))
@@ -101,9 +101,10 @@ class Hook {
 		$this->createhook($hookName, $cb, 'after');
 	}
 
-	public function hooks($allhooks) {
-		foreach($allhooks as $name=>$hooks)
+	public function hooks(array $allhooks) {
+		foreach($allhooks as $name=>$hooks) {
 			foreach($hooks as $cb)
 				$this->createhook($name, $cb);
+		}
 	}
 }
