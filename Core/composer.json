@@ -1,0 +1,16 @@
+{
+	"name": "asgard/core",
+	"license": "MIT",
+	"authors": [{
+		"name": "Michel Hognerud",
+		"email": "michel@hognerud.net"
+	}],
+    "autoload": {
+        "psr-4": {"Asgard\\Core\\": "."}
+    },
+    "require": {
+        "niktux/addendum": "dev-master",
+        "asgard/utils": "dev-master",
+        "symfony/yaml": "dev-master"
+    }
+}

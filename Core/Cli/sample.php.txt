@@ -1,0 +1,8 @@
+<?php
+namespace Tests;
+
+class AutoTest extends \Asgard\Core\Test {
+	public function test() {
+		/* Autotest - DO NOT MODIFY THIS LINE */
+	}
+}
