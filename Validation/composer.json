@@ -1,0 +1,14 @@
+{
+	"name": "asgard/validation",
+	"license": "MIT",
+	"authors": [{
+		"name": "Michel Hognerud",
+		"email": "michel@hognerud.net"
+	}],
+    "autoload": {
+        "psr-4": {"Asgard\\Validation\\": "."}
+    },
+    "require-dev": {
+        "symfony/translation": "2.3.*"
+    }
+}
