@@ -1,7 +1,7 @@
 <?php
 namespace Asgard\Entity\Properties;
 
-class DateProperty extends BaseProperty {
+class DateProperty extends \Asgard\Entity\Property {
 	public function getRules() {
 		$rules = parent::getRules();
 		$rules['isinstanceof'] = 'Carbon\Carbon';

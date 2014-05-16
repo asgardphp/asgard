@@ -1,7 +1,7 @@
 <?php
 namespace Asgard\Entity\Properties;
 
-class TextProperty extends BaseProperty {
+class TextProperty extends \Asgard\Entity\Property {
 	public function getSQLType() {
 		if($this->length)
 			return 'varchar('.$this->length.')';

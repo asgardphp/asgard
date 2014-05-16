@@ -1,7 +1,7 @@
 <?php
-namespace Asgard\Entity\Properties;
+namespace Asgard\Entity;
 
-class BaseProperty {
+class Property {
 	protected $position;
 	protected $entity;
 	protected $name;

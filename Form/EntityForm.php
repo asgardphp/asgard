@@ -39,7 +39,7 @@ class EntityForm extends Form {
 		);
 	}
 
-	protected function addAttributeField(\Asgard\Entity\Entity $entity, $name, \Asgard\Entity\Properties\BaseProperty $properties, $locale=null) {
+	protected function addAttributeField(\Asgard\Entity\Entity $entity, $name, \Asgard\Entity\Property $properties, $locale=null) {
 		$field_params = array();
 
 		$field_params['form'] = $this;

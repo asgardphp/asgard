@@ -1,7 +1,7 @@
 <?php
 namespace Asgard\Entity\Properties;
 
-class ArrayProperty extends BaseProperty {
+class ArrayProperty extends \Asgard\Entity\Property {
 	public function getRules() {
 		$rules = parent::getRules();
 		$rules['array'] = true;

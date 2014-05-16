@@ -1,7 +1,7 @@
 <?php
 namespace Asgard\Entity\Properties;
 
-class BooleanProperty extends BaseProperty {
+class BooleanProperty extends \Asgard\Entity\Property {
 	public function getRules() {
 		$rules = parent::getRules();
 		$rules['required'] = false;

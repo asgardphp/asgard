@@ -1,7 +1,7 @@
 <?php
 namespace Asgard\Entity\Properties;
 
-class IntegerProperty extends BaseProperty {
+class IntegerProperty extends \Asgard\Entity\Property {
 	public function getSQLType() {
 		if($this->length)
 			return 'int('.$this->length.')';
