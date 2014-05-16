@@ -7,7 +7,6 @@ class DALTest extends \PHPUnit_Framework_TestCase {
 	public static function setUpBeforeClass() {
 		if(!defined('_ENV_'))
 			define('_ENV_', 'test');
-		require _VENDOR_DIR_.'autoload.php';
 
 		$db = new \Asgard\Db\DB(array(
 			'host' => 'localhost',

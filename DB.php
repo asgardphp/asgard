@@ -11,7 +11,7 @@ class DB {
 	 * @param array config database configuration
 	 * @param \PDO db database connection
 	*/
-	public function __construct($config, $db=null) {
+	public function __construct(array $config, \PDO $db=null) {
 		$this->config = $config;
 		if(!$db) {
 			$this->db = new \PDO('mysql:host='.$config['host'].(isset($config['database']) ? ';dbname='.$config['database']:''),
@@ -63,7 +63,7 @@ class DB {
 	 * 
 	 * @return Asgard\Db\Query Query object
 	*/
-	public function query($sql, $args=array()) {
+	public function query($sql, array $args=array()) {
 		return new Query($this->db, $sql, $args);
 	}
 	

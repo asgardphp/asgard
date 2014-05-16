@@ -123,9 +123,10 @@ class BuildTable {
 			
 		if($this->primary) {
 			$sql .= ",\n".'PRIMARY KEY (';
-			if(is_array($this->primary))
+			if(is_array($this->primary)) {
 				foreach($this->primary as $v)
 					$sql .= '`'.$v.'`';
+			}
 			else
 				$sql .= '`'.$this->primary.'`';
 			$sql .= ')';
@@ -133,9 +134,10 @@ class BuildTable {
 		
 		if($this->indexes) {
 			$sql .= ",\n".'INDEX KEY (';
-			if(is_array($this->indexes))
+			if(is_array($this->indexes)) {
 				foreach($this->indexes as $v)
 					$sql .= '`'.$v.'`';
+			}
 			else
 				$sql .= '`'.$this->indexes.'`';
 			$sql .= ')';
@@ -143,9 +145,10 @@ class BuildTable {
 		
 		if($this->uniques) {
 			$sql .= ",\n".'UNIQUE KEY (';
-			if(is_array($this->uniques))
+			if(is_array($this->uniques)) {
 				foreach($this->uniques as $v)
 					$sql .= '`'.$v.'`';
+			}
 			else
 				$sql .= '`'.$this->uniques.'`';
 			$sql .= ')';
@@ -161,7 +164,7 @@ class Table {
 	protected $db;
 	protected $name;
 	
-	public function __construct($db, $name) {
+	public function __construct(DB $db, $name) {
 		$this->db = $db;
 		$this->name = $name;
 	}
@@ -206,7 +209,7 @@ class Column {
 	protected $type;
 	protected $length;
 	
-	public function __construct($db, $table, $name, $type=null, $length=null) {
+	public function __construct(DB $db, $table, $name, $type=null, $length=null) {
 		$this->db = $db;
 		$this->table = $table;
 		$this->name = $name;
@@ -237,7 +240,7 @@ class Column {
 	#default
 	#autoincrement
 	
-	protected function change($params) {
+	protected function change(array $params) {
 		$table = $this->table;
 		$oldcol = $this->name;
 		$newcol = isset($params['name']) ? $params['name']:$this->name;
@@ -418,7 +421,7 @@ class Column {
 class Schema {
 	protected $db;
 
-	public function __construct($db) {
+	public function __construct(DB $db) {
 		$this->db = $db;
 	}
 

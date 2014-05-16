@@ -20,7 +20,7 @@ class DAL {
 
 	protected $query = null;
 
-	public function __construct($db, $tables=null) {
+	public function __construct(DB $db, $tables=null) {
 		$this->db = $db;
 		$this->addFrom($tables);
 	}
@@ -121,7 +121,7 @@ class DAL {
 		return $this;
 	}
 	
-	public function query($sql=null, $params=array()) {
+	public function query($sql=null, array $params=array()) {
 		if($sql === null) {
 			$sql = $this->buildSQL();
 			$params = $this->getParameters();
@@ -185,7 +185,7 @@ class DAL {
 		return $this;
 	}
 
-	public function _addSelect($columns) {
+	protected function _addSelect(array $columns) {
 		if(array_values($columns) === $columns) {
 			foreach($columns as $k=>$v) {
 				unset($columns[$k]);
@@ -227,10 +227,6 @@ class DAL {
 	}
 		
 	public function where($conditions, $values=null) {
-		// d($conditions);
-		if(!$conditions)
-			return $this;
-
 		if($values !== null)
 			$this->where[$conditions] = $values;
 		else		
@@ -241,7 +237,7 @@ class DAL {
 
 	/* CONDITIONS PROCESSING */
 	protected function processConditions($params, $condition = 'and', $brackets=false, $table=null) {
-		if(sizeof($params) == 0)
+		if(count($params) == 0)
 			return array('', array());
 		
 		$string_conditions = '';
@@ -274,7 +270,7 @@ class DAL {
 					$pdoparams[] = $r[1];
 				}
 				else {
-					$r = $this->processConditions($value, $key, sizeof($params) > 1, $table);
+					$r = $this->processConditions($value, $key, count($params) > 1, $table);
 					$string_conditions[] = $r[0];
 					$pdoparams[] = $r[1];
 				}
@@ -318,24 +314,6 @@ class DAL {
 		}, $str);
 	}
 	
-	/*protected static function parseConditions($conditions) {
-		$res = array();
-
-		if(is_array($conditions)) {
-			foreach($conditions as $k=>$v)
-				if(is_int($k))
-					$res[] = static::parseConditions($v);
-				else {
-					$ar = array();
-					$ar[$k] = static::parseConditions($v);
-					$res[] = $ar;
-				}
-			return $res;
-		}
-		else
-			return $conditions;
-	}*/
-	
 	/* BUILDERS */
 	protected function buildColumns() {
 		$select = array();
@@ -368,10 +346,8 @@ class DAL {
 	}
 
 	protected function buildWhere($default=null) {
-		// d($this->where);
 		$params = array();
 		$r = $this->processConditions($this->where, 'and', false, $this->getDefaultTable());
-		// d($r);
 		if($r[0])
 			return array(' WHERE '.$r[0], $r[1]);
 		else
@@ -430,15 +406,8 @@ class DAL {
 	protected function buildJointures() {
 		$params = array();
 		$jointures = '';
-		// if($this->joins)
-		// d($this->joins);
 		foreach($this->joins as $alias=>$jointure) {
-			// d($jointure);
 			$type = $jointure[0];
-			// $table = array_keys($jointure[1])[0];
-			// $conditions = array_values($jointure[1])[0];
-			// $table = $jointure[1][0];
-			// $conditions = $jointure[1][1];
 			$table = $jointure[1];
 			$conditions = $jointure[2];
 			$alias = $alias !== $table ? $alias:null;
@@ -463,18 +432,13 @@ class DAL {
 				$jointure = ' INNER JOIN ';
 				break;
 		}
-		// if(static::isIdentifier($table))
-		// 	$table = $this->identifierQuotes($table);
-		// $table = preg_replace_callback('/(^[a-z_][a-z0-9._]*)| ([a-z_][a-z0-9._]*$)/', function($matches) {
-		#(...) a
-		#actu
-		#actu a
+
 		if($alias !== null)
 			$table = $table.' '.$alias;
 		$table = preg_replace_callback('/(^[a-z_][a-z0-9._]*)| ([a-z_][a-z0-9._]*$)/', function($matches) {
 				return $this->identifierQuotes($matches[0]);
 		}, $table);
-		// d($table);
+
 		$jointure .= $table;
 		if($conditions) {
 			$r = $this->processConditions($conditions);
@@ -535,8 +499,8 @@ class DAL {
 		// return array('SELECT '.$select.' FROM '.$table.$jointures.$where.$groupby.$orderBy.$limit, $params);
 	}
 
-	public function buildUpdateSQL($values) {
-		if(sizeof($values) == 0)
+	public function buildUpdateSQL(array $values) {
+		if(count($values) == 0)
 			throw new \Exception('Update values should not be empty.');
 		$params = array();
 
@@ -582,8 +546,8 @@ class DAL {
 			return 'DELETE FROM '.$tables.$where.$orderBy.$limit;
 	}
 
-	public function buildInsertSQL($values) {
-		if(sizeof($values) == 0)
+	public function buildInsertSQL(array $values) {
+		if(count($values) == 0)
 			throw new \Exception('Insert values should not be empty.');
 		if($this->into === null && count($this->tables) !== 1)
 			throw new \Exception('The into table is not defined.');
@@ -598,7 +562,7 @@ class DAL {
 		$cols = array();
 		foreach($values as $k=>$v)
 			$cols[] = $this->replace($k);
-		$str = ' ('.implode(', ', $cols).') VALUES ('.implode(', ', array_fill(0, sizeof($values), '?')).')';
+		$str = ' ('.implode(', ', $cols).') VALUES ('.implode(', ', array_fill(0, count($values), '?')).')';
 		$params = array_merge($params, array_values($values));
 		
 		$this->params = $params;
@@ -606,19 +570,19 @@ class DAL {
 	}
 	
 	/* FUNCTIONS */
-	public function update($values) {
+	public function update(array $values) {
 		$sql = $this->buildUpdateSQL($values);
 		$params = $this->getParameters();
 		return $this->db->query($sql, $params)->affected();
 	}
 	
-	public function insert($values) {
+	public function insert(array $values) {
 		$sql = $this->buildInsertSQL($values);
 		$params = $this->getParameters();
 		return $this->db->query($sql, $params)->id();
 	}
 	
-	public function delete($tables=null) {
+	public function delete(array $tables=null) {
 		$sql = $this->buildDeleteSQL($tables);
 		$params = $this->getParameters();
 		return $this->db->query($sql, $params)->affected();

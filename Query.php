@@ -5,7 +5,7 @@ class Query {
 	protected $db;
 	protected $rsc;
 
-	public function __construct($db, $sql, $args=array()) {
+	public function __construct(\PDO $db, $sql, array $args=array()) {
 		$this->db = $db;
 		try {
 			if($args) {
