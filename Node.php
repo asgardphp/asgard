@@ -13,7 +13,7 @@ class Node {
 	/**
 	 * Constructor
 	 * 
-	 * @param \DOMNode domnode
+	 * @param \DOMNode|null domnode
 	*/
 	public function __construct($domnode) {
 		if(!$domnode)
@@ -186,7 +186,7 @@ class Node {
 	 * 
 	 * @return \DOMXPath
 	*/
-	protected static function nodeToXpath($domnode) {
+	protected static function nodeToXpath(\DOMNode $domnode) {
 		$dom = new \DOMDocument();
 		$dom->formatOutput = true;
 		$node = $dom->importNode($domnode, true);
@@ -197,7 +197,7 @@ class Node {
 	/**
 	 * Returns the inner html of a DOMNode object.
 	 * 
-	 * @param \DOMNode node
+	 * @param \DOMNode|null node
 	 * 
 	 * @return string HTML code
 	*/
@@ -219,12 +219,12 @@ class Node {
 	 * @return string XML code
 	*/
 	protected static function getInnerXML($node) {
-		if($this->xpath === null)
+		if(!$node)
 			return null;
-		$innerHTML= ''; 
+		$innerXML= ''; 
 		$children = $node->childNodes; 
 		foreach ($children as $child)
 			$innerHTML .= $child->ownerDocument->saveXML($child);
-		return $innerHTML; 
+		return $innerXML; 
 	}
 }

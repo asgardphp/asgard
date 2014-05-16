@@ -2,14 +2,8 @@
 namespace Asgard\Xpath\Tests;
 
 class XpathTest extends \PHPUnit_Framework_TestCase {
-	public static function setUpBeforeClass() {
-		if(!defined('_ENV_'))
-			define('_ENV_', 'test');
-		require _VENDOR_DIR_.'autoload.php';
-	}
-	
 	public function test1() {
-		$html = file_get_contents(__dir__.'/page.html');
+		$html = file_get_contents(__DIR__.'/page.html');
 		$doc = new \Asgard\Xpath\Doc($html);
 
 		$this->assertInstanceOf('DOMXpath', $doc->getXpath());
