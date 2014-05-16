@@ -6,7 +6,7 @@ namespace <?php echo $bundle['namespace'] ?>\Controllers;
 @Prefix('<?php echo $prefix ?>')
 */
 <?php endif ?>
-class <?php echo ucfirst($controller['name']) ?> extends \Asgard\Core\Controller {
+class <?php echo ucfirst($controller['name']) ?> extends \Asgard\Http\Controller {
 <?php foreach($controller['actions'] as $name=>$action): ?>
 <?php if(($route=$action['route']) !== null): ?>
 	/**

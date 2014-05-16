@@ -9,30 +9,8 @@
         "psr-4": {"Asgard\\Core\\": "."}
     },
     "require": {
-        "asgard/composer": "dev-master",
         "niktux/addendum": "dev-master",
-        "nesbot/Carbon": "*",
-        "symfony/yaml": "dev-master",
-        "asgard/auth": "dev-master",
-        "asgard/behaviors": "dev-master",
-        "asgard/db": "dev-master",
-        "asgard/files": "dev-master",
-        "asgard/form": "dev-master",
-        "asgard/hook": "dev-master",
-        "asgard/orm": "dev-master",
         "asgard/utils": "dev-master",
-        "asgard/translation": "dev-master",
-        "asgard/validation": "dev-master",
-        "asgard/cache": "dev-master",
-        "psr/log": "dev-master"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "3.7.*"
-    },
-    "suggest": {
-        "asgard/seo": "dev-master",
-        "asgard/js": "dev-master",
-        "asgard/minify": "dev-master",
-        "psr/log": "1.0.0"
+        "symfony/yaml": "dev-master"
     }
 }

@@ -4,18 +4,18 @@ namespace <?php echo $bundle['namespace'] ?>\Controllers;
 /**
 @Prefix('<?php echo $entity['meta']['plural'] ?>')
 */
-class <?php echo ucfirst($entity['meta']['name']) ?>Controller extends \Asgard\Core\Controller {<?php if(in_array('index', $entity['front']) || isset($entity['front']['index'])): ?>
+class <?php echo ucfirst($entity['meta']['name']) ?>Controller extends \Asgard\Http\Controller {<?php if(in_array('index', $entity['front']) || isset($entity['front']['index'])): ?>
 	/**
 	@Route('')
 	*/
-	public function indexAction($request) {
+	public function indexAction(\Asgard\Http\Request $request) {
 		$this-><?php echo $entity['meta']['plural'] ?> = \<?php echo $entity['meta']['entityClass'] ?>::all();
 	}
 	<?php endif ?><?php if(in_array('show', $entity['front']) || isset($entity['front']['show'])): ?>
 	/**
 	@Route(':id')
 	*/
-	public function showAction($request) {
+	public function showAction(\Asgard\Http\Request $request) {
 		if(!($this-><?php echo $entity['meta']['name'] ?> = \<?php echo $entity['meta']['entityClass'] ?>::load($request['id'])))
 			$this->notfound();
 			

@@ -31,7 +31,7 @@ class Autoloader {
 		$this->preload = $preload;
 	}
 
-	public function addPreloadedClasses($classes) {
+	public function addPreloadedClasses(array $classes) {
 		if(!$this->globalNamespace || !$this->preload)
 			return;
 		foreach($classes as $class)
@@ -154,7 +154,7 @@ class Autoloader {
 		$after = array_merge(get_declared_classes(), get_declared_interfaces());
 		
 		$diff = array_diff($after, $before);
-		$result = \Asgard\Utils\Tools::array_get(array_values($diff), sizeof($diff)-1);
+		$result = \Asgard\Utils\Tools::array_get(array_values($diff), count($diff)-1);
 		if(!$result) {
 			foreach(array_merge(get_declared_classes(), get_declared_interfaces()) as $class) {
 				$reflector = new \ReflectionClass($class);

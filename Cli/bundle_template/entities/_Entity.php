@@ -1,7 +1,7 @@
 <%
 namespace <?php echo $bundle['namespace'] ?>\Entities;
 
-class <?php echo ucfirst($entity['meta']['name']) ?> extends \Asgard\Core\Entity {
+class <?php echo ucfirst($entity['meta']['name']) ?> extends \Asgard\Entity\Entity {
 	public static $properties = array(
 <?php foreach($entity['properties'] as $name=>$property): ?>
 		'<?php echo $name ?>'	=>	array(

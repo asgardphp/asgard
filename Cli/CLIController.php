@@ -20,7 +20,7 @@ abstract class CLIController {
 				$routes[] = array(
 					'shortcut'	=>	$v->value,
 					'controller'	=>	get_called_class(),
-					'action'	=>	\Asgard\Core\App::get('resolver')->formatActionName($method),
+					'action'	=>	static::formatActionName($method),
 					'usage'		=>	$usage,
 					'description'		=>	$description,
 				);
@@ -28,6 +28,10 @@ abstract class CLIController {
 		}
 
 		return $routes;
+	}
+
+	public static function formatActionName($action) {
+		return preg_replace('/Action$/i', '', $action);
 	}
 
 	public function run($action, $params=array(), $showView=false) {

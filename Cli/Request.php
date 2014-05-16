@@ -35,7 +35,7 @@ class Request {
 	
 	protected static function parseArgs($argv) {
 		$res = array();
-		for($k=0; $k<sizeof($argv); $k++) {
+		for($k=0; $k<count($argv); $k++) {
 			$v = $argv[$k];
 			if(preg_match('/^--([^ =]+)=(.+)/', $v, $matches))
 				$res[$matches[1]] = $matches[2];

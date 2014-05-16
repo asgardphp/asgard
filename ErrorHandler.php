@@ -28,7 +28,7 @@ class ErrorHandler {
 		}
 	}
 
-	public static function getBacktraceFromException($e) {
+	public static function getBacktraceFromException(\Exception $e) {
 		$trace = $e->getTrace();
 
 		if($e instanceof FatalErrorException) {
@@ -66,7 +66,7 @@ class ErrorHandler {
 		throw new \ErrorException($errstr, $errno, 0, $errfile, $errline);
 	}
 
-	public static function exceptionHandler($e) {
+	public static function exceptionHandler(\Exception $e) {
 		static::$reservedMemory = null;
 
 		#PSRException with a given severity
@@ -100,7 +100,7 @@ class ErrorHandler {
 		exit(1);
 	}
 
-	public static function logException($e) {
+	public static function logException(\Exception $e) {
 		if(!static::isLogging())
 			return;
 

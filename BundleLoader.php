@@ -19,75 +19,92 @@ namespace Asgard\Core {
 	class BundleLoader {
 		protected $bundle = null;
 
-		public function load($queue) {
+		public function load(BundlesManager $queue) {
 			if(\Asgard\Core\App::has('autoloader'))
 				\Asgard\Core\App::get('autoloader')->preloadDir($this->getBundle());
 		}
 
 		public function run() {
-			$this->loadLocales();
-			$this->loadHooks();
-			$this->loadControllers();
-			if(php_sapi_name() === 'cli')
-				$this->loadCLI();
+			$bundleData = \Asgard\Core\App::get('cache')->get('bundles/'.$this->getID());
+			if($bundleData !== null) {
+				$locales = $bundleData['locales'];
+				$hooks = $bundleData['hooks'];
+				$cli = $bundleData['cli'];
+				$routes = $bundleData['routes'];
+			}
+			else {
+				$locales = $this->loadLocales();
+				$hooks = $this->loadHooks();
+				$cli = $this->loadCli();
+				$routes = $this->loadControllers();
+				
+				\Asgard\Core\App::get('cache')->set('bundles/'.$this->getID(), array(
+					'locales' => $locales,
+					'hooks' => $hooks,
+					'cli' => $cli,
+					'routes' => $routes,
+				));
+			}
+
+			if(\Asgard\Core\App::has('translator'))
+				\Asgard\Core\App::get('translator')->addLocales($locales);
+
+			if(\Asgard\Core\App::has('hook'))
+				\Asgard\Core\App::get('hook')->hooks($hooks);
+
+			if(\Asgard\Core\App::has('resolver'))
+				\Asgard\Core\App::get('resolver')->addRoutes($routes);
+
+			if(php_sapi_name() === 'cli' && \Asgard\Core\App::has('clirouter'))
+				\Asgard\Core\App::get('clirouter')->addRoutes($cli);
 		}
 
 		protected function loadLocales() {
-			$locales = \Asgard\Core\App::get('cache')->get('bundles/'.$this->getBundle().'/locales', function() {
-				return \Asgard\Core\App::get('translator')->fetchLocalesFromDir($this->getBundle().'/locales');
-			});
-			\Asgard\Core\App::get('translator')->addLocales($locales);
+			if(!\Asgard\Core\App::has('translator'))
+				return array();
+			return \Asgard\Core\App::get('translator')->fetchLocalesFromDir($this->getBundle().'/locales');
 		}
 
 		protected function loadHooks() {
-			$hooks = \Asgard\Core\App::get('cache')->get('bundles/'.$this->getID().'/hooks', function() {
-				$hooks = array();
-				if(file_exists($this->getBundle().'/hooks/')) {
-					foreach(glob($this->getBundle().'/hooks/*.php') as $filename) {
-						$class = \Asgard\Core\Autoloader::loadClassFile($filename);
-						if(is_subclass_of($class, 'Asgard\Hook\HooksContainer'))
-							$hooks = array_merge($hooks, $class::fetchHooks());
-					}
+			if(!\Asgard\Core\App::has('hook'))
+				return array();
+			$hooks = array();
+			if(file_exists($this->getBundle().'/hooks/')) {
+				foreach(glob($this->getBundle().'/hooks/*.php') as $filename) {
+					$class = \Asgard\Core\Autoloader::loadClassFile($filename);
+					if(is_subclass_of($class, 'Asgard\Hook\HooksContainer'))
+						$hooks = array_merge_recursive($hooks, $class::fetchHooks());
 				}
-				return $hooks;
-			});
-			if(!is_array($hooks))
-				return;
-			\Asgard\Core\App::get('hook')->hooks($hooks);
+			}
+			return $hooks;
 		}
 
 		protected function loadCLI() {
-			$routes = \Asgard\Core\App::get('cache')->get('bundles/'.$this->getID().'/cli', function() {
-				$routes = array();
-				if(file_exists($this->getBundle().'/Cli/')) {
-					foreach(glob($this->getBundle().'/Cli/*.php') as $filename) {
-						$class = \Asgard\Core\Autoloader::loadClassFile($filename);
-						if(is_subclass_of($class, 'Asgard\Core\Cli\CLIController'))
-							$routes = array_merge($routes, $class::fetchRoutes());
-					}
+			if(!\Asgard\Core\App::has('clirouter'))
+				return array();
+			$routes = array();
+			if(file_exists($this->getBundle().'/Cli/')) {
+				foreach(glob($this->getBundle().'/Cli/*.php') as $filename) {
+					$class = \Asgard\Core\Autoloader::loadClassFile($filename);
+					if(is_subclass_of($class, 'Asgard\Core\Cli\CLIController'))
+						$routes = array_merge($routes, $class::fetchRoutes());
 				}
-				return $routes;
-			});
-			if(!is_array($routes))
-				return;
-			\Asgard\Core\App::get('clirouter')->addRoutes($routes);
+			}
+			return $routes;
 		}
 
 		protected function loadControllers() {
-			$routes = \Asgard\Core\App::get('cache')->get('bundles/'.$this->getID().'/controllers', function() {
-				$routes = array();
-				if(file_exists($this->getBundle().'/controllers/')) {
-					foreach(glob($this->getBundle().'/controllers/*.php') as $k=>$filename) {
-						$class = \Asgard\Core\Autoloader::loadClassFile($filename);
-						if(is_subclass_of($class, 'Asgard\Core\Controller'))
-							$routes = array_merge($routes, $class::fetchRoutes());
-					}
+			if(!\Asgard\Core\App::has('resolver'))
+				return array();
+			$routes = array();
+			if(file_exists($this->getBundle().'/controllers/')) {
+				foreach(glob($this->getBundle().'/controllers/*.php') as $k=>$filename) {
+					$class = \Asgard\Core\Autoloader::loadClassFile($filename);
+					if(is_subclass_of($class, 'Asgard\Http\Controller'))
+						$routes = array_merge($routes, $class::fetchRoutes());
 				}
-				return $routes;
-			});
-			if(!is_array($routes))
-				return;
-			\Asgard\Core\App::get('resolver')->addRoutes($routes);
+			}
+			return $routes;
 		}
 
 		public function setBundle($bundle) {

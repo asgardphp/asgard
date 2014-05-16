@@ -10,13 +10,6 @@ class BundlesManager {
 		$this->bundles[] = new Bundle;
 	}
 
-	public function loadEntityFixtures($bundle_path) {
-		if(file_exists($bundle_path.'/data')) {
-			foreach(glob($bundle_path.'/data/*.entities.yml') as $file)
-				\Asgard\Orm\Libs\ORMManager::loadEntityFixtures($file);
-		}
-	}
-
 	public function addBundlesDirs($dirs) {
 		foreach($dirs as $dir)
 			$this->addBundles(glob($dir.'/*', GLOB_ONLYDIR));
@@ -26,7 +19,7 @@ class BundlesManager {
 	public function addBundles($_bundles) {
 		if(!is_array($_bundles))
 			$_bundles = array();
-		$count = sizeof($_bundles);
+		$count = count($_bundles);
 		$bundles = array();
 		foreach($_bundles as $k=>$v) {
 			if($v instanceof BundleLoader) {
@@ -76,7 +69,7 @@ class BundlesManager {
 		if(!$this->loaded) {
 			$this->addBundles($_bundles);
 
-			for($i=0; $i < sizeof($this->bundles); $i++)
+			for($i=0; $i < count($this->bundles); $i++)
 				$this->bundles[$i]->load($this);
 
 			$this->loaded = true;

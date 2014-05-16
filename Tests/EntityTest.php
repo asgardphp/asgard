@@ -5,8 +5,8 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 	public static function setUpBeforeClass() {
 		if(!defined('_ENV_'))
 			define('_ENV_', 'test');
-		require_once _VENDOR_DIR_.'autoload.php';
 		\Asgard\Core\App::instance(true)->config->set('bundles', array(
+			new \Asgard\Entity\Bundle,
 		))
 		->set('bundlesdirs', array());
 		\Asgard\Core\App::loadDefaultApp(false);
@@ -28,16 +28,10 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 
 		#hook call static
 		$definition = Classes\News::getDefinition();
-		$definition->addStaticMethod('test1', function() {
-			return 'bla';
-		});
 		$this->assertEquals('bla', Classes\News::test1());
 
 		#hook call
 		$definition = Classes\News::getDefinition();
-		$definition->addMethod('test2', function($entity) {
-			return $entity->title;
-		});
 		$news->title = 'bla';
 		$this->assertEquals('bla', $news->test2());
 
@@ -50,7 +44,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 
 		#property
 		$property = Classes\News::property('title');
-		$this->assertTrue($property instanceof \Asgard\Core\Properties\TextProperty);
+		$this->assertTrue($property instanceof \Asgard\Entity\Properties\TextProperty);
 		$this->assertEquals('title', $property->getName());
 		$this->assertEquals('text', $property->type);
 
@@ -65,7 +59,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 		$this->assertContains('content', $names);
 
 		#getEntityName
-		$this->assertEquals('news', Classes\News::getEntityName());
+		$this->assertEquals('news', Classes\News::getShortName());
 
 		#toJSON
 		$json = $news->toJSON();

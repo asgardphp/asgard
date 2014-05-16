@@ -40,9 +40,13 @@ class App {
 		$bundles = $this->get('config')->get('bundles');
 		$bundlesdirs = $this->get('config')->get('bundlesdirs');
 		$bundlesmanager = new BundlesManager;
+			\Asgard\Utils\Profiler::checkpoint('bundlesmanager');
 		$bundlesmanager->addBundles($bundles);
+			\Asgard\Utils\Profiler::checkpoint('addbundles');
 		$bundlesmanager->addBundlesDirs($bundlesdirs);
+			\Asgard\Utils\Profiler::checkpoint('addbundlesDirs');
 		$bundlesmanager->loadBundles();
+			\Asgard\Utils\Profiler::checkpoint('loadBundles');
 		$this->_set('bundlesmanager', $bundlesmanager);
 
 		$this->loaded = true;
@@ -135,16 +139,15 @@ class App {
 		if(
 			$this->_has('config')
 			&& $this->_get('config')->get('autofacade')
-			&& preg_match('/^[a-zA-Z0-9]+$/', $name)
+			&& preg_match('/^[a-zA-Z0-9_]+$/', $name)
 			&& !class_exists(ucfirst(strtolower($name)))) {
-			$string = 'class '.ucfirst(strtolower($name)).' extends \Asgard\Core\Facade {}';
-			eval($string);
+			eval('class '.ucfirst(strtolower($name)).' extends \Asgard\Core\Facade {}');
 		}
 
 		$this->registry[$name] = array('callback'=>$callback, 'save'=>$save);
 	}
 	
-	public function make($name, $params=array(), $default=null) {
+	public function make($name, array $params=array(), $default=null) {
 		if(isset($this->registry[$name]))
 			return call_user_func_array($this->registry[$name]['callback'], $params);
 		else {

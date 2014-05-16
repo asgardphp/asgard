@@ -24,7 +24,7 @@ class Config {
 			$this->load($config[_ENV_]);
 	}
 	
-	public function load($config) {
+	public function load(array $config) {
 		foreach($config as $key=>$value)
 			$this->set($key, $value);
 	}
