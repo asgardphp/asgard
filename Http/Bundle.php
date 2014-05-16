@@ -2,7 +2,7 @@
 namespace Asgard\Http;
 
 class Bundle extends \Asgard\Core\BundleLoader {
-	public function load(\Asgard\Core\BundlesManager $queue) {
+	public function load(\Asgard\Core\BundlesManager $bundlesManager) {
 		\Asgard\Core\App::instance()->register('resolver', function() { return new \Asgard\Http\Resolver; } );
 		\Asgard\Core\App::instance()->register('response', function() { return new \Asgard\Http\Response; } );
 		\Asgard\Core\App::instance()->register('request', function() { return \Asgard\Http\Request::createFromGlobals(); } );
@@ -14,6 +14,6 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		\Asgard\Core\App::instance()->register('cookie', function() { return \Asgard\Core\App::instance()->get('request')->cookie; }, 0 );
 		\Asgard\Core\App::instance()->register('server', function() { return \Asgard\Core\App::instance()->get('request')->server; }, 0 );
 
-		parent::load($queue);
+		parent::load($bundlesManager);
 	}
 }

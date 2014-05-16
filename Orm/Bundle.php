@@ -2,10 +2,10 @@
 namespace Asgard\Orm;
 
 class Bundle extends \Asgard\Core\BundleLoader {
-	public function load(\Asgard\Core\BundlesManager $queue) {
-		$queue->addBundle(new \Asgard\Db\Bundle);
+	public function load(\Asgard\Core\BundlesManager $bundlesManager) {
+		$bundlesManager->addBundle(new \Asgard\Db\Bundle);
 		
-		parent::load($queue);
+		parent::load($bundlesManager);
 	}
 
 	public function run() {

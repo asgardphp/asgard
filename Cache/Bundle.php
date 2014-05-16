@@ -2,7 +2,7 @@
 namespace Asgard\Cache;
 
 class Bundle extends \Asgard\Core\BundleLoader {
-	public function load(\Asgard\Core\BundlesManager $queue) {
+	public function load(\Asgard\Core\BundlesManager $bundlesManager) {
 		\Asgard\Core\App::instance()->register('Asgard\Cache\FileCache', function() {
 			return new \Asgard\Cache\FileCache('storage/cache/');
 		});
@@ -13,6 +13,6 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			return new \Asgard\Cache\NullCache;
 		});
 
-		parent::load($queue);
+		parent::load($bundlesManager);
 	}
 }

@@ -19,7 +19,7 @@ namespace Asgard\Core {
 	class BundleLoader {
 		protected $bundle = null;
 
-		public function load(BundlesManager $queue) {
+		public function load(BundlesManager $bundlesManager) {
 			if(\Asgard\Core\App::has('autoloader'))
 				\Asgard\Core\App::get('autoloader')->preloadDir($this->getBundle());
 		}
