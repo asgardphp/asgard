@@ -1,0 +1,14 @@
+{
+	"name": "asgard/db",
+	"license": "MIT",
+	"authors": [{
+		"name": "Michel Hognerud",
+		"email": "michel@hognerud.net"
+	}],
+    "autoload": {
+        "psr-4": {"Asgard\\Db\\": "."}
+    },
+    "require": {
+        "asgard/composer": "dev-master"
+    }
+}
