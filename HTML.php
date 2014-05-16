@@ -91,7 +91,7 @@ class HTML {
 	}
 	
 	public function printJSCode() {
-		if(sizeof($this->code_js)>0) {
+		if(count($this->code_js)>0) {
 			echo '<script type="text/javascript">
 			//<![CDATA[
 			';
@@ -103,7 +103,7 @@ class HTML {
 	}
 	
 	public function printCSSCode() {
-		if(sizeof($this->code_css)>0) {
+		if(count($this->code_css)>0) {
 			echo '<style type="text/css">';
 			foreach($this->code_css as $code)
 				echo $code."\n";

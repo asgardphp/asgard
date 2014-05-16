@@ -2,33 +2,33 @@
 namespace Asgard\Utils;
 
 class FileManager {
-	public static function getNewFileName($output) {
-		$fileexts = explode('.', $output);
-		if(sizeof($fileexts) > 1) {
+	public static function getNewFileName($dst) {
+		$fileexts = explode('.', $dst);
+		if(count($fileexts) > 1) {
 			$filename = implode('.', array_slice($fileexts, 0, -1));
-			$ext = $fileexts[sizeof($fileexts)-1];
-			$output = $filename.'.'.$ext;
+			$ext = $fileexts[count($fileexts)-1];
+			$dst = $filename.'.'.$ext;
 		}
 		else
-			$filename = $output;
+			$filename = $dst;
 		
 		$i=1;
-		while(file_exists($output))
-			$output = $filename.'_'.($i++).'.'.$ext;
+		while(file_exists($dst))
+			$dst = $filename.'_'.($i++).'.'.$ext;
 
-		return $output;
+		return $dst;
 	}
 
-	public static function move($src, $output) {
-		$output = static::getNewFileName($output);
+	public static function move($src, $dst) {
+		$dst = static::getNewFileName($dst);
 			
-		static::mkdir(dirname($output));
+		static::mkdir(dirname($dst));
 			
-		if(!copy($src, $output))
+		if(!copy($src, $dst))
 			return false;
 		else {
 			unlink($src);
-			return basename($output);
+			return basename($dst);
 		}
 	}
 
@@ -59,15 +59,15 @@ class FileManager {
 		return $r;
 	} 
 
-	public static function move_uploaded($src, $output) {
-		$output = static::getNewFileName($output);
+	public static function move_uploaded($src, $dst) {
+		$dst = static::getNewFileName($dst);
 			
-		static::mkdir(dirname($output));
+		static::mkdir(dirname($dst));
 			
-		if(!move_uploaded_file($src, $output))
+		if(!move_uploaded_file($src, $dst))
 			return false;
 		else
-			return basename($output);
+			return basename($dst);
 	}
 	
 	public static function isUploaded($file) {

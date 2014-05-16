@@ -200,7 +200,7 @@ class Tools {
 		
 		$cutwords = array_slice($words, 0, 15);
 		
-		return implode(' ', $cutwords).(sizeof($words) > sizeof($cutwords) ? $trailing:'');
+		return implode(' ', $cutwords).(count($words) > count($cutwords) ? $trailing:'');
 	}
 	
 	protected static function remove_accents($str, $charset='utf-8') {

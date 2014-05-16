@@ -6,7 +6,7 @@ class Debug {
 		static::dWithTrace(array_merge(array(debug_backtrace()), func_get_args()));
 	}
 
-	public static function dWithTrace($trace) {
+	public static function dWithTrace(array $trace) {
 		if(!\Asgard\Core\App::get('config')->get('debug'))
 			return;
 		while(ob_get_length())
@@ -22,7 +22,7 @@ class Debug {
 		die(static::getReport($trace));
 	}
 
-	public static function getReport($backtrace) {
+	public static function getReport(array $backtrace) {
 		$r = '';
 		if(php_sapi_name() === 'cli')
 			$r .= static::getCLIBacktrace($backtrace);
@@ -79,12 +79,12 @@ $(function(){
 });
 </script>
 EOT;
-		for($i=0; $i<sizeof($backtrace); $i++) {
+		for($i=0; $i<count($backtrace); $i++) {
 			$trace = $backtrace[$i];
 			if(isset($backtrace[$i+1]))
 				$next = $backtrace[$i+1];
 			else
-				$next = $backtrace[sizeof($backtrace)-1];
+				$next = $backtrace[count($backtrace)-1];
 			
 			if(isset($trace['file']))
 				$r .= '<a href="code:'.$trace['file'].':'.$trace['line'].'">'.$trace['file'].'</a> ('.$trace['line'].')';
@@ -94,7 +94,7 @@ EOT;
 				$r .= ' at '.$next['function'];
 			$r .= "<br>\n";
 
-			if(isset($next['args']) && sizeof($next['args']) > 0) {
+			if(isset($next['args']) && count($next['args']) > 0) {
 				$r .= '<div><span class="toggle"><span>+</span>Args:</span>'."<br>\n";
 				$r .= '<div style="display:none"><ul>';
 				foreach($next['args'] as $arg) {
@@ -153,12 +153,12 @@ EOT;
 			$backtrace = static::getBacktrace();
 			
 		$r = '';
-		for($i=0; $i<sizeof($backtrace); $i++) {
+		for($i=0; $i<count($backtrace); $i++) {
 			$trace = $backtrace[$i];
 			if(isset($backtrace[$i+1]))
 				$next = $backtrace[$i+1];
 			else
-				$next = $backtrace[sizeof($backtrace)-1];
+				$next = $backtrace[count($backtrace)-1];
 			
 			if(isset($trace['file']))
 				$r .= $trace['file'].':'.$trace['line']."\n";

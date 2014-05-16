@@ -37,16 +37,16 @@ class CSV {
 	protected $data = array();
 	protected $separator = ';';
 
-	public function __construct($header = array()) {
+	public function __construct(array $header = array()) {
 		$this->header($header);
 	}
 
-	public function header($header) {
+	public function header(array $header) {
 		$this->header = $header;
 		return $this;
 	}
 
-	public function add($data) {
+	public function add(array $data) {
 		$this->data[] = $data;
 		return $this;
 	}
@@ -56,7 +56,7 @@ class CSV {
 		return $this;
 	}
 
-	function toCSV($data) {
+	function toCSV(array $data) {
 		$outstream = fopen("php://temp", 'r+');
 		fputcsv($outstream, $data, $this->separator, '"');
 		rewind($outstream);

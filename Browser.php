@@ -37,29 +37,29 @@ class Browser {
 		return $this->last;
 	}
 
-	public function get($url='', $body='', $headers=array()) {
+	public function get($url='', $body='', array $headers=array()) {
 		return $this->req($url, 'GET', array(), array(), $body, $headers);
 	}
 
-	public function post($url='', $post=array(), $files=array(), $body='', $headers=array()) {
+	public function post($url='', array $post=array(), array $files=array(), $body='', array $headers=array()) {
 		return $this->req($url, 'POST', $post, $files, $body, $headers);
 	}
 
-	public function put($url='', $post=array(), $files=array(), $body='', $headers=array()) {
+	public function put($url='', array $post=array(), array $files=array(), $body='', array $headers=array()) {
 		return $this->req($url, 'PUT', $post, $files, $body, $headers);
 	}
 
-	public function delete($url='', $body='', $headers=array()) {
+	public function delete($url='', $body='', array $headers=array()) {
 		return $this->req($url, 'DELETE', array(), array(), $body, $headers);
 	}
 
 	public function req(
 			$url='',
 			$method='GET',
-			$post=array(),
-			$file=array(),
+			array $post=array(),
+			array $file=array(),
 			$body='',
-			$headers=array()
+			array $headers=array()
 		) {
 		#build request
 		$get = array();
@@ -68,7 +68,7 @@ class Browser {
 			parse_str($infos['query'], $get);
 			$url = preg_replace('/(\?.*)$/', '', $url);
 		}
-		$request = new \Asgard\Core\Request;
+		$request = new \Asgard\Http\Request;
 		$request->setMethod($method);
 		$request->get->setAll($get);
 		$request->post->setAll($post);
@@ -76,7 +76,7 @@ class Browser {
 		$request->header->setAll($headers);
 		$request->cookie->setAll($this->cookies);
 		$request->session->setAll($this->session);
-		if(sizeof($post))
+		if(count($post))
 			$request->body = http_build_query($post);
 		else
 			$request->body = $body;
@@ -85,7 +85,7 @@ class Browser {
 		$request->url->setHost('localhost');
 		$request->url->setRoot('');
 
-		$res = \Asgard\Core\HttpKernel::process($request, $this->catchException);
+		$res = \Asgard\Http\HttpKernel::process($request, $this->catchException);
 
 		$this->last = $res;
 		$this->cookies = $request->cookie->all();
@@ -98,7 +98,7 @@ class Browser {
 		$this->catchException = $catchException;
 	}
 
-	public function submit($item=0, $to=null, $override=array()) {
+	public function submit($item=0, $to=null, array $override=array()) {
 		if($this->last === null)
 			throw new \Exception('No page to submit from.');
 		libxml_use_internal_errors(true);
@@ -115,7 +115,7 @@ class Browser {
 		return $this->post($to, $res);
 	}
 
-	protected function merge(&$arr1, &$arr2) {
+	protected function merge(array &$arr1, array &$arr2) {
 		foreach($arr2 as $k=>$v) {
 			if(is_array($arr1[$k]) && is_array($arr2[$k]))
 				$this->merge($arr1[$k], $arr2[$k]);

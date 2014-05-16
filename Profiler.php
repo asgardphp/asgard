@@ -16,11 +16,14 @@ class Profiler {
 	}
 
 	public static function report() {
-		if(defined('_COXIS_START_')) {
-			array_unshift(array(
-				'name'	=>	'start',
-				'time'	=>	_COXIS_START_,
-			));
+		if(defined('_ASGARD_START_')) {
+			array_unshift(
+				static::$checkpoints,
+				array(
+					'name'	=>	'start',
+					'time'	=>	_ASGARD_START_,
+				)
+			);
 		}
 		static::$checkpoints[] = array(
 			'name'	=>	'end',

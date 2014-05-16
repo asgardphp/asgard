@@ -8,7 +8,7 @@ class ImageManager {
 	var $height;
 	var $type;
 
-	public function resize($dim=array(), $force=false) {
+	public function resize(array $dim=array(), $force=false) {
 		list($orig_width, $orig_height) = $this->size();
 		if(isset($dim['width']) && isset($dim['height'])) {
 			if($dim['width'] > $orig_width && !$force)
@@ -52,7 +52,7 @@ class ImageManager {
 		return $this;
 	}
 
-	public function crop($dim=array()) {
+	public function crop(array $dim=array()) {
 		list($orig_width, $orig_height) = $this->size();
 		if(isset($dim['width']) && isset($dim['height'])) {
 			if($dim['width'] > $orig_width)
@@ -105,20 +105,20 @@ class ImageManager {
 		return $type;
 	}
 	
-	public static function load($input) {
+	public static function load($src) {
 		$img = new ImageManager();
-		$img->src = $input;
-		list($img->width, $img->height) = getimagesize($input);
-		$img->type = $type = static::getImageType($input);
+		$img->src = $src;
+		list($img->width, $img->height) = getimagesize($src);
+		$img->type = $type = static::getImageType($src);
 		switch($type) {
 			case IMAGETYPE_GIF:
-				$img->rsc = imagecreatefromgif($input);
+				$img->rsc = imagecreatefromgif($src);
 				break;
 			case IMAGETYPE_JPEG:
-				$img->rsc = imagecreatefromjpeg($input);
+				$img->rsc = imagecreatefromjpeg($src);
 				break;
 			case IMAGETYPE_PNG:
-				$img->rsc = imagecreatefrompng($input);
+				$img->rsc = imagecreatefrompng($src);
 				imagealphablending($img->rsc, true); // setting alpha blending on
 				imagesavealpha($img->rsc, true); // save alphablending setting (important)
 				break;
@@ -133,12 +133,12 @@ class ImageManager {
 		return $this;
 	}
 	
-	public function save($output, $type=null) {
+	public function save($dst, $type=null) {
 		if($type===null)
 			$type = $this->type;
 						
 		#only if output is not stdout
-		if($output!==null) {
+		if($dst!==null) {
 			switch($type) {
 				case IMAGETYPE_GIF:
 					$ext = '.gif'; break;
@@ -149,32 +149,32 @@ class ImageManager {
 			}
 							
 			#replace file extension
-			$fileexts = explode('.', $output);
+			$fileexts = explode('.', $dst);
 			$filename = implode('.', array_slice($fileexts, 0, -1));
-			$output = $filename.$ext;
+			$dst = $filename.$ext;
 			
 			$i=1;
-			while(file_exists(_DIR_.$output))
-				$output = $filename.'_'.($i++).$ext;
+			while(file_exists(_DIR_.$dst))
+				$dst = $filename.'_'.($i++).$ext;
 		
-			if($output !=null && !file_exists(_DIR_.dirname($output)))
-				mkdir(dirname($output), 0777, true);
+			if($dst !=null && !file_exists(_DIR_.dirname($dst)))
+				mkdir(dirname($dst), 0777, true);
 		}
 	
 		switch($type) {
 			case IMAGETYPE_GIF:
-				if(imagegif($this->rsc, $output, 100))
-					return basename($output);
+				if(imagegif($this->rsc, $dst, 100))
+					return basename($dst);
 				else
 					return false;
 			case IMAGETYPE_JPEG:
-				if(imagejpeg($this->rsc, $output, 100))
-					return basename($output);
+				if(imagejpeg($this->rsc, $dst, 100))
+					return basename($dst);
 				else
 					return false;
 			case IMAGETYPE_PNG:
-				if(imagepng($this->rsc, $output, 9))
-					return basename($output);
+				if(imagepng($this->rsc, $dst, 9))
+					return basename($dst);
 				else
 					return false;
 		}

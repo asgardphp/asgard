@@ -6,7 +6,7 @@ class Field {
     protected $choices = array();
     protected $type;
 
-    function __construct($node) {
+    function __construct(\DOMNode $node) {
         $nodeName = $node->nodeName;
 
         switch($nodeName) {
@@ -61,7 +61,7 @@ class Field {
         }
     }
 
-    public function addChoice($node) {
+    public function addChoice(\DOMNode $node) {
         if($node->nodeName != 'input')
             return;
         $inputValue = $node->getAttribute('value');
@@ -105,7 +105,7 @@ class FormParser {
        $this->fields[$name] = $value;
     }
 
-    public function add($node) {
+    public function add(\DOMNode $node) {
         $name = $node->getAttribute('name');
         if($this->has($name))
             $this->get($name)->addChoice($node);
@@ -152,7 +152,7 @@ class FormParser {
         $this->submit = $submit;
     }
 
-    public function parse($node) {
+    public function parse(\DOMNode $node) {
         $document = new \DOMDocument('1.0', 'UTF-8');
         $node = $document->importNode($node, true);
         $root = $document->appendChild($document->createElement('_root'));
