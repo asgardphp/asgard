@@ -1,0 +1,34 @@
+{
+	"name": "asgard/asgard",
+	"license": "MIT",
+	"authors": [{
+		"name": "Michel Hognerud",
+		"email": "michel@hognerud.net"
+	}],
+    "autoload": {
+        "psr-4": {"Asgard\\": "."}
+    },
+    "require": {
+        "niktux/addendum": "dev-master",
+        "symfony/yaml": "dev-master"
+    },
+    "replace": {
+        "asgard/auth": "self.version",
+        "asgard/cache": "self.version",
+        "asgard/data": "self.version",
+        "asgard/db": "self.version",
+        "asgard/entity": "self.version",
+        "asgard/files": "self.version",
+        "asgard/form": "self.version",
+        "asgard/hook": "self.version",
+        "asgard/http": "self.version",
+        "asgard/orm": "self.version",
+        "asgard/translation": "self.version",
+        "asgard/utils": "self.version",
+        "asgard/validation": "self.version",
+        "asgard/xpath": "self.version"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "3.7.*"
+    }
+}
