@@ -2,7 +2,7 @@
 namespace Asgard\Form\Widgets;
 
 class MultipleSelectWidget extends \Asgard\Form\Widgets\HTMLWidget {
-	public function render($options=array()) {
+	public function render(array $options=array()) {
 		$options = $this->options+$options;
 
 		$attrs = array();

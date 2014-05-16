@@ -2,7 +2,7 @@
 namespace Asgard\Form\Widgets;
 
 class DateWidget extends \Asgard\Form\Widgets\HTMLWidget {
-	public function render($options=array()) {
+	public function render(array $options=array()) {
 		$options = $this->options+$options;
 
 		$day = $this->field->getDay();

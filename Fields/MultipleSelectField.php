@@ -10,7 +10,7 @@ class MultipleSelectField extends \Asgard\Form\Fields\Field {
 		return array();
 	}
 
-	public function getRadio($name, $options=array()) {
+	public function getRadio($name, array $options=array()) {
 		$choices = $this->getChoices();
 		$default = $this->value;
 
@@ -31,7 +31,7 @@ class MultipleSelectField extends \Asgard\Form\Fields\Field {
 		return HTMLWidget::radio($this->getName(), $value, $options);
 	}
 
-	public function getRadios($options=array()) {
+	public function getRadios(array $options=array()) {
 		if(isset($options['choices']))
 			$choices = $options['choices'];
 		else
@@ -47,7 +47,7 @@ class MultipleSelectField extends \Asgard\Form\Fields\Field {
 		return $radios;
 	}
 
-	public function getCheckboxes($options=array()) {
+	public function getCheckboxes(array $options=array()) {
 		if(isset($options['choices']))
 			$choices = $options['choices'];
 		else
@@ -63,7 +63,7 @@ class MultipleSelectField extends \Asgard\Form\Fields\Field {
 		return $checkboxes;
 	}
 
-	public function getCheckbox($name, $options=array()) {
+	public function getCheckbox($name, array $options=array()) {
 		$choices = $this->getChoices();
 		$default = $this->value;
 

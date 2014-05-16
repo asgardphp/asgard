@@ -27,7 +27,7 @@ class Form extends Group {
 		return $this;
 	}
 	
-	public function setDad($dad) {
+	public function setDad(Group $dad) {
 		$this->_dad = $dad;
 		$this->noCSRF();
 		return $this;
@@ -42,7 +42,7 @@ class Form extends Group {
 		return strtoupper($this->_method);
 	}
 
-	public function render($render_callback, $field, $options=array()) {
+	public function render($render_callback, Fields\Field $field, array $options=array()) {
 		if($this->_dad)
 			return $this->_dad->render($render_callback, $field, $options);
 
@@ -96,7 +96,7 @@ class Form extends Group {
 		$this->_render_callbacks[$name] = $callback;
 	}
 
-	public function setRequest($request) {
+	public function setRequest(\Asgard\Http\Request $request) {
 		$this->_request = $request;
 		$this->fetch();
 		return $this;
@@ -120,13 +120,10 @@ class Form extends Group {
 		$this->_data = array();
 		if($this->_groupName) {
 			$this->setData(
-				// $this->getRequest()->post->get($this->_groupName, array()),
-				// $files
 				$this->getRequest()->post->get($this->_groupName, array()) + $files
 			);
 		}
 		else
-			// $this->setData($this->getRequest()->post->all(), $files);
 			$this->setData($this->getRequest()->post->all() + $files);
 
 		return $this;
@@ -164,7 +161,7 @@ class Form extends Group {
 		return false;
 	}
 	
-	public function open($params=array()) {
+	public function open(array $params=array()) {
 		$params = array_merge($this->_params, $params);
 		$action = isset($params['action']) && $params['action'] ? $params['action']:\Asgard\Core\App::get('url')->full();
 		$method = $this->_method;
@@ -211,7 +208,7 @@ class Form extends Group {
 		return !$this->errors() && $this->isSent();
 	}
 	
-	protected function convertTo($type, $files) {
+	protected function convertTo($type, array $files) {
 		$res = array();
 		foreach($files as $name=>$file) {
 			if(is_array($file))
@@ -223,7 +220,7 @@ class Form extends Group {
 		return $res;
 	}
 	
-	protected function merge_all($name, $type, $tmp_name, $error, $size) {
+	protected function merge_all(array $name, array $type, array $tmp_name, array $error, array $size) {
 		foreach($name as $k=>$v) {
 			if(isset($v['name']) && !is_array($v['name']))
 				$name[$k] = array_merge($v, $type[$k], $tmp_name[$k], $error[$k], $size[$k]);
@@ -234,7 +231,7 @@ class Form extends Group {
 		return $name;
 	}
 
-	protected function parseFiles($raw) {
+	protected function parseFiles(array $raw) {
 		if(isset($raw['name']) && isset($raw['type']) && isset($raw['tmp_name']) && isset($raw['error']) && isset($raw['size'])) {
 			if(is_array($raw['name'])) {
 				$name = $this->convertTo('name', $raw['name']);

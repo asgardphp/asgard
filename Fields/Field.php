@@ -11,7 +11,7 @@ abstract class Field {
 	protected $error;
 	public $form;
 
-	public function __construct($options=array()) {
+	public function __construct(array $options=array()) {
 		$this->options = $options;
 		if(isset($options['data_type']))
 			$this->data_type = $options['data_type'];
@@ -36,7 +36,7 @@ abstract class Field {
 		return $messages;
 	}
 
-	public function __call($name, $args) {
+	public function __call($name, array $args) {
 		return $this->render($name, isset($args[0]) ? $args[0]:array());
 	}
 
@@ -52,13 +52,13 @@ abstract class Field {
 		return '<label for="'.$this->getID().'">'.$this->label().'</label>';
 	}
 
-	public function def($options=array()) {
+	public function def(array $options=array()) {
 		if(!$this->default_render)
 			throw new \Exception('No default render function for this field');
 		return $this->render($this->default_render, $options);
 	}
 
-	public function render($render_callback, $options=array()) {
+	public function render($render_callback, array $options=array()) {
 		return $this->dad->render($render_callback, $this, $options);
 	}
 	
@@ -103,9 +103,9 @@ abstract class Field {
 	public function getName() {
 		$parents = $this->getParents();
 	
-		if(sizeof($parents) > 0) {
+		if(count($parents) > 0) {
 			$id = $parents[0];
-			for($i=1; $i<sizeof($parents); $i++)
+			for($i=1; $i<count($parents); $i++)
 				$id .= '['.$parents[$i].']';
 			$id .= '['.$this->name.']';
 			return $id;

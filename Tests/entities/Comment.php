@@ -1,23 +1,25 @@
 <?php
 namespace Asgard\Form\Tests\Entities;
 
-class Comment extends \Asgard\Core\Entity {
-	public static $properties = array(
-		'content' => array(
-			'required'
-		)
-	);
+class Comment extends \Asgard\Entity\Entity {
+	public static function definition(\Asgard\Entity\EntityDefinition $definition) {
+		$definition->properties = array(
+			'content' => array(
+				'required'
+			)
+		);
 
-	public static $behaviors = array(
-		'Asgard\Orm\OrmBehavior'
-	);
+		$definition->behaviors = array(
+			new \Asgard\Orm\OrmBehavior
+		);
 
-	public static $relations = array(
-		'user' => array(
-			'entity' => 'Asgard\Form\Tests\Entities\User',
-			'has' => 'one'
-		)
-	);
+		$definition->relations = array(
+			'user' => array(
+				'entity' => 'Asgard\Form\Tests\Entities\User',
+				'has' => 'one'
+			)
+		);
+	}
 
 	public function __toString() {
 		return $this->content;

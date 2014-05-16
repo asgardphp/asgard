@@ -14,7 +14,7 @@ class DynamicGroup extends Group {
 		$this->_default_render = $default_render;
 	}
 
-	public function setData($data) {
+	public function setData(array $data) {
 		$this->_data = array_values($data);
 		
 		foreach($data as $name=>$data)
@@ -75,16 +75,5 @@ class DynamicGroup extends Group {
 		unset($this[$offset]);
 
 		return $r;
-	}
-
-	protected static function mergeDataFiles(&$data, $files) {
-	    foreach($files as $child=>$value) {
-	        if(isset($data[$child])) {
-	            if(is_array($data[$child]) && is_array($value))
-	                static::asgard_array_merge($data[$child], $value);
-	        }
-	        else
-	            $data[$child] = $value;
-	    }
 	}
 }

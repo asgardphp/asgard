@@ -8,7 +8,7 @@ abstract class HTMLWidget {
 	protected $value;
 	protected $options;
 
-	public function __construct($name, $value=null, $options=array()) {
+	public function __construct($name, $value=null, array $options=array()) {
 		$this->name = $name;
 		$this->value = $value;
 
@@ -25,13 +25,13 @@ abstract class HTMLWidget {
 		$this->options = $options;
 	}
 
-	public static function getWidget($name, $args) {
+	public static function getWidget($name, array $args) {
 		$reflector = new \ReflectionClass($name);
 		$widget = $reflector->newInstanceArgs($args);
 		return $widget;
 	}
 
-	public static function __callStatic($name, $args) {
+	public static function __callStatic($name, array $args) {
 		return \Asgard\Core\App::instance()->make('Asgard\Form\Widgets\\'.$name, $args, function() use($name, $args) {
 			$class = 'Asgard\Form\Widgets\\'.$name.'Widget';
 			$reflector = new \ReflectionClass($class);

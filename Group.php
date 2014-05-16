@@ -10,18 +10,18 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 	protected $_hasfile;
 	protected $_request;
 
-	public function __construct($fields, $dad=null, $name=null, $data=null) {
+	public function __construct(array $fields, $dad=null, $name=null, $data=null) {
 		$this->addFields($fields);
 		$this->_dad = $dad;
 		$this->_groupName = $name;
 		$this->_data = $data;
 	}
 
-	public function render($render_callback, $field, $options=array()) {
+	public function render($render_callback, Fields\Field $field, array $options=array()) {
 		return $this->_dad->render($render_callback, $field, $options);
 	}
 
-	protected function setErrors($errors) {
+	protected function setErrors(array $errors) {
 		foreach($errors as $name=>$error) {
 			if(isset($this->_fields[$name]))
 				$this->_fields[$name]->setErrors($error);
@@ -101,17 +101,17 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 	}
 
 	public function size() {
-		return sizeof($this->_fields);
+		return count($this->_fields);
 	}
 	
-	public function addFields($fields) {
+	public function addFields(array $fields) {
 		foreach($fields as $name=>$sub_fields)
 			$this->_fields[$name] = $this->parseFields($sub_fields, $name);
 			
 		return $this;
 	}
 	
-	public function addField($field, $name=null) {
+	public function addField(Fields\Field $field, $name=null) {
 		$reflect = new \ReflectionClass($this);
 		try {
 			if($reflect->getProperty($name))
@@ -120,16 +120,16 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 		if($name !== null)
 			$this->_fields[$name] = $this->parseFields($field, $name);
 		else
-			$this->_fields[] = $this->parseFields($field, sizeof($this->fields));
+			$this->_fields[] = $this->parseFields($field, count($this->fields));
 		
 		return $this;
 	}
 	
-	public function setDad($dad) {
+	public function setDad(Group $dad) {
 		$this->_dad = $dad;
 	}
 	
-	public function setFields($fields) {
+	public function setFields(array $fields) {
 		$this->_fields = array();
 		$this->addFields($fields, $this);
 	}
@@ -144,7 +144,7 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 		return $this;
 	}
 	
-	public function setData($data) {
+	public function setData(array $data) {
 		$this->_data = $data;
 		
 		$this->updateChilds();
@@ -189,7 +189,7 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 		foreach($this->_fields as $name=>$field) {
 			if($field instanceof self) {
 				$errors[$name] = $field->errors();
-				if(sizeof($errors[$name]) === 0)
+				if(count($errors[$name]) === 0)
 					unset($errors[$name]);
 			}
 		}
@@ -219,7 +219,7 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 
 	// adsf
 
-	protected function getReportErrors($report) {
+	protected function getReportErrors(\Asgard\Validation\Report $report) {
 		$errors = array();
 		if($report->attributes()) {
 			foreach($report->attributes() as $attribute=>$attrReport) {
@@ -273,7 +273,7 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 	protected function _save($group=null) {
 		if(!$group)
 			$group = $this;
-			static $i=0;
+		$group->trigger('save');
 		if($group instanceof \Asgard\Form\Group) {
 			foreach($group->_fields as $name=>$field) {
 				if($field instanceof self)
@@ -298,7 +298,7 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 		return $this->_fields[$name];
 	}
 
-	public function add($name, $field, $options=array()) {
+	public function add($name, $field, array $options=array()) {
 		$fieldClass = $field.'Field';
 		$this->__set($name, new $fieldClass($options));
 	}
@@ -307,8 +307,8 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 		return $this->get($name);
 	}
 	
-	public function __set($k, $v) {
-		$this->_fields[$k] = $this->parseFields($v, $k);
+	public function __set($name, $value) {
+		$this->_fields[$name] = $this->parseFields($value, $name);
 		
 		return $this;
 	}
@@ -321,7 +321,7 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 	
     public function offsetSet($offset, $value) {
 		if(is_null($offset))
-			$this->_fields[] = $this->parseFields($value, sizeof($this->_fields));
+			$this->_fields[] = $this->parseFields($value, count($this->_fields));
 		else
 			$this->_fields[$offset] = $this->parseFields($value, $offset);
     }
@@ -359,7 +359,7 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 		return $key !== NULL && $key !== FALSE;
     }
 
-	public function trigger($name, $args=array(), $cb=null, $print=false) {
+	public function trigger($name, array $args=array(), $cb=null, $print=false) {
 		return parent::trigger($name, array_merge(array($this), $args), $cb, $print);
 	}
 	

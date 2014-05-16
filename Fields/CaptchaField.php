@@ -2,7 +2,7 @@
 namespace Asgard\Form\Fields;
 
 class CaptchaField extends \Asgard\Form\Fields\Field {
-	public function __construct($options=array()) {
+	public function __construct(array $options=array()) {
 		parent::__construct($options);
 		$this->options['validation']['captcha_check'] = array($this, 'error');
 

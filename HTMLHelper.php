@@ -2,7 +2,7 @@
 namespace Asgard\Form;
 
 class HTMLHelper {
-	public static function tag($tag, $attrs, $inner=null) {
+	public static function tag($tag, array $attrs, $inner=null) {
 		$str = '';
 		
 		foreach($attrs as $k=>$v)

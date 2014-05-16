@@ -10,7 +10,7 @@ class SelectField extends \Asgard\Form\Fields\Field {
 		return array();
 	}
 
-	public function getRadios($options=array()) {
+	public function getRadios(arrray $options=array()) {
 		if(isset($options['choices']))
 			$choices = $options['choices'];
 		else
@@ -26,7 +26,7 @@ class SelectField extends \Asgard\Form\Fields\Field {
 		return $radios;
 	}
 
-	public function getRadio($name, $options=array()) {
+	public function getRadio($name, array $options=array()) {
 		$choices = $this->getChoices();
 		$default = $this->value;
 

@@ -2,7 +2,7 @@
 namespace Asgard\Form\Fields;
 
 class CSRFField extends \Asgard\Form\Fields\HiddenField {
-	public function __construct($options=array()) {
+	public function __construct(array $options=array()) {
 		parent::__construct($options);
 		$this->options['validation']['required'] = true;
 		$this->options['validation']['callback'] = array($this, 'error');

@@ -10,18 +10,19 @@ class FormTest extends \PHPUnit_Framework_TestCase {
 
 		if(!defined('_ENV_'))
 			define('_ENV_', 'test');
-		require_once _VENDOR_DIR_.'autoload.php';
 		\Asgard\Core\App::instance(true)->config->set('bundles', array(
 			new \Asgard\Validation\Bundle,
 			new \Asgard\Orm\Bundle,
-		));
-		\Asgard\Core\App::loadDefaultApp();
+			new \Asgard\Http\Bundle,
+			new \Asgard\Entity\Bundle,
+		))->set('bundlesdirs', array());
+		\Asgard\Core\App::loadDefaultApp(false);
 	}
 
 	public function testFormAndGroup() {
 		#DynamicGroup
 		#data sent to dynamic group "group"
-		$request = new \Asgard\Core\Request;
+		$request = new \Asgard\Http\Request;
 		$request->setMethod('post')->post->set('group', array(
 			'd',
 			'e',
@@ -64,7 +65,7 @@ class FormTest extends \PHPUnit_Framework_TestCase {
 		$form = new \Asgard\Form\Form('test', array(), array(
 			'title' => new \Asgard\Form\Fields\TextField
 		));
-		$form->setRequest($request = new \Asgard\Core\Request);
+		$form->setRequest($request = new \Asgard\Http\Request);
 		$childForm = new \Asgard\Form\Form('test', array(), array(
 			'content' => new \Asgard\Form\Fields\TextField(array('validation' => array('required')))
 		));
@@ -211,7 +212,7 @@ class FormTest extends \PHPUnit_Framework_TestCase {
 
 		$user = new Entities\User;
 		$form = new \Asgard\Form\EntityForm($user);
-		$request = new \Asgard\Core\Request;
+		$request = new \Asgard\Http\Request;
 		$request->setMethod('post')->post->set('user', array('name' => 'Bob'));
 		$form->setRequest($request);
 

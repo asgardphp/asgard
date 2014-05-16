@@ -6,8 +6,8 @@ class EntityForm extends Form {
 	protected $_i18n = false;
 
 	public function __construct(
-		$entity, 
-		$params=array()
+		\Asgard\Entity\Entity $entity, 
+		array $params=array()
 	) {
 		$this->_entity = $entity;
 
@@ -33,13 +33,13 @@ class EntityForm extends Form {
 		}
 
 		parent::__construct(
-			isset($params['name']) ? $params['name']:$entity->getEntityName(),
+			isset($params['name']) ? $params['name']:$entity->getShortName(),
 			$params,
 			$fields
 		);
 	}
 
-	protected function addAttributeField($entity, $name, $properties, $locale=null) {
+	protected function addAttributeField(\Asgard\Entity\Entity $entity, $name, \Asgard\Entity\Properties\BaseProperty $properties, $locale=null) {
 		$field_params = array();
 
 		$field_params['form'] = $this;
@@ -82,9 +82,9 @@ class EntityForm extends Form {
 
 	public function addRelation($name) {
 		$entity = $this->_entity;
-		$relation = $entity::getDefinition()->relations[$name];
+		$relation = $entity::getDefinition()->relation($name);
 
-		$ids = array(''=>__('Choose'));
+		$ids = array(''=>\Asgard\Core\App::get('translator')->trans('Choose'));
 		foreach($relation['entity']::all() as $v)
 			$ids[$v->id] = (string)$v;
 				
@@ -120,7 +120,7 @@ class EntityForm extends Form {
 			foreach($field as $name=>$sub_field) {
 				if(is_subclass_of($sub_field, 'Asgard\Form\Group')) {
 					$field_errors = $this->errors($sub_field);
-					if(sizeof($field_errors) > 0)
+					if(count($field_errors) > 0)
 						$errors[$sub_field->name] = $field_errors;
 				}
 			}
@@ -152,22 +152,22 @@ class EntityForm extends Form {
 				$f = $this->_data[$name];
 				switch($f['error']) {
 					case UPLOAD_ERR_INI_SIZE:
-						$errors[$name][] = __('The uploaded file exceeds the max filesize.');
+						$errors[$name][] = \Asgard\Core\App::get('translator')->trans('The uploaded file exceeds the max filesize.');
 						break;
 					case UPLOAD_ERR_FORM_SIZE:
-						$errors[$name][] = __('The uploaded file exceeds the max filesize.');
+						$errors[$name][] = \Asgard\Core\App::get('translator')->trans('The uploaded file exceeds the max filesize.');
 						break;
 					case UPLOAD_ERR_PARTIAL:
-						$errors[$name][] = __('The uploaded file was only partially uploaded.');
+						$errors[$name][] = \Asgard\Core\App::get('translator')->trans('The uploaded file was only partially uploaded.');
 						break;
 					case UPLOAD_ERR_NO_TMP_DIR:
-						$errors[$name][] = __('Missing a temporary folder.');
+						$errors[$name][] = \Asgard\Core\App::get('translator')->trans('Missing a temporary folder.');
 						break;
 					case UPLOAD_ERR_CANT_WRITE:
-						$errors[$name][] = __('Failed to write file to disk.');
+						$errors[$name][] = \Asgard\Core\App::get('translator')->trans('Failed to write file to disk.');
 						break;
 					case UPLOAD_ERR_EXTENSION:
-						$errors[$name][] = __('A PHP extension stopped the file upload.');
+						$errors[$name][] = \Asgard\Core\App::get('translator')->trans('A PHP extension stopped the file upload.');
 						break;
 				}
 			}
