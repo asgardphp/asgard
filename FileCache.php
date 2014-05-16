@@ -30,9 +30,10 @@ class FileCache implements CacheInterface {
 	public function set($file, $var) {
 		if(!static::isSerializable($var))
 			return false;
-		if(static::sizeofvar($var) > 5*1024*1024)
-			return false;
 		try {
+			if(static::sizeofvar($var) > 5*1024*1024)
+				return false;
+
 			if(is_object($var))
 				$res = 'unserialize(\''.serialize($var).'\')';
 			elseif(($ve = var_export($var, true)) == '')
@@ -43,7 +44,7 @@ class FileCache implements CacheInterface {
 			$dst = $this->path.$file.'.php';
 			\Asgard\Utils\FileManager::mkdir(dirname($dst));
 			file_put_contents($dst, $res);
-		} catch(\ErrorException $e) {
+		} catch(\Exception $e) {
 			return false;
 		}
 		return true;
@@ -64,16 +65,11 @@ class FileCache implements CacheInterface {
 
 	protected static function isSerializable($value) {
 		if(is_object($value))
-			return false;
-		if(is_object($value)) {
-			if($value instanceof \Closure)
-				return false;
-			else
-				$value = (array)$value;
-		}
+			return $value instanceof \Serializable;
 
 		if(!is_array($value))
 			return true;
+
 		foreach($value as $element) {
 			if(!static::isSerializable($element))
 				return false;

@@ -32,10 +32,11 @@ class APCCache implements CacheInterface {
 	
 	public function set($identifier, $var) {
 		try {
-			$r = apc_store($this->path.'/'.$identifier, $var);
-		} catch(\Exception $e) { return false; }
-		if(!$r)
+			if(!($r = apc_store($this->path.'/'.$identifier, $var)))
+				return false;
+		} catch(\Exception $e) {
 			return false;
+		}
 
 		$identifiers = \apc_fetch($this->path.'/__identifiers');
 		$identifiers[$identifier] = true;
