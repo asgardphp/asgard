@@ -1,0 +1,15 @@
+{
+	"name": "asgard/form",
+	"license": "MIT",
+	"authors": [{
+		"name": "Michel Hognerud",
+		"email": "michel@hognerud.net"
+	}],
+    "autoload": {
+        "psr-4": {"Asgard\\Form\\": "."}
+    },
+    "suggest": {
+        "asgard/ckeditor": "dev-master",
+        "asgard/captcha": "dev-master"
+    }
+}
