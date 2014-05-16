@@ -1,7 +1,7 @@
 <?php
 namespace Asgard\Form\Widgets;
 
-class WysiwygWidget extends \Asgard\Form\Widgets\HTMLWidget {
+class WysiwygWidget extends \Asgard\Form\Widget {
 	public function render(array $options=array()) {
 		$options = $this->options+$options;
 		

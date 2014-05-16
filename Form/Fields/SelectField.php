@@ -1,7 +1,7 @@
 <?php
 namespace Asgard\Form\Fields;
 
-class SelectField extends \Asgard\Form\Fields\Field {
+class SelectField extends \Asgard\Form\Field {
 	protected $default_render = 'select';
 
 	public function getChoices() {

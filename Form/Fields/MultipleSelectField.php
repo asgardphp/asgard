@@ -1,7 +1,7 @@
 <?php
 namespace Asgard\Form\Fields;
 
-class MultipleSelectField extends \Asgard\Form\Fields\Field {
+class MultipleSelectField extends \Asgard\Form\Field {
 	protected $default_render = 'checkboxes';
 
 	public function getChoices() {

@@ -42,7 +42,7 @@ class Form extends Group {
 		return strtoupper($this->_method);
 	}
 
-	public function render($render_callback, Fields\Field $field, array $options=array()) {
+	public function render($render_callback, Field $field, array $options=array()) {
 		if($this->_dad)
 			return $this->_dad->render($render_callback, $field, $options);
 
@@ -60,16 +60,16 @@ class Form extends Group {
 					#widget given by an application hook
 					$widget = \Asgard\Core\App::get('hook')->trigger('Asgard\Form\Widgets\\'.$render_callback, array(), function() use($render_callback) {
 						#if $render_callback is a widget class
-						if(class_exists($render_callback) && $render_callback instanceof \Asgard\Form\Widgets\HTMLWidget)
+						if(class_exists($render_callback) && $render_callback instanceof \Asgard\Form\Widget)
 							return $render_callback;
 						#last chance
-						elseif(class_exists('Asgard\Form\Widgets\\'.$render_callback.'Widget') && is_subclass_of('Asgard\Form\Widgets\\'.$render_callback.'Widget', '\Asgard\Form\Widgets\HTMLWidget'))
+						elseif(class_exists('Asgard\Form\Widgets\\'.$render_callback.'Widget') && is_subclass_of('Asgard\Form\Widgets\\'.$render_callback.'Widget', '\Asgard\Form\Widget'))
 							return 'Asgard\Form\Widgets\\'.$render_callback.'Widget';
 						else
 							throw new \Exception('No widget for callback: '.$render_callback);
 					});
 				}
-				return \Asgard\Form\Widgets\HTMLWidget::getWidget($widget, array($field->getName(), $field->getValue(), $options));
+				return \Asgard\Form\Widget::getWidget($widget, array($field->getName(), $field->getValue(), $options));
 			};
 		}
 

@@ -1,7 +1,7 @@
 <?php
 namespace Asgard\Form\Fields;
 
-class FileField extends Field {
+class FileField extends \Asgard\Form\Field {
 	protected $default_render = 'file';
 
 	public function getValue() {

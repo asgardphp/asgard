@@ -17,7 +17,7 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 		$this->_data = $data;
 	}
 
-	public function render($render_callback, Fields\Field $field, array $options=array()) {
+	public function render($render_callback, Field $field, array $options=array()) {
 		return $this->_dad->render($render_callback, $field, $options);
 	}
 
@@ -73,7 +73,7 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 					(isset($this->_data[$name]) ? $this->_data[$name]:array())
 				);
 			}
-			elseif($fields instanceof Fields\Field) {
+			elseif($fields instanceof Field) {
 				$reflect = new \ReflectionClass($this);
 				try {
 					if($reflect->getProperty($name))
@@ -111,7 +111,7 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 		return $this;
 	}
 	
-	public function addField(Fields\Field $field, $name=null) {
+	public function addField(Field $field, $name=null) {
 		$reflect = new \ReflectionClass($this);
 		try {
 			if($reflect->getProperty($name))
@@ -156,7 +156,7 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 		$res = array();
 		
 		foreach($this->_fields as $field) {
-			if($field instanceof \Asgard\Form\Fields\Field)
+			if($field instanceof \Asgard\Form\Field)
 				$res[$field->name] = $field->getValue();
 			elseif($field instanceof \Asgard\Form\Group)
 				$res[$field->_groupName] = $field->getData();
@@ -239,7 +239,7 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 		$messages = array();
 		
 		foreach($this->_fields as $name=>$field) {
-			if($field instanceof Fields\Field) {
+			if($field instanceof Field) {
 				if($field_rules = $field->getValidationRules())
 					$constrains[$name] = $field_rules;
 				if($field_messages = $field->getValidationMessages())
@@ -370,7 +370,7 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 					(isset($this->_data[$name]) ? $this->_data[$name]:array())
 				);
 			}
-			elseif($field instanceof \Asgard\Form\Fields\Field) {
+			elseif($field instanceof \Asgard\Form\Field) {
 				if(isset($this->_data[$name]))
 					$field->setValue($this->_data[$name]);
 				else {

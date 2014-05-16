@@ -1,7 +1,7 @@
 <?php
-namespace Asgard\Form\Widgets;
+namespace Asgard\Form;
 
-abstract class HTMLWidget {
+abstract class Widget {
 	protected $label;
 	protected $field;
 	protected $name;

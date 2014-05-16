@@ -1,7 +1,7 @@
 <?php
 namespace Asgard\Form\Widgets;
 
-class CheckboxesWidget extends \Asgard\Form\Widgets\HTMLWidget {
+class CheckboxesWidget extends \Asgard\Form\Widget {
 	public function render(array $options=array()) {
 		$options = $this->options+$options;
 

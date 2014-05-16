@@ -1,7 +1,7 @@
 <?php
 namespace Asgard\Form\Fields;
 
-class DateField extends \Asgard\Form\Fields\Field {
+class DateField extends \Asgard\Form\Field {
 	protected $default_render = 'date';
 	protected $data_type = 'date';
 

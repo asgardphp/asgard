@@ -170,7 +170,7 @@ class FormTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals('<input type="text" name="test[title]" value="abc" id="test-title">', $form->title->def()->__toString());
 		$form->setRenderCallback('text', function($field, $options) {
 			$options['attrs']['class'] = 'a b c';
-			return \Asgard\Form\Widgets\HTMLWidget::text($field->getName(), $field->getValue(), $options);
+			return \Asgard\Form\Widget::text($field->getName(), $field->getValue(), $options);
 		});
 		$this->assertEquals('<input type="text" name="test[title]" value="abc" id="test-title" class="a b c">', $form->title->def()->__toString());
 
@@ -195,7 +195,7 @@ class FormTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals($form['childForm']['content'], $form->childForm->content);
 
 		foreach($form as $field)
-			$this->assertTrue($field instanceof \Asgard\Form\Fields\Field || $field instanceof \Asgard\Form\Group);
+			$this->assertTrue($field instanceof \Asgard\Form\Field || $field instanceof \Asgard\Form\Group);
 
 		$this->setExpectedException('Asgard\Form\FormException');
 		$form->save();

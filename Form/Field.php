@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\Form\Fields;
+namespace Asgard\Form;
 
 abstract class Field {
 	public $options;

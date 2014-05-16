@@ -1,14 +1,14 @@
 <?php
 namespace Asgard\Form\Fields;
 
-class CaptchaField extends \Asgard\Form\Fields\Field {
+class CaptchaField extends \Asgard\Form\Field {
 	public function __construct(array $options=array()) {
 		parent::__construct($options);
 		$this->options['validation']['captcha_check'] = array($this, 'error');
 
 		$this->default_render = function($field, $options) {
 			return '<img src="'.\Asgard\Core\App::get('url')->to('captcha').'">'.
-				\Asgard\Form\Widgets\HTMLWidget::text($field->getName(), $field->getValue(), $options)->render();
+				\Asgard\Form\Widget::text($field->getName(), $field->getValue(), $options)->render();
 		};
 	}
 

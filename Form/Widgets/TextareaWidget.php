@@ -1,7 +1,7 @@
 <?php
 namespace Asgard\Form\Widgets;
 
-class TextareaWidget extends \Asgard\Form\Widgets\HTMLWidget {
+class TextareaWidget extends \Asgard\Form\Widget {
 	public function render(array $options=array()) {
 		$options = $this->options+$options;
 		
