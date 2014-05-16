@@ -1,12 +1,13 @@
 <?php
-namespace Asgard\Orm\Libs;
+namespace Asgard\Orm;
 
 class EntityRelation implements \ArrayAccess {
 	protected $entityClass;
+	protected $reverseRelation;
 	public $name;
 	public $params = array();
 
-	public function __construct($entityDefinition, $name, $params) {
+	public function __construct(\Asgard\Entity\EntityDefinition $entityDefinition, $name, array $params) {
 		$entityClass = $entityDefinition->getClass();
 		$this->entityClass = $entityClass;
 		$this->params = $params;
@@ -21,51 +22,65 @@ class EntityRelation implements \ArrayAccess {
 			$entityDefinition->addProperty($this->params['link_type'], array('type' => 'text', 'required' => (isset($this->params['required']) && $this->params['required']), 'editable'=>false));
 		}
 		else {
-			$rev = $this->reverseRelationParams();
-			$relation_entity = $this->params['entity'];
-
-			if(!isset($this->params['type'])) {
-				if($this->params['has'] == 'one') {
-					if($rev['has'] == 'one')
-						$this->params['type'] = 'hasOne';
-					elseif($rev['has'] == 'many')
-						$this->params['type'] = 'belongsTo';
-				}
-				elseif($this->params['has'] == 'many') {
-					if($rev['has'] == 'one')
-						$this->params['type'] = 'hasMany';
-					elseif($rev['has'] == 'many')
-						$this->params['type'] = 'HMABT';
-				}
-			}
-
-			if(!isset($this->params['type']))
-				throw new \Exception('Problem with relation type');
-
-			if($this->params['type'] == 'hasMany') {
-				$rev_rel = $this->reverseRelationParams();
-				$this->params['link'] = $rev_rel['name'].'_id';
-			}
-			elseif($this->params['type'] == 'HMABT') {
-				$this->params['link_a'] = $entityClass::getEntityName().'_id';
-				$this->params['link_b'] = $relation_entity::getEntityName().'_id';
-				if(isset($this->params['sortable']) && $this->params['sortable'])
-					$this->params['sortable'] = $entityClass::getEntityName().'_position';
-				else
-					$this->params['sortable'] = false;
-				if($entityClass::getEntityName() < $relation_entity::getEntityName())
-					$this->params['join_table'] = \Asgard\Core\App::get('config')->get('database/prefix').$entityClass::getEntityName().'_'.$relation_entity::getEntityName();
-				else
-					$this->params['join_table'] = \Asgard\Core\App::get('config')->get('database/prefix').$relation_entity::getEntityName().'_'.$entityClass::getEntityName();
-			}
-			else {
+			if($this->params['has'] == 'one') {
 				$this->params['link'] = $name.'_id';
 				$entityDefinition->addProperty($this->params['link'], array('type' => 'integer', 'required' => (isset($this->params['required']) && $this->params['required']), 'editable'=>false));
 			}
 		}
 	}
 
+	public function getLink() {
+		if($this->type() == 'hasMany') {
+			return $this->reverseRelationParams()['name'].'_id';
+		}
+		elseif($this->type() == 'belongsTo') {
+			return $this->name.'_id';
+		}
+	}
+
+	public function getLinkA() {
+		$entityClass = $this->entityClass;
+		return $entityClass->getEntityName().'_id';
+	}
+
+	public function getLinkB() {
+		$entityClass = $this->params['entity'];
+		return $entityClass::getEntityName().'_id';
+	}
+
+	public function getTable() {
+		$entityClass = $this->entityClass;
+		$relationEntityClass = $this->params['entity'];
+
+		if($entityClass::getEntityName() < $relationEntityClass::getEntityName())
+			return \Asgard\Core\App::get('config')->get('database/prefix').$entityClass::getEntityName().'_'.$relationEntityClass::getEntityName();
+		else
+			return \Asgard\Core\App::get('config')->get('database/prefix').$relationEntityClass::getEntityName().'_'.$entityClass::getEntityName();
+	}
+
+	public function type() {
+		$rev = $this->reverseRelationParams();
+
+		if($this->params['has'] == 'one') {
+			if($rev['has'] == 'one')
+				return 'hasOne';
+			elseif($rev['has'] == 'many')
+				return 'belongsTo';
+		}
+		elseif($this->params['has'] == 'many') {
+			if($rev['has'] == 'one')
+				return 'hasMany';
+			elseif($rev['has'] == 'many')
+				return 'HMABT';
+		}
+		else
+			throw new \Exception('Problem with relation type.');
+	}
+
 	protected function reverseRelationParams() {
+		if($this->reverseRelation !== null)
+			return $this->reverseRelation;
+
 		$origEntityName = strtolower($this->entityClass);
 		$entityName = preg_replace('/^\\\/', '', $origEntityName);
 
@@ -73,8 +88,9 @@ class EntityRelation implements \ArrayAccess {
 		$name = $this->name;
 
 		$rev_relations = array();
-		if(isset($relation_entity::$relations))
-			foreach($relation_entity::$relations as $rev_rel_name=>$rev_rel) {
+		// if(isset($relation_entity::$relations))
+			// foreach($relation_entity::$relations as $rev_rel_name=>$rev_rel) {
+			foreach($relation_entity::getDefinition()->relations() as $rev_rel_name=>$rev_rel) {
 				$relEntityClass = preg_replace('/^\\\/', '', strtolower($rev_rel['entity']));
 
 				if($relEntityClass == $entityName
@@ -86,7 +102,8 @@ class EntityRelation implements \ArrayAccess {
 						continue;
 					if(isset($rev_rel['for']) && $rev_rel['for']!=$name)
 						continue;
-					$rev_relations[] = array_merge(array('name'=>$rev_rel_name), $rev_rel);
+					// $rev_relations[] = array_merge(array('name'=>$rev_rel_name), $rev_rel);
+					$rev_relations[] = $rev_rel;
 				}
 			}
 
@@ -94,8 +111,10 @@ class EntityRelation implements \ArrayAccess {
 			throw new \Exception('No reverse relation for '.$entityName.': '.$name);
 		elseif(count($rev_relations) > 1)
 			throw new \Exception('Multiple reverse relations for '.$entityName.': '.$name);
-		else
+		else {
+			$this->reverseRelation = $rev_relations[0];
 			return $rev_relations[0];
+		}
 	}
 
 	public function reverse() {

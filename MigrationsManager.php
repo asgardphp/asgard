@@ -1,51 +1,14 @@
 <?php
-namespace Asgard\Orm\Libs;
+namespace Asgard\Orm;
 
 class MigrationsManager {
-	public static function loadEntityFixtures($file) {
-		$yaml = new \Symfony\Component\Yaml\Parser();
-		$raw = $yaml->parse(file_get_contents($file));
-
-		$entities = array();
-
-		foreach($raw as $class => $raw_entities) {
-			foreach($raw_entities as $name => $raw_entity) {
-				foreach($raw_entity as $k=>$V)
-					if(!$class::hasProperty($k))
-						unset($raw_entity[$k]);
-
-				$entity = new $class;
-				$entity->set($raw_entity, 'all');
-				$entity->save(array(), true);
-				$entity->save(null, true);
-				$entities[$class][$name] = $entity;
-			}
+	public static function diff($filename='Diff', $verbose=false) {
+		$tracking = static::readTracking();
+		foreach(static::readList() as $time=>$migration) {
+			if(!isset($tracking[$migration]) || $tracking[$migration]!=='up')
+				return false;
 		}
 
-		foreach($entities as $class => $classEntities) {
-			foreach($classEntities as $name => $entity) {
-				foreach($class::getDefinition()->relations as $relation => $params) {
-					if(!isset($raw[$class][$name][$relation]))
-						continue;
-					$relationFixtures = $raw[$class][$name][$relation];
-
-					$rel = $class::getDefinition()->relations[$relation];
-					$relationClass = $rel['entity'];
-
-					if(is_array($relationFixtures)) {
-						foreach($relationFixtures as $v)
-							$relationFixtures[$k] = $entities[$relationClass][$v]->id;
-					}
-					else
-						$relationFixtures = $entities[$relationClass][$relationFixtures]->id;
-
-					$entity->save(array($relation => $relationFixtures), true);
-				}
-			}
-		}
-	}
-
-	public static function diff($filename='diff', $verbose=false) {
 		list($up, $down) = static::_diff();
 		return static::createMigration($up, $down, $filename, $verbose);
 	}
@@ -62,120 +25,125 @@ class MigrationsManager {
 		$oldSchemas = array();
 		$tables = \Asgard\Core\App::get('db')->query('SHOW TABLES')->all();
 		foreach($tables as $k=>$v) {
-			$table = \Asgard\Utils\Tools::array_get(array_values($v), 0);
+			$table = array_values($v)[0];
 			$oldSchemas[$table] = static::tableSchema($table);
 		}
 
+
+		$entityClasses = array();
 		foreach(get_declared_classes() as $class) {
-			if(is_subclass_of($class, 'Asgard\Core\Entity')) {
-				if($class == 'Asgard\Core\Entity')
+			if(is_subclass_of($class, 'Asgard\Entity\Entity')) {
+				if($class == 'Asgard\Entity\Entity')
 					continue;
 				$reflection = new \ReflectionClass($class);
 				if($reflection->isAbstract())
 					continue;
-				
-				$schema = array();
-				
-				foreach($class::getDefinition()->properties() as $name=>$prop) {
-					if(!$prop->orm)
-						$neworm = array();
-					else
-						$neworm = $prop->orm;
-					if(!isset($prop->orm['type'])) {
-						if(method_exists($prop, 'getSQLType'))
-							$neworm['type'] = $prop->getSQLType();
-						else {
-							switch($prop->type) {
-								default:
-									throw new \Exception('Cannot convert '.$prop->type.' type');
-							}
+				$entityClasses[] = $class;
+			}
+		}
+
+		foreach($entityClasses as $class) {
+			$schema = array();
+			
+			foreach($class::getDefinition()->properties() as $name=>$prop) {
+				if(!$prop->orm)
+					$neworm = array();
+				else
+					$neworm = $prop->orm;
+				if(!isset($prop->orm['type'])) {
+					if(method_exists($prop, 'getSQLType'))
+						$neworm['type'] = $prop->getSQLType();
+					else {
+						switch($prop->type) {
+							default:
+								throw new \Exception('Cannot convert '.$prop->type.' type');
 						}
 					}
-
-					if(!isset($prop->orm['default']))
-						$neworm['default'] = false;
-					if(!isset($prop->orm['nullable']))
-						$neworm['nullable'] = true;
-					if(!isset($prop->orm['key']))
-						$neworm['key'] = '';
-					if(!isset($prop->orm['auto_increment']))
-						$neworm['auto_increment'] = false;
-					$neworm['position'] = $prop->params['position'];
-
-					if($prop->i18n) {
-						if(!isset($newSchemas[$class::getTable().'_translation'])) {
-							$newSchemas[$class::getTable().'_translation'] = array(
-								'id' => array(
-									'type'	=>	'int(11)',
-									'nullable'	=>	false,
-									'auto_increment'	=>	false,
-									'default'	=>	null,
-									'key'	=>	null,
-								),
-								'locale' => array(
-									'type'	=>	'varchar(50)',
-									'nullable'	=>	false,
-									'auto_increment'	=>	false,
-									'default'	=>	null,
-									'key'	=>	null,
-								),
-							);
-						}
-						$newSchemas[$class::getTable().'_translation'][$prop->getName()] = $neworm;
-					}
-					else
-						$schema[$name] = $prop->orm = $neworm;
 				}
 
-				foreach($class::getDefinition()->relations as $name=>$rel) {
-					if($rel['type'] == 'HMABT') {
-						$table_name = $rel['join_table'];
-						if(!isset($newSchemas[$table_name])) {
-							$arr = array(
-								$rel['link_a']	=>	array(
-									'type'	=>	'int(11)',
-									'nullable'	=>	false,
-									'auto_increment'	=>	false,
-									'default'	=>	null,
-									'key'	=>	null,
-								),
-								$rel['link_b']	=>	array(
-									'type'	=>	'int(11)',
-									'nullable'	=>	false,
-									'auto_increment'	=>	false,
-									'default'	=>	null,
-									'key'	=>	null,
-								),
-							);
-							$newSchemas[$table_name] = $arr;
-						}
-						if($rel['sortable'])
-							$newSchemas[$table_name][$rel['sortable']] = array(
+				if(!isset($prop->orm['default']))
+					$neworm['default'] = false;
+				if(!isset($prop->orm['nullable']))
+					$neworm['nullable'] = true;
+				if(!isset($prop->orm['key']))
+					$neworm['key'] = '';
+				if(!isset($prop->orm['auto_increment']))
+					$neworm['auto_increment'] = false;
+				$neworm['position'] = $prop->params['position'];
+
+				if($prop->i18n) {
+					if(!isset($newSchemas[$class::getTable().'_translation'])) {
+						$newSchemas[$class::getTable().'_translation'] = array(
+							'id' => array(
 								'type'	=>	'int(11)',
 								'nullable'	=>	false,
 								'auto_increment'	=>	false,
 								'default'	=>	null,
 								'key'	=>	null,
-							);
+							),
+							'locale' => array(
+								'type'	=>	'varchar(50)',
+								'nullable'	=>	false,
+								'auto_increment'	=>	false,
+								'default'	=>	null,
+								'key'	=>	null,
+							),
+						);
 					}
+					$newSchemas[$class::getTable().'_translation'][$prop->getName()] = $neworm;
 				}
-
-				uasort($schema, function($a, $b) {
-					if(!isset($a['position']))
-						return -1;
-					if(!isset($b['position']))
-						return 1;
-					if($a['position'] < $b['position'])
-						return -1;
-					return 1;
-				});
-
-				$i = 0;
-				foreach($schema as $k=>$col)
-					$schema[$k]['position'] = $i++;
-
-				$newSchemas[$class::getTable()] = $schema;
+				else
+					$schema[$name] = $prop->orm = $neworm;
 			}
+
+			foreach($class::getDefinition()->relations as $name=>$rel) {
+				if($rel['type'] == 'HMABT') {
+					$table_name = $rel['join_table'];
+					if(!isset($newSchemas[$table_name])) {
+						$arr = array(
+							$rel['link_a']	=>	array(
+								'type'	=>	'int(11)',
+								'nullable'	=>	false,
+								'auto_increment'	=>	false,
+								'default'	=>	null,
+								'key'	=>	null,
+							),
+							$rel['link_b']	=>	array(
+								'type'	=>	'int(11)',
+								'nullable'	=>	false,
+								'auto_increment'	=>	false,
+								'default'	=>	null,
+								'key'	=>	null,
+							),
+						);
+						$newSchemas[$table_name] = $arr;
+					}
+					if($rel['sortable'])
+						$newSchemas[$table_name][$rel['sortable']] = array(
+							'type'	=>	'int(11)',
+							'nullable'	=>	false,
+							'auto_increment'	=>	false,
+							'default'	=>	null,
+							'key'	=>	null,
+						);
+				}
+			}
+
+			uasort($schema, function($a, $b) {
+				if(!isset($a['position']))
+					return -1;
+				if(!isset($b['position']))
+					return 1;
+				if($a['position'] < $b['position'])
+					return -1;
+				return 1;
+			});
+
+			$i = 0;
+			foreach($schema as $k=>$col)
+				$schema[$k]['position'] = $i++;
+
+			$newSchemas[$class::getTable()] = $schema;
 		}
 		
 		$oldSchemas = array_filter($oldSchemas);
@@ -186,7 +154,7 @@ class MigrationsManager {
 		return array($up, $down);
 	}
 
-	protected static function diffBetween($newSchemas, $oldSchemas, $down=false) {
+	protected static function diffBetween(array $newSchemas, array $oldSchemas, $down=false) {
 		$migrations = array();
 		foreach($newSchemas as $class=>$schema) {
 			$table = $class;
@@ -286,7 +254,7 @@ class MigrationsManager {
 
 	public static function unmigrateLast($verbose=false) {
 		$json = static::readList();
-		for($i=sizeof($json)-1; $i>=0; $i--) {
+		for($i=count($json)-1; $i>=0; $i--) {
 			$migration = array_values($json)[$i];
 			if(static::isUp($migration)) {
 				static::unmigrate($migration, $verbose);
@@ -335,7 +303,7 @@ class MigrationsManager {
 		return $json;
 	}
 
-	protected static function writeList($arr) {
+	protected static function writeList(array $arr) {
 		\Asgard\Utils\FileManager::put(_DIR_.'migrations/list.json', json_encode($arr, JSON_PRETTY_PRINT));
 	}
 
@@ -345,11 +313,11 @@ class MigrationsManager {
 		return json_decode(file_get_contents(_DIR_.'migrations/tracking.json'), true);
 	}
 
-	protected static function writeTracking($arr) {
+	protected static function writeTracking(array $arr) {
 		\Asgard\Utils\FileManager::put(_DIR_.'migrations/tracking.json', json_encode($arr, JSON_PRETTY_PRINT));
 	}
 
-	protected static function createMigration($up, $down, $filename='diff', $verbose=false) {
+	protected static function createMigration($up, $down, $filename='Diff', $verbose=false) {
 		if(!$up)
 			return;
 		if(!is_array($up))
@@ -360,11 +328,13 @@ class MigrationsManager {
 			$down = array($down);
 		foreach($down as $k=>$v)
 			$down[$k] = static::tabs($v, 2);
-			
-		$i = static::current()+1;
+
+		$dst = 'migrations/'.$filename.'.php';
+		$dst = \Asgard\Utils\FileManager::getNewFilename($dst);
+		$filename = str_replace('.php', '', basename($dst));
 			
 		$migration = '<?php
-class '.$filename.'_'.$i.' {
+class '.$filename.' {
 	public static function up() {
 		'.implode("\n\n\t\t", $up).'
 	}
@@ -373,22 +343,20 @@ class '.$filename.'_'.$i.' {
 		'.implode("\n\n\t\t", $down)."
 	}
 }";
-		\Asgard\Utils\FileManager::mkdir('migrations');
-		$dst = 'migrations/'.$filename.'_'.$i.'.php';
-		file_put_contents($dst, $migration);
+		\Asgard\Utils\FileManager::put($dst, $migration);
 
 		if($verbose)
 			echo 'New migration: '.$dst;
 
 		$list = static::readList();
-		$list[time()] = $filename.'_'.$i;
+		$list[time()] = $filename;
 		static::writeList($list);
 
-		return $filename.'_'.$i;
+		return $filename;
 	}
 	
 	protected static function tabs($str, $tabs) {
-		return implode("\n".str_repeat("\t", $tabs), explode("\n", $str));
+		return str_replace("\n", "\n".str_repeat("\t", $tabs), $str);
 	}
 	
 	protected static function dropColumn($col) {
@@ -396,7 +364,7 @@ class '.$filename.'_'.$i.' {
 		return $migration;
 	}
 	
-	protected static function updateColumn($table, $col, $diff) {
+	protected static function updateColumn($table, $col, array $diff) {
 		$migration = "\n\t\$table->col('$col')";
 		if(isset($diff['type']))
 			$migration .= "\n		->type('$diff[type]')";
@@ -439,7 +407,7 @@ class '.$filename.'_'.$i.' {
 		return $migration;
 	}
 	
-	protected static function buildColumnFor($table, $col, $definition) {
+	protected static function buildColumnFor($table, $col, array $definition) {
 		$migration = '';
 		$migration = "\n\t\$table->add('$col', '$definition[type]')";
 		if($definition['nullable'])
@@ -459,29 +427,15 @@ class '.$filename.'_'.$i.' {
 		return $migration;
 	}
 	
-	protected static function buildTableFor($class, $definition) {
+	protected static function buildTableFor($class, array $cols) {
 		$table = $class;
 		
 		$migration = "\Asgard\Core\App::get('schema')->create('$table', function(".'$table'.") {";
-		foreach($definition as $col=>$col_definition)
+		foreach($cols as $col=>$col_definition)
 			$migration .= "\t".static::buildColumnFor($table, $col, $col_definition);
 		$migration .= "\n});";
 		
 		return $migration;
-	}
-	
-	public static function current() {
-		try {
-		return file_get_contents('migrations/migrate_version');
-		} catch(\ErrorException $e) {
-			return 0;
-		}
-	}
-	
-	public static function uptodate() {
-		$migrations = static::todo();
-				
-		return !(sizeof($migrations) > 0);
 	}
 
 	protected static function tableSchema($table) {

@@ -1,19 +1,21 @@
 <?php
 namespace Asgard\Orm\Tests\Entities;
 
-class Author extends \Asgard\Core\Entity {
-	public static $properties = array(
-		'name',
-	);
+class Author extends \Asgard\Entity\Entity {
+	public static function definition(\Asgard\Entity\EntityDefinition $definition) {
+		$definition->properties = array(
+			'name',
+		);
 
-	public static $behaviors = array(
-		'Asgard\Orm\ORMBehavior'
-	);
+		$definition->behaviors = array(
+			new \Asgard\Orm\ORMBehavior
+		);
 
-	public static $relations = array(
-		'news' => array(
-			'entity' => 'Asgard\Orm\Tests\Entities\News',
-			'has' => 'many'
-		),
-	);
+		$definition->relations = array(
+			'news' => array(
+				'entity' => 'Asgard\Orm\Tests\Entities\News',
+				'has' => 'many'
+			),
+		);
+	}
 }

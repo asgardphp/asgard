@@ -1,120 +1,158 @@
 <?php
 namespace Asgard\Orm;
 
-class ORMBehavior implements \Asgard\Core\Behavior {
-	public static function load($entityDefinition, $params=null) {
-		$entityName = $entityDefinition->getClass();
-		$ormHandler = new \Asgard\Orm\Libs\ORMHandler($entityDefinition);
+class ORMBehavior extends \Asgard\Entity\Behavior {
+	protected $dataMapper;
+	protected $entityClass;
 
-		#Static methods
-		#Article::getTable()
-		$entityDefinition->addStaticMethod('getTable', function() use($entityName) {
-			return \Asgard\Orm\Libs\ORMHandler::getTable($entityName);
-		});
-		#Article::orm()
-		$entityDefinition->addStaticMethod('orm', function() use($ormHandler) {
-			return $ormHandler->getORM();
-		});
-		#Article::load(2)
-		$entityDefinition->addStaticMethod('load', function($id) use($ormHandler) {
-			return $ormHandler->load($id);
-		});
-		#Article::destroyAll()
-		$entityDefinition->addStaticMethod('destroyAll', function() use($ormHandler) {
-			return $ormHandler->destroyAll();
-		});
-		#Article::destroyOne()
-		$entityDefinition->addStaticMethod('destroyOne', function($id) use($ormHandler) {
-			return $ormHandler->destroyOne($id);
-		});
-		#Article::hasRelation('parent')
-		$entityDefinition->addStaticMethod('hasRelation', function($name) use($entityDefinition) {
-			return array_key_exists($name, $entityDefinition->relations());
-		});
+	public function load(\Asgard\Entity\EntityDefinition $definition) {
+		$this->entityClass = $entityClass = $definition->getClass();
 
-		#Methods
-		#$article->isNew()
-		$entityDefinition->addMethod('isNew', function($entity) use($ormHandler) {
-			return $ormHandler->isNew($entity);
-			// $em->isNew($entity)
-		});
-		#$article->isOld()
-		$entityDefinition->addMethod('isOld', function($entity) use($ormHandler) {
-			return $ormHandler->isOld($entity);
-		});
-		#Relations
-		$entityDefinition->addMethod('relation', function($entity, $relation) use($ormHandler) {
-			return $ormHandler->relation($entity, $relation);
-		});
-		#Relation properties
-		$entityDefinition->addMethod('getRelationProperty', function($entity, $relation) use($ormHandler) {
-			return $ormHandler->getRelationProperty($entity, $relation);
-		});
-
-		#Hooks
-		$entityDefinition->hookOn('callStatic', function($chain, $name, $args) use($ormHandler) {
-			$res = null;
-			if(strpos($name, 'loadBy') === 0) {
-				$chain->found = true;
-				preg_match('/^loadBy(.*)/', $name, $matches);
-				$property = strtolower($matches[1]);
-				$val = $args[0];
-				return $ormHandler->getORM()->where(array($property => $val))->first();
-			}
-			#Article::where() / ::limit() / ::orderBy() / ..
-			elseif(method_exists('Asgard\Orm\Libs\ORM', $name)) {
-				$chain->found = true;
-				return call_user_func_array(array($ormHandler->getORM(), $name), $args);
-			}
-		});
-
-		// $em->getRelation($entity, $relationName, )
-		$entityDefinition->hookOn('call', function($chain, $entity, $name, $args) use($ormHandler) {
-			$res = null;
-			if($entity::hasRelation($name)) {
-				$chain->found = true;
-				$res = $entity->relation($name);
-			}
-			return $res;
-		});
-
-		$entityDefinition->hookOn('constrains', function($chain, &$constrains) use($entityDefinition) {
-			foreach($entityDefinition->relations() as $name=>$relation)
-				$constrains[$name] = $relation->getRules();
-		});
-
-		// $em->load($entityClass, $id)
-		$entityDefinition->hookOn('construct', function($chain, $entity, $id) use($ormHandler) {
-			$ormHandler->construct($chain, $entity, $id);
-		});
-
-		// $em->destroy($entity) // avec un hook/event "destroy"
-		#$article->destroy()
-		$entityDefinition->hookOn('destroy', function($chain, $entity) use($ormHandler) {
-			$ormHandler->destroy($entity);
-		});
-
-		// $em->save($entity) // avec un hook/event "save"
-		#$article->save()
-		$entityDefinition->hookOn('save', function($chain, $entity) use($ormHandler) {
-			$ormHandler->save($entity);
-		});
+		if(!isset($definition->order_by))
+			$definition->order_by = 'id DESC';
 		
-		// $em->getI18N($entity, $attribute, $lang) // sans behavior utiliser getI18N, avec, le hook s'integre a get()
-		#$article->title
-		$entityDefinition->hookAfter('get', function($chain, $entity, $name, $lang) {
-			return \Asgard\Orm\Libs\ORMHandler::fetch($entity, $name, $lang);
-		});
+		$definition->addProperty('id', array(
+			'type'     => 'text', 
+			'editable' => false, 
+			'required' => false,
+			'position' => 0,
+			'defaut'   => 0,
+			'orm'      => array(
+				'type'              => 'int(11)',
+				'auto_increment'	=> true,
+				'key'	            => 'PRI',
+				'nullable'	        => false,
+			),
+		));	
 
-		// $em->relation($entity, $name)
-		$entityDefinition->hookBefore('get', function($chain, $entity, $name, $lang) {
-			if($entity::hasRelation($name)) {
-				$rel = $entity->relation($name);
-				if($rel instanceof \Asgard\Core\Collection)
-					return $rel->get();
-				else
-					return $rel->first();
-			}
-		});
+		foreach($definition->relations as $name=>$params)
+			$definition->relations[$name] = new EntityRelation($definition, $name, $params);
+		
+		$definition->hookAfter('get', array($this, 'hookAfterGet'));
+		$definition->hookBefore('get', array($this, 'hookBeforeGet'));
+		$definition->hook('validation', array($this, 'hookValidation'));
+	}
+
+	protected function getDataMapper() {
+		if(!$this->dataMapper)
+			$this->dataMapper = new DataMapper(\Asgard\Core\App::get('db'));
+		return $this->dataMapper;
+	}
+
+	public function hookBeforeGet(\Asgard\Hook\HookChain $chain, \Asgard\Entity\Entity $entity, $name, $lang) {
+		if($entity::hasRelation($name)) {
+			$rel = $this->dataMapper->relation($entity, $name);
+			if($rel instanceof \Asgard\Entity\Collection)
+				return $rel->get();
+			else
+				return $rel->first();
+		}
+	}
+
+	public function hookAfterGet(\Asgard\Hook\HookChain $chain, \Asgard\Entity\Entity $entity, $name, $lang) {
+		return $this->getDataMapper()->getI18N($entity, $name, $lang);
+	}
+
+	public function hookValidation(\Asgard\Hook\HookChain $chain, \Asgard\Entity\Entity $entity, \Asgard\Validation\Validator $validator, array &$data) {
+		foreach($this->definition->relations() as $name=>$relation) {
+			$data[$name] = $this->dataMapper->relation($entity, $name);
+			$validator->attribute($name, $relation->getRules());
+		}
+	}
+
+	public function staticCatchAll($name, array $args, &$processed) {
+		#Article::where() / ::limit() / ::orderBy() / ..
+		if(method_exists('Asgard\Orm\ORM', $name)) {
+			$processed = true;
+			return call_user_func_array(array($this->getDataMapper()->orm($this->entityClass), $name), $args);
+		}
+	}
+
+	public function callCatchAll($entity, $name, $args, &$processed) {
+		if($entity::hasRelation($name)) {
+			$processed = true;
+			return $entity->relation($name);
+		}
+	}
+
+	#Article::loadBy('title', 'hello world')
+	public function static_loadBy($property, $value) {
+		return $this->getDataMapper()->orm($this->entityClass)->where(array($property => $value))->first();
+	}
+
+	#Article::getRelationProperty('category')
+	public function static_getRelationProperty($relation) {
+		return $this->getDataMapper()->getRelationProperty($this->entityClass, $relation);
+	}
+
+	#Static methods
+	#Article::relations()
+	public function static_relations() {
+		return $this->definition->relations;
+	}
+
+	#Article::relation('parent')
+	public function static_relation($name) {
+		return $this->static_relations()[$name];
+	}
+
+	#Article::hasRelation('parent')
+	public function static_hasRelation($name) {
+		return array_key_exists($name, $this->static_relations());
+	}
+
+	#Article::load(2)
+	public function static_load($id) {
+		return $this->getDataMapper()->load($this->entityClass, $id);
+	}
+
+	public function static_getTable() {
+		return $this->getDataMapper()->getTable($this->entityClass);
+	}
+
+	#Article::orm()
+	public function static_orm() {
+		return $this->getDataMapper()->orm($this->entityClass);
+	}
+
+	#Article::destroyAll()
+	public function static_destroyAll() {
+		return $this->getDataMapper()->destroyAll($this->entityClass);
+	}
+
+	#Article::destroyOne()
+	public function static_destroyOne($id) {
+		return $this->getDataMapper()->destroyOne($this->entityClass, $id);
+	}
+
+	#Article::create()
+	public function static_create(array $values=array(), $force=false) {
+		return $this->getDataMapper()->create($this->entityClass, $values, $force);
+	}
+
+	#Methods
+	#$article->save()
+	public function call_save(\Asgard\Entity\Entity $entity, array $values=null, $force=false) {
+		return $this->getDataMapper()->save($entity, $values, $force);
+	}
+
+	#$article->destroy()
+	public function call_destroy(\Asgard\Entity\Entity $entity) {
+		return $this->getDataMapper()->destroy($entity);
+	}
+
+	#$article->isNew()
+	public function call_isNew(\Asgard\Entity\Entity $entity) {
+		return $this->getDataMapper()->isNew($entity);
+	}
+
+	#$article->isOld()
+	public function call_isOld(\Asgard\Entity\Entity $entity) {
+		return $this->getDataMapper()->isOld($entity);
+	}
+
+	#$article->relation('category')
+	public function call_relation(\Asgard\Entity\Entity $entity, $relation) {
+		return $this->getDataMapper()->relation($entity, $relation);
 	}
 }

@@ -3,12 +3,12 @@ class ORMTest extends PHPUnit_Framework_TestCase {
 	public static function setUpBeforeClass() {
 		if(!defined('_ENV_'))
 			define('_ENV_', 'test');
-		require_once _VENDOR_DIR_.'autoload.php';
 		\Asgard\Core\App::instance(true)->config->set('bundles', array(
-			_ASGARD_DIR_.'core',
-			_ASGARD_DIR_.'orm',
-			_ASGARD_DIR_.'validation',
-		));
+			new \Asgard\Core\Bundle,
+			new \Asgard\Orm\Bundle,
+			new \Asgard\Validation\Bundle,
+			new \Asgard\Entity\Bundle,
+		))->set('bundlesdirs', array());
 		\Asgard\Core\App::loadDefaultApp();
 	}
 	
@@ -29,7 +29,7 @@ class ORMTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals(1, Asgard\Orm\Tests\Entities\Category::orderBy('id ASC')->first()->id);
 
 		#relation shortcut
-		$this->assertEquals(2, sizeof($cat->news));
+		$this->assertEquals(2, count($cat->news));
 
 		#relation + where
 		$this->assertEquals(1, $cat->news()->where('title', 'Welcome!')->first()->id);
@@ -56,7 +56,7 @@ class ORMTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals(1, Asgard\Orm\Tests\Entities\News::min('score'));
 
 		#relations cascade
-		$this->assertEquals(2, sizeof($cat->news()->author));
+		$this->assertEquals(2, count($cat->news()->author));
 		$this->assertEquals(1, $cat->news()->author()->where('name', 'Bob')->first()->id);
 
 		#join
@@ -74,7 +74,7 @@ class ORMTest extends PHPUnit_Framework_TestCase {
 		$orm = Asgard\Orm\Tests\Entities\News::orm();
 		while($n = $orm->next())
 			$news[] = $n;
-		$this->assertEquals(3, sizeof($news));
+		$this->assertEquals(3, count($news));
 
 		#values
 		$this->assertEquals(
@@ -90,8 +90,8 @@ class ORMTest extends PHPUnit_Framework_TestCase {
 
 		#with
 		$cats = Asgard\Orm\Tests\Entities\Category::with('news')->get();
-		$this->assertEquals(1, sizeof($cats[0]->data['news']));
-		$this->assertEquals(2, sizeof($cats[1]->data['news']));
+		$this->assertEquals(1, count($cats[0]->data['news']));
+		$this->assertEquals(2, count($cats[1]->data['news']));
 
 		$cats = Asgard\Orm\Tests\Entities\Category::with('news', function($orm) {
 			$orm->with('author');
@@ -106,14 +106,14 @@ class ORMTest extends PHPUnit_Framework_TestCase {
 		$orm = Asgard\Orm\Tests\Entities\News::paginate(1, 2);
 		$paginator = $orm->getPaginator();
 		$this->assertTrue($paginator instanceof \Asgard\Utils\Paginator);
-		$this->assertEquals(2, sizeof($orm->get()));
-		$this->assertEquals(1, sizeof(Asgard\Orm\Tests\Entities\News::paginate(2, 2)->get()));
+		$this->assertEquals(2, count($orm->get()));
+		$this->assertEquals(1, count(Asgard\Orm\Tests\Entities\News::paginate(2, 2)->get()));
 
 		#offset
 		$this->assertEquals(3, Asgard\Orm\Tests\Entities\News::orderBy('id ASC')->offset(2)->first()->id);
 
 		#limit
-		$this->assertEquals(2, sizeof(Asgard\Orm\Tests\Entities\News::limit(2)->get()));
+		$this->assertEquals(2, count(Asgard\Orm\Tests\Entities\News::limit(2)->get()));
 
 		#two jointures with the same name
 		$r = Asgard\Orm\Tests\Entities\News::first()

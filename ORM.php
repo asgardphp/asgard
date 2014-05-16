@@ -1,6 +1,11 @@
 <?php
-namespace Asgard\Orm\Libs;
+namespace Asgard\Orm;
 
+/**
+ * Helps performing operations on a set of entities.
+ * 
+ * @author Michel Hognerud <michel@hognerud.net>
+*/
 class ORM {
 	protected $entity;
 	protected $with;
@@ -13,14 +18,34 @@ class ORM {
 	protected $per_page;
 
 	protected $tmp_dal = null;
-		
+	
+	/**
+	 * Constructor.
+	 * 
+	 * @param \Asgard\Entity\Entity entity The entity class.
+	*/
 	public function __construct($entity) {
 		$this->entity = $entity;
 
-		$this->orderBy($entity::getDefinition()->meta['order_by']);
+		$this->orderBy($entity::getDefinition()->order_by);
 	}
-
-	public function __call($relationName, $args) {
+	
+	/**
+	 * Magic method.
+	 * 
+	 * Lets you access relations of the entity.
+	 * For example:
+	 * $orm = new ORM('News');
+	 * $orm->categories()->all();
+	 * 
+	 * @param string relationName The name of the relation.
+	 * @param array args Not used.
+	 * 
+	 * @throws \Exception If the relation does not exist.
+	 * 
+	 * @return ORM A new ORM instance of the related entities.
+	*/
+	public function __call($relationName, array $args) {
 		$current_entity = $this->entity;
 		if(!$current_entity::getDefinition()->hasRelation($relationName))
 			throw new \Exception('Relation '.$relationName.' does not exist.');
@@ -36,21 +61,40 @@ class ORM {
 
 		return $newOrm;
 	}
-
+	
+	/**
+	 * Magic Method.
+	 * 
+	 * Lets you retrieve related entities.
+	 * For example:
+	 * $orm = new ORM('News');
+	 * $categories = $orm->categories;
+	 * 
+	 * @param string name The name of the relation.
+	 * 
+	 * @return array Array of entities.
+	*/
 	public function __get($name) {
 		return $this->$name()->get();
 	}
-
-	public function joinToEntity($relation, $entity) {
+	
+	/**
+	 * Limits the search to the entities related to the given entity.
+	 * 
+	 * @param string relation The name of the relation.
+	 * @param \Asgard\Entity\Entity entity The related entity.
+	 * 
+	 * @return ORM $this
+	*/
+	public function joinToEntity($relation, \Asgard\Entity\Entity $entity) {
 		if(is_string($relation)) {
 			$current_entity = $this->entity;
 			$relation = $current_entity::getDefinition()->relations[$relation];
 		}
 
 		if($relation['polymorphic']) {
-			// d($relation);
-			$this->where(array($relation['link_type'] => $entity->getEntityName()));
-			$relation['real_entity'] = $entity->getEntityName();
+			$this->where(array($relation['link_type'] => $entity->getShortName()));
+			$relation['real_entity'] = $entity->getShortName();
 		}
 		$this->join($relation);
 
@@ -58,28 +102,78 @@ class ORM {
 
 		return $this;
 	}
-
+	
+	/**
+	 * Joins a relation to the search. Useful when having conditions involving relations.
+	 * 
+	 * @param string|array relations The name of the relation or an array of relations.
+	 * 
+	 * @return ORM $this
+	*/
 	public function join($relations) {
 		$this->join[] = $relations;
 		return $this;
 	}
-
+	
+	/**
+	 * Returns the name of the table.
+	 * 
+	 * @return string
+	*/
 	public function getTable() {
 		$current_entity = $this->entity;
 		return $current_entity::getTable();
 	}
-
+	
+	/**
+	 * Returns the name of the i18n table.
+	 * 
+	 * @return string
+	*/
 	public function geti18nTable() {
 		return $this->getTable().'_translation';
 	}
-
-	public function toEntity($raw, $entityClass=null) {
+	
+	/**
+	 * Converts a raw array to an entity.
+	 * 
+	 * @param array raw
+	 * @param string entityClass The class of the entity to be instantiated.
+	 * 
+	 * @return \Asgard\Entity\Entity
+	*/
+	public function toEntity(array $raw, $entityClass=null) {
 		if(!$entityClass)
 			$entityClass = $this->entity;
 		$new = new $entityClass;
-		return ORMHandler::unserializeSet($new, $raw);
+		return static::unserializeSet($new, $raw);
 	}
+	
+	/**
+	 * Fills up an entity with a raw array of data.
+	 * 
+	 * @param \Asgard\Entity\Entity entity
+	 * @param array data
+	 * @param NULL|string lang Only necessary if the data concerns a specific language.
+	 * 
+	 * @return \Asgard\Entity\Entity
+	*/
+	protected static function unserializeSet(\Asgard\Entity\Entity $entity, array $data, $lang=null) {
+		foreach($data as $k=>$v) {
+			if($entity::hasProperty($k))
+				$data[$k] = $entity->property($k)->unserialize($v, $entity);
+			else
+				unset($data[$k]);
+		}
 
+		return $entity->_set($data, $lang);
+	}
+	
+	/**
+	 * Returns the next entity in the search list.
+	 * 
+	 * @return \Asgard\Entity\Entity
+	*/
 	public function next() {
 		if(!$this->tmp_dal)
 			$this->tmp_dal = $this->getDAL();
@@ -88,35 +182,67 @@ class ORM {
 		else
 			return $this->toEntity($r);
 	}
-
+	
+	/**
+	 * Returns all the ids of the selected entities.
+	 * 
+	 * @return array
+	*/
 	public function ids() {
 		return $this->values('id');
 	}
-
-	public function values($attr) {
+	
+	/**
+	 * Returns an array with all the values of a specific property from the selected entities.
+	 * 
+	 * @param string property
+	 * 
+	 * @return array
+	*/
+	public function values($property) {
 		$res = array();
 		foreach($this->get() as $one)
-			$res[] = $one->$attr;
+			$res[] = $one->get($property);
 		return $res;
 	}
 	
+	/**
+	 * Returns the first entity from the search list.
+	 * 
+	 * @return \Asgard\Entity\Entity
+	*/
 	public function first() {
 		$this->limit(1);
 		
 		$res = $this->get();
-		if(!sizeof($res))
+		if(!count($res))
 			return false;
 		return $res[0];
 	}
 	
+	/**
+	 * Returns all the entities from the search list.
+	 * 
+	 * @return array
+	*/
 	public function all() {
 		return static::get();
 	}
-
+	
+	/**
+	 * Returns the DB object used to access the database.
+	 * 
+	 * @return \Asgard\Db\DB
+	*/
 	public function getDB() {
 		return \Asgard\Core\App::get('db');
 	}
-
+	
+	/**
+	 * Returns the DAL object used to build queries.
+	 * 
+	 * @return \Asgard\Db\DAL
+	*/
 	public function getDAL() {
 		$current_entity = $this->entity;
 		$dal = new \Asgard\Db\DAL($this->getDB());
@@ -152,8 +278,16 @@ class ORM {
 
 		return $dal;
 	}
-
-	public function recursiveJointures($dal, $jointures, $current_entity, $table) {
+	
+	/**
+	 * Performs jointures on the DAL object.
+	 * 
+	 * @param \Asgard\Db\DAL dal
+	 * @param array jointures Array of relations.
+	 * @param stringcurrent_entity The entity class from which jointures are built.
+	 * @param string table The table from which to performs jointures.
+	*/
+	public function recursiveJointures(\Asgard\Db\DAL $dal, array $jointures, $current_entity, $table) {
 		$alias = null;
 		foreach($jointures as $relation) {
 			if(is_array($relation)) {
@@ -191,8 +325,17 @@ class ORM {
 			}
 		}
 	}
-
-	protected function jointure($dal, $relation, $alias, $current_entity, $ref_table) {
+	
+	/**
+	 * Performs a single jointure.
+	 * 
+	 * @param \Asgard\Db\DAL dal
+	 * @param string relation The name of the relation.
+	 * @param string alias How the related table will be referenced in the SQL query.
+	 * @param \Asgard\Entity\Entity current_entity The entity class from which the jointure is built.
+	 * @param string ref_table The table from which to performs the jointure.
+	*/
+	protected function jointure(\Asgard\Db\DAL $dal, $relation, $alias, $current_entity, $ref_table) {
 		if($relation['polymorphic'])
 			$relation_entity = $relation['real_entity'];
 		else
@@ -201,10 +344,10 @@ class ORM {
 		if($alias === null)
 			$alias = $relationName;
 
-		switch($relation['type']) {
+		switch($relation->type()) {
 			case 'hasOne':
 			case 'belongsTo':
-				$link = $relation['link'];
+				$link = $relation->getLink();
 				$table = $relation_entity::getTable();
 				$dal->rightjoin(array(
 					$table.' '.$alias => $this->processConditions(array(
@@ -213,7 +356,7 @@ class ORM {
 				));
 				break;
 			case 'hasMany':
-				$link = $relation['link'];
+				$link = $relation->getLink();
 				$table = $relation_entity::getTable();
 				$dal->rightjoin(array(
 					$table.' '.$alias => $this->processConditions(array(
@@ -224,12 +367,12 @@ class ORM {
 			case 'HMABT':
 				$dal->rightjoin(array(
 					$relation['join_table'] => $this->processConditions(array(
-						$relation['join_table'].'.'.$relation['link_a'].' = '.$ref_table.'.id',
+						$relation['join_table'].'.'.$relation->getLinkA().' = '.$ref_table.'.id',
 					))
 				));
 				$dal->rightjoin(array(
 					$relation_entity::getTable().' '.$alias => $this->processConditions(array(
-						$relation['join_table'].'.'.$relation['link_b'].' = '.$alias.'.id',
+						$relation['join_table'].'.'.$relation->getLinkB().' = '.$alias.'.id',
 					))
 				));
 				break;
@@ -247,6 +390,13 @@ class ORM {
 		}
 	}
 	
+	/**
+	 * Returns the array of entities from the search list.
+	 * 
+	 * @throws \Exception If one the "with" relations does not exist.
+	 * 
+	 * @return array Array of \Asgard\Entity\Entity
+	*/
 	public function get() {
 		$entities = array();
 		$ids = array();
@@ -262,16 +412,16 @@ class ORM {
 			$ids[] = $row['id'];
 		}
 
-		if(sizeof($entities) && sizeof($this->with)) {
+		if(count($entities) && count($this->with)) {
 			foreach($this->with as $relation_name=>$closure) {
 				$rel = $current_entity::getDefinition()->relations[$relation_name];
-				$relation_type = $rel['type'];
+				$relation_type = $rel->type();
 				$relation_entity = $rel['entity'];
 
 				switch($relation_type) {
 					case 'hasOne':
 					case 'belongsTo':
-						$link = $rel['link'];
+						$link = $rel->getLink();
 						
 						$orm = $relation_entity::where(array('id IN ('.implode(', ', $ids).')'));
 						if(is_callable($closure))
@@ -290,7 +440,7 @@ class ORM {
 						}
 						break;
 					case 'hasMany':
-						$link = $rel['link'];
+						$link = $rel->getLink();
 						
 						$orm = $relation_entity::where(array($link.' IN ('.implode(', ', $ids).')'));
 						if(is_callable($closure))
@@ -306,9 +456,9 @@ class ORM {
 						}
 						break;
 					case 'HMABT':
-						$join_table = $rel['join_table'];
-						$currentEntity_idfield = $rel['link_a'];
-						$relationEntity_idfield = $rel['link_b'];
+						$join_table = $rel->getTable();
+						$currentEntity_idfield = $rel->getLinkA();
+						$relationEntity_idfield = $rel->getLinkB();
 
 						$reverse_relation = $rel->reverse();
 						$reverse_relation_name = $reverse_relation['name'];
@@ -342,18 +492,34 @@ class ORM {
 		return $entities;
 	}
 	
-	public function selectQuery($sql, $args=array()) {
+	/**
+	 * Performs an SQL query and returns the entities.
+	 * 
+	 * @param string sql SQL query
+	 * @param array args SQL parameters
+	 * 
+	 * @return array Array of \Asgard\Entity\Entity
+	*/
+	public function selectQuery($sql, array $args=array()) {
 		$entities = array();
 		$entity = $this->entity;
 		
 		$dal = new \Asgard\Db\DAL($this->getDB());
 		$rows = $dal->query($sql, $args)->all();
 		foreach($rows as $row)
-			$entities[] = ORMHandler::unserializeSet(new $entity, $row);
+			$entities[] = static::unserializeSet(new $entity, $row);
 			
 		return $entities;
 	}
 	
+	/**
+	 * Paginates the search list.
+	 * 
+	 * @param integer page Current page.
+	 * @param integer per_page Number of elements per page.
+	 * 
+	 * @return \Asgard\Orm\ORM $this
+	*/
 	public function paginate($page, $per_page=10) {
 		$page = $page ? $page:1;
 		$this->offset(($page-1)*$per_page);
@@ -364,19 +530,39 @@ class ORM {
 		
 		return $this;
 	}
-
+	
+	/**
+	 * Returns the paginator tool.
+	 * 
+	 * @return \Asgard\Utils\Paginator
+	*/
 	public function getPaginator() {
 		if($this->page === null || $this->per_page === null)
 			return;
 		return new \Asgard\Utils\Paginator($this->count(), $this->page, $this->per_page);
 	}
 	
-	public function with($with, $closure=null) {
+	/**
+	 * Retrieves the related entities along with the selected entities.
+	 * 
+	 * @param array|string with Array of relation names or the name of the relation.
+	 * @param \Closure closure Code to be executed on the relation's ORM.
+	 * 
+	 * @return \Asgard\Orm\ORM $this
+	*/
+	public function with($with, \Closure $closure=null) {
 		$this->with[$with] = $closure;
 		
 		return $this;
 	}
-
+	
+	/**
+	 * Replace the tables by their i18n equivalent.
+	 * 
+	 * @param string sql SQL query.
+	 * 
+	 * @return string The modified SQL query.
+	*/
 	protected function replaceTable($sql) {
 		$entity = $this->entity;
 		$table = $this->getTable();
@@ -386,14 +572,20 @@ class ORM {
 			if(!$entity::hasProperty($property))
 				continue;
 			$table = $entity::property($property)->i18n ? $i18nTable:$table;
-			// $sql = preg_replace('/(?<![\.a-z0-9-_`\(\)])('.$property.')(?![\.a-z0-9-_`\(\)])/', $table.'.`$1`', $sql);
 			$sql = preg_replace('/(?<![\.a-z0-9-_`\(\)])('.$property.')(?![\.a-z0-9-_`\(\)])/', $table.'.$1', $sql);
 		}
 
 		return $sql;
 	}
-
-	protected function processConditions($conditions) {
+	
+	/**
+	 * Format the conditions before being used in SQL.
+	 * 
+	 * @param array conditions
+	 * 
+	 * @return array Formatted conditions.
+	*/
+	protected function processConditions(array $conditions) {
 		foreach($conditions as $k=>$v) {
 			if(!is_array($v)) {
 				$newK = $this->replaceTable($k);
@@ -401,14 +593,21 @@ class ORM {
 				if($newK != $k)
 					unset($conditions[$k]);
 			}
-			else {
+			else
 				$conditions[$k] = $this->processConditions($conditions[$k]);
-			}
 		}
 
 		return $conditions;
 	}
 	
+	/**
+	 * Add new conditions to the query.
+	 * 
+	 * @param array|string conditions Array of conditions or name of a property.
+	 * @param null|string val Value of the property.
+	 * 
+	 * @return \Asgard\Orm\ORM $this
+	*/
 	public function where($conditions, $val=null) {
 		if(is_array($conditions))
 			$this->where[] = $this->processConditions($conditions);
@@ -418,21 +617,47 @@ class ORM {
 		return $this;
 	}
 	
+	/**
+	 * Sets the offset.
+	 * 
+	 * @param integer offset
+	 * 
+	 * @return \Asgard\Orm\ORM $this
+	*/
 	public function offset($offset) {
 		$this->offset = $offset;
 		return $this;
 	}
 	
+	/**
+	 * Sets the limit.
+	 * 
+	 * @param integer limit
+	 * 
+	 * @return \Asgard\Orm\ORM $this
+	*/
 	public function limit($limit) {
 		$this->limit = $limit;
 		return $this;
 	}
 	
+	/**
+	 * Sets the order.
+	 * 
+	 * @param string orderBy e.g. position ASC
+	 * 
+	 * @return \Asgard\Orm\ORM $this
+	*/
 	public function orderBy($orderBy) {
 		$this->orderBy = $orderBy;
 		return $this;
 	}
 	
+	/**
+	 * Deletes all the selected entities.
+	 * 
+	 * @return integer The number of deleted entities.
+	*/
 	public function delete() {
 		$count = 0;
 		while($entity = $this->next())
@@ -441,32 +666,83 @@ class ORM {
 		return $count;
 	}
 	
-	public function update($values) {
+	/**
+	 * Updates entities properties.
+	 * 
+	 * @param array values Array of properties.
+	 * 
+	 * @return \Asgard\Orm\ORM $this
+	*/
+	public function update(array $values) {
 		while($entity = $this->next())
 			$entity->save($values);
 		return $this;
 	}
 	
+	/**
+	 * Counts the number of selected entities.
+	 * 
+	 * @param string group_by To split the result according to a specific property.
+	 * 
+	 * @return integer|array The total or an array of total per value.
+	*/
 	public function count($group_by=null) {
 		return $this->getDAL()->count($group_by);
 	}
 	
+	/**
+	 * Returns the minimum value of a property.
+	 * 
+	 * @param string what The property to count from.
+	 * @param string group_by To split the result according to a specific property.
+	 * 
+	 * @return integer|array The total or an array of total per value.
+	*/
 	public function min($what, $group_by=null) {
 		return $this->getDAL()->min($what, $group_by);
 	}
 	
+	/**
+	 * Returns the maximum value of a property.
+	 * 
+	 * @param string what The property to count from.
+	 * @param string group_by To split the result according to a specific property.
+	 * 
+	 * @return integer|array The total or an array of total per value.
+	*/
 	public function max($what, $group_by=null) {
 		return $this->getDAL()->max($what, $group_by);
 	}
 	
+	/**
+	 * Returns the average value of a property.
+	 * 
+	 * @param string what The property to count from.
+	 * @param string group_by To split the result according to a specific property.
+	 * 
+	 * @return integer|array The total or an array of total per value.
+	*/
 	public function avg($what, $group_by=null) {
 		return $this->getDAL()->avg($what, $group_by);
 	}
 	
+	/**
+	 * Returns the sum of a property.
+	 * 
+	 * @param string what The property to count from.
+	 * @param string group_by To split the result according to a specific property.
+	 * 
+	 * @return integer|array The total or an array of total per value.
+	*/
 	public function sum($what, $group_by=null) {
 		return $this->getDAL()->sum($what, $group_by);
 	}
 	
+	/**
+	 * Resets all conditions, order, offset, and limit.
+	 * 
+	 * @return \Asgard\Orm\ORM $this
+	*/
 	public function reset() {
 		$this->where = array();
 		$this->with = array();
