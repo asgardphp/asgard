@@ -1,7 +1,7 @@
 <?php
-namespace Asgard\Core\Cli;
+namespace Asgard\Core\Console;
 
-class AsgardController extends CLIController {
+class AsgardController extends \Asgard\Console\Controller {
 	public function versionAction($request) {
 		echo 'Version: alpha';
 	}

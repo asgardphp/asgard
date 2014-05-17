@@ -1,7 +1,7 @@
 <?php
-namespace Asgard\Core\Cli;
+namespace Asgard\Db\Console;
 
-class DBController extends CLIController {
+class DBController extends \Asgard\Console\Controller {
 	/**
 	@Shortcut('db:drop-all')
 	@Usage('db:drop-all')

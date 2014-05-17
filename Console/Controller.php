@@ -1,7 +1,7 @@
 <?php
-namespace Asgard\Core\Cli;
+namespace Asgard\Console;
 
-abstract class CLIController {
+abstract class Controller {
 	public static function fetchRoutes() {
 		$routes = array();
 		$reflection = new \Addendum\ReflectionAnnotatedClass(get_called_class());

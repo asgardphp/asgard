@@ -1,7 +1,7 @@
 <?php
-namespace Asgard\Core\Cli;
+namespace Asgard\Console;
 
-class FrontController extends CLIController {
+class FrontController extends Controller {
 	public function mainAction($request) {
 		$request = Request::createFromGlobals();
 		

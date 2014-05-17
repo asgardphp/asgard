@@ -10,6 +10,7 @@
     },
     "require": {
         "niktux/addendum": "dev-master",
+        "asgard/cache": "dev-master",
         "asgard/utils": "dev-master",
         "symfony/yaml": "dev-master"
     }

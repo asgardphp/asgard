@@ -24,7 +24,7 @@ class PageLayout extends Filter {
 		$htmllayout = $controller->htmlLayout;
 
 		if(is_array($layout) && count($layout) >= 2 && $result !== null)
-			$result = \Asgard\Http\Controller::staticDoRun($layout[0], $layout[1], $result);
+			$result = call_user_func_array($layout, array($result));
 		elseif($htmllayout !== true)
 			$htmllayout = false;
 

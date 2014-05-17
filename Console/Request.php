@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\Core\Cli;
+namespace Asgard\Console;
 
 class Request {
 	protected $route;
@@ -7,7 +7,7 @@ class Request {
 
 	public function __construct($route) {
 		$this->route = $route;
-		$this->args = new \Asgard\Core\Cli\Args;
+		$this->args = new Args;
 	}
 
 	public function getRoute() {

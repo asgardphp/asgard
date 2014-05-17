@@ -29,19 +29,19 @@ namespace Asgard\Core {
 			if($bundleData !== null) {
 				$locales = $bundleData['locales'];
 				$hooks = $bundleData['hooks'];
-				$cli = $bundleData['cli'];
+				$consoleRoutes = $bundleData['consoleRoutes'];
 				$routes = $bundleData['routes'];
 			}
 			else {
 				$locales = $this->loadLocales();
 				$hooks = $this->loadHooks();
-				$cli = $this->loadCli();
+				$consoleRoutes = $this->loadConsole();
 				$routes = $this->loadControllers();
 				
 				\Asgard\Core\App::get('cache')->set('bundles/'.$this->getID(), array(
 					'locales' => $locales,
 					'hooks' => $hooks,
-					'cli' => $cli,
+					'consoleRoutes' => $consoleRoutes,
 					'routes' => $routes,
 				));
 			}
@@ -56,7 +56,7 @@ namespace Asgard\Core {
 				\Asgard\Core\App::get('resolver')->addRoutes($routes);
 
 			if(php_sapi_name() === 'cli' && \Asgard\Core\App::has('clirouter'))
-				\Asgard\Core\App::get('clirouter')->addRoutes($cli);
+				\Asgard\Core\App::get('clirouter')->addRoutes($consoleRoutes);
 		}
 
 		protected function loadLocales() {
@@ -79,14 +79,14 @@ namespace Asgard\Core {
 			return $hooks;
 		}
 
-		protected function loadCLI() {
+		protected function loadConsole() {
 			if(!\Asgard\Core\App::has('clirouter'))
 				return array();
 			$routes = array();
-			if(file_exists($this->getBundle().'/Cli/')) {
-				foreach(glob($this->getBundle().'/Cli/*.php') as $filename) {
+			if(file_exists($this->getBundle().'/Console/')) {
+				foreach(glob($this->getBundle().'/Console/*.php') as $filename) {
 					$class = \Asgard\Core\Autoloader::loadClassFile($filename);
-					if(is_subclass_of($class, 'Asgard\Core\Cli\CLIController'))
+					if(is_subclass_of($class, 'Asgard\Console\Controller'))
 						$routes = array_merge($routes, $class::fetchRoutes());
 				}
 			}

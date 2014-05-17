@@ -6,11 +6,6 @@ class Controller extends \Asgard\Hook\Hookable {
 	public $request;
 	public $response;
 
-	public static function widget($action, $args=array()) {
-		$controller = new static;
-		return $controller->doRun($action, $args);
-	}
-
 	public static function fetchRoutes() {
 		$routes = array();
 		$class = get_called_class();
@@ -139,16 +134,13 @@ class Controller extends \Asgard\Hook\Hookable {
 			return $controller->response;
 	}
 
-	public static function staticDoRun($class, $method, $params=array()) {
+	public static function widget($class, $method, array $params=array()) {
 		$controller = new $class;
 		return $controller->doRun($method, $params);
 	}
 
-	public function doRun($method, $params=array()) {
+	protected function doRun($method, array $params=array()) {
 		$this->_view = null;
-	
-		if(!is_array($params))
-			$params = array($params);
 
 		ob_start();
 		$result = call_user_func_array(array($this, $method), $params);
@@ -165,13 +157,13 @@ class Controller extends \Asgard\Hook\Hookable {
 				$method = preg_replace('/Action$/', '', $method);
 				if($this->_view === null && !$this->setRelativeView($method.'.php'))
 					return null;
-				return $this->renderView($this->_view, $this);
+				return $this->renderView($this->_view, array($this));
 			}
 		}
 		return null;
 	}
 	
-	protected function renderView($_view, $_args=array()) {
+	protected function renderView($_view, array $_args=array()) {
 		foreach($_args as $_key=>$_value)
 			$$_key = $_value;
 

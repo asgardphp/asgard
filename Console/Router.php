@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\Core\Cli;
+namespace Asgard\Console;
 
 class Router {
 	public function addRoutes($routes) {

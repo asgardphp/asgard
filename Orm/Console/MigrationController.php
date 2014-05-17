@@ -1,7 +1,7 @@
 <?php
-namespace Asgard\Orm\CLI;
+namespace Asgard\Orm\Console;
 
-class MigrationController extends \Asgard\Core\Cli\CLIController {
+class MigrationController extends \Asgard\Console\Controller {
 	/**
 	@Shortcut('automigrate')
 	@Usage('automigrate')

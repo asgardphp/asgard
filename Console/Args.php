@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\Core\Cli;
+namespace Asgard\Console;
 
 class Args implements \ArrayAccess {
 	protected $inputs;

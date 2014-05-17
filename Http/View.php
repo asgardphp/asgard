@@ -39,7 +39,7 @@ abstract class View {
 		return static::renderTemplate($this->template, $params);
 	}
 
-	public static function renderTemplate($_template, $_params=array()) {
+	public static function renderTemplate($_template, array $_params=array()) {
 		foreach($_params as $_key=>$_value)
 			$$_key = $_value;
 
