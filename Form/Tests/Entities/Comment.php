@@ -10,7 +10,7 @@ class Comment extends \Asgard\Entity\Entity {
 		);
 
 		$definition->behaviors = array(
-			new \Asgard\Orm\OrmBehavior
+			new \Asgard\Orm\ORMBehavior
 		);
 
 		$definition->relations = array(
