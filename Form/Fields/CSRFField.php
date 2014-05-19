@@ -11,7 +11,7 @@ class CSRFField extends \Asgard\Form\Fields\HiddenField {
 
 		$this->default_render = function($field, $options) {
 			$token = $this->generateToken();
-			return \Asgard\Form\Widget::getWidget('Asgard\Form\Widgets\HiddenWidget', array($field->getName(), $token, $options))->render();
+			return $field->getTopForm()->getWidget('Asgard\Form\Widgets\HiddenWidget', $field->getName(), $token, $options)->render();
 		};
 	}
 

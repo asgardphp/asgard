@@ -16,9 +16,15 @@ class EntityException extends \Exception implements \Asgard\Entity\EntityExcepti
 
 class DataMapper {
 	protected $db;
+	protected $locale;
+	protected $prefix;
+	protected $app;
 
-	public function __construct(\Asgard\Db\DB $db) {
+	public function __construct(\Asgard\Db\DB $db, $locale=null, $prefix=null, $app=null) {
 		$this->db = $db;
+		$this->locale = $locale;
+		$this->prefix = $prefix;
+		$this->app = $app;
 	}
 
 	public function isNew(\Asgard\Entity\Entity $entity) {
@@ -44,7 +50,7 @@ class DataMapper {
 	}
 	
 	public function orm($entityClass) {
-		$orm = new ORM($entityClass);
+		$orm = new ORM($entityClass, $this->db, $this->locale, $this->prefix, $this->app);
 		return $orm;
 	}
 	
@@ -61,9 +67,9 @@ class DataMapper {
 
 	public function getTable($entityClass) {
 		if(isset($entityClass::getDefinition()->table) && $entityClass::getDefinition()->table)
-			return \Asgard\Core\App::get('config')->get('database/prefix').$entityClass::getDefinition()->table;
+			return $this->prefix.$entityClass::getDefinition()->table;
 		else
-			return \Asgard\Core\App::get('config')->get('database/prefix').$entityClass::getShortName();
+			return $this->prefix.$entityClass::getShortName();
 	}
 	
 	public function destroyAll($entityClass) {
@@ -120,7 +126,7 @@ class DataMapper {
 				return $relEntity::where(array('id' => $entity->get($link)));
 			case 'hasMany':
 			case 'HMABT':
-				return new \Asgard\Orm\CollectionORM($entity, $name);
+				return new \Asgard\Orm\CollectionORM($entity, $name, $this->db, $this->locale, $this->prefix);
 			default:	
 				throw new \Exception('Relation '.$relation_type.' does not exist.');
 		}

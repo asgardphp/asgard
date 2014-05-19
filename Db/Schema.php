@@ -350,7 +350,7 @@ class Column {
 	protected function getType() {
 		$r = $this->db->query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
-                 WHERE TABLE_SCHEMA = '".\Asgard\Core\App::get('config')->get('database/database')."' 
+                 WHERE TABLE_SCHEMA = '".$this->db->getConfig()['database']."' 
                  AND  TABLE_NAME = '$this->table'
 		 AND COLUMN_NAME = '$this->name'")->first();
 		 
@@ -360,7 +360,7 @@ class Column {
 	protected function getNullable() {
 		$r = $this->db->query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
-                 WHERE TABLE_SCHEMA = '".\Asgard\Core\App::get('config')->get('database/database')."' 
+                 WHERE TABLE_SCHEMA = '".$this->db->getConfig()['database']."' 
                  AND  TABLE_NAME = '$this->table'
 		 AND COLUMN_NAME = '$this->name'")->first();
 		 
@@ -370,7 +370,7 @@ class Column {
 	protected function getDefault() {
 		$r = $this->db->query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
-                 WHERE TABLE_SCHEMA = '".\Asgard\Core\App::get('config')->get('database/database')."' 
+                 WHERE TABLE_SCHEMA = '".$this->db->getConfig()['database']."' 
                  AND  TABLE_NAME = '$this->table'
 		 AND COLUMN_NAME = '$this->name'")->first();
 		 
@@ -380,7 +380,7 @@ class Column {
 	protected function getAutoincrement() {
 		$r = $this->db->query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
-                 WHERE TABLE_SCHEMA = '".\Asgard\Core\App::get('config')->get('database/database')."' 
+                 WHERE TABLE_SCHEMA = '".$this->db->getConfig()['database']."' 
                  AND  TABLE_NAME = '$this->table'
 		 AND COLUMN_NAME = '$this->name'")->first();
 		 

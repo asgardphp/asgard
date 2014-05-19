@@ -5,21 +5,25 @@ class ErrorHandler {
 	protected static $reservedMemory;
 	protected static $errorAtStart;
 
-	public static function initialize() {
+	public static function initialize($app) {
 		ini_set('log_errors', 0);
 		static::$reservedMemory = str_repeat('a', 10240);
 		static::$errorAtStart = error_get_last();
 
-		set_error_handler(array('Asgard\Core\ErrorHandler', 'phpErrorHandler'));
-		set_exception_handler(array('Asgard\Core\ErrorHandler', 'exceptionHandler'));
-		register_shutdown_function(array('Asgard\Core\ErrorHandler', 'shutdownFunction'));
+		$errorHandler = new static($app);
+		// $debug = new \Asgard\Utils\Debug($app);
+		$app['errorHandler'] = $errorHandler;
+		// $app->set('debug', $debug);
+		set_error_handler(array($errorHandler, 'phpErrorHandler'));
+		set_exception_handler(array($errorHandler, 'exceptionHandler'));
+		register_shutdown_function(array($errorHandler, 'shutdownFunction'));
 	}
 
-	public static function getErrorAtStart() {
-		return static::$errorAtStart;
+	public function __construct($app) {
+		$this->app = $app;
 	}
 
-	public static function shutdownFunction() {
+	public function shutdownFunction() {
 		if(($e=error_get_last()) && $e !== static::$errorAtStart) {
 	        $exceptionHandler = set_exception_handler(function() {});
 	        restore_exception_handler();
@@ -28,7 +32,7 @@ class ErrorHandler {
 		}
 	}
 
-	public static function getBacktraceFromException(\Exception $e) {
+	public function getBacktraceFromException(\Exception $e) {
 		$trace = $e->getTrace();
 
 		if($e instanceof FatalErrorException) {
@@ -60,48 +64,48 @@ class ErrorHandler {
 		return $trace;
 	}
 
-	public static function phpErrorHandler($errno, $errstr, $errfile, $errline) {
-		if(static::isLogging() && App::get('config')->get('log_php_errors'))
-			static::log(\Psr\Log\LogLevel::NOTICE, 'PHP ('.static::getPHPError($errno).'): '.$errstr, $errfile, $errline);
+	public function phpErrorHandler($errno, $errstr, $errfile, $errline) {
+		if($this->isLogging() && App::get('config')->get('log_php_errors'))
+			$this->log(\Psr\Log\LogLevel::NOTICE, 'PHP ('.static::getPHPError($errno).'): '.$errstr, $errfile, $errline);
 		throw new \ErrorException($errstr, $errno, 0, $errfile, $errline);
 	}
 
-	public static function exceptionHandler(\Exception $e) {
+	public function exceptionHandler(\Exception $e) {
 		static::$reservedMemory = null;
 
 		#PSRException with a given severity
 		if($e instanceof PSRException) {
-			if(static::isLogging())
+			if($this->isLogging())
 				$severity = $e->getseverity();
 			$msg = $e->getMessage();
 		}
 		#PHP exception
 		elseif($e instanceof \ErrorException) {
-			if(static::isLogging())
+			if($this->isLogging())
 				$severity = static::getPHPErrorSeverity($e->getCode());
 			$msg = 'PHP ('.static::getPHPError($e->getCode()).'): '.$e->getMessage();
 		}
 		#other exception
 		else {
-			if(static::isLogging())
+			if($this->isLogging())
 				$severity = \Psr\Log\LogLevel::ERROR;
 			$msg = get_class($e).': '.$e->getMessage();
 		}
 
-		$trace = static::getBacktraceFromException($e);
+		$trace = $this->getBacktraceFromException($e);
 
-		if(static::isLogging())
-			static::log($severity, $msg, $e->getFile(), $e->getLine(), $trace);
+		if($this->isLogging())
+			$this->log($severity, $msg, $e->getFile(), $e->getLine(), $trace);
 		
 		if(PHP_SAPI == 'cli')
-			echo static::getCLIErrorResponse($msg, $trace);
+			echo $this->getCLIErrorResponse($msg, $trace);
 		else
-			static::getHTTPErrorResponse($msg, $trace)->send();
+			$this->getHTTPErrorResponse($msg, $trace)->send();
 		exit(1);
 	}
 
-	public static function logException(\Exception $e) {
-		if(!static::isLogging())
+	public function logException(\Exception $e) {
+		if(!$this->isLogging())
 			return;
 
 		#PSRException with a given severity
@@ -120,13 +124,13 @@ class ErrorHandler {
 			$msg = get_class($e).': '.$e->getMessage();
 		}
 
-		$trace = static::getBacktraceFromException($e);
+		$trace = $this->getBacktraceFromException($e);
 
-		static::log($severity, $msg, $e->getFile(), $e->getLine(), $trace);
+		$this->log($severity, $msg, $e->getFile(), $e->getLine(), $trace);
 	}
 
-	public static function log($severity, $message, $file, $line, $trace=null) {
-		if(!static::isLogging())
+	public function log($severity, $message, $file, $line, $trace=null) {
+		if(!$this->isLogging())
 			return;
 
 		$context = array(
@@ -134,15 +138,15 @@ class ErrorHandler {
 			'line' => $line,
 			'trace' => $trace,
 		);
-		static::getLogger()->log($severity, $message, $context);
+		$this->getLogger()->log($severity, $message, $context);
 	}
 
-	public static function isLogging() {
-		return App::get('config')->get('log') && !!static::getLogger();
+	public function isLogging() {
+		return $this->app['config']->get('log') && !!$this->getLogger();
 	}
 
-	public static function getLogger() {
-		return App::get('logger');
+	public function getLogger() {
+		return $this->app['logger'];
 	}
 
 	public static function getPHPErrorSeverity($code) {
@@ -185,30 +189,34 @@ class ErrorHandler {
 		return $errors[$code];
 	}
 
-	public static function isFatal($severity) {
-		return in_array($severity, App::get('config')->get('fatal_errors'));
+	public function isFatal($severity) {
+		return in_array($severity, $this->app['config']->get('fatal_errors'));
 	}
 
-	public static function getCLIErrorResponse($msg, $backtrace=null) {
+	public function getCLIErrorResponse($msg, $backtrace=null) {
 		$result = '';
 		if($msg)
 			$result .= $msg."\n\n";
-		$result .= \Asgard\Utils\Debug::getReport($backtrace);
+		$result .= \Asgard\Utils\Debug::getReport($this->getRequest(), $backtrace);
 		echo $result;
 	}
 
-	public static function getHTTPErrorResponse($msg, $backtrace=null) {
+	public function getHTTPErrorResponse($msg, $backtrace=null) {
 		$result = '';
 		if($msg) {
 			$result .= '<b>Message</b><br>'."\n";
 			$result .= $msg."<hr>\n";
 		}
-		$result .= \Asgard\Utils\Debug::getReport($backtrace);
+		$result .= \Asgard\Utils\Debug::getReport($this->getRequest(), $backtrace);
 	
-		App::get('response')->setCode(500);
-		if(App::get('config')->get('debug'))
-			return App::get('response')->setHeader('Content-Type', 'text/html')->setContent($result);
+		$response = new \Asgard\Http\Response(500);
+		if($this->app['config']->get('debug'))
+			return $response->setHeader('Content-Type', 'text/html')->setContent($result);
 		else
-			return App::get('response')->setHeader('Content-Type', 'text/html')->setContent('<h1>Error</h1>Oops, something went wrong.');
+			return $response->setHeader('Content-Type', 'text/html')->setContent('<h1>Error</h1>Oops, something went wrong.');
+	}
+
+	public function getRequest() {
+		return $this->app['request'];
 	}
 }

@@ -8,12 +8,44 @@ class Form extends Group {
 	);
 	protected $_render_callbacks = array();
 	protected $_method = 'post';
+	protected $_request;
+	protected $_app;
 
-	public function __construct($name=null, $params=array(), $fields=array()) {
+	public function __construct(
+		$name=null,
+		$params=array(),
+		$fields=array(),
+		\Asgard\Http\Request $request=null,
+		$app=null
+		) {
 		$this->_groupName = $name;
 		$this->_params = $params;
+		$this->_request = $request;
+		$this->_app = $app;
 		$this->fetch();
 		$this->setFields($fields);
+	}
+
+	public function getapp() {
+		return $this->_app;
+	}
+
+	public function setApp($app) {
+		$this->_app = $app;
+	}
+
+	public function getHook() {
+		if($this->_app)
+			return $this->_app['hook'];
+		if($this->_dad)
+			return $this->_dad->getHook();
+	}
+
+	public function getTranslator() {
+		if($this->_app)
+			return $this->_app['translator'];
+		if($this->_dad)
+			return $this->_dad->getTranslator();
 	}
 
 	public function csrf() {
@@ -42,6 +74,24 @@ class Form extends Group {
 		return strtoupper($this->_method);
 	}
 
+	public function getWidget($class, $name, $value, $options) {
+		#Asgard\Form\Widgets\TextWidget
+		if(class_exists($class)) {
+			$reflector = new \ReflectionClass($class);
+			return $reflector->newInstanceArgs(array($name, $value, $options, $this));
+		}
+		#text
+		else {
+			$form = $this;
+			return $this->_app->make('Asgard\Form\Widgets\\'.$class, array($name, $value, $options, $form), function() use($class, $name, $value, $options, $form) {
+				$class = 'Asgard\Form\Widgets\\'.$class.'Widget';
+				$reflector = new \ReflectionClass($class);
+				$widget = $reflector->newInstanceArgs(array($name, $value, $options, $form));
+				return $widget;
+			});
+		}
+	}
+
 	public function render($render_callback, Field $field, array $options=array()) {
 		if($this->_dad)
 			return $this->_dad->render($render_callback, $field, $options);
@@ -58,18 +108,19 @@ class Form extends Group {
 				$widget = $this->trigger('Asgard\Form\Widgets\\'.$render_callback);
 				if($widget === null) {
 					#widget given by an application hook
-					$widget = \Asgard\Core\App::get('hook')->trigger('Asgard\Form\Widgets\\'.$render_callback, array(), function() use($render_callback) {
+					if(!$this->getHook() || !($widget = $this->getHook()->trigger('Asgard\Form\Widgets\\'.$render_callback))) {
 						#if $render_callback is a widget class
 						if(class_exists($render_callback) && $render_callback instanceof \Asgard\Form\Widget)
-							return $render_callback;
+							$widget = $render_callback;
 						#last chance
 						elseif(class_exists('Asgard\Form\Widgets\\'.$render_callback.'Widget') && is_subclass_of('Asgard\Form\Widgets\\'.$render_callback.'Widget', '\Asgard\Form\Widget'))
-							return 'Asgard\Form\Widgets\\'.$render_callback.'Widget';
+							$widget = 'Asgard\Form\Widgets\\'.$render_callback.'Widget';
 						else
 							throw new \Exception('No widget for callback: '.$render_callback);
-					});
+					}
 				}
-				return \Asgard\Form\Widget::getWidget($widget, array($field->getName(), $field->getValue(), $options));
+
+				return $this->getWidget($widget, $field->getName(), $field->getValue(), $options);
 			};
 		}
 
@@ -163,7 +214,7 @@ class Form extends Group {
 	
 	public function open(array $params=array()) {
 		$params = array_merge($this->_params, $params);
-		$action = isset($params['action']) && $params['action'] ? $params['action']:\Asgard\Core\App::get('url')->full();
+		$action = isset($params['action']) && $params['action'] ? $params['action']:$this->_request->url->full();
 		$method = $this->_method;
 		$enctype = isset($params['enctype']) ? $params['enctype']:($this->hasFile() ? ' enctype="multipart/form-data"':'');
 		$attrs = '';
@@ -205,7 +256,7 @@ class Form extends Group {
 	}
 
 	public function isValid() {
-		return !$this->errors() && $this->isSent();
+		return $this->isSent() && !$this->errors();
 	}
 	
 	protected function convertTo($type, array $files) {

@@ -10,7 +10,7 @@ class MigrationController extends \Asgard\Console\Controller {
 	public function automigrateAction($request) {
 		\Asgard\Utils\FileManager::mkdir('migrations');
 		echo 'Running diff..'."\n";
-		$filename = \Asgard\Orm\MigrationsManager::diff('Diff', true);
+		$filename = $this->getMigrationsManager()->diff('Diff', true);
 		if(!$filename) {
 			echo 'Nothing to migrate.';
 			return;
@@ -19,7 +19,7 @@ class MigrationController extends \Asgard\Console\Controller {
 
 		\Asgard\Core\App::get('clirouter')->run('Asgard\Core\Cli\DBController', 'backup', $request);
 		echo 'Migrating...'."\n";
-		\Asgard\Orm\MigrationsManager::migrate($filename, true);
+		$this->getMigrationsManager()->migrate($filename, true);
 	}
 
 	/**
@@ -31,7 +31,7 @@ class MigrationController extends \Asgard\Console\Controller {
 		\Asgard\Utils\FileManager::mkdir('migrations');
 		echo 'Running diff..'."\n";
 	
-		$diff = \Asgard\Orm\MigrationsManager::diff('Diff', true);
+		$diff = $this->getMigrationsManager()->diff('Diff', true);
 		if($diff)
 			echo 'New migration: '.$diff;
 		else
@@ -47,7 +47,7 @@ class MigrationController extends \Asgard\Console\Controller {
 		\Asgard\Core\App::get('clirouter')->run('Asgard\Core\Cli\DBController', 'backup', $request);
 		echo 'Migrating...'."\n";
 
-		\Asgard\Orm\MigrationsManager::migrateNext(true);
+		$this->getMigrationsManager()->migrateNext(true);
 	}
 
 	/**
@@ -59,7 +59,7 @@ class MigrationController extends \Asgard\Console\Controller {
 		\Asgard\Core\App::get('clirouter')->run('Asgard\Core\Cli\DBController', 'backup', $request);
 		echo 'Unmigrating...'."\n";
 
-		\Asgard\Orm\MigrationsManager::unmigrateLast(true);
+		$this->getMigrationsManager()->unmigrateLast(true);
 	}
 
 	/**
@@ -71,7 +71,7 @@ class MigrationController extends \Asgard\Console\Controller {
 		\Asgard\Core\App::get('clirouter')->run('Asgard\Core\Cli\DBController', 'backup', $request);
 		echo 'Unmigrating...'."\n";
 
-		\Asgard\Orm\MigrationsManager::unmigrate($request[0], true);
+		$this->getMigrationsManager()->unmigrate($request[0], true);
 	}
 
 	/**
@@ -83,7 +83,7 @@ class MigrationController extends \Asgard\Console\Controller {
 		\Asgard\Core\App::get('clirouter')->run('Asgard\Core\Cli\DBController', 'backup', $request);
 		echo 'Migrating...'."\n";
 
-		\Asgard\Orm\MigrationsManager::migrate($request[0], true);
+		$this->getMigrationsManager()->migrate($request[0], true);
 	}
 
 	/**
@@ -95,6 +95,10 @@ class MigrationController extends \Asgard\Console\Controller {
 		\Asgard\Core\App::get('clirouter')->run('Asgard\Core\Cli\DBController', 'backup', $request);
 		echo 'Migrating...'."\n";
 
-		\Asgard\Orm\MigrationsManager::migrateAll();
+		$this->getMigrationsManager()->migrateAll();
+	}
+
+	protected function getMigrationsManager() {
+		return \Asgard\Core\App::instance()->get('migrationsManager');
 	}
 }

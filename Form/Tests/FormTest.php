@@ -2,21 +2,27 @@
 namespace Asgard\Form\Tests;
 
 class FormTest extends \PHPUnit_Framework_TestCase {
+	protected static $app;
+
 	#for entities
 	public static function setUpBeforeClass() {
-		#requis pour charger les entities/orm
-		#autoloader dans le bootstrap
-		// \Asgard\Core\App::init();
-
 		if(!defined('_ENV_'))
 			define('_ENV_', 'test');
-		\Asgard\Core\App::instance(true)->config->set('bundles', array(
-			new \Asgard\Validation\Bundle,
-			new \Asgard\Orm\Bundle,
-			new \Asgard\Http\Bundle,
-			new \Asgard\Entity\Bundle,
-		))->set('bundlesdirs', array());
-		\Asgard\Core\App::loadDefaultApp(false);
+
+		$app = new \Asgard\Core\App;
+		$app['config'] = new \Asgard\Core\Config;
+		$app['hook'] = new \Asgard\Hook\Hook($app);
+		$app['cache'] = new \Asgard\Cache\NullCache;
+		$app['translator'] = new \Asgard\Translation\Translator;
+		$app['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($app);
+		$app['db'] = new \Asgard\Db\DB(array(
+			'database' => 'asgard',
+			'user' => 'root',
+			'password' => '',
+			'host' => 'localhost'
+		));
+		\Asgard\Entity\Entity::setApp($app);
+		static::$app = $app;
 	}
 
 	public function testFormAndGroup() {
@@ -34,6 +40,7 @@ class FormTest extends \PHPUnit_Framework_TestCase {
 		});
 		$form = new \Asgard\Form\Form;
 		$form->setRequest($request);
+		$form->setApp(static::$app);
 		$form->group = $group;
 
 		#pré-rempli le groupe avec des données/entities existants
@@ -64,8 +71,8 @@ class FormTest extends \PHPUnit_Framework_TestCase {
 		#Form
 		$form = new \Asgard\Form\Form('test', array(), array(
 			'title' => new \Asgard\Form\Fields\TextField
-		));
-		$form->setRequest($request = new \Asgard\Http\Request);
+		), $request, static::$app);
+		// $form->setRequest($request = new \Asgard\Http\Request);
 		$childForm = new \Asgard\Form\Form('test', array(), array(
 			'content' => new \Asgard\Form\Fields\TextField(array('validation' => array('required')))
 		));
@@ -170,7 +177,7 @@ class FormTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals('<input type="text" name="test[title]" value="abc" id="test-title">', $form->title->def()->__toString());
 		$form->setRenderCallback('text', function($field, $options) {
 			$options['attrs']['class'] = 'a b c';
-			return \Asgard\Form\Widget::text($field->getName(), $field->getValue(), $options);
+			return $field->getTopForm()->getWidget('text', $field->getName(), $field->getValue(), $options);
 		});
 		$this->assertEquals('<input type="text" name="test[title]" value="abc" id="test-title" class="a b c">', $form->title->def()->__toString());
 
@@ -207,11 +214,12 @@ class FormTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testEntityForm() {
-		$db = new \Asgard\Db\DB(\Asgard\Core\App::get('config')->get('database'));
+		// $db = new \Asgard\Db\DB(static::$dbParams);
+		$db = static::$app['db'];
 		$db->import(__dir__.'/formentities.sql');
 
 		$user = new Entities\User;
-		$form = new \Asgard\Form\EntityForm($user);
+		$form = new \Asgard\Form\EntityForm($user, array(), null, static::$app);
 		$request = new \Asgard\Http\Request;
 		$request->setMethod('post')->post->set('user', array('name' => 'Bob'));
 		$form->setRequest($request);

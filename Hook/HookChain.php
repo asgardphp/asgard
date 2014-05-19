@@ -5,9 +5,10 @@ class HookChain {
 	public $calls;
 	protected $continue = true;
 	public $executed = 0;
+	public $app;
 
-	public function __construct(array $calls=array()) {
-		$this->calls = $calls;
+	public function __construct(\Asgard\Core\App $app) {
+		$this->app = $app;
 	}
 
 	public function run(array $args, $print) {

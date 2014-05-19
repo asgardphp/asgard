@@ -5,11 +5,13 @@ class Paginator {
 	public $per_page;
 	public $total;
 	public $page;
+	protected $request;
 	
-	public function __construct($total, $page=1, $per_page=10) {
+	public function __construct($total, $page=1, $per_page=10, $request=null) {
 		$this->per_page	= $per_page;
 		$this->total    = $total;
 		$this->page     = $page ? $page:1;
+		$this->request  = $request;
 	}
 	
 	public function getStart() {
@@ -45,7 +47,7 @@ class Paginator {
 		if($this->page > 1)
 			$r .= '<a href="'.$this->getPrev().'">«</a>';
 		for($i=1; $i<=$this->getPages(); $i++)
-			$r .= '<a href="'.\Asgard\Core\App::get('url')->full(array('page'=>$i)).'"'.($this->page ==$i ? ' class="active"':'').'>'.$i.'</a>';
+			$r .= '<a href="'.$this->request->url->full(array('page'=>$i)).'"'.($this->page ==$i ? ' class="active"':'').'>'.$i.'</a>';
 		if($this->page < $this->getPages())
 			$r .= '<a href="'.$this->getNext().'">»</a>';
 		return $r;
@@ -60,10 +62,10 @@ class Paginator {
 	}
 	
 	public function getPrev() {
-		return \Asgard\Core\App::get('url')->full(array('page'=>$this->page-1));
+		return $this->request->url->full(array('page'=>$this->page-1));
 	}
 	
 	public function getNext() {
-		return \Asgard\Core\App::get('url')->full(array('page'=>$this->page+1));
+		return $this->request->url->full(array('page'=>$this->page+1));
 	}
 }

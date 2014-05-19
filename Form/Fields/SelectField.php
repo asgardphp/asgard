@@ -10,7 +10,7 @@ class SelectField extends \Asgard\Form\Field {
 		return array();
 	}
 
-	public function getRadios(arrray $options=array()) {
+	public function getRadios(array $options=array()) {
 		if(isset($options['choices']))
 			$choices = $options['choices'];
 		else
@@ -45,6 +45,6 @@ class SelectField extends \Asgard\Form\Field {
 		if($value == $default)
 			$options['attrs']['checked'] = 'checked';
 		$options['label'] = $name;
-		return HTMLWidget::radio($this->getName(), $value, $options);
+		return $this->getTopForm()->getWidget('radio', $this->getName(), $value, $options);
 	}
 }

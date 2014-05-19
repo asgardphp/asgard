@@ -3,15 +3,17 @@ namespace Asgard\Form;
 
 class EntityForm extends Form {
 	protected $_entity;
-	protected $_i18n = false;
+	protected $_locales = array();
 
 	public function __construct(
 		\Asgard\Entity\Entity $entity, 
-		array $params=array()
+		array $params=array(),
+		\Asgard\Http\Request $request=null,
+		$app=null
 	) {
 		$this->_entity = $entity;
 
-		$this->_i18n = isset($params['i18n']) && $params['i18n'];
+		$this->_locales = isset($params['locales']) && $params['locales'];
 	
 		$fields = array();
 		foreach($entity->properties() as $name=>$properties) {
@@ -22,9 +24,9 @@ class EntityForm extends Form {
 			if($properties->editable === false || $properties->form_editable === false)
 				continue;
 
-			if($this->_i18n && $properties->i18n) {
+			if($this->_locales && $properties->i18n) {
 				$i18ngroup = array();
-				foreach(\Asgard\Core\App::get('config')->get('locales') as $locale)
+				foreach($this->_locales as $locale)
 					$i18ngroup[$locale] = $this->addAttributeField($entity, $name, $properties, $locale);
 				$fields[$name] = $i18ngroup;
 			}
@@ -35,7 +37,9 @@ class EntityForm extends Form {
 		parent::__construct(
 			isset($params['name']) ? $params['name']:$entity->getShortName(),
 			$params,
-			$fields
+			$fields,
+			$request,
+			$app
 		);
 	}
 
@@ -84,7 +88,7 @@ class EntityForm extends Form {
 		$entity = $this->_entity;
 		$relation = $entity::getDefinition()->relation($name);
 
-		$ids = array(''=>\Asgard\Core\App::get('translator')->trans('Choose'));
+		$ids = array(''=>$this->getTranslator()->trans('Choose'));
 		foreach($relation['entity']::all() as $v)
 			$ids[$v->id] = (string)$v;
 				
@@ -113,7 +117,7 @@ class EntityForm extends Form {
 
 		if(is_subclass_of($field, 'Asgard\Form\Group')) {
 			if($field instanceof \Asgard\Form\EntityForm)
-				$errors = $field->my_errors();
+				$errors = $field->myErrors();
 			elseif($field instanceof \Asgard\Form\Form)
 				$errors = $field->errors();
 				
@@ -136,44 +140,17 @@ class EntityForm extends Form {
 		return $this->_entity;
 	}
 	
-	protected function my_errors() {
+	protected function myErrors() {
 		$data = $this->getData();
 		$data = array_filter($data, function($v) {
 			return $v !== null; 
 		});
-		if($this->_i18n)
+		if($this->_locales)
 			$this->_entity->set($data, 'all');
 		else
 			$this->_entity->set($data);
 
-		$errors = array();
-		foreach($this->_fields as $name=>$field) {
-			if($field instanceof Fields\FileField && isset($this->_data[$name])) {
-				$f = $this->_data[$name];
-				switch($f['error']) {
-					case UPLOAD_ERR_INI_SIZE:
-						$errors[$name][] = \Asgard\Core\App::get('translator')->trans('The uploaded file exceeds the max filesize.');
-						break;
-					case UPLOAD_ERR_FORM_SIZE:
-						$errors[$name][] = \Asgard\Core\App::get('translator')->trans('The uploaded file exceeds the max filesize.');
-						break;
-					case UPLOAD_ERR_PARTIAL:
-						$errors[$name][] = \Asgard\Core\App::get('translator')->trans('The uploaded file was only partially uploaded.');
-						break;
-					case UPLOAD_ERR_NO_TMP_DIR:
-						$errors[$name][] = \Asgard\Core\App::get('translator')->trans('Missing a temporary folder.');
-						break;
-					case UPLOAD_ERR_CANT_WRITE:
-						$errors[$name][] = \Asgard\Core\App::get('translator')->trans('Failed to write file to disk.');
-						break;
-					case UPLOAD_ERR_EXTENSION:
-						$errors[$name][] = \Asgard\Core\App::get('translator')->trans('A PHP extension stopped the file upload.');
-						break;
-				}
-			}
-		}
-
-		return array_merge($errors, parent::myErrors(), $this->_entity->errors());
+		return array_merge(parent::myErrors(), $this->_entity->errors());
 	}
 	
 	public function save() {

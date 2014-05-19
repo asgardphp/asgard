@@ -5,6 +5,7 @@ class Controller extends \Asgard\Hook\Hookable {
 	protected $_view;
 	public $request;
 	public $response;
+	protected $app;
 
 	public static function fetchRoutes() {
 		$routes = array();
@@ -41,6 +42,15 @@ class Controller extends \Asgard\Hook\Hookable {
 		}
 
 		return $routes;
+	}
+
+	public function setApp($app) {
+		$this->app = $app;
+		$this->hook = $app['hook'];
+	}
+
+	public function getapp() {
+		return $this->app;
 	}
 	
 	public function getRouteFor($what) {
@@ -88,23 +98,24 @@ class Controller extends \Asgard\Hook\Hookable {
 	}
 	
 	public function url_for($action, $params=array(), $relative=false) {
-		return \Asgard\Core\App::get('url')->url_for(array(get_called_class(), $action), $params, $relative);
+		return $this->app['resolver']->url_for(array(get_called_class(), $action), $params, $relative);
 	}
 
-	public static function run($controllerClassName, $actionShortname, $request=null, $response=null) {
+	public static function run($controllerClassName, $actionShortname, \Asgard\Core\App $app, $request=null, $response=null) {
 		if($request === null)
 			$request = new Request;
 		if($response === null)
 			$response = new Response;
 
 		$actionName = $actionShortname.'Action';
-		$controller = new $controllerClassName();
+		$controller = new $controllerClassName;
+		$controller->setApp($app);
 
 		$request->route = array('controller'=>$controllerClassName, 'action'=>$actionShortname);
 		$controller->request = $request;
 		$controller->response = $response;
 
-		\Asgard\Core\App::get('hook')->trigger('controller_configure', array($controller));
+		$app['hook']->trigger('controller_configure', array($controller));
 
 		if(method_exists($controller, 'before')) {
 			$controller->hook('before', function($chain, $controller, $request) {
@@ -157,10 +168,14 @@ class Controller extends \Asgard\Hook\Hookable {
 				$method = preg_replace('/Action$/', '', $method);
 				if($this->_view === null && !$this->setRelativeView($method.'.php'))
 					return null;
-				return $this->renderView($this->_view, array($this));
+				return $this->renderView($this->_view, (array)$this);
 			}
 		}
 		return null;
+	}
+
+	public function getFlash() {
+		return new \Asgard\Utils\Flash($this->request);
 	}
 	
 	protected function renderView($_view, array $_args=array()) {
@@ -185,5 +200,9 @@ class Controller extends \Asgard\Hook\Hookable {
 		$dir = dirname($reflection->getFileName());
 		$this->setView($dir.'/../views/'.strtolower(preg_replace('/Controller$/i', '', \Asgard\Utils\NamespaceUtils::basename(get_class($this)))).'/'.$view);
 		return file_exists($dir.'/../views/'.strtolower(preg_replace('/Controller$/i', '', \Asgard\Utils\NamespaceUtils::basename(get_class($this)))).'/'.$view);
+	}
+
+	public function back() {
+		return $this->response->redirect($this->request->server->get('HTTP_REFERER'));
 	}
 }

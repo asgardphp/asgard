@@ -17,15 +17,20 @@ namespace {
 
 namespace Asgard\Core {
 	class BundleLoader {
-		protected $bundle = null;
+		protected $bundle;
+		protected $app;
+
+		public function setApp($app) {
+			$this->app = $app;
+		}
 
 		public function load(BundlesManager $bundlesManager) {
-			if(\Asgard\Core\App::has('autoloader'))
-				\Asgard\Core\App::get('autoloader')->preloadDir($this->getBundle());
+			if($this->app->has('autoloader'))
+				$this->app['autoloader']->preloadDir($this->getBundle());
 		}
 
 		public function run() {
-			$bundleData = \Asgard\Core\App::get('cache')->get('bundles/'.$this->getID());
+			$bundleData = $this->app['cache']->get('bundles/'.$this->getID());
 			if($bundleData !== null) {
 				$locales = $bundleData['locales'];
 				$hooks = $bundleData['hooks'];
@@ -38,7 +43,7 @@ namespace Asgard\Core {
 				$consoleRoutes = $this->loadConsole();
 				$routes = $this->loadControllers();
 				
-				\Asgard\Core\App::get('cache')->set('bundles/'.$this->getID(), array(
+				$this->app['cache']->set('bundles/'.$this->getID(), array(
 					'locales' => $locales,
 					'hooks' => $hooks,
 					'consoleRoutes' => $consoleRoutes,
@@ -46,27 +51,27 @@ namespace Asgard\Core {
 				));
 			}
 
-			if(\Asgard\Core\App::has('translator'))
-				\Asgard\Core\App::get('translator')->addLocales($locales);
+			if($this->app->has('translator'))
+				$this->app['translator']->addLocales($locales);
 
-			if(\Asgard\Core\App::has('hook'))
-				\Asgard\Core\App::get('hook')->hooks($hooks);
+			if($this->app->has('hook'))
+				$this->app['hook']->hooks($hooks);
 
-			if(\Asgard\Core\App::has('resolver'))
-				\Asgard\Core\App::get('resolver')->addRoutes($routes);
+			if($this->app->has('resolver'))
+				$this->app['resolver']->addRoutes($routes);
 
-			if(php_sapi_name() === 'cli' && \Asgard\Core\App::has('clirouter'))
-				\Asgard\Core\App::get('clirouter')->addRoutes($consoleRoutes);
+			if(php_sapi_name() === 'cli' && $this->app->has('clirouter'))
+				$this->app['clirouter']->addRoutes($consoleRoutes);
 		}
 
 		protected function loadLocales() {
-			if(!\Asgard\Core\App::has('translator'))
+			if(!$this->app->has('translator'))
 				return array();
-			return \Asgard\Core\App::get('translator')->fetchLocalesFromDir($this->getBundle().'/locales');
+			return $this->app['translator']->fetchLocalesFromDir($this->getBundle().'/locales');
 		}
 
 		protected function loadHooks() {
-			if(!\Asgard\Core\App::has('hook'))
+			if(!$this->app->has('hook'))
 				return array();
 			$hooks = array();
 			if(file_exists($this->getBundle().'/hooks/')) {
@@ -80,7 +85,7 @@ namespace Asgard\Core {
 		}
 
 		protected function loadConsole() {
-			if(!\Asgard\Core\App::has('clirouter'))
+			if(!$this->app->has('clirouter'))
 				return array();
 			$routes = array();
 			if(file_exists($this->getBundle().'/Console/')) {
@@ -94,7 +99,7 @@ namespace Asgard\Core {
 		}
 
 		protected function loadControllers() {
-			if(!\Asgard\Core\App::has('resolver'))
+			if(!$this->app->has('resolver'))
 				return array();
 			$routes = array();
 			if(file_exists($this->getBundle().'/controllers/')) {

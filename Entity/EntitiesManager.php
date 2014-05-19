@@ -3,6 +3,11 @@ namespace Asgard\Entity;
 
 class EntitiesManager {
 	protected $entities = array();
+	protected $app;
+
+	public function __construct($app) {
+		$this->app = $app;
+	}
 
 	public function get($entityClass) {
 		if(!$this->has($entityClass))
@@ -16,16 +21,15 @@ class EntitiesManager {
 	}
 
 	public function make($entityClass) {
-		\Asgard\Utils\Profiler::checkpoint('start make');
 		if($this->has($entityClass))
 			return $this->entities[$entityClass];
 		
-		$definition = \Asgard\Core\App::get('cache')->get('entitiesmanager/'.$entityClass.'/definition', function() use($entityClass) {
-			$definition = new EntityDefinition($entityClass);
+		$app = $this->app;
+		$definition = $this->app['cache']->get('entitiesmanager/'.$entityClass.'/definition', function() use($entityClass, $app) {
+			$definition = new EntityDefinition($entityClass, $app);
 			return $definition;
 		});
 		$this->entities[$entityClass] = $definition;
-		\Asgard\Utils\Profiler::checkpoint('end make');
 		return $definition;
 	}
 }

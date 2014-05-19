@@ -10,11 +10,22 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 	protected $_hasfile;
 	protected $_request;
 
-	public function __construct(array $fields, $dad=null, $name=null, $data=null) {
+	public function __construct(
+		array $fields,
+		$dad=null,
+		$name=null,
+		$data=null,
+		\Asgard\Hook\Hook $hook,
+		\Symfony\Component\Translation\TranslatorInterface $translator
+		) {
 		$this->addFields($fields);
 		$this->_dad = $dad;
 		$this->_groupName = $name;
 		$this->_data = $data;
+	}
+
+	public function getTranslator() {
+		return $this->_dad->getTranslator();
 	}
 
 	public function render($render_callback, Field $field, array $options=array()) {
@@ -57,10 +68,8 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 			return $this->_dad->getRequest();
 		elseif($this->_request !== null)
 			return $this->_request;
-		elseif(class_exists('Asgard\Core\App') && \Asgard\Core\App::get('request') !== null)
-			return $this->_request = \Asgard\Core\App::get('request');
 		else
-			return $this->_request = \Asgard\Core\Request::createFromGlobals();
+			return $this->_request = \Asgard\Http\Request::createFromGlobals();
 	}
 	
 	public function isSent() {
@@ -127,6 +136,12 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 	
 	public function setDad(Group $dad) {
 		$this->_dad = $dad;
+	}
+
+	public function getTopForm() {
+		if($this->_dad)
+			return $this->_dad->getTopForm();
+		return $this;
 	}
 	
 	public function setFields(array $fields) {
@@ -257,7 +272,34 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 
 		$report = $this->getValidator()->errors($data);
 
-		return $this->getReportErrors($report);
+		$errors = array();
+		foreach($this->_fields as $name=>$field) {
+			if($field instanceof Fields\FileField && isset($this->_data[$name])) {
+				$f = $this->_data[$name];
+				switch($f['error']) {
+					case UPLOAD_ERR_INI_SIZE:
+						$errors[$name][] = $this->getTranslator()->trans('The uploaded file exceeds the max filesize.');
+						break;
+					case UPLOAD_ERR_FORM_SIZE:
+						$errors[$name][] = $this->getTranslator()->trans('The uploaded file exceeds the max filesize.');
+						break;
+					case UPLOAD_ERR_PARTIAL:
+						$errors[$name][] = $this->getTranslator()->trans('The uploaded file was only partially uploaded.');
+						break;
+					case UPLOAD_ERR_NO_TMP_DIR:
+						$errors[$name][] = $this->getTranslator()->trans('Missing a temporary folder.');
+						break;
+					case UPLOAD_ERR_CANT_WRITE:
+						$errors[$name][] = $this->getTranslator()->trans('Failed to write file to disk.');
+						break;
+					case UPLOAD_ERR_EXTENSION:
+						$errors[$name][] = $this->getTranslator()->trans('A PHP extension stopped the file upload.');
+						break;
+				}
+			}
+		}
+
+		return array_merge($errors, $this->getReportErrors($report));
 	}
 
 	public function save() {

@@ -52,27 +52,10 @@ class Response {
 		return $this->content;
 	}
 
-	public function sendHeaders($headers=null) {
+	public function sendHeaders() {
 		if(headers_sent())
 			return;
 	
-		if(!$headers) {
-			$headers = array();
-			if(array_key_exists($this->code, static::$codes))
-				$headers[] = 'HTTP/1.1 '.$this->code.' '.static::$codes[$this->code];
-			else
-				$headers[] = 'HTTP/1.1 200 '.static::$codes[200];
-			foreach($this->headers as $k=>$v)
-				$headers[] = $k.': '.$v;
-		}
-			
-		foreach($headers as $h)
-			header($h);
-	}
-
-	public function send($kill=true) {
-		\Asgard\Core\App::get('hook')->trigger('output');
-
 		$headers = array();
 		if(array_key_exists($this->code, static::$codes))
 			$headers[] = 'HTTP/1.1 '.$this->code.' '.static::$codes[$this->code];
@@ -80,31 +63,18 @@ class Response {
 			$headers[] = 'HTTP/1.1 200 '.static::$codes[200];
 		foreach($this->headers as $k=>$v)
 			$headers[] = $k.': '.$v;
-
-		$this->doSend($headers, $this->content, $kill);
+			
+		foreach($headers as $h)
+			header($h);
 	}
 
-	protected function doSend($headers, $content, $kill) {
-		while(ob_get_level())
-			ob_end_clean();
-		\Asgard\Core\App::get('hook')->trigger('end');
-		\Asgard\Core\App::get('response')->sendHeaders($headers);
-		echo $content;
-        if(\Asgard\Core\App::get('config')->get('profiler'))
-                \Asgard\Utils\Profiler::report();
-		if($kill)
-			exit();
-	}
-
-	public function back() {
-		return $this->redirect(\Asgard\Core\App::get('server')->get('HTTP_REFERER'), false);
+	public function send() {
+		$this->sendHeaders();
+		echo $this->content;
 	}
 	
-	public function redirect($url='', $relative=true) {
-		if($relative && !preg_match('/^http:\/\//', $url))
-			$this->headers['Location'] = \Asgard\Core\App::get('url')->to($url);
-		else
-			$this->headers['Location'] = $url;
+	public function redirect($url='') {
+		$this->headers['Location'] = $url;
 		return $this;
 	}
 

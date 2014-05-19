@@ -3,14 +3,20 @@ namespace Asgard\Cache;
 
 class Bundle extends \Asgard\Core\BundleLoader {
 	public function load(\Asgard\Core\BundlesManager $bundlesManager) {
-		\Asgard\Core\App::instance()->register('Asgard\Cache\FileCache', function() {
+		$this->app->register('Asgard\Cache\FileCache', function() {
 			return new \Asgard\Cache\FileCache('storage/cache/');
 		});
-		\Asgard\Core\App::instance()->register('Asgard\Cache\APCCache', function() {
-			return new \Asgard\Cache\APCCache(\Asgard\Core\App::get('config')->get('key'));
+		$this->app->register('Asgard\Cache\APCCache', function($app) {
+			return new \Asgard\Cache\APCCache($app['config']->get('key'));
 		});
-		\Asgard\Core\App::instance()->register('Asgard\Cache\NullCache', function() {
+		$this->app->register('Asgard\Cache\NullCache', function() {
 			return new \Asgard\Cache\NullCache;
+		});
+		$this->app->register('cache', function($app) {
+			$driver = $app['config']->get('cache_driver');
+			if(!$driver)
+				$driver = 'Asgard\Cache\NullCache';
+			return $app->make($driver);
 		});
 
 		parent::load($bundlesManager);

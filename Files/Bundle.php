@@ -7,7 +7,7 @@ class Bundle extends \Asgard\Core\BundleLoader {
 	}
 
 	public function run() {
-		\Asgard\Core\App::get('rulesregistry')->registerNamespace('Asgard\Files\Rules');
+		$this->app['rulesregistry']->registerNamespace('Asgard\Files\Rules');
 		
 		parent::run();
 	}

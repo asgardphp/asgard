@@ -2,72 +2,92 @@
 namespace Asgard\Http;
 
 class HttpKernel {
-	public static function run() {
-		\Asgard\Core\App::loadDefaultApp(true);
-		\Asgard\Utils\Profiler::checkpoint('after load');
-		$request = \Asgard\Core\App::get('request');
-		$request->isInitial = true;
-		static::process($request, true)->send();
+	protected $app;
+	protected $loaded = false;
+	protected $requests = array();
+
+	public function __construct(\Asgard\Core\App $app) {
+		$this->app = $app;
 	}
 
-	public static function process(\Asgard\Http\Request $request, $catch=false) {
-		$previousRequest = \Asgard\Core\App::get('request');
-		\Asgard\Core\App::instance()->request = $request;
+	public function run() {
+		$request = \Asgard\Http\Request::createFromGlobals();
+		$request->isInitial = true;
+		$this->app->set('request', $request);
+
+		$response = $this->process($request);
+
+		$this->app->get('hook')->trigger('output', array($response, $request));
+		return $response;
+	}
+
+	public function process(Request $request, $catch=true) {
+		$this->app['request'] = $request;
+		$this->requests[] = $request;
 
 		if(!$catch)
-			$response = static::processRaw($request);
+			$response = $this->processRaw($request);
 		else {
 			try {
-				$response = static::processRaw($request);
+				$response = $this->processRaw($request);
 			} catch(\Exception $e) {
-				if($e instanceof \Asgard\Http\ControllerException) {
+				if($e instanceof ControllerException) {
+					$response = $e->getResponse();
 					$severity = $e->getSeverity();
-					$trace = \Asgard\Core\ErrorHandler::getBacktraceFromException($e);
-					\Asgard\Core\ErrorHandler::log($severity, $e->getMessage(), $e->getFile(), $e->getLine(), $trace);
+					$trace = $this->app['errorHandler']->getBacktraceFromException($e);
+					$this->app['errorHandler']->log($severity, $e->getMessage(), $e->getFile(), $e->getLine(), $trace);
 				}
-				else
-					\Asgard\Core\ErrorHandler::logException($e);
+				else {
+					$response = null;
+					$this->app['errorHandler']->logException($e);
+				}
 
-				$response = \Asgard\Core\App::get('hook')->trigger('exception_'.get_class($e), array($e));
+				$this->app['hook']->trigger('exception_'.get_class($e), array($e, $response, $request));
 				if($response === null)
-					$response = static::getExceptionResponse($e);
+					$response = $this->getExceptionResponse($e);
 			}
 		}
 
 		try {
-			\Asgard\Core\App::get('hook')->trigger('frontcontroller_end', array($response));
+			$this->app['hook']->trigger('frontcontroller_end', array($response));
 		} catch(\Exception $e) {
-			\Asgard\Core\ErrorHandler::logException($e);
+			$this->app['errorHandler']->logException($e);
 		}
 
-		\Asgard\Core\App::instance()->request = $previousRequest;
+		array_pop($this->requests);
+		if(isset($this->requests[count($this->requests)-1]))
+			$this->app['request'] = $this->requests[count($this->requests)-1];
 
-		\Asgard\Utils\Profiler::report();
 		return $response;
 	}
 
-	protected static function processRaw(\Asgard\Http\Request $request, $catch=true) {
-		if(file_exists(_DIR_.'app/start.php'))
-			include _DIR_.'app/start.php';
-		\Asgard\Core\App::get('hook')->trigger('start');
+	public function getLastRequest() {
+		if(!isset($this->requests[count($this->requests)-1]))
+			return;
+		return $this->requests[count($this->requests)-1];
+	}
 
-		$resolver = \Asgard\Core\App::get('resolver');
+	protected function processRaw(Request $request, $catch=true) {
+		$resolver = $this->app['resolver'];
+		$resolver->setRequest($request);
+
+		if(defined('_DIR_') && file_exists(_DIR_.'app/start.php'))
+			include _DIR_.'app/start.php';
+		$this->app['hook']->trigger('start', array($request));
 
 		$callback = $resolver->getCallback($request);
 		if($callback === null)
 			throw new Exceptions\NotFoundException;
 		$arguments = $resolver->getArguments($request);
 
-		\Asgard\Utils\Profiler::checkpoint('before controller');
-		$response = call_user_func_array($callback, array_merge($arguments, array($request)));
-		\Asgard\Utils\Profiler::checkpoint('after controller');
+		$response = call_user_func_array($callback, array_merge($arguments, array($this->app, $request)));
 
 		return $response;
 	}
 
-	protected static function getExceptionResponse($e) {
-		$trace = \Asgard\Core\ErrorHandler::getBacktraceFromException($e);
+	protected function getExceptionResponse($e) {
+		$trace = $this->app['errorHandler']->getBacktraceFromException($e);
 		$msg = $e->getMessage() ? get_class($e).': '.$e->getMessage():'Uncaught exception: '.get_class($e);
-		return \Asgard\Core\ErrorHandler::getHTTPErrorResponse($msg, $trace);
+		return $this->app['errorHandler']->getHTTPErrorResponse($msg, $trace);
 	}
 }

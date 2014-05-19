@@ -4,16 +4,17 @@ namespace Asgard\Form\Fields;
 class CaptchaField extends \Asgard\Form\Field {
 	public function __construct(array $options=array()) {
 		parent::__construct($options);
-		$this->options['validation']['captcha_check'] = array($this, 'error');
+		$this->options['validation']['required'] = true;
+		$this->options['validation']['callback'] = array(array($this, 'error'));
 
 		$this->default_render = function($field, $options) {
-			return '<img src="'.\Asgard\Core\App::get('url')->to('captcha').'">'.
-				\Asgard\Form\Widget::text($field->getName(), $field->getValue(), $options)->render();
+			return '<img src="'.$field->dad->getRequest()->url->to('captcha').'">'.
+				$field->getTopForm()->getWidget('text', $field->getName(), $field->getValue(), $options)->render();
 		};
 	}
 
 	public function error() {
-		if($this->value != \Session::get('captcha'))
-			return __('Captcha is invalid.');
+		if($this->value != $this->getTopForm()->getRequest()->session->get('captcha'))
+			return false;
 	}
 }

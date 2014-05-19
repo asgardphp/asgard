@@ -2,6 +2,7 @@
 namespace Asgard\Entity;
 
 abstract class Entity {
+	protected static $app;
 	#public for behaviors
 	public $data = array(
 		'properties'	=>	array(),
@@ -9,11 +10,19 @@ abstract class Entity {
 
 	public function __construct(array $params=null) {
 		#create the entity definition if does not exist yet
-		\Asgard\Core\App::get('entitiesmanager')->make(get_called_class());
+		static::$app['entitiesmanager']->make(get_called_class());
 
 		$this->loadDefault();
 		if(is_array($params))
 			$this->set($params);
+	}
+
+	public static function setApp($app) {
+		static::$app = $app;
+	}
+
+	public static function getapp() {
+		return static::$app;
 	}
 	
 	/* MAGIC METHODS */
@@ -45,7 +54,7 @@ abstract class Entity {
 	public static function definition(EntityDefinition $entityDefinition) {}
 
 	public static function getDefinition() {
-		return \Asgard\Core\App::get('entitiesmanager')->get(get_called_class());
+		return static::$app['entitiesmanager']->get(get_called_class());
 	}
 
 	public function loadDefault() {
@@ -69,6 +78,7 @@ abstract class Entity {
 		$messages = array_merge($messages, static::getDefinition()->messages());
 		
 		$validator = new \Asgard\Validation\Validator;
+		$validator->setRegistry(static::$app['rulesregistry']);
 		$validator->attributes($constrains);
 		$validator->ruleMessages($messages);
 
@@ -112,7 +122,7 @@ abstract class Entity {
 		if(static::getDefinition()->hasProperty($name)) {
 			if(static::getDefinition()->property($name)->i18n) {
 				if(!$lang)
-					$lang = \Asgard\Core\App::get('config')->get('locale');
+					$lang = static::$app['config']->get('locale');
 				if($lang == 'all') {
 					foreach($value as $one => $v)
 						$this->data['properties'][$name][$one] = $v;
@@ -149,7 +159,7 @@ abstract class Entity {
 
 			if(static::getDefinition()->property($name)->i18n) {
 				if(!$lang)
-					$lang = \Asgard\Core\App::get('config')->get('locale');
+					$lang = static::$app['config']->get('locale');
 				if($lang == 'all') {
 					$val = array();
 					foreach($value as $one => $v)
@@ -175,13 +185,13 @@ abstract class Entity {
 	
 	public function get($name, $lang=null) {
 		if(!$lang)
-			$lang = \Asgard\Core\App::get('config')->get('locale');
+			$lang = static::$app['config']->get('locale');
 
 		$res = $this->getDefinition()->trigger('get', array($this, $name, $lang), function($chain, $entity, $name, $lang) {
 			if($entity::hasProperty($name)) {
 				if($entity::property($name)->i18n) {
 					if($lang == 'all') {
-						$langs = \Asgard\Core\App::get('config')->get('locales');
+						$langs = static::$app['config']->get('locales');
 						$res = array();
 						foreach($langs as $lang)
 							$res[$lang] = $entity->get($name, $lang);

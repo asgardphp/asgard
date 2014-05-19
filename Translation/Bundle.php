@@ -3,10 +3,13 @@ namespace Asgard\Translation;
 
 class Bundle extends \Asgard\Core\BundleLoader {
 	public function load(\Asgard\Core\BundlesManager $bundlesManager) {
+		$this->app->register('translator', function($app) {
+			return new \Asgard\Translation\Translator($app['config']->get('locale'));
+		});
 		parent::load($bundlesManager);
 	}
 
 	public function run() {
-		\Asgard\Core\App::get('translator')->importLocales('locales');
+		$this->app['translator']->importLocales('locales');
 	}
 }

@@ -9,7 +9,6 @@ abstract class Field {
 	protected $value;
 	protected $default_render = 'text';
 	protected $error;
-	public $form;
 
 	public function __construct(array $options=array()) {
 		$this->options = $options;
@@ -17,10 +16,12 @@ abstract class Field {
 			$this->data_type = $options['data_type'];
 		if(isset($options['default']))
 			$this->value = $options['default'];
-		if(isset($options['form']))
-			$this->form = $options['form'];
 		if(isset($options['default_render']))
-			$this->form = $options['default_render'];
+			$this->default_render = $options['default_render'];
+	}
+
+	public function getTopForm() {
+		return $this->dad->getTopForm();
 	}
 
 	public function getValidationRules() {

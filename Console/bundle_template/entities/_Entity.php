@@ -39,6 +39,6 @@ class <?php echo ucfirst($entity['meta']['name']) ?> extends \Asgard\Entity\Enti
 	}
 
 	public function url() {
-		return \Asgard\Core\App::get('url')->url_for(array('<?php echo ucfirst($entity['meta']['name']) ?>', 'show'), array('id'=>$this->id));
+		return static::$app['resolver']->url_for(array('<?php echo ucfirst($entity['meta']['name']) ?>', 'show'), array('id'=>$this->id));
 	}
 }

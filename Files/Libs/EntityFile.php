@@ -77,7 +77,8 @@ class EntityFile {
 	}
 	
 	public function url($default=null) {
-		return \Asgard\Core\App::get('url')->to($this->get($default, false));
+		$entity = $this->entity;
+		return $entity::getapp()->get('request')->url->to($this->get($default, false));
 	}
 	
 	public function save() {

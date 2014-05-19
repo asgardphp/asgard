@@ -2,7 +2,7 @@
 namespace Asgard\Orm;
 
 /**
- * Helps performing operations on a set of entities.
+ * Helps performing operations like selection, deletion and update on a set of entities.
  * 
  * @author Michel Hognerud <michel@hognerud.net>
 */
@@ -16,6 +16,10 @@ class ORM {
 	protected $join = array();
 	protected $page;
 	protected $per_page;
+	protected $db;
+	protected $locale;
+	protected $prefix;
+	protected $app;
 
 	protected $tmp_dal = null;
 	
@@ -24,8 +28,12 @@ class ORM {
 	 * 
 	 * @param \Asgard\Entity\Entity entity The entity class.
 	*/
-	public function __construct($entity) {
+	public function __construct($entity, $db, $locale=null, $prefix=null, $app=null) {
 		$this->entity = $entity;
+		$this->db = $db;
+		$this->locale = $locale;
+		$this->prefix = $prefix;
+		$this->app = $app;
 
 		$this->orderBy($entity::getDefinition()->order_by);
 	}
@@ -235,7 +243,7 @@ class ORM {
 	 * @return \Asgard\Db\DB
 	*/
 	public function getDB() {
-		return \Asgard\Core\App::get('db');
+		return $this->db;
 	}
 	
 	/**
@@ -266,7 +274,7 @@ class ORM {
 			$dal->leftjoin(array(
 				$translation_table => $this->processConditions(array(
 					$table.'.id = '.$translation_table.'.id',
-					$translation_table.'.locale' => \Asgard\Core\App::get('config')->get('locale')
+					$translation_table.'.locale' => $this->locale
 				))
 			));
 		}
@@ -366,13 +374,13 @@ class ORM {
 				break;
 			case 'HMABT':
 				$dal->rightjoin(array(
-					$relation['join_table'] => $this->processConditions(array(
-						$relation['join_table'].'.'.$relation->getLinkA().' = '.$ref_table.'.id',
+					$relation->getTable($this->prefix) => $this->processConditions(array(
+						$relation->getTable($this->prefix).'.'.$relation->getLinkA().' = '.$ref_table.'.id',
 					))
 				));
 				$dal->rightjoin(array(
 					$relation_entity::getTable().' '.$alias => $this->processConditions(array(
-						$relation['join_table'].'.'.$relation->getLinkB().' = '.$alias.'.id',
+						$relation->getTable($this->prefix).'.'.$relation->getLinkB().' = '.$alias.'.id',
 					))
 				));
 				break;
@@ -384,7 +392,7 @@ class ORM {
 			$dal->leftjoin(array(
 				$translation_table.' '.$relationName.'_translation' => $this->processConditions(array(
 					$table.'.id = '.$relationName.'_translation.id',
-					$relationName.'_translation.locale' => \Asgard\Core\App::get('config')->get('locale')
+					$relationName.'_translation.locale' => $this->locale
 				))
 			));
 		}
@@ -537,9 +545,9 @@ class ORM {
 	 * @return \Asgard\Utils\Paginator
 	*/
 	public function getPaginator() {
-		if($this->page === null || $this->per_page === null)
-			return;
-		return new \Asgard\Utils\Paginator($this->count(), $this->page, $this->per_page);
+		$page = $this->page !== null ? $this->page : 1;
+		$per_page = $this->per_page !== null ? $this->per_page : 10;
+		return $this->app->make('paginator', array($this->count(), $page, $per_page));
 	}
 	
 	/**

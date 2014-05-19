@@ -27,7 +27,7 @@ $csv = new CSV($entity::propertyNames());
 foreach($entities as $entity)
 	$csv->add($entity->toArray());
 $result = $csv->get();
-return \Asgard\Core\App::get('response')->setHeader('Content-Type', 'text/csv')
+return $response->setHeader('Content-Type', 'text/csv')
        ->setHeader('content-disposition', 'attachment; filename="participants.csv"')
        ->setContent($result);
 */

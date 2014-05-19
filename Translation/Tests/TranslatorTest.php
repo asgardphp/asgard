@@ -14,9 +14,10 @@ class TranslatorTest extends \PHPUnit_Framework_TestCase {
 
 	#translation
 	public function test1() {
-		\Asgard\Core\App::get('translator')->setLocale('fr');
-		\Asgard\Core\App::get('translator')->importLocales(realpath(__dir__.'/locales/'));
-		$this->assertEquals(__('Hello :name!', array('name' => 'Michel')), 'Bonjour Michel !');
+		$translator = new \Asgard\Translation\Translator;
+		$translator->setLocale('fr');
+		$translator->importLocales(realpath(__DIR__.'/locales/'));
+		$this->assertEquals('Bonjour Michel !', $translator->trans('Hello :name!', array('name' => 'Michel')));
 	}
 }
 ?>

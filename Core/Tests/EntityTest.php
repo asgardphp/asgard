@@ -2,14 +2,28 @@
 namespace Asgard\Core\Tests;
 
 class EntityTest extends \PHPUnit_Framework_TestCase {
+	protected static $app;
+
 	public static function setUpBeforeClass() {
 		if(!defined('_ENV_'))
 			define('_ENV_', 'test');
-		\Asgard\Core\App::instance(true)->config->set('bundles', array(
-			new \Asgard\Entity\Bundle,
-		))
-		->set('bundlesdirs', array());
-		\Asgard\Core\App::loadDefaultApp(false);
+
+		$app = new \Asgard\Core\App;
+		$app['config'] = new \Asgard\Core\Config;
+		$app['config']->set('locale', 'en');
+		$app['config']->set('locales', array('fr', 'en'));
+		$app['hook'] = new \Asgard\Hook\Hook($app);
+		$app['cache'] = new \Asgard\Cache\NullCache;
+		$app['rulesregistry'] = new \Asgard\Validation\RulesRegistry;
+		$app['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($app);
+		$app['db'] = new \Asgard\Db\DB(array(
+			'database' => 'asgard',
+			'user' => 'root',
+			'password' => '',
+			'host' => 'localhost'
+		));
+		\Asgard\Entity\Entity::setApp($app);
+		static::$app = $app;
 	}
 
 	public function test1() {
@@ -148,6 +162,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 		$news->title = 'English Title';
 		$this->assertEquals('English Title', $news->title);
 		$news->set('title', 'Titre Français', 'fr');
+		// d($news->get('title', 'en'));
 		$this->assertEquals('English Title', $news->get('title', 'en'));
 		$this->assertEquals('Titre Français', $news->get('title', 'fr'));
 		$this->assertEquals(
@@ -175,6 +190,5 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 			'title' => 'Test Title',
 		));
 		$this->assertEquals(strrev('Test Title'), $news->title);
-
 	}
 }

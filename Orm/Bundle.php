@@ -9,7 +9,10 @@ class Bundle extends \Asgard\Core\BundleLoader {
 	}
 
 	public function run() {
-		\Asgard\Core\App::get('rulesregistry')->registerNamespace('Asgard\Orm\Validation');
+		$this->app['rulesregistry']->registerNamespace('Asgard\Orm\Validation');
+		$this->app->register('migrationsManager', function($app) {
+			return new MigrationsManager($app['db'], $app['bundlesManager']);
+		});
 		parent::run();
 	}
 }

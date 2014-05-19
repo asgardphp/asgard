@@ -29,6 +29,6 @@ class PageLayout extends Filter {
 			$htmllayout = false;
 
 		if($htmllayout !== false)
-			$result = \Asgard\Http\View::renderTemplate('app/general/views/default/html.php', array('content'=>$result));
+			$result = \Asgard\Http\View::renderTemplate('app/general/views/default/html.php', array('content'=>$result, 'controller'=>$controller));
 	}
 }

@@ -3,6 +3,11 @@ namespace Asgard\Hook;
 
 class Hook {
 	public $registry = array();
+	protected $app;
+
+	public function __construct($app) {
+		$this->app = $app;
+	}
 
 	public function trigger_print($name, array $args=array(), $cb=null) {
 		return $this->trigger($name, $args, $cb, true);
@@ -13,7 +18,7 @@ class Hook {
 	}
 
 	public function trigger($name, array $args=array(), $cb=null, $print=false) {
-		return $this->triggerChain(new HookChain, $name, $args, $cb, $print);
+		return $this->triggerChain(new HookChain($this->app), $name, $args, $cb, $print);
 	}
 
 	public function triggerChain(HookChain $chain, $name, array $args=array(), $cb=null, $print=false) {

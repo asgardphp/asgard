@@ -77,42 +77,6 @@ class URL {
 			return '';
 	}
 
-	public function url_for($what, array $params=array(), $relative=false) {
-		#controller/action
-		if(is_array($what)) {
-			$controller = strtolower($what[0]);
-			$action = strtolower($what[1]);
-			foreach(\Asgard\Core\App::get('resolver')->getRoutes() as $route_params) {
-				$route = $route_params->getRoute();
-				if(strtolower($route_params->getController()) == $controller && strtolower($route_params->getAction()) == $action) {
-					if($route_params->get('host'))
-						return 'http://'.$route_params->get('host').'/'.\Asgard\Core\App::get('resolver')->buildRoute($route, $params);
-					elseif($relative)
-						return \Asgard\Core\App::get('resolver')->buildRoute($route, $params);
-					else
-						return $this->to(\Asgard\Core\App::get('resolver')->buildRoute($route, $params));
-				}
-			}
-		}
-		#route
-		else {
-			$what = strtolower($what);
-			foreach(\Asgard\Core\App::get('resolver')->getRoutes() as $route_params) {
-				$route = $route_params->getRoute();
-				if($route_params->get('name') != null && strtolower($route_params->get('name')) == $what) {
-					if($route_params->get('host'))
-						return 'http://'.$route_params->get('host').'/'.\Asgard\Core\App::get('resolver')->buildRoute($route, $params);
-					elseif($relative)
-						return \Asgard\Core\App::get('resolver')->buildRoute($route, $params);
-					else
-						return $this->to(\Asgard\Core\App::get('resolver')->buildRoute($route, $params));
-				}
-			}
-		}
-					
-		throw new \Exception('Route not found.');
-	}
-
 	public function startsWith($what) {
 		return preg_match('/^'.preg_quote($what, '/').'/', $this->get());
 	}

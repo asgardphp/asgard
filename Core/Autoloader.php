@@ -19,8 +19,8 @@ class Autoloader {
 		$this->map[$class] = $path;
 	}
 	
-	public function namespaceMap($k, $v) {
-		$this->namespaces[$k] = $v;
+	public function namespaceMap($namespace, $dir) {
+		$this->namespaces[$namespace] = $dir;
 	}
 
 	public function globalNamespace($globalNamespace) {
@@ -116,7 +116,8 @@ class Autoloader {
 			foreach($this->namespaces as $namespace=>$dir) {
 				if(preg_match('/^'.preg_quote($namespace).'/', $class)) {
 					$rest = preg_replace('/^'.preg_quote($namespace).'\\\?/', '', $class);
-					$path = _DIR_.$dir.DIRECTORY_SEPARATOR.static::class2path($rest);
+					// $path = _DIR_.$dir.DIRECTORY_SEPARATOR.static::class2path($rest);
+					$path = $dir.DIRECTORY_SEPARATOR.static::class2path($rest);
 
 					if(file_exists($path))
 						return static::loadClassFile($path, $class);
@@ -124,8 +125,10 @@ class Autoloader {
 			}
 
 			#psr
-			if(file_exists(_DIR_.($path = static::class2path($class))))
-				return static::loadClassFile(_DIR_.$path, $class);
+			// if(file_exists(_DIR_.($path = static::class2path($class))))
+			// 	return static::loadClassFile(_DIR_.$path, $class);
+			if(file_exists(($path = static::class2path($class))))
+				return static::loadClassFile($path, $class);
 
 			#lookup for global classes
 			if($this->globalNamespace && \Asgard\Utils\NamespaceUtils::dirname($class) == '.') {

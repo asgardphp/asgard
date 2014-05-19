@@ -6,8 +6,8 @@ class Translator implements \Symfony\Component\Translation\TranslatorInterface {
 	protected $locale = 'en';
 	public $locales = array();
 
-	public function __construct() {
-		static::setLocale(\Asgard\Core\App::get('config')->get('locale'));
+	public function __construct($locale='en') {
+		static::setLocale($locale);
 	}
 
 	public function addLocales($locales) {

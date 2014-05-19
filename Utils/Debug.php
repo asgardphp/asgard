@@ -2,42 +2,42 @@
 namespace Asgard\Utils;
 
 class Debug {
-	public static function d() {
-		static::dWithTrace(array_merge(array(debug_backtrace()), func_get_args()));
+	public static function d(\Asgard\Http\Request $request) {
+		$args = func_get_args();
+		array_shift($args);
+		static::dWithTrace(array_merge(array($request, debug_backtrace()), $args));
 	}
 
-	public static function dWithTrace(array $trace) {
-		if(!\Asgard\Core\App::get('config')->get('debug'))
-			return;
+	public static function dWithTrace(\Asgard\Http\Request $request, array $trace) {
 		while(ob_get_length())
 			ob_end_clean();
 			
 		if(php_sapi_name() != 'cli')
 			echo '<pre>';
-		foreach(array_slice(func_get_args(), 1) as $arg)
+		foreach(array_slice(func_get_args(), 2) as $arg)
 			var_dump($arg);
 		if(php_sapi_name() != 'cli')
 			echo '</pre>';
 		
-		die(static::getReport($trace));
+		die(static::getReport($request, $trace));
 	}
 
-	public static function getReport(array $backtrace) {
+	public static function getReport(\Asgard\Http\Request $request, array $backtrace) {
 		$r = '';
 		if(php_sapi_name() === 'cli')
-			$r .= static::getCLIBacktrace($backtrace);
+			$r .= static::getCLIBacktrace($request, $backtrace);
 		else {
-			$r .= static::getHTMLBacktrace($backtrace);
-			$r .= static::getHTMLRequest();
+			$r .= static::getHTMLBacktrace($request, $backtrace);
+			$r .= static::getHTMLRequest($request);
 		}
 		return $r;
 	}
 	
-	public static function getHTMLBacktrace($backtrace=null) {
+	public static function getHTMLBacktrace(\Asgard\Http\Request $request, $backtrace=null) {
 		if(!$backtrace)
 			$backtrace = debug_backtrace();
 
-		$jquery = \Asgard\Core\App::get('url')->to('js/jquery.js');
+		$jquery = $request->url->to('js/jquery.js');
 			
 		$r = '<b>Backtrace</b><br>'."\n";
 		$r .= <<<EOT
@@ -148,7 +148,7 @@ EOT;
 		return $r;
 	}
 	
-	public static function getCLIBacktrace($backtrace=null) {
+	public static function getCLIBacktrace(\Asgard\Http\Request $request, $backtrace=null) {
 		if(!$backtrace)
 			$backtrace = static::getBacktrace();
 			
@@ -167,8 +167,7 @@ EOT;
 		return $r;
 	}
 
-	public static function getHTMLRequest() {
-		$r = \Asgard\Core\App::get('request');
+	public static function getHTMLRequest(\Asgard\Http\Request $r) {
 		$res = '<b>Request</b><br>';
 		$res .= '<div>';
 
@@ -184,7 +183,7 @@ EOT;
 				else
 					$str = \Asgard\Utils\Tools::var_dump_to_string($v);
 				$res .= '<pre>'.$str.'</pre>';
-				$res .= "</li>\n";
+				$res .= '</li>';
 			}
 			$res .= '</ul></div></div>';
 		}
@@ -201,7 +200,7 @@ EOT;
 				else
 					$str = \Asgard\Utils\Tools::var_dump_to_string($v);
 				$res .= '<pre>'.$str.'</pre>';
-				$res .= "</li>\n";
+				$res .= '</li>';
 			}
 			$res .= '</ul></div></div>';
 		}

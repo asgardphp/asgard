@@ -4,10 +4,16 @@ namespace Asgard\Core;
 class BundlesManager {
 	protected $bundles = array();
 	protected $loaded = false;
+	protected $app;
 
 	public function __construct() {
+		#todo ptet les virer?
 		$this->bundles[] = new \Asgard\Cache\Bundle;
 		$this->bundles[] = new Bundle;
+	}
+
+	public function setApp($app) {
+		$this->app = $app;
 	}
 
 	public function addBundlesDirs($dirs) {
@@ -54,7 +60,7 @@ class BundlesManager {
 		}
 		foreach($bundles as $bundle=>$obj) {
 			if($obj === null) {
-				$obj = new \Asgard\Core\BundleLoader;
+				$obj = new BundleLoader;
 				$obj->setBundle($bundle);
 			}
 			foreach($this->bundles as $b) {
@@ -69,8 +75,10 @@ class BundlesManager {
 		if(!$this->loaded) {
 			$this->addBundles($_bundles);
 
-			for($i=0; $i < count($this->bundles); $i++)
+			for($i=0; $i < count($this->bundles); $i++) {
+				$this->bundles[$i]->setApp($this->app);
 				$this->bundles[$i]->load($this);
+			}
 
 			$this->loaded = true;
 		}

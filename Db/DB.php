@@ -24,6 +24,10 @@ class DB {
 			$this->db = $db;
 		$this->db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 	}
+
+	public function getConfig() {
+		return $this->config;
+	}
 	
 	/**
 	 * sdsf

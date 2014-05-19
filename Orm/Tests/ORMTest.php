@@ -1,19 +1,32 @@
 <?php
 class ORMTest extends PHPUnit_Framework_TestCase {
+	protected static $app;
+
 	public static function setUpBeforeClass() {
 		if(!defined('_ENV_'))
 			define('_ENV_', 'test');
-		\Asgard\Core\App::instance(true)->config->set('bundles', array(
-			new \Asgard\Core\Bundle,
-			new \Asgard\Orm\Bundle,
-			new \Asgard\Validation\Bundle,
-			new \Asgard\Entity\Bundle,
-		))->set('bundlesdirs', array());
-		\Asgard\Core\App::loadDefaultApp();
+
+		$app = new \Asgard\Core\App;
+		$app['hook'] = new \Asgard\Hook\Hook($app);
+		$app['config'] = new \Asgard\Core\Config;
+		$app['cache'] = new \Asgard\Cache\NullCache;
+		$app->register('paginator', function($app, $args) {
+			return new \Asgard\Utils\Paginator($args[0], $args[1], $args[2]);
+		});
+		$app['rulesregistry'] = new \Asgard\Validation\RulesRegistry;
+		$app['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($app);
+		$app['db'] = new \Asgard\Db\DB(array(
+			'database' => 'asgard',
+			'user' => 'root',
+			'password' => '',
+			'host' => 'localhost'
+		));
+		\Asgard\Entity\Entity::setApp($app);
+		static::$app = $app;
 	}
 	
 	public function test1() {
-		\Asgard\Core\App::get('db')->import(realpath(__dir__.'/sql/ormtest.sql'));
+		static::$app['db']->import(realpath(__dir__.'/sql/ormtest.sql'));
 
 		#load
 		$cat = Asgard\Orm\Tests\Entities\Category::load(1);
@@ -126,7 +139,7 @@ class ORMTest extends PHPUnit_Framework_TestCase {
 		$this->assertCount(2, $r);
 
 		#validation
-		\Asgard\Core\App::get('rulesregistry')->registerNamespace('Asgard\Orm\Validation');
+		static::$app['rulesregistry']->registerNamespace('Asgard\Orm\Validation');
 		$cat = Asgard\Orm\Tests\Entities\Category::load(1);
 		$this->assertEquals(array(
 			'news' => array(

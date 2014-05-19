@@ -3,14 +3,16 @@ namespace Asgard\Utils;
 
 class Flash {
 	protected $messages = array('success' => array(), 'error' => array());
+	protected $request;
 
-	public function __construct() {
-		if(\Asgard\Core\App::get('session')->has('messages'))
-			$this->messages = \Asgard\Core\App::get('session')->get('messages');
+	public function __construct(\Asgard\Http\Request $request) {
+		$this->request = $request;
+		if($request->session->has('messages'))
+			$this->messages = $request->session->get('messages');
 	}
 
 	protected function persist() {
-		\Asgard\Core\App::get('session')->set('messages', $this->messages);
+		$this->request->session->set('messages', $this->messages);
 	}
 
 	public function addSuccess($message) {

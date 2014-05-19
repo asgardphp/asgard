@@ -175,10 +175,12 @@ class Validator {
 	}
 
 	public function getRegistry() {
-		if(!$this->registry)
-			return RulesRegistry::getInstance();
-		else
+		if($this->registry)
 			return $this->registry;
+		elseif($this->parent)
+			return $this->parent->getRegistry();
+		else
+			return RulesRegistry::getInstance();
 	}
 
 	public function setRegistry(RulesRegistry $registry) {

@@ -2,18 +2,24 @@
 namespace Asgard\Files\Tests;
 
 class FilesTest extends \PHPUnit_Framework_TestCase {
+	protected static $app;
+
 	public static function setUpBeforeClass() {
 		if(!defined('_ENV_'))
 			define('_ENV_', 'test');
 
-		\Asgard\Core\App::instance(true)->config->set('bundles', array(
-			new \Asgard\Core\Bundle,
-			new \Asgard\Validation\Bundle,
-			new \Asgard\Files\Bundle,
-			new \Asgard\Entity\Bundle,
-		))
-		->set('bundlesdirs', array());
-		\Asgard\Core\App::loadDefaultApp(false);
+		$app = new \Asgard\Core\App;
+		$app['rulesregistry'] = new \Asgard\Validation\RulesRegistry;
+		$app['rulesregistry']->registerNamespace('Asgard\Files\Rules');
+		$app['hook'] = new \Asgard\Hook\Hook($app);
+		$app['hook']->hook('entity_property_type', function($chain, $type) {
+			if($type == 'file')
+				return '\Asgard\Files\Libs\FileProperty';
+		});
+		$app['cache'] = new \Asgard\Cache\NullCache;
+		$app['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($app);
+		\Asgard\Entity\Entity::setApp($app);
+		static::$app = $app;
 	}
 
 	public static function tearDownAfteClass() {

@@ -28,7 +28,7 @@ class MultipleSelectField extends \Asgard\Form\Field {
 		if($value == $default)
 			$options['attrs']['checked'] = 'checked';
 		$options['label'] = $name;
-		return HTMLWidget::radio($this->getName(), $value, $options);
+		return $this->getTopForm()->getWidget('radio', $this->getName(), $value, $options);
 	}
 
 	public function getRadios(array $options=array()) {
@@ -81,7 +81,7 @@ class MultipleSelectField extends \Asgard\Form\Field {
 		if($value == $default)
 			$options['attrs']['checked'] = 'checked';
 		$options['label'] = $name;
-		return HTMLWidget::checkbox($this->name, $value, $options);
+		return $this->getTopForm()->getWidget('checkbox', $field->name, $value, $options);
 	}
 	
 	public function getValue() {

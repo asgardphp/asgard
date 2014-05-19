@@ -17,7 +17,8 @@ class News extends \Asgard\Entity\Entity {
 		);
 
 		$definition->behaviors = array(
-			new \Asgard\Files\Tests\SaveBehavior
+			new \Asgard\Files\Tests\SaveBehavior,
+			new \Asgard\Files\FilesBehavior
 		);
 	}
 }

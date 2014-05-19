@@ -40,22 +40,22 @@ class EntityRelation implements \ArrayAccess {
 
 	public function getLinkA() {
 		$entityClass = $this->entityClass;
-		return $entityClass->getEntityName().'_id';
+		return $entityClass->getShortName().'_id';
 	}
 
 	public function getLinkB() {
 		$entityClass = $this->params['entity'];
-		return $entityClass::getEntityName().'_id';
+		return $entityClass::getShortName().'_id';
 	}
 
-	public function getTable() {
+	public function getTable($prefix=null) {
 		$entityClass = $this->entityClass;
 		$relationEntityClass = $this->params['entity'];
 
-		if($entityClass::getEntityName() < $relationEntityClass::getEntityName())
-			return \Asgard\Core\App::get('config')->get('database/prefix').$entityClass::getEntityName().'_'.$relationEntityClass::getEntityName();
+		if($entityClass::getShortName() < $relationEntityClass::getShortName())
+			return $prefix.$entityClass::getShortName().'_'.$relationEntityClass::getShortName();
 		else
-			return \Asgard\Core\App::get('config')->get('database/prefix').$relationEntityClass::getEntityName().'_'.$entityClass::getEntityName();
+			return $prefix.$relationEntityClass::getShortName().'_'.$entityClass::getShortName();
 	}
 
 	public function type() {

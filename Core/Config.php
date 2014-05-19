@@ -14,6 +14,7 @@ class Config {
 	public function loadConfigDir($dir) {
 		foreach(glob(_DIR_.$dir.'/*.php') as $filename)
 			$this->loadConfigFile($filename);
+		return $this;
 	}
 	
 	public function loadConfigFile($filename) {
@@ -22,19 +23,17 @@ class Config {
 			$this->load($config['all']);
 		if(defined('_ENV_') && isset($config[_ENV_]))
 			$this->load($config[_ENV_]);
+		return $this;
 	}
 	
 	public function load(array $config) {
 		foreach($config as $key=>$value)
 			$this->set($key, $value);
+		return $this;
 	}
 	
 	public function set($str_path, $value) {
 		\Asgard\Utils\Tools::string_array_set($this->config, $str_path, $value);
-
-		if(\Asgard\Core\App::hasInstance() && \Asgard\Core\App::has('hook'))
-			\Asgard\Core\App::get('hook')->trigger(array('Config/Set/'.$str_path, $value));
-		
 		return $this;
 	}
 	

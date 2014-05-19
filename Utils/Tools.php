@@ -213,7 +213,7 @@ class Tools {
 		return $str;
 	}
 	
-	static public function slugify($text) {
+	public static function slugify($text) {
 		$text = static::remove_accents($text);
 	
 		// replace non letter or digits by -
@@ -238,87 +238,15 @@ class Tools {
 		return $text;
 	}
 	
-	static public function randstr($length=10, $validCharacters = 'abcdefghijklmnopqrstuxyvwzABCDEFGHIJKLMNOPQRSTUXYVWZ0123456789') {
+	public static function randstr($length=10, $validCharacters = 'abcdefghijklmnopqrstuxyvwzABCDEFGHIJKLMNOPQRSTUXYVWZ0123456789') {
 		$validCharNumber = strlen($validCharacters);
-
 		$result = '';
 
-		for ($i = 0; $i < $length; $i++) {
+		for ($i=0; $i < $length; $i++) {
 			$index = mt_rand(0, $validCharNumber - 1);
 			$result .= $validCharacters[$index];
 		}
 
 		return $result;
 	}
-
-	public static function hash($pwd) {
-		return sha1(\Asgard\Core\App::get('config')->get('key').$pwd);
-	}
-
-	// public static function getRelativePath($from, $to) {
-	// 	$from     = explode('/', $from);
-	// 	$to       = explode('/', $to);
-	// 	$relPath  = $to;
-
-	// 	foreach($from as $depth => $dir) {
-	// 		if($dir === $to[$depth])
-	// 			array_shift($relPath);
-	// 		else {
-	// 			$remaining = count($from) - $depth;
-	// 			if($remaining > 1) {
-	// 				$padLength = (count($relPath) + $remaining - 1) * -1;
-	// 				$relPath = array_pad($relPath, $padLength, '..');
-	// 				break;
-	// 			}
-	// 			else
-	// 				$relPath[0] = './' . $relPath[0];
-	// 		}
-	// 	}
-	// 	return implode('/', $relPath);
-	// }
-
-	// public static function asgard_array_merge(&$a,$b){
-	//     foreach($b as $child=>$value) {
-	//         if(isset($a[$child])) {
-	//             if(is_array($a[$child]) && is_array($value))
-	//                 static::asgard_array_merge($a[$child], $value);
-	//         }
-	//         else
-	//             $a[$child] = $value;
-	//     }
-	// }
-	
-	// public static function prependHttp($url) {
-	//     if (!preg_match("~^(?:f|ht)tps?://~i", $url))
-	//         $url = "http://" . $url;
-	//     return $url;
-	// }
-	
-	// public static function zip($source, $destination) {
-	//     if (!extension_loaded('zip') || !file_exists(_DIR_.$source))
-	// 		return false;
-
-	//     $zip = new \ZipArchive();
-	//     if (!$zip->open($destination, \ZIPARCHIVE::CREATE))
-	// 		return false;
-
-	//     $source = str_replace('\\', '/', realpath($source));
-
-	//     if (is_dir($source) === true) {
-	// 		$files = new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($source), \RecursiveIteratorIterator::SELF_FIRST);
-
-	// 		foreach ($files as $file) {
-	// 	    	$file = str_replace('\\', '/', realpath($file));
-
-	// 		    if (is_dir($file) === true)
-	// 				$zip->addEmptyDir(str_replace($source . '/', '', $file . '/'));
-	// 		    else if (is_file($file) === true)
-	// 				$zip->addFromString(str_replace($source . '/', '', $file), file_get_contents($file));
-	// 		}
-	//     }
-	//     else if (is_file($source) === true)
-	// 		$zip->addFromString(basename($source), file_get_contents($source));
-
-	//     return $zip->close();
-	// }
 }

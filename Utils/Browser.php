@@ -5,7 +5,12 @@ class Browser {
 	protected $session = array();
 	protected $cookies = array();
 	protected $last;
+	protected $app;
 	protected $catchException = false;
+
+	public function __construct(\Asgard\Core\App $app) {
+		$this->app = $app;
+	}
 
 	public function resetCookies() {
 		$this->cookies = array();
@@ -85,7 +90,8 @@ class Browser {
 		$request->url->setHost('localhost');
 		$request->url->setRoot('');
 
-		$res = \Asgard\Http\HttpKernel::process($request, $this->catchException);
+		$httpKernel = new \Asgard\Http\HttpKernel($this->app);
+		$res = $httpKernel->process($request, $this->catchException);
 
 		$this->last = $res;
 		$this->cookies = $request->cookie->all();
