@@ -30,28 +30,28 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 
 	#get default
 	public function test1() {
-		$com = \Asgard\Orm\tests\i18Nentities\Commentaire::load(2);
+		$com = \Asgard\Orm\tests\I18nentities\Commentaire::load(2);
 		$actu = $com->actualite;
 		$this->assertEquals('Hello', $actu->test); #default language is english
 	}
     
 	#save french text
 	public function test2() {
-		$com = \Asgard\Orm\tests\i18Nentities\Commentaire::load(2);
+		$com = \Asgard\Orm\tests\I18nentities\Commentaire::load(2);
 		$actu = $com->actualite;
 		$this->assertEquals('Bonjour', $actu->get('test', 'fr'));
 	}
     
 	#get english text
 	public function test3() {
-		$com = \Asgard\Orm\tests\i18Nentities\Commentaire::load(2);
+		$com = \Asgard\Orm\tests\I18nentities\Commentaire::load(2);
 		$actu = $com->actualite;
 		$this->assertEquals('Hello', $actu->get('test', 'en'));
 	}
     
 	#get all
 	public function test4() {
-		$com = \Asgard\Orm\tests\i18Nentities\Commentaire::load(2);
+		$com = \Asgard\Orm\tests\I18nentities\Commentaire::load(2);
 		$actu = $com->actualite;
 		$this->assertContains('Bonjour', $actu->get('test', 'all'));
 		$this->assertContains('Hello', $actu->get('test', 'all'));
@@ -61,7 +61,7 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 	#save english version
 	public function test5() {
 		static::$app['translator']->setLocale('en');
-		$actu = \Asgard\Orm\tests\i18Nentities\Actualite::load(2);
+		$actu = \Asgard\Orm\tests\I18nentities\Actualite::load(2);
 		$actu->test = 'Hi';
 		$actu->save(null, true);
 		$dal = new \Asgard\Db\DAL(static::$app['db'], static::$app['config']->get('database/prefix').'actualite_translation');

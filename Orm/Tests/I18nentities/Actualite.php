@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\Orm\Tests\I18Nentities;
+namespace Asgard\Orm\Tests\I18nentities;
 
 class Actualite extends \Asgard\Entity\Entity {
 	public static function definition(\Asgard\Entity\EntityDefinition $definition) {
