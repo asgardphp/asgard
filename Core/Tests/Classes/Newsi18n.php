@@ -10,10 +10,6 @@ class Newsi18n extends \Asgard\Entity\Entity {
 			'content'
 		);
 
-		$definition->behaviors = array(
-			new \Asgard\Behaviors\PageBehavior
-		);
-
 		$definition->addProperty('another_property');
 	}
 

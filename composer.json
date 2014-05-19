@@ -10,7 +10,9 @@
     },
     "require": {
         "niktux/addendum": "dev-master",
-        "symfony/yaml": "dev-master"
+        "symfony/yaml": "dev-master",
+        "symfony/translation": "dev-master",
+        "nesbot/carbon": "dev-master"
     },
     "replace": {
         "asgard/auth": "self.version",

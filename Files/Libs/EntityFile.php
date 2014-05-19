@@ -78,7 +78,7 @@ class EntityFile {
 	
 	public function url($default=null) {
 		$entity = $this->entity;
-		return $entity::getapp()->get('request')->url->to($this->get($default, false));
+		return $entity::getApp()->get('request')->url->to($this->get($default, false));
 	}
 	
 	public function save() {
@@ -100,8 +100,8 @@ class EntityFile {
 	}
 	
 	public function delete() {
-		if($path = $this->get())
-			\Asgard\Utils\FileManager::unlink(_WEB_DIR_.$path);
+		if($path = $this->get(null, true))
+			\Asgard\Utils\FileManager::unlink($path);
 		$this->file = null;
 		
 		return $this;

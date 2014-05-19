@@ -154,10 +154,10 @@ class ImageManager {
 			$dst = $filename.$ext;
 			
 			$i=1;
-			while(file_exists(_DIR_.$dst))
+			while(file_exists($dst))
 				$dst = $filename.'_'.($i++).$ext;
 		
-			if($dst !=null && !file_exists(_DIR_.dirname($dst)))
+			if($dst !=null && !file_exists(dirname($dst)))
 				mkdir(dirname($dst), 0777, true);
 		}
 	
