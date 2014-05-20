@@ -8,7 +8,7 @@ class XpathTest extends \PHPUnit_Framework_TestCase {
 
 		$this->assertInstanceOf('DOMXpath', $doc->getXpath());
 		$this->assertEquals($html, $doc->getCode());
-		$this->assertEquals('951b0c5e212ec90ed70895ac10a5dfac2025ee9e', sha1($doc->html()));
+		$this->assertEquals('951b0c5e212ec90ed70895ac10a5dfac2025ee9e', sha1($this->normalize($doc->html())));
 
 		$this->assertEquals('<a href="#">Home</a>', $doc->html('/html/body/div[1]/div/div[2]/ul/li'));
 		$this->assertEquals('<a href="#about">About</a>', $doc->html('/html/body/div[1]/div/div[2]/ul/li', 1));
@@ -39,5 +39,12 @@ class XpathTest extends \PHPUnit_Framework_TestCase {
 		$item = $doc->item('/html/body/div[1]/div/div[2]/ul/li[2]');
 		$this->assertEquals('Home', $item->prev()->text());
 		$this->assertEquals('Contact', $item->next()->text());
+	}
+
+	protected function normalize($s) {
+	    $s = str_replace("\r\n", "\n", $s);
+	    $s = str_replace("\r", "\n", $s);
+	    $s = preg_replace("/\n{2,}/", "\n\n", $s);
+	    return $s;
 	}
 }
