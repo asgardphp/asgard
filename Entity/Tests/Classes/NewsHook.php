@@ -1,11 +1,11 @@
 <?php
-namespace Asgard\Core\Tests\Classes;
+namespace Asgard\Entity\Tests\Classes;
 
 class NewsHook extends \Asgard\Entity\Entity {
 	public static function definition(\Asgard\Entity\EntityDefinition $definition) {
 		$definition->properties = array(
 			'title' => array(
-				'setHook' => array('Asgard\Core\Tests\Classes\NewsHook', 'reverse'),
+				'setHook' => array('Asgard\Entity\Tests\Classes\NewsHook', 'reverse'),
 			),
 		);
 

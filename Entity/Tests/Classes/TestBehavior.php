@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\Core\Tests\Classes;
+namespace Asgard\Entity\Tests\Classes;
 
 class TestBehavior extends \Asgard\Entity\Behavior {
 	public function static_test1() {

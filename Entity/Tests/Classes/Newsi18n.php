@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\Core\Tests\Classes;
+namespace Asgard\Entity\Tests\Classes;
 
 class Newsi18n extends \Asgard\Entity\Entity {
 	public static function definition(\Asgard\Entity\EntityDefinition $definition) {

@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\Core\Tests;
+namespace Asgard\Entity\Tests;
 
 class EntityTest extends \PHPUnit_Framework_TestCase {
 	protected static $app;
