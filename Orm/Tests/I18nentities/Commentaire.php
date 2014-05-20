@@ -13,7 +13,7 @@ class Commentaire extends \Asgard\Entity\Entity {
 
 		$definition->relations = array(
 			'actualite'	=>	array(
-				'entity'	=>	'\Asgard\Orm\Tests\I18Nentities\Actualite',
+				'entity'	=>	'\Asgard\Orm\Tests\I18nentities\Actualite',
 				'has'	=>	'one',
 			),
 		);

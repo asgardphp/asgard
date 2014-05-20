@@ -35,7 +35,7 @@ class Actualite extends \Asgard\Entity\Entity {
 
 		$definition->relations = array(
 			'commentaires'	=>	array(
-				'entity'	=>	'\Asgard\Orm\Tests\I18Nentities\Commentaire',
+				'entity'	=>	'\Asgard\Orm\Tests\I18nentities\Commentaire',
 				'has'		=>	'many',
 			),
 		);
