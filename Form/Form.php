@@ -113,8 +113,8 @@ class Form extends Group {
 						if(class_exists($render_callback) && $render_callback instanceof \Asgard\Form\Widget)
 							$widget = $render_callback;
 						#last chance
-						elseif(class_exists('Asgard\Form\Widgets\\'.$render_callback.'Widget') && is_subclass_of('Asgard\Form\Widgets\\'.$render_callback.'Widget', '\Asgard\Form\Widget'))
-							$widget = 'Asgard\Form\Widgets\\'.$render_callback.'Widget';
+						elseif(class_exists('Asgard\Form\Widgets\\'.ucfirst($render_callback).'Widget') && is_subclass_of('Asgard\Form\Widgets\\'.ucfirst($render_callback).'Widget', '\Asgard\Form\Widget'))
+							$widget = 'Asgard\Form\Widgets\\'.ucfirst($render_callback).'Widget';
 						else
 							throw new \Exception('No widget for callback: '.$render_callback);
 					}

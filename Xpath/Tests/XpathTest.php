@@ -8,7 +8,7 @@ class XpathTest extends \PHPUnit_Framework_TestCase {
 
 		$this->assertInstanceOf('DOMXpath', $doc->getXpath());
 		$this->assertEquals($html, $doc->getCode());
-		$this->assertEquals('951b0c5e212ec90ed70895ac10a5dfac2025ee9e', sha1($this->normalize($doc->html())));
+		$this->assertEquals('fcdc49e8fd7c2bd00d7a1af0017613cd234e839e', sha1($this->normalize($doc->html())));
 
 		$this->assertEquals('<a href="#">Home</a>', $doc->html('/html/body/div[1]/div/div[2]/ul/li'));
 		$this->assertEquals('<a href="#about">About</a>', $doc->html('/html/body/div[1]/div/div[2]/ul/li', 1));
