@@ -21,7 +21,6 @@ class BrowserTest extends \PHPUnit_Framework_TestCase {
 		$mm = new \Asgard\Migration\MigrationsManager(__DIR__.'/migrations/');
 		$mm->create('up();', 'down();', 'Amigration');
 		$this->assertTrue(file_exists(__DIR__.'/migrations/Amigration.php'));
-		d();
 		$this->assertEquals('<?php'."\n".
 'class Amigration extends \Asgard\Migration\Migration {'."\n".
 '	public function up() {'."\n".
