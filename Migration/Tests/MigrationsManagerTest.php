@@ -37,7 +37,7 @@ class BrowserTest extends \PHPUnit_Framework_TestCase {
 '    \}'."\n".
 '\}/', file_get_contents(__DIR__.'/migrations/migrations.json'));
 
-		$mm->remove('AMigration');
+		$mm->remove('Amigration');
 		$this->assertRegExp('/\['."\n".
 "\n".
 '\]/', file_get_contents(__DIR__.'/migrations/migrations.json'));
