@@ -12,12 +12,12 @@ class HttpKernelTest extends \PHPUnit_Framework_TestCase {
 		$kernel = new HttpKernel($app);
 
 		$resolver = $this->getMock('Asgard\Http\Resolver', array('getCallback', 'getArguments'), array(new \Asgard\Cache\NullCache));
-		$resolver->expects($this->once())->method('getCallback')->willReturn(function() use($kernel, $app) { 
+		$resolver->expects($this->once())->method('getCallback')->will($this->returnValue(function() use($kernel, $app) { 
 			$this->assertInstanceOf('Asgard\Http\Request', $kernel->getLastRequest());
 			$this->assertInstanceOf('Asgard\Http\Request', $app['request']);
 			return 'response';
-		});
-		$resolver->expects($this->once())->method('getArguments')->willReturn(array());
+		}));
+		$resolver->expects($this->once())->method('getArguments')->will($this->returnValue(array()));
 		$app['resolver'] = $resolver;
 		
 		$this->assertEquals('response', $kernel->run());
@@ -25,10 +25,10 @@ class HttpKernelTest extends \PHPUnit_Framework_TestCase {
 
 	public function testCatching() {
 		$resolver = $this->getMock('Asgard\Http\Resolver', array('getCallback', 'getArguments'), array(new \Asgard\Cache\NullCache));
-		$resolver->expects($this->once())->method('getCallback')->willReturn(function() { 
+		$resolver->expects($this->once())->method('getCallback')->will($this->returnValue(function() { 
 			echo $a;
-		});
-		$resolver->expects($this->once())->method('getArguments')->willReturn(array());
+		}));
+		$resolver->expects($this->once())->method('getArguments')->will($this->returnValue(array()));
 
 		$kernel = new HttpKernel(array(
 			'hooks' => new \Asgard\Hook\HooksManager,
@@ -45,10 +45,10 @@ class HttpKernelTest extends \PHPUnit_Framework_TestCase {
 
 	public function testNoInformation() {
 		$resolver = $this->getMock('Asgard\Http\Resolver', array('getCallback', 'getArguments'), array(new \Asgard\Cache\NullCache));
-		$resolver->expects($this->once())->method('getCallback')->willReturn(function() { 
+		$resolver->expects($this->once())->method('getCallback')->will($this->returnValue(function() { 
 			echo $a;
-		});
-		$resolver->expects($this->once())->method('getArguments')->willReturn(array());
+		}));
+		$resolver->expects($this->once())->method('getArguments')->will($this->returnValue(array()));
 
 		$kernel = new HttpKernel(array(
 			'hooks' => new \Asgard\Hook\HooksManager,
@@ -66,10 +66,10 @@ class HttpKernelTest extends \PHPUnit_Framework_TestCase {
 
 	public function testHookException() {
 		$resolver = $this->getMock('Asgard\Http\Resolver', array('getCallback', 'getArguments'), array(new \Asgard\Cache\NullCache));
-		$resolver->expects($this->once())->method('getCallback')->willReturn(function() { 
+		$resolver->expects($this->once())->method('getCallback')->will($this->returnValue(function() { 
 			throw new NotFoundException;
-		});
-		$resolver->expects($this->once())->method('getArguments')->willReturn(array());
+		}));
+		$resolver->expects($this->once())->method('getArguments')->will($this->returnValue(array()));
 
 		$hook = new \Asgard\Hook\HooksManager;
 		$hook->hook('Asgard.Http.Exception.Asgard\Hook\Tests\NotFoundException', function($chain, $e, &$response, $request) {
