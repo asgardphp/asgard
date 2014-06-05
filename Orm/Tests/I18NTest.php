@@ -9,12 +9,13 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 			define('_ENV_', 'test');
 
 		$app = new \Asgard\Core\App;
-		$app['hook'] = new \Asgard\Hook\Hook($app);
-		$app['config'] = new \Asgard\Core\Config;
+		$app['hooks'] = new \Asgard\Hook\HooksManager($app);
+		$app['kernel'] = new \Asgard\Core\Kernel();
+		$app['config'] = new \Asgard\Core\Config();
 		$app['config']->set('locale', 'en');
 		$app['config']->set('locales', array('en', 'fr'));
 		$app['cache'] = new \Asgard\Cache\NullCache;
-		$app['translator'] = new \Asgard\Translation\Translator('en');
+		$app['translator'] = new \Symfony\Component\Translation\Translator('en');
 		$app['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($app);
 		$app['db'] = new \Asgard\Db\DB(array(
 			'database' => 'asgard',
@@ -69,4 +70,3 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals('Hi', $r['test']);
 	}
 }
-?>

@@ -24,13 +24,23 @@ class Tools {
 	}
 
 	public static function string_array_get($arr, $str_path, $default=null) {
-		$path = explode('/', $str_path);
+		$path = explode('.', $str_path);
 		return static::array_get($arr, $path, $default);
 	}
 
 	public static function string_array_set(&$arr, $str_path, $value) {
-		$path = explode('/', $str_path);
+		$path = explode('.', $str_path);
 		static::array_set($arr, $path, $value);
+	}
+
+	public static function string_array_isset($arr, $str_path) {
+		$path = explode('.', $str_path);
+		return static::array_isset($arr, $path);
+	}
+
+	public static function string_array_unset(&$arr, $str_path) {
+		$path = explode('.', $str_path);
+		static::array_unset($arr, $path);
 	}
 
 	public static function array_set(&$arr, $path, $value) {

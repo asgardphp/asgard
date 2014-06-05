@@ -5,11 +5,11 @@ class ControllerRoute extends Route {
 	protected $controller;
 	protected $action;
 
-	public function __construct($route, $controller, $action, $options=array()) {
+	public function __construct($route, $controller, $action, array $options=array()) {
 		$this->controller = $controller;
 		$this->action = $action;
 
-		parent::__construct($route, array('Asgard\Http\Controller', 'run'), array(), $options);
+		parent::__construct($route, array('Asgard\Http\Controller', 'staticRun'), array(), $options);
 	}
 
 	public function getController() {

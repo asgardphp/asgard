@@ -42,7 +42,7 @@ class DataMapper {
 		$entity = new $entityClass;
 		$res = $this->orm($entityClass)->where(array('id' => $id))->getDAL()->first();
 		if($res)
-			static::unserializeSet($entity, $res);
+			$entity->_set(static::unserialize($entity, $res));
 
 		if($this->isNew($entity))
 			return null;
@@ -85,24 +85,15 @@ class DataMapper {
 		return false;
 	}
 	
-	public function getI18N(\Asgard\Entity\Entity $entity, $name, $lang=null) {
-		if(!$entity::hasProperty($name))
+	public function getI18N(\Asgard\Entity\Entity $entity, $lang=null) {
+		$dal = new \Asgard\Db\DAL($this->db, $this->getTranslationTable($entity));
+		$res = $dal->where(array('id' => $entity->id))->where(array('locale'=>$lang))->first();
+		if(!$res)
 			return;
-		if($entity::property($name)->i18n) {
-			if(isset($entity->data['properties'][$name][$lang]))
-				return $entity->data['properties'][$name][$lang];
-			$dal = new \Asgard\Db\DAL($this->db, static::getTranslationTable($entity));
-			$res = $dal->where(array('id' => $entity->id))->where(array('locale'=>$lang))->first();
-			if(!$res)
-				return;
-			unset($res['id']);
-			unset($res['locale']);
+		unset($res['id']);
+		unset($res['locale']);
 
-			static::unserializeSet($entity, $res, $lang);
-				
-			if(isset($entity->data['properties'][$name][$lang]))
-				return $entity->data['properties'][$name][$lang];
-		}
+		return static::unserialize($entity, $res);
 	}
 
 	protected function getRelation(\Asgard\Entity\Entity $entity, $name) {
@@ -132,7 +123,7 @@ class DataMapper {
 		}
 	}
 
-	protected static function unserializeSet(\Asgard\Entity\Entity $entity, array $data, $lang=null) {
+	protected static function unserialize(\Asgard\Entity\Entity $entity, array $data) {
 		foreach($data as $k=>$v) {
 			if($entity::hasProperty($k))
 				$data[$k] = $entity->property($k)->unserialize($v, $entity);
@@ -140,11 +131,12 @@ class DataMapper {
 				unset($data[$k]);
 		}
 
-		return $entity->_set($data, $lang);
+		return $data;
 	}
 
 	public function destroy(\Asgard\Entity\Entity $entity) {
 		$orms = array();
+
 		foreach($entity::getDefinition()->relations() as $name=>$relation) {
 			if(isset($relation['cascade']['delete']) && $relation['cascade']['delete']) {
 				$orm = $entity->$name();
@@ -161,6 +153,18 @@ class DataMapper {
 			$r = static::entityORM($entity)->getDAL()->delete();
 
 		$entity::trigger('destroy', array($entity));
+
+		//Files
+		foreach($entity::getDefinition()->properties() as $name=>$prop) {
+			if($prop instanceof \Asgard\Entity\Properties\FileProperty) {
+				if($prop->get('multiple')) {
+					foreach($entity->get($name) as $file)
+						$file->delete();
+				}
+				else
+					$entity->get($name)->delete();
+			}
+		}
 
 		foreach($orms as $orm)
 			$orm->delete();
@@ -180,7 +184,7 @@ class DataMapper {
 			$data[$name] = $entity->relation($name);
 			$validator->attribute($name, $relation->getRules());
 		}
-		return $this->trigger('validation', array($entity, $validator, &$data), function($chain, $entity, $validator, &$data) {
+		return $entity->trigger('validation', array($entity, $validator, &$data), function($chain, $entity, $validator, &$data) {
 			return $validator->valid($data);
 		});
 	}
@@ -217,6 +221,25 @@ class DataMapper {
 
 		$entity::trigger('save', array($entity));
 
+		//Files
+		$webdir = $this->app['kernel']['webdir'];
+		foreach($entity::getDefinition()->properties() as $name=>$prop) {
+			if($prop instanceof \Asgard\Entity\Properties\FileProperty) {
+				$dir = $prop->get('dir');
+				if(!$dir)
+					$dir = $webdir;
+				else
+					$dir = $webdir.'/'.$dir;
+				if($prop->get('multiple')) {
+					$files = $entity->$name = array_values($entity->$name->all());
+					foreach($files as $file)
+						$file->moveToDir($dir);
+				}
+				else
+					$entity->get($name)->moveToDir($dir);
+			}
+		}
+
 		#apply filters before saving
 		foreach($entity->propertyNames() as $name) {
 			if(isset($entity->data['properties'][$name]))
@@ -251,9 +274,10 @@ class DataMapper {
 		$values = array();
 		$i18n = array();
 		foreach($vars as $p => $v) {
-			if($entity::property($p)->i18n)
+			if($entity::property($p)->i18n) {
 				foreach($v as $lang=>$lang_value)
 					$i18n[$lang][$p] = $lang_value;
+			}
 			else
 				$values[$p] = $v;
 		}
@@ -271,7 +295,7 @@ class DataMapper {
 		
 		//Persist i18n
 		foreach($i18n as $lang=>$values) {
-			$dal = new \Asgard\Db\DAL($this->db, static::getTranslationTable($entity));
+			$dal = new \Asgard\Db\DAL($this->db, $this->getTranslationTable($entity));
 			if(!$dal->where(array('id'=>$entity->id, 'locale'=>$lang))->update($values))
 				$dal->insert(
 					array_merge(

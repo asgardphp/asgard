@@ -10,13 +10,6 @@ abstract class Facade {
 	}
 
 	public static function inst() {
-		return App::get(static::getClass());
-	}
-
-	public static function getClass() {
-		if(isset(static::$class))
-			return static::$class;
-		else
-			return strtolower(\Asgard\Utils\NamespaceUtils::basename(get_called_class()));
+		return App::instance()->get(strtolower(get_called_class()));
 	}
 }

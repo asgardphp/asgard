@@ -14,13 +14,14 @@ class FileManager {
 		
 		$i=1;
 		while(file_exists($dst))
-			$dst = $filename.'_'.($i++).'.'.$ext;
+			$dst = $filename.'_'.($i++).(isset($ext) ? '.'.$ext:'');
 
 		return $dst;
 	}
 
-	public static function move($src, $dst) {
-		$dst = static::getNewFileName($dst);
+	public static function move($src, $dst, $rename=false) {
+		if($rename)
+			$dst = static::getNewFileName($dst);
 			
 		static::mkdir(dirname($dst));
 			
@@ -32,20 +33,25 @@ class FileManager {
 		}
 	}
 
-	public static function copy($src, $dst, $rename=true) {
+	public static function copy($src, $dst, $rename=false) {
 		if(is_dir($src))
-			return static::copyDir($src, $dst);
+			return static::copyDir($src, $dst, $rename);
 		else {
 			if($rename)
 				$dst = static::getNewFileName($dst);
 			static::mkdir(dirname($dst));
-			return copy($src, $dst);
+			$r = copy($src, $dst);
+			if($rename && $r)
+				return $dst;
+			return $r;
 		}
 	}
 
-	protected static function copyDir($src, $dst) { 
+	protected static function copyDir($src, $dst, $rename=false) { 
 		$r = true;
 		$dir = opendir($src);
+		if($rename)
+			$dst = static::getNewFileName($dst);
 		static::mkdir($dst);
 		while(false !== ($file = readdir($dir))) { 
 			if(($file != '.') && ($file != '..')) { 
@@ -55,7 +61,9 @@ class FileManager {
 					$r = $r && copy($src.'/'.$file,$dst.'/'.$file); 
 			} 
 		} 
-		closedir($dir); 
+		closedir($dir);
+		if($rename)
+			return $dst;
 		return $r;
 	} 
 
@@ -119,8 +127,13 @@ class FileManager {
 		return true;
 	}
 
-	public static function put($file, $content) {
-		static::mkdir(dirname($file));
-		return file_put_contents($file, $content);
+	public static function put($dst, $content, $rename=false) {
+		if($rename)
+			$dst = static::getNewFileName($dst);
+		static::mkdir(dirname($dst));
+		$r = file_put_contents($dst, $content);
+		if($r && $rename)
+			return $dst;
+		return $r;
 	}
 }

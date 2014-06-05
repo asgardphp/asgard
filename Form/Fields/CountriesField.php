@@ -252,7 +252,7 @@ class CountriesField extends Field {
 			'EH' => __('WESTERN SAHARA'),
 			'YE' => __('YEMEN'),
 			'ZM' => __('ZAMBIA'),
-			'ZW' => __('ZIMBABWE'
+			'ZW' => __('ZIMBABWE')
 		);
 		parent::__construct($params);
 	}

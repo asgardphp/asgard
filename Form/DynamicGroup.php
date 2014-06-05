@@ -2,20 +2,20 @@
 namespace Asgard\Form;
 
 class DynamicGroup extends Group {
-	protected $_cb;
-	protected $_default_render;
+	protected $cb;
+	protected $default_render;
 
 	public function __construct($cb, $default_render=null) {
-		$this->_cb = $cb;
-		$this->_default_render = $default_render;
+		$this->cb = $cb;
+		$this->default_render = $default_render;
 	}
 
 	public function setDefaultRender($default_render) {
-		$this->_default_render = $default_render;
+		$this->default_render = $default_render;
 	}
 
 	public function setData(array $data) {
-		$this->_data = array_values($data);
+		$this->data = array_values($data);
 		
 		foreach($data as $name=>$data)
 			$this->newField($name, $data);
@@ -26,7 +26,7 @@ class DynamicGroup extends Group {
 	}
 
 	public function def($field=null) {
-		$default_render = $this->_default_render;
+		$default_render = $this->default_render;
 		if($default_render === null)
 			return $field->def();
 		else
@@ -46,7 +46,7 @@ class DynamicGroup extends Group {
 	protected function newField($name=null, $data=null) {
 		if($name !== null && isset($this[$name]))
 			return;
-		$cb = $this->_cb;
+		$cb = $this->cb;
 		$newelement = $cb($data);
 		if(!$newelement)
 			return;
@@ -55,7 +55,7 @@ class DynamicGroup extends Group {
 	}
 
 	protected function renderNew($offset=null) {
-		$default_render = $this->_default_render;
+		$default_render = $this->default_render;
 
 		if($offset === null)
 			$offset = $this->size();

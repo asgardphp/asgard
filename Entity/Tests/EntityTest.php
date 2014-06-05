@@ -12,7 +12,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 		$app['config'] = new \Asgard\Core\Config;
 		$app['config']->set('locale', 'en');
 		$app['config']->set('locales', array('fr', 'en'));
-		$app['hook'] = new \Asgard\Hook\Hook($app);
+		$app['hooks'] = new \Asgard\Hook\HooksManager($app);
 		$app['cache'] = new \Asgard\Cache\NullCache;
 		$app['rulesregistry'] = new \Asgard\Validation\RulesRegistry;
 		$app['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($app);

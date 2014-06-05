@@ -1,0 +1,9 @@
+{
+	"Migration": {
+		"added": 1,
+		"migrated": 3
+	},
+	"MigrationNext": {
+		"added": 2
+	}
+}

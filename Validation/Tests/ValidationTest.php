@@ -6,7 +6,7 @@ use Asgard\Validation\RulesRegistry;
 use Asgard\Validation\InputBag;
 
 class Test extends \PHPUnit_Framework_TestCase {
-	public function test1() {
+	public function test() {
 		$v = new v;
 		$v->rules(array(
 			'min' => 5,
@@ -115,10 +115,24 @@ class Test extends \PHPUnit_Framework_TestCase {
 		$this->assertFalse(v::any(v::min(5), v::equal(3))->valid(2));
 		$this->assertEquals('"2" is invalid.', v::any(v::min(5), v::equal(3))->errors(2)->first());
 
+		#IsNull
+		$this->assertFalse(v::min(1)->valid(0));
+		$this->assertTrue(v::isNull(function($i) { return $i==0; })->min(1)->valid(0));
+		$this->assertTrue(v::isNull(function($i) { return $i==0; })->valid(0));
+		$this->assertFalse(v::isNull(function($i) { return $i==0; })->required()->valid(0));
+
 		#Rule all
 		$this->assertTrue(v::all(v::min(5), v::equal(6))->valid(6));
 		$this->assertFalse(v::all(v::min(5), v::equal(6))->valid(7));
 		$this->assertEquals('"7" is invalid.', v::all(v::min(5), v::equal(6))->errors(7)->first());
+
+		#Rule each
+		$this->assertTrue(v::each(v::min(5))->valid(array(5,6,7,8,9)));
+		$this->assertFalse(v::each(v::min(5))->valid(array(1,2,3,4,5,6,7,8,9)));
+
+		#Each rule
+		$this->assertFalse(v::min(5)->valid(array(1,2,3,4,5,6,7,8,9)));
+		$this->assertTrue(v::min(5)->valid(array(5,6,7,8,9)));
 
 		RulesRegistry::getInstance()->messages(array('min'=>':attribute shall be greater than :min!'));
 		$this->assertEquals('"3" shall be greater than 5!', v::min(5)->errors(3)->first());

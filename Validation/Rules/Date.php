@@ -2,6 +2,8 @@
 namespace Asgard\Validation\Rules;
 
 class Date extends \Asgard\Validation\Rule {
+	protected $handleEach = true;
+
 	public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\Validator $validator) {
 		if($input instanceof \Carbon\Carbon)
 			return true;

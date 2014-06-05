@@ -11,9 +11,9 @@ class FormTest extends \PHPUnit_Framework_TestCase {
 
 		$app = new \Asgard\Core\App;
 		$app['config'] = new \Asgard\Core\Config;
-		$app['hook'] = new \Asgard\Hook\Hook($app);
+		$app['hooks'] = new \Asgard\Hook\HooksManager($app);
 		$app['cache'] = new \Asgard\Cache\NullCache;
-		$app['translator'] = new \Asgard\Translation\Translator;
+		$app['translator'] = new \Symfony\Component\Translation\Translator('en');
 		$app['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($app);
 		$app['db'] = new \Asgard\Db\DB(array(
 			'database' => 'asgard',
@@ -41,7 +41,7 @@ class FormTest extends \PHPUnit_Framework_TestCase {
 		$form = new \Asgard\Form\Form;
 		$form->setRequest($request);
 		$form->setApp(static::$app);
-		$form->group = $group;
+		$form['group'] = $group;
 
 		#pré-rempli le groupe avec des données/entities existants
 		$data = array(
@@ -77,7 +77,7 @@ class FormTest extends \PHPUnit_Framework_TestCase {
 			'content' => new \Asgard\Form\Fields\TextField(array('validation' => array('required')))
 		));
 		// $childForm->setDad($form); #$form->childForm = new Form..
-		$form->childForm = $childForm;
+		$form['childForm'] = $childForm;
 
 		$request->server->set('CONTENT_LENGTH', (int)ini_get('post_max_size')*1024*1024+1);
 		$this->assertFalse($form->uploadSuccess());
@@ -105,7 +105,7 @@ class FormTest extends \PHPUnit_Framework_TestCase {
 		$form->fetch();
 		$this->assertTrue($form->isSent());
 
-		$request->get->remove('test');
+		$request->get->delete('test');
 		$this->assertFalse($form->isSent());
 		$this->assertFalse($form->isValid());
 
@@ -174,18 +174,18 @@ class FormTest extends \PHPUnit_Framework_TestCase {
 		$form->fetch();
 		$this->assertTrue($form->isValid());
 
-		$this->assertEquals('<input type="text" name="test[title]" value="abc" id="test-title">', $form->title->def()->__toString());
+		$this->assertEquals('<input type="text" name="test[title]" value="abc" id="test-title">', $form['title']->def()->__toString());
 		$form->setRenderCallback('text', function($field, $options) {
 			$options['attrs']['class'] = 'a b c';
 			return $field->getTopForm()->getWidget('text', $field->getName(), $field->getValue(), $options);
 		});
-		$this->assertEquals('<input type="text" name="test[title]" value="abc" id="test-title" class="a b c">', $form->title->def()->__toString());
+		$this->assertEquals('<input type="text" name="test[title]" value="abc" id="test-title" class="a b c">', $form['title']->def()->__toString());
 
 		$this->assertCount(2, $form->getFields());
 		$this->assertEquals(2, $form->size());
 
 		$this->assertEquals('test', $form->getName());
-		$this->assertEquals('childForm', $form->childForm->getName());
+		$this->assertEquals('childForm', $form['childForm']->getName());
 
 		$form->reset();
 		$this->assertEquals(array(
@@ -196,10 +196,8 @@ class FormTest extends \PHPUnit_Framework_TestCase {
 		), $form->getData());
 
 		$this->assertFalse($form->hasFile());
-		$form->childForm->file = new \Asgard\Form\Fields\FileField;
+		$form['childForm']['file'] = new \Asgard\Form\Fields\FileField;
 		$this->assertTrue($form->hasFile());
-
-		$this->assertEquals($form['childForm']['content'], $form->childForm->content);
 
 		foreach($form as $field)
 			$this->assertTrue($field instanceof \Asgard\Form\Field || $field instanceof \Asgard\Form\Group);

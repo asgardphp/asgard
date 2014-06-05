@@ -1,16 +1,21 @@
 <?php
 namespace Asgard\Http;
 
-abstract class View {
+class View {
 	protected $template;
 	protected $params = array();
 
-	public function reset($template) {
+	public function __construct($template, array $params=array()) {
+		$this->template = $template;
+		$this->params = $params;
+	}
+
+	public function reset() {
 		$this->template = null;
 		$this->params = array();
 	}
 
-	public function setTemplate($template) {
+	public function template($template) {
 		$this->template = $template;
 		return $this;
 	}
@@ -19,12 +24,7 @@ abstract class View {
 		return $this->template;
 	}
 
-	public function setParams($params) {
-		$this->params = $params;
-		return $this;
-	}
-
-	public function params($params) {
+	public function params(array $params=array()) {
 		$this->params = array_merge($this->params, $params);
 		return $this;
 	}

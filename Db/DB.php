@@ -13,16 +13,32 @@ class DB {
 	*/
 	public function __construct(array $config, \PDO $db=null) {
 		$this->config = $config;
-		if(!$db) {
-			$this->db = new \PDO('mysql:host='.$config['host'].(isset($config['database']) ? ';dbname='.$config['database']:''),
-				$config['user'],
-				$config['password'],
-				array(\PDO::MYSQL_ATTR_FOUND_ROWS => true, \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8')
-			);
-		}
+		if(!$db)
+			$this->db = $this->getPDO($config);
 		else
 			$this->db = $db;
 		$this->db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+	}
+
+	protected function getPDO($config) {
+		$driver = isset($config['driver']) ? $config['driver']:'mysql';
+		$user = isset($config['user']) ? $config['user']:'root';
+		$password = isset($config['password']) ? $config['password']:'';
+
+		switch($driver) {
+			case 'mysql':
+				$parameters = 'mysql:host='.$config['host'].(isset($config['port']) ? ';port='.$config['port']:'').(isset($config['database']) ? ';dbname='.$config['database']:'');
+				return new \PDO($parameters, $user, $password, array(\PDO::MYSQL_ATTR_FOUND_ROWS => true, \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'));
+			case 'pgsql':
+				$parameters = 'pgsql:host='.$config['host'].(isset($config['port']) ? ' port='.$config['port']:'').(isset($config['database']) ? ' dbname='.$config['database']:'');
+				return new \PDO($parameters, $user, $password);
+			case 'mssql':
+				$parameters = 'mssql:host='.$config['host'].(isset($config['database']) ? ';dbname='.$config['database']:'');
+				return new \PDO($parameters, $user, $password);
+			case 'sqlite':
+				return new \PDO('sqlite:'.$config['database']);
+
+		}
 	}
 
 	public function getConfig() {
@@ -47,16 +63,43 @@ class DB {
 	 * 
 	 * @return Integer 1 for success, 0 for failure
 	*/
-	public function import($file) {
-	
-		if(!file_exists(realpath($file)))
-			throw new \Exception('File '.$file.' does not exist.');
+	public function import($src) {
+		if(!file_exists(realpath($src)))
+			throw new \Exception('File '.$src.' does not exist.');
 		$host = $this->config['host'];
 		$user = $this->config['user'];
 		$pwd = $this->config['password'];
 		$db = $this->config['database'];
-		$cmd = 'mysql -h '.$host.' -u '.$user.($pwd ? ' -p'.$pwd:'').' '.$db.' < '.realpath($file);
-		return exec($cmd);
+		$cmd = 'mysql -h '.$host.' -u '.$user.($pwd ? ' -p'.$pwd:'').' '.$db.' < '.realpath($src);
+		$process = proc_open($cmd,
+			array(
+			   0 => array("pipe", "r"),
+			   1 => array("pipe", "w"),
+			   2 => array("pipe", "w"),
+			),
+			$pipes
+		);
+		return proc_close($process) === 0;
+	}
+
+	public function dump($dst) {
+		$return = null;
+		$host = $this->config['host'];
+		$user = $this->config['user'];
+		$pwd = $this->config['password'];
+		$db = $this->config['database'];
+
+		\Asgard\Utils\FileManager::mkdir(dirname($dst));
+		$cmd = 'mysqldump --user='.$user.' --password='.$pwd.' --host='.$host.' '.$db.' > '.$dst;
+		$process = proc_open($cmd,
+			array(
+			   0 => array("pipe", "r"),
+			   1 => array("pipe", "w"),
+			   2 => array("pipe", "w"),
+			),
+			$pipes
+		);
+		return proc_close($process) === 0;
 	}
 	
 	/**

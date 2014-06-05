@@ -3,9 +3,9 @@ namespace Asgard\Http;
 
 class Resolver {
 	protected $routes = array();
-	protected $results = array();
-	protected $request;
+	protected $httpKernel;
 	protected $cache;
+	protected $results = array();
 
 	public function __construct($cache) {
 		$this->cache = $cache;
@@ -28,27 +28,24 @@ class Resolver {
 		$this->routes[] = $route;
 	}
 
-	public function getRoute(\Asgard\Http\Request $request) {
-		$request_hash = spl_object_hash($request);
-		if(!isset($this->results[$request_hash]))
-			$this->results[$request_hash] = $this->parseRoutes($request);
-		return $this->results[$request_hash];
-	}
-
 	public function getCallback(\Asgard\Http\Request $request) {
-		$route = $this->getRoute($request);
-		if(!$route)
+		$hash = sha1(serialize($request));
+		if(!array_key_exists($hash, $this->results))
+			$this->results[$hash] = $this->getRoute($request);
+		if(!$this->results[$hash])
 			return null;
 		else
-			return $route->getCallback();
+			return $this->results[$hash]->getCallback();
 	}
 
 	public function getArguments(\Asgard\Http\Request $request) {
-		$route = $this->getRoute($request);
-		if(!$route)
+		$hash = sha1(serialize($request));
+		if(!array_key_exists($hash, $this->results))
+			$this->results[$hash] = $this->getRoute($request);
+		if(!$this->results[$hash])
 			return null;
 		else
-			return $route->getArguments();
+			return $this->results[$hash]->getArguments();
 	}
 
 	public static function formatRoute($route) {
@@ -115,14 +112,12 @@ class Resolver {
 		return $regex;
 	}
 
-	public function parseRoutes(\Asgard\Http\Request $request) {
-		$request_key = md5(serialize(array($request->method(), $request->url->get())));
+	public function getRoute(\Asgard\Http\Request $request) {
+		$request_key = sha1(serialize(array($request->method(), $request->url->get())));
 
-		$routes = $this->routes;
-		$results = $this->cache->get('Router/requests/'.$request_key, function() use($routes, $request) {
-			static::sortRoutes($routes);
+		$results = $this->cache->fetch('Router/requests/'.$request_key, function() use($request) {
 			/* PARSE ALL ROUTES */
-			foreach($routes as $r) {
+			foreach($this->routes as $r) {
 				$route = $r->getRoute();
 				$requirements = $r->get('requirements');
 				$method = $r->get('method');
@@ -141,8 +136,8 @@ class Resolver {
 		return $results['route'];
 	}
 
-	public static function sortRoutes(array &$routes) {
-		usort($routes, function($r1, $r2) {
+	public function sortRoutes() {
+		usort($this->routes, function($r1, $r2) {
 			$route1 = $r1->getRoute();
 			$route2 = $r2->getRoute();
 			
@@ -165,6 +160,8 @@ class Resolver {
 				elseif($c1 != ':' && $c2 == ':')
 					return -1;
 				elseif($c1 != ':' && $c2 != ':') {
+					if($c1 !== $c2)
+						return $c1 > $c2;
 					$route1 = substr($route1, 1);
 					$route2 = substr($route2, 1);
 				}
@@ -174,6 +171,8 @@ class Resolver {
 				}
 			}
 		});
+
+		return $this;
 	}
 	
 	public static function buildRoute($route, array $params=array()) {
@@ -212,11 +211,9 @@ class Resolver {
 				$route = $route_params->getRoute();
 				if(strtolower($route_params->getController()) == $controller && strtolower($route_params->getAction()) == $action) {
 					if($route_params->get('host'))
-						return 'http://'.$route_params->get('host').'/'.$this->buildRoute($route, $params);
-					// elseif($relative)
-					// 	return \Asgard\Core\App::get('resolver')->buildRoute($route, $params);
+						return 'http://'.$route_params->get('host').'/'.static::buildRoute($route, $params);
 					else
-						return $this->getRequest()->url->to($this->buildRoute($route, $params));
+						return $this->getUrl()->to(static::buildRoute($route, $params));
 				}
 			}
 		}
@@ -227,11 +224,9 @@ class Resolver {
 				$route = $route_params->getRoute();
 				if($route_params->get('name') !== null && strtolower($route_params->get('name')) == $what) {
 					if($route_params->get('host'))
-						return 'http://'.$route_params->get('host').'/'.$this->buildRoute($route, $params);
-					// elseif($relative)
-					// 	return \Asgard\Core\App::get('resolver')->buildRoute($route, $params);
+						return 'http://'.$route_params->get('host').'/'.static::buildRoute($route, $params);
 					else
-						return $this->getRequest()->url->to($this->buildRoute($route, $params));
+						return $this->getUrl()->to(static::buildRoute($route, $params));
 				}
 			}
 		}
@@ -239,13 +234,11 @@ class Resolver {
 		throw new \Exception('Route not found.');
 	}
 
-	public function setRequest(Request $request) {
-		$this->request = $request;
+	public function setHttpKernel(HttpKernel $httpKernel) {
+		$this->httpKernel = $httpKernel;
 	}
 
-	public function getRequest() {
-		if(!$this->request)
-			$this->setRequest(new \Asgard\Http\Request);
-		return $this->request;
+	public function getUrl() {
+		return $this->httpKernel->getLastRequest()->url;
 	}
 }

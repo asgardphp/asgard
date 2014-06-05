@@ -2,13 +2,16 @@
 namespace Asgard\Http;
 
 class Bundle extends \Asgard\Core\BundleLoader {
-	public function load(\Asgard\Core\BundlesManager $bundlesManager) {
-		$this->app->register('httpKernel', function($app) { return new \Asgard\Http\HttpKernel($app); } );
-		$this->app->instance()->register('resolver', function($app) { return new \Asgard\Http\Resolver($app['cache']); } );
-		$this->app->instance()->register('response', function() { return new \Asgard\Http\Response; } );
-		$this->app->instance()->register('cookieManager', function() { return new \Asgard\Http\CookieManager; } );
-		$this->app['request'] = new \Asgard\Http\Request;
-
-		parent::load($bundlesManager);
+	public function buildApp($app) {
+		$app->register('httpKernel', function($app) { return new HttpKernel($app); } );
+		$app->register('resolver', function($app) {
+			$resolver = new Resolver($app['cache']);
+			$resolver->setHttpKernel($app['httpKernel']);
+			return $resolver;
+		});
+		$app->register('response', function() { return new Response; } );
+		$app->register('cookieManager', function() { return new CookieManager; } );
+		$app->register('html', function($app) { return new Utils\HTML($app['request']); });
+		$app->register('url', function($app) { return $app['request']->url; });
 	}
 }

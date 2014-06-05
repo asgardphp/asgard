@@ -8,6 +8,7 @@ class Validator {
 	protected $defaultMessage;
 	protected $messages = array();
 	protected $required;
+	protected $isNull;
 	protected $registry;
 	protected $input;
 	protected $parent;
@@ -67,6 +68,8 @@ class Validator {
 			$params = array($params);
 		if($rule === 'required')
 			$this->required = isset($params[0]) ? $params[0]:true;
+		elseif($rule === 'isNull')
+			$this->isNull = $params[0];
 		else {
 			$rule = $this->getRule($rule, $params);
 			if($rule instanceof static)
@@ -164,13 +167,14 @@ class Validator {
 		}
 		#string
 		elseif(is_string($rule)) {
-			$r = $this->getRegistry()->getRule($rule);
-			if(!is_object($r)) {
-				$reflection = new \ReflectionClass($r);
-				return $reflection->newInstanceArgs($params);	
-			}
-			else
-				return $r;
+			return $this->getRegistry()->getRule($rule, $params);
+			// $r = $this->getRegistry()->getRule($rule);
+			// if(!is_object($r)) {
+			// 	$reflection = new \ReflectionClass($r);
+			// 	return $reflection->newInstanceArgs($params);	
+			// }
+			// else
+			// 	return $r;
 		}
 	}
 
@@ -223,10 +227,23 @@ class Validator {
 				return false;
 		}
 		elseif($rule instanceof Rule) {
-			if($rule->validate($this->getInput()->input(), $this->getInput()->parent(), $this) === false)
+			$input = $this->getInput()->input();
+			if($rule->isHandlingEach() && is_array($input)) {
+				foreach($input as $k=>$v) {
+					if($rule->validate($v, $this->getInput(), $this) === false)
+						return false;
+				}
+				return true;
+			}
+			if($rule->validate($input, $this->getInput()->parent(), $this) === false)
 				return false;
 		}
 		return true;
+	}
+
+	protected function isNull($input) {
+		$isNull = $this->isNull;
+		return $input === null || $input === '' || ($isNull && $isNull($input));
 	}
 
 	public function valid($input=null) {
@@ -236,7 +253,7 @@ class Validator {
 			$input = $this->setInput($input);
 
 		#if input is null, return false if required, or true
-		if($input->input() === null || $input->input() === '') {
+		if($this->isNull($input->input())) {
 			if(($required = $this->required) instanceof \Closure)
 				return !$required(null, $input->parent(), $this);
 			else
@@ -271,11 +288,12 @@ class Validator {
 			$required = $this->required();
 		else
 			$required = $this->required;
-		if($input->input() === null || $input->input() === '') {
+
+		if($this->isNull($input->input())) {
 			if($required)
 				$errors['rules']['required'] = $this->buildRuleMessage('required', null, ':attribute is required.', $input->input());
 		}
-		if($input->input() !== null) {
+		else {
 			$i=0; #rules may be added on the fly
 			while(isset($this->rules[$i])) {
 				$rule = $this->rules[$i++];

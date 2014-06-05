@@ -1,69 +1,118 @@
 <?php
 namespace Asgard\Http;
 
-class Controller extends \Asgard\Hook\Hookable {
+#For doctrine, which does not autoload classes...
+require_once __DIR__.'/Annotations/Prefix.php';
+require_once __DIR__.'/Annotations/Route.php';
+
+abstract class Controller extends \Asgard\Hook\Hookable {
 	protected $_view;
 	public $request;
 	public $response;
 	protected $app;
 
+	/* ANNOTATIONS */
 	public static function fetchRoutes() {
 		$routes = array();
 		$class = get_called_class();
-		$reflection = new \Addendum\ReflectionAnnotatedClass($class);
-		
-		if($reflection->getAnnotation('Prefix'))
-			$prefix = Resolver::formatRoute($reflection->getAnnotation('Prefix')->value);
-		else
-			$prefix = '';
-		
-		$methods = get_class_methods($class);
-		foreach($methods as $method) {
-			if(!preg_match('/Action$/i', $method))
-				continue;
-			$method_reflection = new \Addendum\ReflectionAnnotatedMethod($class, $method);
-			if($method_reflection->getAllAnnotations('Route')) {
-				foreach($method_reflection->getAllAnnotations('Route') as $annotation) {
-					$route = Resolver::formatRoute($prefix.'/'.$annotation->value);
 
-					$routes[] = new ControllerRoute(
-						$route,
-						$class,
-						Resolver::formatActionName($method),
-						array(
-							'host' => $method_reflection->getAnnotation('Route')->host,
-							'requirements' => $method_reflection->getAnnotation('Route')->requirements,
-							'method' => $method_reflection->getAnnotation('Route')->method,
-							'name'	=>	isset($method_reflection->getAnnotation('Route')->name) ? $method_reflection->getAnnotation('Route')->name:null
-						)
-					);
-				}
+		$reader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
+		$reader->addNamespace('Asgard\Http\Annotations');
+		$reader = new \Doctrine\Common\Annotations\CachedReader(
+			$reader,
+			new \Doctrine\Common\Cache\ApcCache(),
+			\Asgard\Core\App::instance()['cache'], #todo avec le cache doctrine
+			$debug=true
+			// \Asgard\Core\App::instance()['config']['debug'] #virer instance()..
+		);
+
+		$reflection = new \ReflectionClass($class);
+		$prefix = $reader->getClassAnnotation($reflection, 'Asgard\Http\Annotations\Prefix');
+		$prefix = $prefix !== null ? $prefix->value:'';
+
+		foreach($reflection->getMethods() as $method) {
+			if(!preg_match('/Action$/i', $method->getName()))
+				continue;
+			$routeAnnot = $reader->getMethodAnnotation($method, 'Asgard\Http\Annotations\Route');
+			if($routeAnnot !== null) {
+				$route = Resolver::formatRoute($prefix.'/'.$routeAnnot->value);
+
+				$routes[] = new ControllerRoute(
+					$route,
+					$class,
+					Resolver::formatActionName($method->getName()),
+					array(
+						'host' => $routeAnnot->host,
+						'requirements' => $routeAnnot->requirements,
+						'method' => $routeAnnot->method,
+						'name'	=>	$routeAnnot->name
+					)
+				);
 			}
 		}
 
 		return $routes;
 	}
 
+	public static function routeFor($action) {
+		$routes = static::routesFor($action);
+		if(!isset($routes[0]))
+			return;
+		return $routes[0];
+	}
+
+	public static function routesFor($action) {
+		$routes = array();
+		$class = get_called_class();
+
+		$reader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
+		$reader->addNamespace('Asgard\Http\Annotations');
+		$reader = new \Doctrine\Common\Annotations\CachedReader(
+			$reader,
+			new \Doctrine\Common\Cache\ApcCache(),
+			\Asgard\Core\App::instance()['cache'], #todo avec le cache doctrine
+			$debug=true
+			// \Asgard\Core\App::instance()['config']['debug'] #virer instance()..
+		);
+
+		$reflection = new \ReflectionClass($class);
+		$prefix = $reader->getClassAnnotation($reflection, 'Asgard\Http\Annotations\Prefix');
+		$prefix = $prefix !== null ? $prefix->value:'';
+
+		foreach($reflection->getMethods() as $method) {
+			if(!preg_match('/Action$/i', $method->getName()))
+				continue;
+			$routeAnnot = $reader->getMethodAnnotation($method, 'Asgard\Http\Annotations\Route');
+			if($routeAnnot !== null) {
+				$route = Resolver::formatRoute($prefix.'/'.$routeAnnot->value);
+
+				$routes[] = new ControllerRoute(
+					$route,
+					$class,
+					Resolver::formatActionName($method->getName()),
+					array(
+						'host' => $routeAnnot->host,
+						'requirements' => $routeAnnot->requirements,
+						'method' => $routeAnnot->method,
+						'name'	=>	$routeAnnot->name
+					)
+				);
+			}
+		}
+
+		return $routes;
+	}
+
+	/* APP */
 	public function setApp($app) {
 		$this->app = $app;
-		$this->hook = $app['hook'];
 	}
 
-	public function getapp() {
+	public function getApp() {
 		return $this->app;
 	}
-	
-	public function getRouteFor($what) {
-		foreach(App::get('resolver')->getRoutes() as $route) {
-			if($route instanceof ControllerRoute && $route->getController() == $what[0] && $route->getAction() == $what[1])
-				return $route->getRoute();
-		}
-	}
 
-	public function notfound($msg=null) {
-		throw new Exception\NotFoundException($msg);
-	}
-
+	/* FILTERS */
 	public function addFilter($filter) {
 		$filter->setController($this);
 		if(method_exists($filter, 'before')) 
@@ -72,82 +121,53 @@ class Controller extends \Asgard\Hook\Hookable {
 			$this->hook('after', array($filter, 'after'), $filter->getAfterPriority());
 	}
 
-	public static function route_for($action) {
-		$routes = static::routes_for($action);
-		if(!isset($routes[0]))
-			return;
-		return $routes[0];
+	/* EXECUTION */
+	public static function staticRun($controllerClassName, $actionShortName, \Asgard\Core\App $app, $request=null, $response=null) {
+		$controller = new $controllerClassName();
+		$controller->setApp($app);
+		return $controller->run($actionShortName, $app, $request, $response);
 	}
 
-	public static function routes_for($action) {
-		$routes = array();
-		$reflection = new \Addendum\ReflectionAnnotatedClass(get_called_class());
-		
-		if($reflection->getAnnotation('Prefix'))
-			$prefix = Resolver::formatRoute($reflection->getAnnotation('Prefix')->value);
-		else
-			$prefix = '';
-
-		$method = $action.'Action';
-		$method_reflection = new \Addendum\ReflectionAnnotatedMethod(get_called_class(), $method);
-		if($method_reflection->getAllAnnotations('Route')) {
-			foreach($method_reflection->getAllAnnotations('Route') as $annotation)
-				$routes[] = Resolver::formatRoute($prefix.'/'.$annotation->value);
-		}
-		return $routes;
-	}
-	
-	public function url_for($action, $params=array(), $relative=false) {
-		return $this->app['resolver']->url_for(array(get_called_class(), $action), $params, $relative);
-	}
-
-	public static function run($controllerClassName, $actionShortname, \Asgard\Core\App $app, $request=null, $response=null) {
+	public function run($actionShortname, $app, $request=null, $response=null) {
 		if($request === null)
 			$request = new Request;
 		if($response === null)
 			$response = new Response;
+		$this->app = $app;
 
 		$actionName = $actionShortname.'Action';
-		$controller = new $controllerClassName;
-		$controller->setApp($app);
 
-		$request->route = array('controller'=>$controllerClassName, 'action'=>$actionShortname);
-		$controller->request = $request;
-		$controller->response = $response;
+		$this->request = $request;
+		$this->response = $response;
 
-		$app['hook']->trigger('controller_configure', array($controller));
+		$app['hooks']->trigger('Asgard.Http.Controller', array($this));
 
-		if(method_exists($controller, 'before')) {
-			$controller->hook('before', function($chain, $controller, $request) {
-				return call_user_func_array(array($controller, 'before'), array($request));
+		if(method_exists($this, 'before')) {
+			$this->hook('before', function($chain, $this, $request) {
+				return call_user_func_array(array($this, 'before'), array($request));
 			});
 		}
-		if(method_exists($controller, 'after')) {
-			$controller->hook('after', function($chain, $controller, &$result) {
-				return call_user_func_array(array($controller, 'after'), array(&$result));
+		if(method_exists($this, 'after')) {
+			$this->hook('after', function($chain, $this, &$result) {
+				return call_user_func_array(array($this, 'after'), array(&$result));
 			});
 		}
 
-		if(!$result = $controller->trigger('before', array($controller, $request))) {
-			$result = $controller->doRun($actionName, array($request));
-			$controller->trigger('after', array($controller, &$result));
+		if(!$result = $this->trigger('before', array($this, $request))) {
+			$result = $this->doRun($actionName, array($request));
+			$this->trigger('after', array($this, &$result));
 		}
 
 		if($result !== null) {
 			if(is_string($result))
-				return $controller->response->setContent($result);
+				return $this->response->setContent($result);
 			elseif($result instanceof Response)
 				return $result;
 			else
 				throw new \Exception('Controller response is invalid.');
 		}
 		else
-			return $controller->response;
-	}
-
-	public static function widget($class, $method, array $params=array()) {
-		$controller = new $class;
-		return $controller->doRun($method, $params);
+			return $this->response;
 	}
 
 	protected function doRun($method, array $params=array()) {
@@ -174,8 +194,10 @@ class Controller extends \Asgard\Hook\Hookable {
 		return null;
 	}
 
-	public function getFlash() {
-		return new \Asgard\Utils\Flash($this->request);
+	/* VIEW */
+	public static function widget($class, $method, array $params=array()) {
+		$controller = new $class;
+		return $controller->doRun($method, $params);
 	}
 	
 	protected function renderView($_view, array $_args=array()) {
@@ -198,11 +220,30 @@ class Controller extends \Asgard\Hook\Hookable {
 	public function setRelativeView($view) {
 		$reflection = new \ReflectionObject($this);
 		$dir = dirname($reflection->getFileName());
-		$this->setView($dir.'/../views/'.strtolower(preg_replace('/Controller$/i', '', \Asgard\Utils\NamespaceUtils::basename(get_class($this)))).'/'.$view);
-		return file_exists($dir.'/../views/'.strtolower(preg_replace('/Controller$/i', '', \Asgard\Utils\NamespaceUtils::basename(get_class($this)))).'/'.$view);
+		if(!file_exists($dir.'/../views/'.strtolower(preg_replace('/Controller$/i', '', static::basename(get_class($this)))).'/'.$view))
+			return false;
+		$this->setView($dir.'/../views/'.strtolower(preg_replace('/Controller$/i', '', static::basename(get_class($this)))).'/'.$view);
+		return true;
+	}
+
+	/* UTILS */
+	public function getFlash() {
+		return new \Asgard\Http\Utils\Flash($this->request);
 	}
 
 	public function back() {
-		return $this->response->redirect($this->request->server->get('HTTP_REFERER'));
+		return $this->response->redirect($this->request->server['HTTP_REFERER']);
+	}
+
+	public function notFound($msg=null) {
+		throw new Exception\NotFoundException($msg);
+	}
+	
+	public function url_for($action, $params=array()) {
+		return $this->app['resolver']->url_for(array(get_called_class(), $action), $params);
+	}
+
+	private static function basename($ns) {
+		return basename(str_replace('\\', DIRECTORY_SEPARATOR, $ns));
 	}
 }

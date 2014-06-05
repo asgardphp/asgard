@@ -1,14 +1,24 @@
 <?php
 namespace Asgard\Entity;
 
+use Jeremeamia\SuperClosure\SerializableClosure;
+
 class Property {
 	protected $position;
-	protected $entity;
+	protected $definition;
 	protected $name;
 	public $params = array();
 
 	public function __construct($params) {
 		$this->params = $params;
+	}
+
+	public function __sleep() {
+		foreach($this->params as $k=>$v) {
+			if($v instanceof \Closure)
+				$this->params[$k] = new SerializableClosure($v);
+		}
+		return array('position', 'definition', 'name', 'params');
 	}
 
 	public function setPosition($position) {
@@ -24,8 +34,8 @@ class Property {
 		$this->name = $name;
 	}
 
-	public function setEntity($entity) {
-		$this->entity = $entity;
+	public function setDefinition($definition) {
+		$this->definition = $definition;
 	}
 
 	public function required() {
@@ -58,7 +68,9 @@ class Property {
 	}
 
 	public function getDefault() {
-		if(isset($this->params['default'])) {
+		if($this->get('multiple'))
+			return new Multiple();
+		elseif(isset($this->params['default'])) {
 			if(is_callable($this->params['default']))
 				return $this->params['default']();
 			else
@@ -68,7 +80,7 @@ class Property {
 			return $this->_getDefault();
 	}
 
-	public function _getDefault() {
+	protected function _getDefault() {
 		return '';
 	}
 
@@ -86,15 +98,57 @@ class Property {
 		return array();
 	}
 
-	public function serialize($obj) {
-		return (string)$obj;
+	public function serialize($val) {
+		if($this->get('multiple')) {
+			if(!$val instanceof Multiple)
+				return serialize(array());
+			$r = array();
+			foreach($val as $v)
+				$r[] = $this->doSerialize($v);
+			return serialize($r);
+		}
+		else
+			return $this->doSerialize($val);
+	}
+
+	protected function doSerialize($val) {
+		return (string)$val;
 	}
 
 	public function unserialize($str) {
+		if($this->get('multiple')) {
+			$arr = unserialize($str);
+			if(!is_array($arr))
+				return array();
+			$r = new Multiple();
+			foreach($arr as $v)
+				$r[] = $this->doUnserialize($v);
+			return $r;
+		}
+		else
+			return $this->doUnserialize($str);
+	}
+
+	protected function doUnserialize($str) {
 		return $str;
 	}
 
 	public function set($val) {
+		if($this->get('multiple')) {
+			if($val instanceof Multiple)
+				return $val;
+			$res = new Multiple();
+			if(is_array($val)) {
+				foreach($val as $v)
+					$res[] = $this->doSet($v);
+			}
+			return $res;
+		}
+		else
+			return $this->doSet($val);
+	}
+
+	protected function doSet($val) {
 		return $val;
 	}
 }

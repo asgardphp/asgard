@@ -17,11 +17,11 @@ class ArrayProperty extends \Asgard\Entity\Property {
 		return array();
 	}
 
-	public function serialize($obj) {
+	protected function doSerialize($obj) {
 		return serialize($obj);
 	}
 
-	public function unserialize($str) {
+	protected function doUnserialize($str) {
 		try {
 			return unserialize($str);
 		} catch(\ErrorException $e) {
@@ -29,7 +29,7 @@ class ArrayProperty extends \Asgard\Entity\Property {
 		}
 	}
 
-	public function set($val) {
+	protected function doSet($val) {
 		if(is_array($val))
 			return $val;
 		try {

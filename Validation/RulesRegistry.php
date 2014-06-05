@@ -49,15 +49,31 @@ class RulesRegistry {
 		return $this;
 	}
 
-	public function getRule($rule) {
+	public function getRule($rule, $params=array()) {
+		if($rule === 'required' || $rule === 'isNull')
+			return;
+
 		if(isset($this->rules[$rule])) {
-			return $this->rules[$rule];
+			$rule = $this->rules[$rule];
 		}
-		foreach($this->namespaces as $namespace) {
-			$class = $namespace.ucfirst($rule);
-			if(class_exists($class) && is_subclass_of($class, 'Asgard\Validation\Rule'))
-				return $class;
+		else {
+			foreach($this->namespaces as $namespace) {
+				$class = $namespace.ucfirst($rule);
+				if(class_exists($class) && is_subclass_of($class, 'Asgard\Validation\Rule')) {
+					$rule = $class;
+					break;
+				}
+			}
 		}
+
+		if(isset($rule)) {
+			if(is_string($rule)) {
+				$reflection = new \ReflectionClass($rule);
+				$rule = $reflection->newInstanceArgs($params);
+			}
+			return $rule;
+		}
+
 		throw new \Exception('Rule "'.$rule.'" does not exist.');
 	}
 

@@ -78,6 +78,6 @@ class URL {
 	}
 
 	public function startsWith($what) {
-		return preg_match('/^'.preg_quote($what, '/').'/', $this->get());
+		return !!preg_match('/^'.preg_quote($what, '/').'/', $this->get());
 	}
 }

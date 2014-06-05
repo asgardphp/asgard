@@ -19,40 +19,37 @@ class Request implements \ArrayAccess {
 
 	public function __construct() {
 		$this->url = new \Asgard\Http\URL($this);
-		$this->get = new \Asgard\Http\Inputs\GET;
-		$this->post = new \Asgard\Http\Inputs\POST;
-		$this->file = new \Asgard\Http\Inputs\File;
-		$this->server = new \Asgard\Http\Inputs\Server;
-		$this->cookie = new \Asgard\Http\Inputs\Cookie;
-		$this->header = new \Asgard\Http\Inputs\Header;
-		$this->session = new \Asgard\Http\Inputs\Session;
+		$this->get = new \Asgard\Utils\Bag;
+		$this->post = new \Asgard\Utils\Bag;
+		$this->file = new \Asgard\Utils\Bag;
+		$this->server = new \Asgard\Utils\Bag;
+		$this->cookie = new \Asgard\Utils\Bag;
+		$this->header = new \Asgard\Utils\Bag;
+		$this->session = new \Asgard\Utils\Bag;
 	}
 
 	public static function createFromGlobals() {
 		$request = new static;
-		$request->get->_setAll($_GET);
-		$request->post->_setAll($_POST);
-		$request->file->_setAll($_FILES);
-		$request->cookie->_setAll($_COOKIE);
-		$request->header->_setAll(\Asgard\Utils\Tools::getallheaders());
-		$request->server->_setAll($_SERVER);
-		try {
-			$request->sessionStart();
-			$request->session->_setAll(isset($_SESSION) ? $_SESSION:array());
-		} catch(\ErrorException $e) {}
+		$request->get->setAll($_GET);
+		$request->post->setAll($_POST);
+		$request->file->setAll($_FILES);
+		$request->header->setAll(\Asgard\Utils\Tools::getallheaders());
+		$request->server->setAll($_SERVER);
+		$request->cookie = new CookieManager;
+		$request->session = new SessionManager;
 		$request->body = file_get_contents('php://input');
 
-		$server = trim($request->server->get('SERVER_NAME'), '/');
+		$server = trim($request->server['SERVER_NAME'], '/');
 		if($request->server->has('ORIG_SCRIPT_NAME'))
-			$root = dirname($request->server->get('ORIG_SCRIPT_NAME'));
+			$root = dirname($request->server['ORIG_SCRIPT_NAME']);
 		else
-			$root = dirname($request->server->get('SCRIPT_NAME'));
+			$root = dirname($request->server['SCRIPT_NAME']);
 		if($request->server->has('PATH_INFO'))
-			$url = $request->server->get('PATH_INFO');
+			$url = $request->server['PATH_INFO'];
 		elseif($request->server->has('ORIG_PATH_INFO'))
-			$url = $request->server->get('ORIG_PATH_INFO');
+			$url = $request->server['ORIG_PATH_INFO'];
 		elseif($request->server->has('REDIRECT_URL'))
-			$url = $request->server->get('REDIRECT_URL');
+			$url = $request->server['REDIRECT_URL'];
 		else
 			$url = '';
 		$url = preg_replace('/^\//', '', $url);
@@ -64,12 +61,12 @@ class Request implements \ArrayAccess {
 
 	public function getJSON() {
 		try {
-			return json_decode($request->body);
+			return json_decode($this->body, true);
 		} catch(\Exception $e) {}
 	}
 
 	public function setJSON($data) {
-		$request->body = json_encode($data);
+		$this->body = json_encode($data);
 	}
 
 	public function setURL($server, $root, $url) {
@@ -114,16 +111,6 @@ class Request implements \ArrayAccess {
 		return isset($this->params[$offset]) ? $this->params[$offset] : null;
 	}
 
-	protected function sessionStart() {
-		if(!headers_sent()) {
-			if(isset($this->get['PHPSESSID']))
-				session_id($this->get['PHPSESSID']);
-			elseif(isset($this->post['PHPSESSID']))
-				session_id($this->post['PHPSESSID']);
-			session_start();
-		}
-	}
-
 	public function method() {
 		return isset($this->server['REQUEST_METHOD']) ? strtoupper($this->server['REQUEST_METHOD']):'GET';
 	}
@@ -151,11 +138,11 @@ class Request implements \ArrayAccess {
 		return $this;
 	}
 
-	public function body() {
+	public function getBody() {
 		return $this->body;
 	}
 
-	public function setbody($value) {
+	public function setBody($value) {
 		$this->body = $value;
 		return $this;
 	}

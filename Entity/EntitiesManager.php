@@ -25,10 +25,11 @@ class EntitiesManager {
 			return $this->entities[$entityClass];
 		
 		$app = $this->app;
-		$definition = $this->app['cache']->get('entitiesmanager/'.$entityClass.'/definition', function() use($entityClass, $app) {
+		$definition = $this->app['cache']->fetch('entitiesmanager/'.$entityClass.'/definition', function() use($entityClass, $app) {
 			$definition = new EntityDefinition($entityClass, $app);
 			return $definition;
 		});
+		$definition->setApp($this->app);
 		$this->entities[$entityClass] = $definition;
 		return $definition;
 	}

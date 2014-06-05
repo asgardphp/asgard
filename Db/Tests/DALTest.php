@@ -2,13 +2,13 @@
 namespace Asgard\Db\Tests;
 
 class DALTest extends \PHPUnit_Framework_TestCase {
-	protected $db;
+	protected static $db;
 
 	public static function setUpBeforeClass() {
 		if(!defined('_ENV_'))
 			define('_ENV_', 'test');
 
-		$db = new \Asgard\Db\DB(array(
+		static::$db = $db = new \Asgard\Db\DB(array(
 			'host' => 'localhost',
 			'user' => 'root',
 			'password' => '',
@@ -17,64 +17,8 @@ class DALTest extends \PHPUnit_Framework_TestCase {
 		$db->import(__dir__.'/sql/dal.sql');
 	}
 
-/*
-#new
-setTable
-	table
-	addTable
-	removeTable
-
-select
-	addSelect
-	removeSelect
-offset
-limit
-orderBy
-groupBy
-where
-
-[http://dev.mysql.com/doc/refman/5.0/en/select.html
-	having
-	[ALL | DISTINCT | DISTINCTROW ]
-]
-
-leftjoin
-	removeLeftjoin
-rightjoin
-	removeRightjoin
-innerjoin
-	removeInnerjoin
-rsc
-next
-reset
-query
-first
-
-paginate
-get
-update
-insert
-delete
-count
-min
-max
-avg
-sum
-
-	buildSQL
-	buildInsertSQL
-	buildDeleteSQL
-*/
-	protected function getDAL() {
-		$db = new \Asgard\Db\DB(array(
-			'host' => 'localhost',
-			'user' => 'root',
-			'password' => '',
-			'database' => 'asgard',
-		));
-		if(!$this->db)
-			$this->db = $db;
-		return new \Asgard\Db\DAL($this->db);
+	protected static function getDAL() {
+		return new \Asgard\Db\DAL(static::$db);
 	}
 
 	public function test1() {
@@ -148,7 +92,7 @@ sum
 		$this->assertEquals('SELECT * FROM `news` WHERE `news`.`title` LIKE ? AND `news`.`title` LIKE ?', $dal->buildSQL());
 		$this->assertEquals(array('%test%', '%bla%'), $dal->getParameters());
 
-		/* LEFTJOIN, #rightjoin, #innerjoin (d'autres joins? voir le guide des jointures) */
+		/* LEFTJOIN, #rightjoin, #innerjoin */
 		$this->assertEquals('SELECT * FROM `news` `n` LEFT JOIN `category` ON COUNT(*)=3', $this->getDAL()->from('news n')->leftjoin('category', 'COUNT(*)=3')->buildSQL());
 
 		$dal = $this->getDAL()->from('news n')->leftjoin('category', array('COUNT(*)=?' => 3));
@@ -245,6 +189,10 @@ sum
 
 		$dal = $this->getDAL()->from('news n, category c')->where('id>?', 3)->orderBy('id ASC')->limit(5);
 		$this->assertEquals('DELETE FROM `news`, `category` WHERE `id`>? ORDER BY `id` ASC LIMIT 5', $dal->buildDeleteSQL());
+		$this->assertEquals(array(3), $dal->getParameters());
+
+		$dal = $this->getDAL()->from('news n')->leftJoin('category')->where('id>?', 3)->orderBy('id ASC')->limit(5);
+		$this->assertEquals('DELETE `n` FROM `news` `n` LEFT JOIN `category` WHERE `n`.`id`>? ORDER BY `n`.`id` ASC LIMIT 5', $dal->buildDeleteSQL(array('n')));
 		$this->assertEquals(array(3), $dal->getParameters());
 
 		/* INSERT */

@@ -27,7 +27,7 @@ class BuildCol {
 	}
 	
 	public function def($def) {
-		$this->$def = $def;
+		$this->def = $def;
 		return $this;
 	}
 	

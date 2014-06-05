@@ -12,6 +12,6 @@ class TextareaWidget extends \Asgard\Form\Widget {
 			'name'	=>	$this->name,
 			'id'	=>	isset($options['id']) ? $options['id']:null,
 		)+$attrs,
-		$this->value ? \Asgard\Utils\HTML::sanitize($this->value):'');
+		$this->value ? \Asgard\Http\Utils\HTML::sanitize($this->value):'');
 	}
 }

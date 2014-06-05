@@ -2,8 +2,8 @@
 namespace Asgard\Form;
 
 class EntityForm extends Form {
-	protected $_entity;
-	protected $_locales = array();
+	protected $entity;
+	protected $locales = array();
 
 	public function __construct(
 		\Asgard\Entity\Entity $entity, 
@@ -11,27 +11,27 @@ class EntityForm extends Form {
 		\Asgard\Http\Request $request=null,
 		$app=null
 	) {
-		$this->_entity = $entity;
+		$this->entity = $entity;
 
-		$this->_locales = isset($params['locales']) && $params['locales'];
+		$this->locales = isset($params['locales']) ? $params['locales']:array();
 	
 		$fields = array();
-		foreach($entity->properties() as $name=>$properties) {
+		foreach($entity->properties() as $name=>$property) {
 			if(isset($params['only']) && !in_array($name, $params['only']))
 				continue;
 			if(isset($params['except']) && in_array($name, $params['except']))
 				continue;
-			if($properties->editable === false || $properties->form_editable === false)
+			if($property->editable === false || $property->form_editable === false)
 				continue;
 
-			if($this->_locales && $properties->i18n) {
+			if($this->locales && $property->get('i18n')) {
 				$i18ngroup = array();
-				foreach($this->_locales as $locale)
-					$i18ngroup[$locale] = $this->addAttributeField($entity, $name, $properties, $locale);
+				foreach($this->locales as $locale)
+					$i18ngroup[$locale] = $this->addAttributeField($entity, $name, $property, $locale);
 				$fields[$name] = $i18ngroup;
 			}
 			else
-				$fields[$name] = $this->addAttributeField($entity, $name, $properties);
+				$fields[$name] = $this->addAttributeField($entity, $name, $property);
 		}
 
 		parent::__construct(
@@ -43,49 +43,61 @@ class EntityForm extends Form {
 		);
 	}
 
-	protected function addAttributeField(\Asgard\Entity\Entity $entity, $name, \Asgard\Entity\Property $properties, $locale=null) {
+	protected function addAttributeField(\Asgard\Entity\Entity $entity, $name, \Asgard\Entity\Property $property, $locale=null) {
 		$field_params = array();
 
 		$field_params['form'] = $this;
 
-		if($properties->form_hidden)
+		if($property->form_hidden)
 			$field_params['default'] = '';
 		elseif($entity->get($name, $locale) !== null)
 			$field_params['default'] = $entity->get($name, $locale);
 
 		$field_type = 'Asgard\Form\Fields\TextField';
-		if($properties->type == 'boolean')
+		if($property->type == 'boolean')
 			$field_type = 'Asgard\Form\Fields\BooleanField';
-		elseif($properties->type == 'file') {
-			if($properties->multiple)
+		elseif($property->type == 'file') {
+			if($property->get('multiple'))
 				$field_type = 'Asgard\Form\Fields\MultipleFileField';
 			else
 				$field_type = 'Asgard\Form\Fields\FileField';
 		}
-		elseif($properties->type == 'date')
+		elseif($property->type == 'image') {
+			if($property->get('multiple'))
+				$field_type = 'Asgard\Form\Fields\MultipleImageField';
+			else
+				$field_type = 'Asgard\Form\Fields\ImageField';
+		}
+		elseif($property->type == 'date')
 			$field_type = 'Asgard\Form\Fields\DateField';
 
-		if($properties->in) {
-			foreach($properties->in as $v)
+		if($property->in) {
+			foreach($property->in as $v)
 				$field_params['choices'][$v] = $v;
-			if($properties->multiple)
+			if($property->get('multiple'))
 				$field_type = 'Asgard\Form\Fields\MultipleselectField';
 			else
 				$field_type = 'Asgard\Form\Fields\SelectField';
+		}
+
+		if(isset($property->get('form')['validation'])) {
+			$field_params['validation'] = $property->get('form')['validation'];
+			if(isset($property->get('form')['messages']))
+				$field_params['messages'] = $property->get('form')['messages'];
 		}
 
 		$field_class = $field_type;
 
 		$field = new $field_class($field_params);
 
-		if($properties->type == 'longtext')
+		if($property->type == 'longtext')
 			$field->setDefaultRender('textarea');
 
 		return $field;
 	}
 
 	public function addRelation($name) {
-		$entity = $this->_entity;
+		$entity = $this->entity;
 		$relation = $entity::getDefinition()->relation($name);
 
 		$ids = array(''=>$this->getTranslator()->trans('Choose'));
@@ -96,14 +108,14 @@ class EntityForm extends Form {
 			$this->addField(new Fields\SelectField(array(
 				'type'	=>	'integer',
 				'choices'		=>	$ids,
-				'default'	=>	($this->_entity->isOld() && $this->_entity->$name ? $this->_entity->$name->id:null),
+				'default'	=>	($this->entity->isOld() && $this->entity->$name ? $this->entity->$name->id:null),
 			)), $name);
 		}
 		elseif($relation['has'] == 'many') {
 			$this->addField(new Fields\MultipleSelectField(array(
 				'type'	=>	'integer',
 				'choices'		=>	$ids,
-				'default'	=>	($this->_entity->isOld() ? $this->_entity->$name()->ids():array()),
+				'default'	=>	($this->entity->isOld() ? $this->entity->$name()->ids():array()),
 			)), $name);
 		}
 	}
@@ -131,26 +143,28 @@ class EntityForm extends Form {
 		}
 		
 		$this->setErrors($errors);
-		$this->_errors = $errors;
+		$this->errors = $errors;
 
 		return $errors;
 	}
 	
 	public function getEntity() {
-		return $this->_entity;
+		return $this->entity;
 	}
 	
 	protected function myErrors() {
 		$data = $this->getData();
 		$data = array_filter($data, function($v) {
+			if($v instanceof \Asgard\Form\HttpFile && $v->error())
+				return false;
 			return $v !== null; 
 		});
-		if($this->_locales)
-			$this->_entity->set($data, 'all');
+		if($this->locales)
+			$this->entity->set($data, 'all');
 		else
-			$this->_entity->set($data);
+			$this->entity->set($data);
 
-		return array_merge(parent::myErrors(), $this->_entity->errors());
+		return array_merge(parent::myErrors(), $this->entity->errors());
 	}
 	
 	public function save() {
@@ -172,7 +186,7 @@ class EntityForm extends Form {
 			$group = $this;
 
 		if($group instanceof static)
-			$group->_entity->save();
+			$group->entity->save();
 
 		if($group instanceof Group) {
 			foreach($group->getFields() as $name=>$field) {

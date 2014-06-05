@@ -2,50 +2,63 @@
 namespace Asgard\Form;
 
 class Form extends Group {
-	protected $_params = array(
+	protected $params = array(
 		'method'	=>	'post',
 		'action'	=>	'',
 	);
-	protected $_render_callbacks = array();
-	protected $_method = 'post';
-	protected $_request;
-	protected $_app;
+	protected $render_callbacks = array();
+	protected $method = 'post';
+	protected $request;
+	protected $app;
 
 	public function __construct(
 		$name=null,
 		$params=array(),
 		$fields=array(),
 		\Asgard\Http\Request $request=null,
-		$app=null
+		$app=null // for hooks, translator et widgets constructor
 		) {
-		$this->_groupName = $name;
-		$this->_params = $params;
-		$this->_request = $request;
-		$this->_app = $app;
-		$this->fetch();
-		$this->setFields($fields);
+		$this->groupName = $name;
+		$this->params = $params;
+		$this->request = $request;
+		$this->app = $app;
+		if($request)
+			$this->fetch();
+		$this->addFields($fields);
 	}
 
-	public function getapp() {
-		return $this->_app;
+	public function setParam($param, $value) {
+		$this->params[$param] = $value;
+	}
+
+	public function getParam() {
+		if(!isset($this->params[$param]))
+			return;
+		return $this->params[$param];
+	}
+
+	public function getApp() {
+		if(!$this->app)
+			return $this->dad->getApp();
+		return $this->app;
 	}
 
 	public function setApp($app) {
-		$this->_app = $app;
+		$this->app = $app;
 	}
 
-	public function getHook() {
-		if($this->_app)
-			return $this->_app['hook'];
-		if($this->_dad)
-			return $this->_dad->getHook();
+	public function getHooksManager() {
+		if($this->app)
+			return $this->app['hooks'];
+		if($this->dad)
+			return $this->dad->getHooksManager();
 	}
 
 	public function getTranslator() {
-		if($this->_app)
-			return $this->_app['translator'];
-		if($this->_dad)
-			return $this->_dad->getTranslator();
+		if($this->app)
+			return $this->app['translator'];
+		if($this->dad)
+			return $this->dad->getTranslator();
 	}
 
 	public function csrf() {
@@ -60,18 +73,18 @@ class Form extends Group {
 	}
 	
 	public function setDad(Group $dad) {
-		$this->_dad = $dad;
+		$this->dad = $dad;
 		$this->noCSRF();
 		return $this;
 	}
 
 	public function setMethod($method) {
-		$this->_method = $method;
+		$this->method = $method;
 		return $this;
 	}
 
 	public function getMethod() {
-		return strtoupper($this->_method);
+		return strtoupper($this->method);
 	}
 
 	public function getWidget($class, $name, $value, $options) {
@@ -83,7 +96,7 @@ class Form extends Group {
 		#text
 		else {
 			$form = $this;
-			return $this->_app->make('Asgard\Form\Widgets\\'.$class, array($name, $value, $options, $form), function() use($class, $name, $value, $options, $form) {
+			return $this->app->make('Asgard\Form\Widgets\\'.$class, array($name, $value, $options, $form), function() use($class, $name, $value, $options, $form) {
 				$class = 'Asgard\Form\Widgets\\'.$class.'Widget';
 				$reflector = new \ReflectionClass($class);
 				$widget = $reflector->newInstanceArgs(array($name, $value, $options, $form));
@@ -93,22 +106,22 @@ class Form extends Group {
 	}
 
 	public function render($render_callback, Field $field, array $options=array()) {
-		if($this->_dad)
-			return $this->_dad->render($render_callback, $field, $options);
+		if($this->dad)
+			return $this->dad->render($render_callback, $field, $options);
 
 		#render function passed by argument
 		if(\Asgard\Utils\Tools::is_function($render_callback))
 			$cb = $render_callback;
 		#render function defined by setRenderCallback()
-		elseif(isset($this->_render_callbacks[$render_callback]))
-			$cb = $this->_render_callbacks[$render_callback];
+		elseif(isset($this->render_callbacks[$render_callback]))
+			$cb = $this->render_callbacks[$render_callback];
 		else {
 			$cb = function($field, $options=array()) use($render_callback) {
 				#widget given by a form hook
-				$widget = $this->trigger('Asgard\Form\Widgets\\'.$render_callback);
+				$widget = $this->trigger('Widgets.'.$render_callback);
 				if($widget === null) {
 					#widget given by an application hook
-					if(!$this->getHook() || !($widget = $this->getHook()->trigger('Asgard\Form\Widgets\\'.$render_callback))) {
+					if(!$this->getHooksManager() || !($widget = $this->getHooksManager()->trigger('Asgard.Form.Widgets.'.$render_callback))) {
 						#if $render_callback is a widget class
 						if(class_exists($render_callback) && $render_callback instanceof \Asgard\Form\Widget)
 							$widget = $render_callback;
@@ -140,15 +153,15 @@ class Form extends Group {
 	}
 
 	public function uploadSuccess() {
-		return $this->getRequest()->server->get('CONTENT_LENGTH') <= (int)ini_get('post_max_size')*1024*1024;
+		return $this->getRequest()->server['CONTENT_LENGTH'] <= (int)ini_get('post_max_size')*1024*1024;
 	}
 
 	public function setRenderCallback($name, $callback) {
-		$this->_render_callbacks[$name] = $callback;
+		$this->render_callbacks[$name] = $callback;
 	}
 
 	public function setRequest(\Asgard\Http\Request $request) {
-		$this->_request = $request;
+		$this->request = $request;
 		$this->fetch();
 		return $this;
 	}
@@ -157,9 +170,9 @@ class Form extends Group {
 		$raw = array();
 		$files = array();
 			
-		if($this->_groupName) {
-			if($this->getRequest()->file->get($this->_groupName) !== null)
-				$raw = $this->getRequest()->file->get($this->_groupName);
+		if($this->groupName) {
+			if($this->getRequest()->file->get($this->groupName) !== null)
+				$raw = $this->getRequest()->file->get($this->groupName);
 			else
 				$raw = array();
 		}
@@ -168,10 +181,10 @@ class Form extends Group {
 
 		$files = $this->parseFiles($raw);
 
-		$this->_data = array();
-		if($this->_groupName) {
+		$this->data = array();
+		if($this->groupName) {
 			$this->setData(
-				$this->getRequest()->post->get($this->_groupName, array()) + $files
+				$this->getRequest()->post->get($this->groupName, array()) + $files
 			);
 		}
 		else
@@ -181,18 +194,18 @@ class Form extends Group {
 	}
 
 	public function isSent() {
-		if($this->_dad)
-			return $this->_dad->isSent();
+		if($this->dad)
+			return $this->dad->isSent();
 
 		$method = $this->getMethod();
 		if($method !== $this->getRequest()->method())
 			return false;
 
-		if($this->_groupName) {
+		if($this->groupName) {
 			if($method == 'POST' || $method == 'PUT')
-				return $this->getRequest()->post->has($this->_groupName);
+				return $this->getRequest()->post->has($this->groupName);
 			elseif($method == 'GET')
-				return $this->getRequest()->get->has($this->_groupName);
+				return $this->getRequest()->get->has($this->groupName);
 			return false;
 		}
 		else {
@@ -213,9 +226,9 @@ class Form extends Group {
 	}
 	
 	public function open(array $params=array()) {
-		$params = array_merge($this->_params, $params);
-		$action = isset($params['action']) && $params['action'] ? $params['action']:$this->_request->url->full();
-		$method = $this->_method;
+		$params = array_merge($this->params, $params);
+		$action = isset($params['action']) && $params['action'] ? $params['action']:$this->request->url->full();
+		$method = $this->method;
 		$enctype = isset($params['enctype']) ? $params['enctype']:($this->hasFile() ? ' enctype="multipart/form-data"':'');
 		$attrs = '';
 		if(isset($params['attrs'])) {
@@ -229,7 +242,7 @@ class Form extends Group {
 	
 	public function close() {
 		if($this->has('_csrf_token'))
-			echo $this->_csrf_token->def();
+			echo $this['_csrf_token']->def();
 		echo '</form>';
 		
 		return $this;
@@ -245,10 +258,10 @@ class Form extends Group {
 	}
 
 	public function getGeneralErrors() {
-		if(!$this->_errors)
+		if(!$this->errors)
 			return;
 		$gen_errors = array();
-		foreach($this->_errors as $field_name=>$errors) {
+		foreach($this->errors as $field_name=>$errors) {
 			if(!$this->has($field_name) || $this->get($field_name) instanceof Fields\HiddenField)
 				$gen_errors[$field_name] = $errors;
 		}
@@ -292,10 +305,11 @@ class Form extends Group {
 				$size = $this->convertTo('size', $raw['size']);
 				
 				$files = $this->merge_all($name, $type, $tmp_name, $error, $size);
-				return $files;
+				// return $files;
 			}
 			else
-				return $raw;
+				// return $raw;
+				$files = $raw;
 		}
 		else {
 			foreach($raw as $k=>$v) {
@@ -304,7 +318,13 @@ class Form extends Group {
 				else
 					$raw[$k] = $this->parseFiles($v);
 			}
-			return $raw;
+			// return $raw;
+			$files = $raw;
 		}
+
+		foreach($files as $k=>$v)
+			$files[$k] = \Asgard\Form\HttpFile::createFromArray($v);
+
+		return $files;
 	}
 }

@@ -1,7 +1,7 @@
 <?php
 namespace Asgard\Http;
 
-class Viewable {
+abstract class Viewable {
 	protected $_view;
 
 	public static function widget($class, $method, array $params=array()) {
@@ -26,7 +26,7 @@ class Viewable {
 			else {
 				if($this->_view === null && !$this->setRelativeView($method.'.php'))
 					return null;
-				return $this->renderView($this->_view, $this);
+				return $this->renderView($this->_view, (array)$this);
 			}
 		}
 		return null;
@@ -47,12 +47,5 @@ class Viewable {
 	
 	public function setView($view) {
 		$this->_view = $view;
-	}
-	
-	public function setRelativeView($view) {
-		$reflection = new \ReflectionObject($this);
-		$dir = dirname($reflection->getFileName());
-		$this->setView($dir.'/../views/'.strtolower(preg_replace('/viewable$/i', '', \Asgard\Utils\NamespaceUtils::basename(get_class($this)))).'/'.$view);
-		return file_exists($dir.'/../views/'.strtolower(preg_replace('/viewable$/i', '', \Asgard\Utils\NamespaceUtils::basename(get_class($this)))).'/'.$view);
 	}
 }

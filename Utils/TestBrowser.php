@@ -1,7 +1,14 @@
 <?php
 namespace Asgard\Utils;
 
-class TestBrowser extends \Asgard\Utils\Browser {
+class TestBrowser extends \Asgard\Http\Browser\Browser {
+	protected $dst;
+
+	public function __construct($app, $dst) {
+		parent::__construct($app);
+		$this->dst = $dst;
+	}
+
 	public function req(
 		$url='',
 		$method='GET',
@@ -10,7 +17,7 @@ class TestBrowser extends \Asgard\Utils\Browser {
 		$body='',
 		array $headers=array()
 	) {
-		// file_put_contents(_DIR_.'tests/tested.txt', $url."\n", FILE_APPEND);
+		file_put_contents($this->dst, $url."\n", FILE_APPEND);
 		return parent::req($url, $method, $post, $file, $body, $headers);
 	}
 }

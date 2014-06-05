@@ -347,7 +347,7 @@ class DAL {
 
 	protected function buildWhere($default=null) {
 		$params = array();
-		$r = $this->processConditions($this->where, 'and', false, $this->getDefaultTable());
+		$r = $this->processConditions($this->where, 'and', false, $default !==null ? $default:$this->getDefaultTable());
 		if($r[0])
 			return array(' WHERE '.$r[0], $r[1]);
 		else
@@ -491,12 +491,10 @@ class DAL {
 		$params = array_merge($params, $joinparams);
 		
 		list($where, $whereparams) = $this->buildWhere();
-		// d($where, $this->where);
 		$params = array_merge($params, $whereparams);
 
 		$this->params = $params;
 		return 'SELECT '.$columns.' FROM '.$tables.$jointures.$where.$groupby.$orderBy.$limit;
-		// return array('SELECT '.$select.' FROM '.$table.$jointures.$where.$groupby.$orderBy.$limit, $params);
 	}
 
 	public function buildUpdateSQL(array $values) {
@@ -524,26 +522,28 @@ class DAL {
 		return 'UPDATE '.$tables.$jointures.$str.$where.$orderBy.$limit;
 	}
 
-	// public function buildDeleteSQL($del_tables=null) {
-	public function buildDeleteSQL() {
+	public function buildDeleteSQL(array $del_tables=array()) {
 		$params = array();
 
-		$tables = $this->buildTables(false);
+		$tables = $this->buildTables(count($del_tables) > 0);
 		$orderBy = $this->buildOrderBy();
 		$limit = $this->buildLimit();
 
-		// list($jointures, $joinparams) = $this->buildJointures();
-		// $params = array_merge($params, $joinparams);
+		list($jointures, $joinparams) = $this->buildJointures();
+		$params = array_merge($params, $joinparams);
 		
 		list($where, $whereparams) = $this->buildWhere();
 		$params = array_merge($params, $whereparams);
 
 		$this->params = $params;
-		// if($del_tables !== null)
-		// 	return 'DELETE '.$del_tables.' FROM '.$tables.$jointures.$where.$orderBy.$limit;
-		// else
-			// return 'DELETE FROM '.$tables.$jointures.$where.$orderBy.$limit;
-			return 'DELETE FROM '.$tables.$where.$orderBy.$limit;
+		if($del_tables) {
+			foreach($del_tables as $k=>$v)
+				$del_tables[$k] = '`'.$v.'`';
+			$del_tables = implode(', ', $del_tables);
+			return 'DELETE '.$del_tables.' FROM '.$tables.$jointures.$where.$orderBy.$limit;
+		}
+		else
+			return 'DELETE FROM '.$tables.$jointures.$where.$orderBy.$limit;
 	}
 
 	public function buildInsertSQL(array $values) {
@@ -582,7 +582,7 @@ class DAL {
 		return $this->db->query($sql, $params)->id();
 	}
 	
-	public function delete(array $tables=null) {
+	public function delete(array $tables=array()) {
 		$sql = $this->buildDeleteSQL($tables);
 		$params = $this->getParameters();
 		return $this->db->query($sql, $params)->affected();

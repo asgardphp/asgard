@@ -75,6 +75,10 @@ abstract class Field {
 		$this->dad = $dad;
 	}
 	
+	public function getDad() {
+		return $this->dad;
+	}
+	
 	public function setName($name) {
 		$this->name = $name;
 	}

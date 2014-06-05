@@ -104,9 +104,10 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 	public function remove($ids) {
 		if(!is_array($ids))
 			$ids = array($ids);
-		foreach($ids as $k=>$id)
+		foreach($ids as $k=>$id) {
 			if($id instanceof \Asgard\Entity\Entity)
 				$ids[$k] = $id->id;
+		}
 			
 		switch($this->relation['type']) {
 			case 'hasMany':

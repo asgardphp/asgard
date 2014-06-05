@@ -1,0 +1,33 @@
+<?php
+return array(
+	'dev' => array(
+		'database' => array(
+			'driver'    =>	'_DRIVER_',
+			'host'      =>	'_HOST_',
+			'user'      =>	'_USER_',
+			'password'  =>	'_PASSWORD_',
+			'database'  =>	'_NAME_',
+			'prefix'    =>	'_PREFIX_',
+		),
+	),
+	'test' => array(
+		'database' => array(
+			'driver'    =>	'mysql',
+			'host'      =>	'localhost',
+			'user'      =>	'root',
+			'password'  =>	'',
+			'database'  =>	'asgard_tests',
+			'prefix'    =>	'',
+		),
+	),
+	'prod' => array(
+		'database' => array(
+			'driver'    =>	'mysql',
+			'host'      =>	'localhost',
+			'user'      =>	'root',
+			'password'  =>	'',
+			'database'  =>	'asgard',
+			'prefix'    =>	'',
+		),
+	),
+);

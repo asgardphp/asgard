@@ -1,7 +1,7 @@
 <?php
 namespace Asgard\Http;
 
-class ControllerException extends \Asgard\Core\PSRException {
+class ControllerException extends \Asgard\Debug\PSRException {
 	public $response;
 
 	public function __construct($msg='', $response=null, $severity=null) {

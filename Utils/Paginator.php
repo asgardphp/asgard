@@ -42,7 +42,7 @@ class Paginator {
 			return $last;
 	}
 	
-	public function show() {
+	public function render() {
 		$r = '';
 		if($this->page > 1)
 			$r .= '<a href="'.$this->getPrev().'">«</a>';

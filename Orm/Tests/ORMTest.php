@@ -7,7 +7,7 @@ class ORMTest extends PHPUnit_Framework_TestCase {
 			define('_ENV_', 'test');
 
 		$app = new \Asgard\Core\App;
-		$app['hook'] = new \Asgard\Hook\Hook($app);
+		$app['hooks'] = new \Asgard\Hook\HooksManager($app);
 		$app['config'] = new \Asgard\Core\Config;
 		$app['cache'] = new \Asgard\Cache\NullCache;
 		$app->register('paginator', function($app, $args) {

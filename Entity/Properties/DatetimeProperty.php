@@ -20,17 +20,17 @@ class DatetimeProperty extends \Asgard\Entity\Property {
 		return \Carbon\Carbon::now();
 	}
 
-	public function serialize($obj) {
+	protected function doSerialize($obj) {
 		if($obj == null)
 			return '';
 		return $obj->format('Y-m-d H:i:s');
 	}
 
-	public function unserialize($str) {
+	protected function doUnserialize($str) {
 		return \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $str);
 	}
 
-	public function set($val) {
+	protected function doSet($val) {
 		if($val instanceof \Carbon\Carbon)
 			return $val;
 		elseif(is_string($val)) {

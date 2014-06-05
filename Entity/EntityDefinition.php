@@ -4,7 +4,7 @@ namespace Asgard\Entity;
 class EntityDefinition extends \Asgard\Hook\Hookable {
 	protected $entityClass;
 
-	public $app;
+	protected $app;
 	protected $metas = array();
 	protected $properties = array();
 	public $behaviors = array();
@@ -20,16 +20,26 @@ class EntityDefinition extends \Asgard\Hook\Hookable {
 		if(!$reflectionClass->IsInstantiable())
 			return;
 
-		$this->entityClass = $entityClass;
 		$this->app = $app;
+		$this->entityClass = $entityClass;
 
 		$entityClass::definition($this);
 
-		$this->loadBehaviors();
+		$behaviors = $this->behaviors;
+		$this->behaviors = array();
+		$this->loadBehaviors($behaviors);
 	}
 
-	public function getHook() {
-		return $this->app['hook'];
+	public function setApp($app) {
+		$this->app = $app;
+	}
+
+	public function getApp() {
+		return $this->app;
+	}
+
+	public function __sleep() {
+		return array('entityClass', 'metas', 'properties', 'behaviors', 'messages', 'relations', 'calls', 'statics', 'staticsCatchAll', 'callsCatchAll');
 	}
 
 	public function __set($name, $value) {
@@ -106,28 +116,32 @@ class EntityDefinition extends \Asgard\Hook\Hookable {
 		}
 	}
 
-	public function loadBehaviors() {
-		$this->getHook()->trigger('behaviors_pre_load', array($this));
+	public function loadBehaviors($behaviors) {
+		$this->app['hooks']->trigger('Asgard.Entity.LoadBehaviors', array(&$behaviors));
 
-		#not using foreach because new behaviors may be added in the loop
-		for($i=0; $i<count($this->behaviors); $i++) {
-			if(!$this->behaviors[$i] instanceof \Asgard\Entity\Behavior)
-				throw new \Exception($this->entityClass.' has an invalid behavior object.');
-			$this->behaviors[$i]->setDefinition($this);
-			$this->behaviors[$i]->load($this);
+		foreach($behaviors as $behavior)
+			$this->loadBehavior($behavior);
+	}
 
-			$reflection = new \ReflectionClass($this->behaviors[$i]);
-			foreach($reflection->getMethods() as $methodReflection) {
-				if(strpos($methodReflection->getName(), 'call_') === 0)
-					$this->calls[str_replace('call_', '', $methodReflection->getName())] = array($this->behaviors[$i], $methodReflection->getName());
-				elseif(strpos($methodReflection->getName(), 'static_') === 0)
-					$this->statics[str_replace('static_', '', $methodReflection->getName())] = array($this->behaviors[$i], $methodReflection->getName());
-				elseif($methodReflection->getName() === 'staticCatchAll')
-					$this->staticsCatchAll[] = $this->behaviors[$i];
-				elseif($methodReflection->getName() === 'callCatchAll')
-					$this->callsCatchAll[] = $this->behaviors[$i];
-			}
+	public function loadBehavior($behavior) {
+		if(!$behavior instanceof \Asgard\Entity\Behavior)
+			throw new \Exception($this->entityClass.' has an invalid behavior object.');
+		$behavior->setDefinition($this);
+		$behavior->load($this);
+
+		$reflection = new \ReflectionClass($behavior);
+		foreach($reflection->getMethods() as $methodReflection) {
+			if(strpos($methodReflection->getName(), 'call_') === 0)
+				$this->calls[str_replace('call_', '', $methodReflection->getName())] = array($behavior, $methodReflection->getName());
+			elseif(strpos($methodReflection->getName(), 'static_') === 0)
+				$this->statics[str_replace('static_', '', $methodReflection->getName())] = array($behavior, $methodReflection->getName());
+			elseif($methodReflection->getName() === 'staticCatchAll')
+				$this->staticsCatchAll[] = $behavior;
+			elseif($methodReflection->getName() === 'callCatchAll')
+				$this->callsCatchAll[] = $behavior;
 		}
+
+		$this->behaviors[] = $behavior;
 	}
 
 	public function getClass() {
@@ -154,15 +168,14 @@ class EntityDefinition extends \Asgard\Hook\Hookable {
 					$property['type'] = 'text';
 			}
 
-			$propertyClass = $this->getHook()->trigger('entity_property_type', array($property['type']), function($chain, $type) {
-				return '\Asgard\Entity\Properties\\'.ucfirst($type).'Property';
+			$property = $this->app->make('Asgard.Entity.PropertyType', array($property['type'], $property), function($type, $params) {
+				$class = '\Asgard\Entity\Properties\\'.ucfirst($type).'Property';
+				return new $class($params);
 			});
-
-			$property = new $propertyClass($property);
 		}
 
 		if(is_object($property)) {
-			$property->setEntity($this->entityClass);
+			$property->setDefinition($this);
 			$property->setName($name);
 
 			if($property->getPosition() === null)
@@ -207,11 +220,6 @@ class EntityDefinition extends \Asgard\Hook\Hookable {
 		return false;
 	}
 
-	public function addBehavior(Behavior $behavior) {
-		if(!$this->hasBehavior($behavior))
-			$this->behaviors[] = $behavior;
-	}
-
 	public function isI18N() {
 		foreach($this->properties as $prop) {
 			if($prop->i18n)
@@ -221,6 +229,10 @@ class EntityDefinition extends \Asgard\Hook\Hookable {
 	}
 	
 	public function getShortName() {
-		return \Asgard\Utils\NamespaceUtils::basename(strtolower($this->getClass()));
+		return static::basename(strtolower($this->getClass()));
+	}
+
+	private static function basename($ns) {
+		return basename(str_replace('\\', DIRECTORY_SEPARATOR, $ns));
 	}
 }

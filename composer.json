@@ -1,5 +1,6 @@
 {
 	"name": "asgard/asgard",
+    "description": "Asgard PHP Framework",
 	"license": "MIT",
 	"authors": [{
 		"name": "Michel Hognerud",
@@ -9,13 +10,23 @@
         "psr-4": {"Asgard\\": "."}
     },
     "require": {
-        "niktux/addendum": "dev-master",
-        "symfony/yaml": "dev-master",
-        "symfony/translation": "dev-master",
-        "nesbot/carbon": "dev-master"
+        "php": ">=5.4.0",
+        "doctrine/annotations": "1.*",
+        "doctrine/cache": "1.*",
+        "symfony/yaml": "2.3.*",
+        "symfony/translation": "2.3.*",
+        "jeremeamia/SuperClosure": "1.*",
+        "nesbot/carbon": "1.*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "3.7.*"
+    },
+    "suggest": {
+        "classpreloader/classpreloader": "1.*",
+        "swiftmailer/swiftmailer": "5.0.*"
     },
     "replace": {
-        "asgard/auth": "self.version",
+        "asgard/email": "self.version",
         "asgard/cache": "self.version",
         "asgard/data": "self.version",
         "asgard/db": "self.version",
@@ -25,12 +36,7 @@
         "asgard/hook": "self.version",
         "asgard/http": "self.version",
         "asgard/orm": "self.version",
-        "asgard/translation": "self.version",
         "asgard/utils": "self.version",
-        "asgard/validation": "self.version",
-        "asgard/xpath": "self.version"
-    },
-    "require-dev": {
-        "phpunit/phpunit": "3.7.*"
+        "asgard/validation": "self.version"
     }
 }

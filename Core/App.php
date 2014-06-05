@@ -1,101 +1,96 @@
 <?php
 namespace Asgard\Core;
 
+use Jeremeamia\SuperClosure\SerializableClosure;
+
 class App implements \ArrayAccess {
 	protected static $instance;
 	protected $instances = array();
 	protected $registry = array();
-	protected $loaded = false;
+	protected $autofacade = false;
 
-	public function __construct($config=null) {
-		$this->config = $config;
+	public function __construct(array $instances=array()) {
+		foreach($instances as $name=>$instance)
+			$this->set($name, $instance);
 	}
 
-	public static function hasInstance() {
-		return isset(static::$instance);
-	}
-
-	public static function instance($new=false, $config=null) {
-		if(!isset(static::$instance) || $new)
-			static::$instance = new static($config);
+	public static function instance() {
+		if(!isset(static::$instance))
+			static::$instance = new static;
 		return static::$instance;
 	}
 
-	public function get($class) {
-		if(!isset($this->instances[$class])) {
-			if($this->registry[$class]['save']) {
-				$this->instances[$class] = $this->make($class);
-				return $this->instances[$class];
-			}
-			else
-				return $this->make($class);
+	public static function setInstance($instance) {
+		static::$instance = $instance;
+	}
+
+	public function setAutofacade($facade) {
+		$this->autofacade = $facade;
+	}
+
+	public function get($name) {
+		$name = strtolower($name);
+		if(!isset($this->instances[$name])) {
+			if(!isset($this->registry[$name]))
+				throw new \Exception($name.' has not been registered in app.');
+			$this->instances[$name] = $this->make($name);
+			return $this->instances[$name];
 		}
 		else
-			return $this->instances[$class];
-		// return $this->_get($class);
+			return $this->instances[$name];
 	}
-
-	// public function _get($class) {
-	// }
-
-	// public function __get($name) {
-	// 	return $this->_get($name);
-	// }
 
 	public function set($name, $value) {
-			$this->instances[$name] = $value;
-		// $instance = static::instance();
-		// return $instance->_set($name, $value);
-	}
-
-	// public function _set($name, $value) {
-	// 	// if(is_callable($value))
-	// 	// 	$this->register($name, $value);
-	// 	// else
-	// 		$this->instances[$name] = $value;
-	// 	return $this;
-	// }
-
-	// public function __set($name, $value) {
-	// 	return $this->_set($name, $value);
-	// }
-
-	public static function has($class) {
-		$instance = static::instance();
-		return $instance->_has($class);
-	}
-
-	public function _has($class) {
-		return $this->registered($class) || isset($this->instances[$class]);
-	}
-
-	public function register($name, $callback, $save=true) {
+		$name = strtolower($name);
 		if(
-			$this->_has('config')
-			&& $this->get('config')->get('autofacade')
-			&& preg_match('/^[a-zA-Z0-9_]+$/', $name)
+			$this->autofacade
+			&& preg_match('/^[a-zA-Z_][a-zA-Z0-9_]+$/', $name)
+			&& !class_exists(ucfirst($name))) {
+			eval('class '.ucfirst($name).' extends \Asgard\Core\Facade {}');
+		}
+
+		$this->instances[$name] = $value;
+	}
+
+	public function has($name) {
+		$name = strtolower($name);
+		return $this->registered($name) || isset($this->instances[$name]);
+	}
+
+	public function remove($name) {
+		$name = strtolower($name);
+		unset($this->instances[$name]);
+	}
+
+	public function register($name, $callback) {
+		$name = strtolower($name);
+		if(
+			$this->autofacade
+			&& preg_match('/^[a-zA-Z_][a-zA-Z0-9_]+$/', $name)
 			&& !class_exists(ucfirst(strtolower($name)))) {
 			eval('class '.ucfirst(strtolower($name)).' extends \Asgard\Core\Facade {}');
 		}
 
-		$this->registry[$name] = array('callback'=>$callback, 'save'=>$save);
+		if($callback instanceof \Closure)
+			$callback = new SerializableClosure($callback);
+		$this->registry[$name] = $callback;
 	}
 	
 	public function make($name, array $params=array(), $default=null) {
+		$name = strtolower($name);
 		if(isset($this->registry[$name]))
-			return call_user_func_array($this->registry[$name]['callback'], array($this, $params));
+			return call_user_func_array($this->registry[$name], array($this, $params));
 		else {
-			if($default instanceof \Closure)
+			if(is_callable($default))
 				return call_user_func_array($default, $params);
-			else {
-				if($default === null)
-					throw new \Exception('There is no constructor for "'.$name.'".');
-				return $default;
-			}
+			elseif($default === null)
+				throw new \Exception('There is no constructor for "'.$name.'".');
+			return $default;
 		}
 	}
 
 	public function registered($name) {
+		$name = strtolower($name);
 		return isset($this->registry[$name]);
 	}
 
@@ -107,14 +102,26 @@ class App implements \ArrayAccess {
     }
 
     public function offsetExists($offset) {
-        return isset($this->instances[$offset]);
+        return $this->has($offset);
     }
 
     public function offsetUnset($offset) {
-        unset($this->instances[$offset]);
+        return $this->remove($offset);
     }
 
     public function offsetGet($offset) {
         return $this->get($offset);
     }
+
+	public function __wakeup() {
+		if($this->autofacade) {
+			foreach($this->instances as $name=>$instance) {
+				if(
+					preg_match('/^[a-zA-Z_][a-zA-Z0-9_]+$/', $name)
+					&& !class_exists(ucfirst($name))) {
+					eval('class '.ucfirst($name).' extends \Asgard\Core\Facade {}');
+				}
+			}
+		}
+	}
 }

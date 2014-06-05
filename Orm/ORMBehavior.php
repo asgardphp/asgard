@@ -28,24 +28,25 @@ class ORMBehavior extends \Asgard\Entity\Behavior {
 		foreach($definition->relations as $name=>$params)
 			$definition->relations[$name] = new EntityRelation($definition, $name, $params);
 		
-		$definition->hookAfter('get', array($this, 'hookAfterGet'));
-		$definition->hookBefore('get', array($this, 'hookBeforeGet'));
+		$definition->hook('get', array($this, 'hookGet'));
+		$definition->hook('getI18N', array($this, 'hookgetI18N'));
 		$definition->hook('validation', array($this, 'hookValidation'));
 	}
 
 	protected function getDataMapper() {
 		if(!$this->dataMapper) {
+			$app = $this->definition->getApp();
 			$this->dataMapper = new DataMapper(
-				$this->definition->app['db'],
-				$this->definition->app['config']->get('locale'),
-				$this->definition->app['config']->get('database/prefix'),
-				$this->definition->app
+				$app['db'],
+				$app['config']->get('locale'),
+				$app['config']->get('database/prefix'),
+				$app
 			);
 		}
 		return $this->dataMapper;
 	}
 
-	public function hookBeforeGet(\Asgard\Hook\HookChain $chain, \Asgard\Entity\Entity $entity, $name, $lang) {
+	public function hookGet(\Asgard\Hook\HookChain $chain, \Asgard\Entity\Entity $entity, $name, $lang) {
 		if($entity::hasRelation($name)) {
 			$rel = $this->dataMapper->relation($entity, $name);
 			if($rel instanceof \Asgard\Entity\Collection)
@@ -55,8 +56,8 @@ class ORMBehavior extends \Asgard\Entity\Behavior {
 		}
 	}
 
-	public function hookAfterGet(\Asgard\Hook\HookChain $chain, \Asgard\Entity\Entity $entity, $name, $lang) {
-		return $this->getDataMapper()->getI18N($entity, $name, $lang);
+	public function hookgetI18N(\Asgard\Hook\HookChain $chain, \Asgard\Entity\Entity $entity, $name, $lang) {
+		return $this->getDataMapper()->getI18N($entity, $lang);
 	}
 
 	public function hookValidation(\Asgard\Hook\HookChain $chain, \Asgard\Entity\Entity $entity, \Asgard\Validation\Validator $validator, array &$data) {

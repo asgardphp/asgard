@@ -1,131 +1,95 @@
 <?php
-namespace {
-	class Annotate_Hook extends Addendum\Annotation {}
-	class Annotate_Priority extends Addendum\Annotation {}
-	class Annotate_Prefix extends Addendum\Annotation {}
-	class Annotate_Test extends Addendum\Annotation {}
-	class Annotate_Route extends Addendum\Annotation {
-		public $name;
-		public $requirements;
-		public $method;
-		public $host;
+namespace Asgard\Core;
+
+class BundleLoader {
+	protected $path;
+	protected $app;
+
+	public function __construct() {
+		$reflector = new \ReflectionClass(get_called_class());
+		$this->path = dirname($reflector->getFileName());
 	}
-	class Annotate_Shortcut extends Addendum\Annotation {}
-	class Annotate_Usage extends Addendum\Annotation {}
-	class Annotate_Description extends Addendum\Annotation {}
-}
 
-namespace Asgard\Core {
-	class BundleLoader {
-		protected $bundle;
-		protected $app;
+	public function setPath($path) {
+		$this->path = realpath($path);
+	}
 
-		public function setApp($app) {
-			$this->app = $app;
+	public function getPath() {
+		return $this->path;
+	}
+
+	public function buildApp($app) {
+	}
+
+	public function run($app) {
+		if($app->has('autoloader'))
+			$app['autoloader']->preloadDir($this->getPath());
+
+		$bundleData = $app['cache']->fetch('bundles/'.$this->getID());
+		if($bundleData !== false) {
+			$hooks = $bundleData['hooks'];
+			$routes = $bundleData['routes'];
+		}
+		else {
+			$hooks = $app->has('hooks') ? $this->loadHooks():array();
+			$routes = $app->has('resolver') ? $this->loadControllers():array();
+			
+			$app['cache']->save('bundles/'.$this->getID(), array(
+				'hooks' => $hooks,
+				'routes' => $routes,
+			));
 		}
 
-		public function load(BundlesManager $bundlesManager) {
-			if($this->app->has('autoloader'))
-				$this->app['autoloader']->preloadDir($this->getBundle());
+		if($app->has('translator')) {
+			foreach(glob($this->getPath().'/locales/'.$app['translator']->getLocale().'/*') as $file)
+				$app['translator']->addResource('yaml', $file, $app['translator']->getLocale());
 		}
 
-		public function run() {
-			$bundleData = $this->app['cache']->get('bundles/'.$this->getID());
-			if($bundleData !== null) {
-				$locales = $bundleData['locales'];
-				$hooks = $bundleData['hooks'];
-				$consoleRoutes = $bundleData['consoleRoutes'];
-				$routes = $bundleData['routes'];
+		if($app->has('hooks'))
+			$app['hooks']->hooks($hooks);
+
+		if($app->has('resolver'))
+			$app['resolver']->addRoutes($routes);
+
+		if($app->has('console'))
+			$this->loadConsole($app);
+	}
+
+	protected function loadHooks() {
+		$hooks = array();
+		if(file_exists($this->getPath().'/hooks/')) {
+			foreach(glob($this->getPath().'/hooks/*.php') as $filename) {
+				$class = \Asgard\Core\Autoloader::loadClassFile($filename);
+				if(is_subclass_of($class, 'Asgard\Hook\HooksContainer'))
+					$hooks = array_merge_recursive($hooks, $class::fetchHooks());
 			}
-			else {
-				$locales = $this->loadLocales();
-				$hooks = $this->loadHooks();
-				$consoleRoutes = $this->loadConsole();
-				$routes = $this->loadControllers();
-				
-				$this->app['cache']->set('bundles/'.$this->getID(), array(
-					'locales' => $locales,
-					'hooks' => $hooks,
-					'consoleRoutes' => $consoleRoutes,
-					'routes' => $routes,
-				));
+		}
+		return $hooks;
+	}
+
+	protected function loadConsole($app) {
+		if(file_exists($this->getPath().'/Console/')) {
+			foreach(glob($this->getPath().'/Console/*.php') as $filename) {
+				$class = \Asgard\Core\Autoloader::loadClassFile($filename);
+				if(is_subclass_of($class, 'Symfony\Component\Console\Command\Command'))
+					$app['console']->add(new $class);
 			}
-
-			if($this->app->has('translator'))
-				$this->app['translator']->addLocales($locales);
-
-			if($this->app->has('hook'))
-				$this->app['hook']->hooks($hooks);
-
-			if($this->app->has('resolver'))
-				$this->app['resolver']->addRoutes($routes);
-
-			if(php_sapi_name() === 'cli' && $this->app->has('clirouter'))
-				$this->app['clirouter']->addRoutes($consoleRoutes);
 		}
+	}
 
-		protected function loadLocales() {
-			if(!$this->app->has('translator'))
-				return array();
-			return $this->app['translator']->fetchLocalesFromDir($this->getBundle().'/locales');
-		}
-
-		protected function loadHooks() {
-			if(!$this->app->has('hook'))
-				return array();
-			$hooks = array();
-			if(file_exists($this->getBundle().'/hooks/')) {
-				foreach(glob($this->getBundle().'/hooks/*.php') as $filename) {
-					$class = \Asgard\Core\Autoloader::loadClassFile($filename);
-					if(is_subclass_of($class, 'Asgard\Hook\HooksContainer'))
-						$hooks = array_merge_recursive($hooks, $class::fetchHooks());
-				}
+	protected function loadControllers() {
+		$routes = array();
+		if(file_exists($this->getPath().'/controllers/')) {
+			foreach(glob($this->getPath().'/controllers/*.php') as $k=>$filename) {
+				$class = \Asgard\Core\Autoloader::loadClassFile($filename);
+				if(is_subclass_of($class, 'Asgard\Http\Controller'))
+					$routes = array_merge($routes, $class::fetchRoutes());
 			}
-			return $hooks;
 		}
+		return $routes;
+	}
 
-		protected function loadConsole() {
-			if(!$this->app->has('clirouter'))
-				return array();
-			$routes = array();
-			if(file_exists($this->getBundle().'/Console/')) {
-				foreach(glob($this->getBundle().'/Console/*.php') as $filename) {
-					$class = \Asgard\Core\Autoloader::loadClassFile($filename);
-					if(is_subclass_of($class, 'Asgard\Console\Controller'))
-						$routes = array_merge($routes, $class::fetchRoutes());
-				}
-			}
-			return $routes;
-		}
-
-		protected function loadControllers() {
-			if(!$this->app->has('resolver'))
-				return array();
-			$routes = array();
-			if(file_exists($this->getBundle().'/controllers/')) {
-				foreach(glob($this->getBundle().'/controllers/*.php') as $k=>$filename) {
-					$class = \Asgard\Core\Autoloader::loadClassFile($filename);
-					if(is_subclass_of($class, 'Asgard\Http\Controller'))
-						$routes = array_merge($routes, $class::fetchRoutes());
-				}
-			}
-			return $routes;
-		}
-
-		public function setBundle($bundle) {
-			$this->bundle = realpath($bundle);
-		}
-
-		public function getID() {
-			return sha1($this->getBundle());
-		}
-
-		public function getBundle() {
-			if($this->bundle == null) {
-				$reflector = new \ReflectionClass(get_called_class());
-				$this->bundle = dirname($reflector->getFileName());
-			}
-			return realpath($this->bundle);
-		}
+	protected function getID() {
+		return sha1($this->getPath());
 	}
 }

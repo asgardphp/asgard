@@ -43,6 +43,10 @@ class Response {
 		return $this->headers[strtolower($header)];
 	}
 
+	public function getHeaders() {
+		return $this->headers;
+	}
+
 	public function setContent($content) {
 		$this->content = $content;
 		return $this;
@@ -74,6 +78,8 @@ class Response {
 	}
 	
 	public function redirect($url='') {
+		if(!preg_match('/^http:\/\//', $url))
+			$url = \Asgard\Core\App::instance()['request']->url->to($url);
 		$this->headers['Location'] = $url;
 		return $this;
 	}

@@ -9,6 +9,8 @@
         "psr-4": {"Asgard\\Http\\": "."}
     },
     "require": {
-        "niktux/addendum": "dev-master"
+        "doctrine/annotations": "1.*",
+        "doctrine/cache": "1.*",
+        "asgard/utils": "dev-master"
     }
 }

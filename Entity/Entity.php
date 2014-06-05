@@ -7,14 +7,24 @@ abstract class Entity {
 	public $data = array(
 		'properties'	=>	array(),
 	);
+	protected $locale;
 
 	public function __construct(array $params=null) {
 		#create the entity definition if does not exist yet
 		static::$app['entitiesmanager']->make(get_called_class());
+		$this->locale = static::$app['config']['locale'];
 
 		$this->loadDefault();
 		if(is_array($params))
 			$this->set($params);
+	}
+
+	public function setLocale($locale) {
+		$this->locale = $locale;
+	}
+
+	public function getLocale() {
+		return $this->locale;
 	}
 
 	public static function setApp($app) {
@@ -59,7 +69,7 @@ abstract class Entity {
 
 	public function loadDefault() {
 		foreach(static::properties() as $name=>$property)
-			$this->set($name, $property->getDefault($this));
+			$this->set($name, $property->getDefault());
 				
 		return $this;
 	}
@@ -69,15 +79,37 @@ abstract class Entity {
 		$constrains = array();
 		$messages = array();
 		$entity = $this;
+		$validator = new \Asgard\Validation\Validator;
 
-		foreach($this->getDefinition()->properties() as $name=>$property)
-			$constrains[$name] = $property->getRules();
-		foreach($this->getDefinition()->properties() as $name=>$property)
+		foreach($this->getDefinition()->properties() as $name=>$property) {
+			if($property->get('multiple') || $property->get('i18n')) {
+				$rules = array();
+				foreach($property->getRules() as $rule=>$params) {
+					if($rule === 'self') {
+						foreach($params as $_rule=>$_params) {
+							if($rule = $validator->getRegistry()->getRule($_rule, $_params)) {
+								$rule->handleEach(false);
+								$rules[] = $rule;
+							}
+						}
+					}
+					else {
+						if($rule = $validator->getRegistry()->getRule($rule, $params)) {
+							$rule->handleEach(true);
+							$rules[] = $rule;
+						}
+					}
+				}
+				$constrains[$name] = $rules;
+			}
+			else {
+				$constrains[$name] = $property->getRules();
+			}
 			$messages[$name] = $property->getMessages();
+		}
 
 		$messages = array_merge($messages, static::getDefinition()->messages());
 		
-		$validator = new \Asgard\Validation\Validator;
 		$validator->setRegistry(static::$app['rulesregistry']);
 		$validator->attributes($constrains);
 		$validator->ruleMessages($messages);
@@ -122,7 +154,7 @@ abstract class Entity {
 		if(static::getDefinition()->hasProperty($name)) {
 			if(static::getDefinition()->property($name)->i18n) {
 				if(!$lang)
-					$lang = static::$app['config']->get('locale');
+					$lang = $this->locale;
 				if($lang == 'all') {
 					foreach($value as $one => $v)
 						$this->data['properties'][$name][$one] = $v;
@@ -159,7 +191,7 @@ abstract class Entity {
 
 			if(static::getDefinition()->property($name)->i18n) {
 				if(!$lang)
-					$lang = static::$app['config']->get('locale');
+					$lang = $this->locale;
 				if($lang == 'all') {
 					$val = array();
 					foreach($value as $one => $v)
@@ -185,29 +217,38 @@ abstract class Entity {
 	
 	public function get($name, $lang=null) {
 		if(!$lang)
-			$lang = static::$app['config']->get('locale');
+			$lang = $this->locale;
+		$entity = $this;
 
-		$res = $this->getDefinition()->trigger('get', array($this, $name, $lang), function($chain, $entity, $name, $lang) {
-			if($entity::hasProperty($name)) {
-				if($entity::property($name)->i18n) {
-					if($lang == 'all') {
-						$langs = static::$app['config']->get('locales');
-						$res = array();
-						foreach($langs as $lang)
-							$res[$lang] = $entity->get($name, $lang);
-						return $res;
-					}
-					elseif(isset($entity->data['properties'][$name][$lang]))
-						return $entity->data['properties'][$name][$lang];
+		if($res = $this->getDefinition()->trigger('get', array($this, $name, $lang)))
+			return $res;
+
+		if($entity::hasProperty($name)) {
+			if($entity::property($name)->i18n) {
+				if($lang == 'all') {
+					$langs = static::getApp()['config']['locales'];
+					$res = array();
+					foreach($langs as $lang)
+						$res[$lang] = $entity->get($name, $lang);
+					return $res;
 				}
-				elseif(isset($entity->data['properties'][$name])) 
-					return $entity->data['properties'][$name];
+				elseif(isset($entity->data['properties'][$name][$lang]))
+					return $entity->data['properties'][$name][$lang];
+				else {
+					$i18n = $this->getDefinition()->trigger('getI18N', array($this, $name, $lang));
+					if($i18n === null) $i18n = array();
+					foreach ($i18n as $k=>$v)
+						$this->_set($k, $v, $lang);
+					if(!isset($entity->data['properties'][$name][$lang]))
+						return null;
+					return $entity->data['properties'][$name][$lang];
+				}
 			}
-			elseif(isset($entity->data[$name]))
-				return $entity->data[$name];
-		});
-
-		return $res;
+			elseif(isset($entity->data['properties'][$name]))
+				return $entity->data['properties'][$name];
+		}
+		elseif(isset($entity->data[$name]))
+			return $entity->data[$name];
 	}
 	
 	/* UTILS */
@@ -215,8 +256,12 @@ abstract class Entity {
 		$res = array();
 		
 		foreach($this->propertyNames() as $name) {
-			if(isset($this->data['properties'][$name]))
-				$res[$name] = $this->data['properties'][$name];
+			if(isset($this->data['properties'][$name])) {
+				if($this->property($name)->get('multiple'))
+					$res[$name] = $this->data['properties'][$name]->all();
+				else
+					$res[$name] = $this->data['properties'][$name];
+			}
 			else
 				$res[$name] = null;
 		}

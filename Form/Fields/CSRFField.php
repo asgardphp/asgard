@@ -17,15 +17,15 @@ class CSRFField extends \Asgard\Form\Fields\HiddenField {
 
 	protected function generateToken() {
 		if($this->dad->getRequest()->session->has('_csrf_token'))
-			$this->dad->getRequest()->session->get('_csrf_token');
+			$this->dad->getRequest()->session['_csrf_token'];
 		else {
 			$token = \Asgard\Utils\Tools::randstr();
-			$this->dad->getRequest()->session->set('_csrf_token', $token);
+			$this->dad->getRequest()->session['_csrf_token'] = $token;
 			return $token;
 		}
 	}
 
 	public function error($attr, $value) {
-		return $this->value == $this->dad->getRequest()->session->get('_csrf_token');
+		return $this->value == $this->dad->getRequest()->session['_csrf_token'];
 	}
 }

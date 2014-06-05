@@ -1,25 +1,26 @@
 <?php
 namespace Asgard\Cache;
 
-class NullCache implements CacheInterface {
-	public function __construct($path=null) {
-		$this->path = $path;
+class NullCache implements \Doctrine\Common\Cache\Cache {
+	public function fetch($id, $default=false) {
+		if(is_callable($default))
+			return $default();
+		return $default;
 	}
 
-	public function clear() {}
-
-	public function get($identifier, $default=null) {
-		if(is_callable($default)) {
-			$r = $default();
-			return $r;
-		}
-		else
-			return $default;
-	}
-	
-	public function set($file, $var) {
+	public function contains($id) {
 		return false;
 	}
-	
-	public function delete($file) {}
+
+	public function save($id, $data, $lifeTime=0) {
+		return false;
+	}
+
+	public function delete($id) {
+		return false;
+	}
+
+	public function getStats() {
+		return null;
+	}
 }

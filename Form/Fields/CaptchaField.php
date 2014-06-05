@@ -14,7 +14,7 @@ class CaptchaField extends \Asgard\Form\Field {
 	}
 
 	public function error() {
-		if($this->value != $this->getTopForm()->getRequest()->session->get('captcha'))
+		if($this->value != $this->getTopForm()->getRequest()->session['captcha'])
 			return false;
 	}
 }

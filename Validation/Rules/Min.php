@@ -3,6 +3,7 @@ namespace Asgard\Validation\Rules;
 
 class Min extends \Asgard\Validation\Rule {
 	public $min;
+	protected $handleEach = true;
 
 	public function __construct($min) {
 		$this->min = $min;

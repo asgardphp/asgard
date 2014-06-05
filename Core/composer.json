@@ -9,9 +9,11 @@
         "psr-4": {"Asgard\\Core\\": "."}
     },
     "require": {
-        "niktux/addendum": "dev-master",
         "asgard/cache": "dev-master",
         "asgard/utils": "dev-master",
-        "symfony/yaml": "dev-master"
+        "symfony/yaml": "2.3.*"
+    },
+    "suggest": {
+        "classpreloader/classpreloader": "1.*"
     }
 }

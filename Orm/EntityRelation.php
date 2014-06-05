@@ -40,7 +40,7 @@ class EntityRelation implements \ArrayAccess {
 
 	public function getLinkA() {
 		$entityClass = $this->entityClass;
-		return $entityClass->getShortName().'_id';
+		return $entityClass::getShortName().'_id';
 	}
 
 	public function getLinkB() {

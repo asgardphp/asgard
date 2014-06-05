@@ -7,9 +7,9 @@ class DateField extends \Asgard\Form\Field {
 
 	public function setValue($value) {
 		if(is_array($value))
-			$this->value = new Date(mktime(0, 0, 0, $value['month'], $value['day'], $value['year']));
+			$this->value = \Carbon\Carbon::createFromDate($value['year'], $value['month'], $value['day']);
 		else
-			$this->value = Date::fromDate($value);
+			$this->value = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $value);
 	}
 
 	public function getValue() {
