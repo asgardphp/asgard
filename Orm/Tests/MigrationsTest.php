@@ -174,6 +174,6 @@ class MigrationsTest extends \PHPUnit_Framework_TestCase {
 '    \}'."\n".
 '\}/', file_get_contents(__DIR__.'/migrations/migrations.json'));
 
-		$this->assertFileEquals(__DIR__.'/fixtures/migrations/Post.php', __DIR__.'/migrations/Post.php');
+		$this->assertFileEquals(__DIR__.'/Fixtures/migrations/Post.php', __DIR__.'/migrations/Post.php');
 	}
 }

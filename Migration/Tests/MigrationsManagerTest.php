@@ -19,7 +19,7 @@ class BrowserTest extends \PHPUnit_Framework_TestCase {
 		\Asgard\Utils\FileManager::unlink(__DIR__.'/migrations');
 		\Asgard\Utils\FileManager::copy(__DIR__.'/fixtures/migrations', __DIR__.'/migrations');
 		$mm = new \Asgard\Migration\MigrationsManager(__DIR__.'/migrations/');
-		$mm->create('up();', 'down();', 'Amigration');
+		$mm->create('up();', 'down();', 'AMigration');
 		$this->assertTrue(file_exists(__DIR__.'/migrations/AMigration.php'));
 		$this->assertEquals('<?php'."\n".
 'class Amigration extends \Asgard\Migration\Migration {'."\n".
@@ -32,7 +32,7 @@ class BrowserTest extends \PHPUnit_Framework_TestCase {
 '	}'."\n".
 '}', $this->normalize(file_get_contents(__DIR__.'/migrations/AMigration.php')));
 		$this->assertRegExp('/\{'."\n".
-'    "Amigration": \{'."\n".
+'    "AMigration": \{'."\n".
 '        "added": [0-9.]+'."\n".
 '    \}'."\n".
 '\}/', file_get_contents(__DIR__.'/migrations/migrations.json'));

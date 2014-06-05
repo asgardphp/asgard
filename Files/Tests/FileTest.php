@@ -13,7 +13,7 @@ class FileTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals('txt', $file->extension());
 		$this->assertTrue($file->exists());
 		$this->assertFalse($file2->exists());
-		$this->assertEquals(__DIR__.'\fixtures\file.txt', $file->src());
+		$this->assertEquals(__DIR__.DIRECTORY_SEPARATOR.'fixtures'.DIRECTORY_SEPARATOR.'file.txt', $file->src());
 	}
 
 	public function testUrl() {
