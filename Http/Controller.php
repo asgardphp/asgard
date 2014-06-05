@@ -20,10 +20,8 @@ abstract class Controller extends \Asgard\Hook\Hookable {
 		$reader->addNamespace('Asgard\Http\Annotations');
 		$reader = new \Doctrine\Common\Annotations\CachedReader(
 			$reader,
-			new \Doctrine\Common\Cache\ApcCache(),
-			\Asgard\Core\App::instance()['cache'], #todo avec le cache doctrine
-			$debug=true
-			// \Asgard\Core\App::instance()['config']['debug'] #virer instance()..
+			\Asgard\Core\App::instance()['cache'],
+			\Asgard\Core\App::instance()['config']['debug']
 		);
 
 		$reflection = new \ReflectionClass($class);
@@ -69,10 +67,8 @@ abstract class Controller extends \Asgard\Hook\Hookable {
 		$reader->addNamespace('Asgard\Http\Annotations');
 		$reader = new \Doctrine\Common\Annotations\CachedReader(
 			$reader,
-			new \Doctrine\Common\Cache\ApcCache(),
-			\Asgard\Core\App::instance()['cache'], #todo avec le cache doctrine
-			$debug=true
-			// \Asgard\Core\App::instance()['config']['debug'] #virer instance()..
+			\Asgard\Core\App::instance()['cache'],
+			\Asgard\Core\App::instance()['config']['debug']
 		);
 
 		$reflection = new \ReflectionClass($class);
