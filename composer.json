@@ -16,6 +16,7 @@
         "symfony/yaml": "2.3.*",
         "symfony/translation": "2.3.*",
         "jeremeamia/SuperClosure": "1.*",
+        "psr/log": "1.*",
         "nesbot/carbon": "1.*"
     },
     "require-dev": {
