@@ -5,22 +5,19 @@ class ErrorHandler {
 	protected static $reservedMemory;
 	protected static $errorAtStart;
 	protected $ignoreDirs = array();
+	protected $logPHPErrors = false;
+	protected $logger;
 
-	public static function initialize($app=null) {
+	public static function initialize() {
 		ini_set('log_errors', 0);
 		static::$reservedMemory = str_repeat('a', 10240);
 		static::$errorAtStart = error_get_last();
 
-		$errorHandler = new static($app);
-		$app['errorHandler'] = $errorHandler;
+		$errorHandler = new static();
 		set_error_handler(array($errorHandler, 'phpErrorHandler'));
 		set_exception_handler(array($errorHandler, 'exceptionHandler'));
 		register_shutdown_function(array($errorHandler, 'shutdownFunction'));
 		return $errorHandler;
-	}
-
-	public function __construct($app=null) {
-		$this->app = $app;
 	}
 
 	public function shutdownFunction() {
@@ -71,13 +68,18 @@ class ErrorHandler {
 		return $trace;
 	}
 
+	public function setLogPHPErrors($log) {
+		$this->logPHPErrors = $log;
+		return $this;
+	}
+
 	public function phpErrorHandler($errno, $errstr, $errfile, $errline) {
 		foreach($this->ignoreDirs as $dir) {
 			if(strpos($errfile, $dir) === 0)
 				return;
 		}
 
-		if($this->isLogging() && $this->app['config']['log_php_errors'])
+		if($this->isLogging() && $this->logPHPErrors)
 			$this->log(\Psr\Log\LogLevel::NOTICE, 'PHP ('.static::getPHPError($errno).'): '.$errstr, $errfile, $errline);
 		throw new \ErrorException($errstr, $errno, 0, $errfile, $errline);
 	}
@@ -100,10 +102,7 @@ class ErrorHandler {
 			$result = '';
 			if($msg)
 				$result .= $msg."\n\n";
-			if($this->app instanceof \Asgard\Core\App && $this->app->has('request'))
-				$result .= Debug::getReport($this->app['request'], $trace);
-			else
-				$result .= Debug::getReport(new \Asgard\Http\Request, $trace);
+			$result .= Debug::getReport($trace);
 			echo $result;
 			exit(1);
 		}
@@ -143,15 +142,16 @@ class ErrorHandler {
 			'line' => $line,
 			'trace' => $trace,
 		);
-		$this->getLogger()->log($severity, $message, $context);
+		$this->logger->log($severity, $message, $context);
 	}
 
 	public function isLogging() {
-		return $this->app['config']['log'] && !!$this->getLogger();
+		return !!$this->logger;
 	}
 
-	public function getLogger() {
-		return $this->app['logger'];
+	public function setLogger($logger) {
+		$this->logger = $logger;
+		return $this;
 	}
 
 	public static function getPHPErrorSeverity($code) {
@@ -192,9 +192,5 @@ class ErrorHandler {
 			16384 => 'E_USER_DEPRECATED',
 		);
 		return $errors[$code];
-	}
-
-	public function isFatal($severity) {
-		return in_array($severity, $this->app['config']['fatal_errors']);
 	}
 }

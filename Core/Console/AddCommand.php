@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\Migration\Console;
+namespace Asgard\Core\Console;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -13,7 +13,7 @@ class AddCommand extends \Asgard\Console\Command {
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$src = $input->getArgument('src');
 
-		$mm = new \Asgard\Migration\MigrationsManager($this->getAsgard()['kernel']->getRoot().'/migrations/');
+		$mm = new \Asgard\Migration\MigrationsManager($this->getAsgard()['kernel']['root'].'/migrations/');
 		$migration = $mm->add($src);
 		if($mm->has($migration))
 			$output->writeln('<info>The migration was successfully added.</info>');

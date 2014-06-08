@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\Http\Console;
+namespace Asgard\Core\Console;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;

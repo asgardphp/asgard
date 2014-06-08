@@ -1,12 +1,12 @@
 <?php
-namespace Asgard\Http\Console;
+namespace Asgard\Core\Console;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
-class ConsoleCommand extends \Asgard\Console\Command {
+class RoutesCommand extends \Asgard\Console\Command {
 	protected $name = 'routes';
 	protected $description = 'List all registered routes';
 

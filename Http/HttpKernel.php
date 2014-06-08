@@ -21,7 +21,7 @@ class HttpKernel {
 	}
 
 	public function run() {
-		$request = \Asgard\Http\Request::createFromGlobals();
+		$request = \Asgard\Http\Request::instance();
 		$request->isInitial = true;
 
 		$response = $this->process($request);
@@ -30,8 +30,13 @@ class HttpKernel {
 		return $response;
 	}
 
-	public function process(Request $request, $catch=true) {
+	private function setRequest($request) {
 		$this->app['request'] = $request;
+		\Asgard\Http\Request::setInstance($request);
+	}
+
+	public function process(Request $request, $catch=true) {
+		$this->setRequest($request);
 		$this->requests[] = $request;
 
 		if(!$catch)
@@ -66,8 +71,9 @@ class HttpKernel {
 		}
 
 		array_pop($this->requests);
-		if(isset($this->requests[count($this->requests)-1]))
-			$this->app['request'] = $this->requests[count($this->requests)-1];
+		if(isset($this->requests[count($this->requests)-1])) {
+			$this->setRequest($this->requests[count($this->requests)-1]);
+		}
 
 		return $response;
 	}
@@ -82,8 +88,10 @@ class HttpKernel {
 		$resolver = $this->app['resolver'];
 		$resolver->sortRoutes();
 
-		if($this->start !== null)
+		if($this->start !== null) {
+			$app = $this->app;
 			include $this->start;
+		}
 		if($response = $this->app['hooks']->trigger('Asgard.Http.Start', array($request)))
 			return $response;
 
@@ -113,7 +121,7 @@ class HttpKernel {
 
 		$result = '<b>Message</b><br>'."\n"
 			. $msg."<hr>\n"
-			. \Asgard\Debug\Debug::getReport($request, $trace);
+			. \Asgard\Debug\Debug::getReport($trace);
 	
 		$response = new \Asgard\Http\Response(500);
 		if($this->app['config']['debug'])

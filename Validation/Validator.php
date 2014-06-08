@@ -34,6 +34,8 @@ class Validator {
 			return call_user_func_array(array($this, 'callRules'), $args);
 		if($name == 'rule')
 			return call_user_func_array(array($this, 'callRule'), $args);
+		if($name == 'ruleEach')
+			return call_user_func_array(array($this, 'callRuleEach'), $args);
 		return call_user_func_array(array($this, 'callRule'), array($name, $args));
 	}
 
@@ -48,11 +50,13 @@ class Validator {
 			return call_user_func_array(array($v, 'callRules'), $args);
 		if($name == 'rule')
 			return call_user_func_array(array($v, 'callRule'), $args);
+		if($name == 'ruleEach')
+			return call_user_func_array(array($v, 'callRuleEach'), $args);
 		return call_user_func_array(array($v, 'callRule'), array($name, $args));
 	}
 
 	#to define several rules
-	public function callRules(array $rules) {
+	protected function callRules(array $rules) {
 		foreach($rules as $key=>$value) {
 			if(is_numeric($key))
 				$this->rule($value);
@@ -63,7 +67,7 @@ class Validator {
 	}
 
 	#to define one rule
-	public function callRule($rule, $params=array()) {
+	protected function callRule($rule, $params=array()) {
 		if(!is_array($params))
 			$params = array($params);
 		if($rule === 'required')
@@ -74,6 +78,23 @@ class Validator {
 			$rule = $this->getRule($rule, $params);
 			if($rule instanceof static)
 				$rule->setParent($this);
+			$this->rules[] = $rule;
+		}
+		return $this;
+	}
+
+	protected function callRuleEach($rule, $params=array()) {
+		if(!is_array($params))
+			$params = array($params);
+		if($rule === 'required')
+			$this->required = isset($params[0]) ? $params[0]:true;
+		elseif($rule === 'isNull')
+			$this->isNull = $params[0];
+		else {
+			$rule = $this->getRule($rule, $params);
+			if($rule instanceof static)
+				$rule->setParent($this);
+			$rule->handleEach(true);
 			$this->rules[] = $rule;
 		}
 		return $this;
@@ -166,16 +187,8 @@ class Validator {
 			return $reflection->newInstance($rule);
 		}
 		#string
-		elseif(is_string($rule)) {
+		elseif(is_string($rule))
 			return $this->getRegistry()->getRule($rule, $params);
-			// $r = $this->getRegistry()->getRule($rule);
-			// if(!is_object($r)) {
-			// 	$reflection = new \ReflectionClass($r);
-			// 	return $reflection->newInstanceArgs($params);	
-			// }
-			// else
-			// 	return $r;
-		}
 	}
 
 	public function getRegistry() {

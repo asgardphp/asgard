@@ -2,13 +2,15 @@
 namespace Asgard\Debug;
 
 class Debug {
-	public static function d(\Asgard\Http\Request $request) {
+	protected static $url;
+
+	public static function d() {
 		$args = func_get_args();
 		array_shift($args);
-		static::dWithTrace(array_merge(array($request, debug_backtrace()), $args));
+		static::dWithTrace(array_merge(array(debug_backtrace()), $args));
 	}
 
-	public static function dWithTrace(\Asgard\Http\Request $request, array $trace) {
+	public static function dWithTrace(array $trace) {
 		while(ob_get_length())
 			ob_end_clean();
 			
@@ -19,10 +21,16 @@ class Debug {
 		if(php_sapi_name() != 'cli')
 			echo '</pre>';
 		
-		die(static::getReport($request, $trace));
+		die(static::getReport($trace));
 	}
 
-	public static function getReport(\Asgard\Http\Request $request, array $backtrace) {
+	public static function setURL($url) {
+		static::$url = $url;
+	}
+
+	public static function getReport(array $backtrace) {
+		$request = \Asgard\Http\Request::instance();
+
 		$r = '';
 		if(php_sapi_name() === 'cli')
 			$r .= static::getCLIBacktrace($request, $backtrace);
@@ -87,7 +95,7 @@ EOT;
 				$next = $backtrace[count($backtrace)-1];
 			
 			if(isset($trace['file'])) {
-				$url = \Asgard\Core\App::instance()['config']['debug_url'];
+				$url = static::$url;
 				$url = str_replace('%file%', $trace['file'], $url);
 				$url = str_replace('%line%', $trace['line'], $url);
 				$r .= '<a href="'.$url.'">'.$trace['file'].'</a> ('.$trace['line'].')';

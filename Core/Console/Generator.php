@@ -31,4 +31,8 @@ class Generator {
 
 		\Asgard\Utils\FileManager::put($_dst, $content);
 	}
+
+	public function outputPHP($v) {
+		return var_export($v, true);
+	}
 }

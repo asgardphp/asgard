@@ -11,7 +11,7 @@ class InitConfigCommand extends \Asgard\Console\Command {
 	protected $description = 'Initialize the configuration file';
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
-		$root = $this->getAsgard()['kernel']->getRoot();
+		$root = $this->getAsgard()['kernel']['root'];
 
 		if(file_exists($root.'/config/config.php'))
 			$output->writeln('File "config/config.php" already exists.');

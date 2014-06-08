@@ -27,15 +27,18 @@
         "swiftmailer/swiftmailer": "5.0.*"
     },
     "replace": {
-        "asgard/email": "self.version",
         "asgard/cache": "self.version",
-        "asgard/data": "self.version",
+        "asgard/console": "self.version",
+        "asgard/core": "self.version",
         "asgard/db": "self.version",
+        "asgard/debug": "self.version",
+        "asgard/email": "self.version",
         "asgard/entity": "self.version",
         "asgard/files": "self.version",
         "asgard/form": "self.version",
         "asgard/hook": "self.version",
         "asgard/http": "self.version",
+        "asgard/migration": "self.version",
         "asgard/orm": "self.version",
         "asgard/utils": "self.version",
         "asgard/validation": "self.version"

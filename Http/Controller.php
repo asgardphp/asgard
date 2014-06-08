@@ -224,7 +224,7 @@ abstract class Controller extends \Asgard\Hook\Hookable {
 
 	/* UTILS */
 	public function getFlash() {
-		return new \Asgard\Http\Utils\Flash($this->request);
+		return new \Asgard\Http\Utils\Flash($this->request->session);
 	}
 
 	public function back() {

@@ -3,8 +3,8 @@ namespace <?php echo $bundle['namespace'] ?>\Controllers;
 
 <?php if(($prefix=$controller['prefix']) !== null): ?>
 /**
-@Prefix('<?php echo $prefix ?>')
-*/
+ * @Prefix('<?php echo $prefix ?>')
+ */
 <?php endif ?>
 class <?php echo ucfirst($controller['name']) ?> extends \Asgard\Http\Controller {
 <?php foreach($controller['actions'] as $name=>$action): ?>

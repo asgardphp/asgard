@@ -27,24 +27,12 @@ class HooksManager {
 	 * @param string name
 	 * @param array args
 	 * @param Callback cb Default callback.
+	 * @param HooksChain
 	 * 
 	 * @api 
 	*/
-	public function trigger($name, array $args=array(), $cb=null) {
-		return $this->triggerChain(new HookChain($this->app), $name, $args, $cb);
-	}
-	
-	/**
-	 * Triggers a hook with a given chain.
-	 * 
-	 * @param HookChain chain
-	 * @param string name
-	 * @param array args
-	 * @param Callback cb Default callback.
-	 * 
-	 * @api 
-	*/
-	public function triggerChain(HookChain $chain, $name, array $args=array(), $cb=null) {
+	public function trigger($name, array $args=array(), $cb=null, &$chain=null) {
+		$chain = new HookChain($this->app);
 		if(is_string($name))
 			$name = explode('.', $name);
 

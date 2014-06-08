@@ -55,8 +55,7 @@ class HookTest extends \PHPUnit_Framework_TestCase {
 				function() { },
 			)
 		));
-		$chain = new HookChain;
-		$hooks->triggerChain($chain, 'foo');
+		$hooks->trigger('foo', array(), null, $chain);
 		$this->assertEquals(2, $chain->executed);
 	}
 
@@ -69,8 +68,7 @@ class HookTest extends \PHPUnit_Framework_TestCase {
 				function() { },
 			)
 		));
-		$chain = new HookChain;
-		$hooks->triggerChain($chain, 'foo');
+		$hooks->trigger('foo', array(), null, $chain);
 		$this->assertEquals(1, $chain->executed);
 	}
 

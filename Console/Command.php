@@ -34,10 +34,10 @@ class Command extends \Symfony\Component\Console\Command\Command {
 	*/
 	protected function specifyParameters() {
 		foreach ($this->getArguments() as $arguments)
-			call_user_func_array(array($this, 'addArgument'), $arguments);
+			call_user_func_array([$this, 'addArgument'], $arguments);
 
 		foreach ($this->getOptions() as $options)
-			call_user_func_array(array($this, 'addOption'), $options);
+			call_user_func_array([$this, 'addOption'], $options);
 	}
 	
 	/**
@@ -46,7 +46,7 @@ class Command extends \Symfony\Component\Console\Command\Command {
 	 * @return array
 	*/
 	protected function getOptions() {
-		return array();
+		return [];
 	}
 	
 	/**
@@ -55,7 +55,7 @@ class Command extends \Symfony\Component\Console\Command\Command {
 	 * @return array
 	*/
 	protected function getArguments() {
-		return array();
+		return [];
 	}
 
 	public function run(InputInterface $input, OutputInterface $output) {
@@ -65,14 +65,14 @@ class Command extends \Symfony\Component\Console\Command\Command {
 		return parent::run($input, $output);
 	}
 
-	public function call($command, array $arguments = array()) {
+	public function call($command, array $arguments = []) {
 		$instance = $this->getApplication()->find($command);
 		$arguments['command'] = $command;
 
 		return $instance->run(new ArrayInput($arguments), $this->output);
 	}
 
-	public function callSilent($command, array $arguments = array()) {
+	public function callSilent($command, array $arguments = []) {
 		$instance = $this->getApplication()->find($command);
 		$arguments['command'] = $command;
 

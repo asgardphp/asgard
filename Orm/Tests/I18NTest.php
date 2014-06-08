@@ -8,7 +8,7 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 		if(!defined('_ENV_'))
 			define('_ENV_', 'test');
 
-		$app = new \Asgard\Core\App;
+		$app = new \Asgard\Core\App();
 		$app['hooks'] = new \Asgard\Hook\HooksManager($app);
 		$app['kernel'] = new \Asgard\Core\Kernel();
 		$app['config'] = new \Asgard\Core\Config();

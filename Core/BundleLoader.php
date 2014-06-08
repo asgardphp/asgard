@@ -57,8 +57,8 @@ class BundleLoader {
 
 	protected function loadHooks() {
 		$hooks = array();
-		if(file_exists($this->getPath().'/hooks/')) {
-			foreach(glob($this->getPath().'/hooks/*.php') as $filename) {
+		if(file_exists($this->getPath().'/Hooks/')) {
+			foreach(glob($this->getPath().'/Hooks/*.php') as $filename) {
 				$class = \Asgard\Core\Autoloader::loadClassFile($filename);
 				if(is_subclass_of($class, 'Asgard\Hook\HooksContainer'))
 					$hooks = array_merge_recursive($hooks, $class::fetchHooks());
@@ -79,8 +79,8 @@ class BundleLoader {
 
 	protected function loadControllers() {
 		$routes = array();
-		if(file_exists($this->getPath().'/controllers/')) {
-			foreach(glob($this->getPath().'/controllers/*.php') as $k=>$filename) {
+		if(file_exists($this->getPath().'/Controllers/')) {
+			foreach(glob($this->getPath().'/Controllers/*.php') as $filename) {
 				$class = \Asgard\Core\Autoloader::loadClassFile($filename);
 				if(is_subclass_of($class, 'Asgard\Http\Controller'))
 					$routes = array_merge($routes, $class::fetchRoutes());

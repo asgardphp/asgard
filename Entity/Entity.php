@@ -8,11 +8,13 @@ abstract class Entity {
 		'properties'	=>	array(),
 	);
 	protected $locale;
+	protected $locales;
 
 	public function __construct(array $params=null) {
 		#create the entity definition if does not exist yet
 		static::$app['entitiesmanager']->make(get_called_class());
 		$this->locale = static::$app['config']['locale'];
+		$this->locales = static::$app['config']['locales'];
 
 		$this->loadDefault();
 		if(is_array($params))
@@ -82,7 +84,7 @@ abstract class Entity {
 		$validator = new \Asgard\Validation\Validator;
 
 		foreach($this->getDefinition()->properties() as $name=>$property) {
-			if($property->get('multiple') || $property->get('i18n')) {
+			if($property->get('multiple')) {
 				$rules = array();
 				foreach($property->getRules() as $rule=>$params) {
 					if($rule === 'self') {
@@ -102,9 +104,8 @@ abstract class Entity {
 				}
 				$constrains[$name] = $rules;
 			}
-			else {
+			else
 				$constrains[$name] = $property->getRules();
-			}
 			$messages[$name] = $property->getMessages();
 		}
 
@@ -223,10 +224,10 @@ abstract class Entity {
 		if($res = $this->getDefinition()->trigger('get', array($this, $name, $lang)))
 			return $res;
 
-		if($entity::hasProperty($name)) {
+		if($this->getDefinition()->hasProperty($name)) {
 			if($entity::property($name)->i18n) {
 				if($lang == 'all') {
-					$langs = static::getApp()['config']['locales'];
+					$langs = $this->locales;
 					$res = array();
 					foreach($langs as $lang)
 						$res[$lang] = $entity->get($name, $lang);
@@ -255,12 +256,12 @@ abstract class Entity {
 	public function toArrayRaw() {
 		$res = array();
 		
-		foreach($this->propertyNames() as $name) {
+		foreach($this->properties() as $name=>$property) {
 			if(isset($this->data['properties'][$name])) {
 				if($this->property($name)->get('multiple'))
-					$res[$name] = $this->data['properties'][$name]->all();
+					$res[$name] = $this->get($name)->all();
 				else
-					$res[$name] = $this->data['properties'][$name];
+					$res[$name] = $this->get($name);
 			}
 			else
 				$res[$name] = null;
@@ -273,22 +274,32 @@ abstract class Entity {
 		$res = array();
 		
 		foreach($this->properties() as $name=>$property) {
-			$res[$name] = $this->$property;
-			if(method_exists($property, 'toArray'))
-				$res[$name] = $property->toArray($res[$name]);
-			elseif(method_exists($property, 'toString'))
-				$res[$name] = $property->toString($res[$name]);
-			else {
-				if(is_object($res[$name])) {
-					if(method_exists($res[$name], 'toArray'))
-						$res[$name] = $res[$name]->toArray();
-					elseif(method_exists($res[$name], '__toString'))
-						$res[$name] = $res[$name]->__toString();
-				}	
+			$res[$name] = $this->get($name);
+			if($property->get('multiple')) {
+				foreach($res[$name] as $k=>$v)
+					$res[$name][$k] = $this->propertyToArray($v, $property);
 			}
+			else
+				$res[$name] = $this->propertyToArray($res[$name], $property);
 		}
 		
 		return $res;
+	}
+
+	private function propertyToArray($v, $property) {
+		if(is_string($v) || is_array($v))
+			return $v;
+		if(method_exists($property, 'toArray'))
+			return $property->toArray($v);
+		elseif(method_exists($property, 'toString'))
+			return $property->toString($v);
+		elseif(is_object($v)) {
+			if(method_exists($v, 'toArray'))
+				return $v->toArray();
+			elseif(method_exists($v, '__toString'))
+				return $v->__toString();
+		}
+		throw new \Exception('Cannot convert property '.$property.' to array or string.');
 	}
 
 	public function toJSON() {

@@ -66,13 +66,13 @@ class RulesRegistry {
 			}
 		}
 
-		if(isset($rule)) {
-			if(is_string($rule)) {
-				$reflection = new \ReflectionClass($rule);
-				$rule = $reflection->newInstanceArgs($params);
-			}
+		if(is_string($rule) && class_exists($rule)) {
+			$reflection = new \ReflectionClass($rule);
+			$rule = $reflection->newInstanceArgs($params);
 			return $rule;
 		}
+		elseif(is_object($rule))
+			return $rule;
 
 		throw new \Exception('Rule "'.$rule.'" does not exist.');
 	}

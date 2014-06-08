@@ -5,7 +5,7 @@ class HTML {
 	protected $include_js = array();
 	protected $include_css = array();
 	protected $code_js = array();
-	public $code_css = array();
+	protected $code_css = array();
 	protected $code = array();
 	
 	protected $title = '';

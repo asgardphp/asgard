@@ -2,12 +2,12 @@
 namespace <?php echo $bundle['namespace'] ?>\Entities;
 
 class <?php echo ucfirst($entity['meta']['name']) ?> extends \Asgard\Entity\Entity {
-	public static function definition($definition) {
+	public static function definition(\Asgard\Entity\EntityDefinition $definition) {
 		$definition->properties = array(
 <?php foreach($entity['properties'] as $name=>$property): ?>
 		'<?php echo $name ?>'	=>	array(
 <?php foreach($property as $k=>$v): ?>
-			'<?php echo $k ?>'	=>	<?php echo BuildTools::outputPHP($v) ?>,
+			'<?php echo $k ?>'	=>	<?php echo $this->outputPHP($v) ?>,
 <?php endforeach ?>
 		),
 <?php endforeach ?>
@@ -17,7 +17,7 @@ class <?php echo ucfirst($entity['meta']['name']) ?> extends \Asgard\Entity\Enti
 	<?php foreach($entity['relations'] as $relationname => $relation): ?>
 			'<?php echo $relationname ?>' => array(
 				<?php foreach($relation as $k=>$v): ?>
-				'<?php echo $k ?>'	=>	<?php echo BuildTools::outputPHP($v) ?>,
+				'<?php echo $k ?>'	=>	<?php echo $this->outputPHP($v) ?>,
 				<?php endforeach ?>
 			),
 	<?php endforeach ?>

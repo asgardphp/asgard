@@ -87,7 +87,11 @@ class '.$name.' extends \Asgard\Migration\Migration {
 	}
 
 	public function migrateAll($tracking=false) {
-		foreach($this->tracker->getDownList() as $migrationName=>$params) {
+		if($tracking)
+			$list = $this->tracker->getDownList();
+		else
+			$list = $this->tracker->getList();
+		foreach($list as $migrationName=>$params) {
 			if($this->migrate($migrationName, $tracking) === false)
 				return false;
 		}

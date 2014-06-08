@@ -2,6 +2,7 @@
 namespace Asgard\Http;
 
 class Request implements \ArrayAccess {
+	static protected $instance;
 	public $get;
 	public $post;
 	public $file;
@@ -16,6 +17,16 @@ class Request implements \ArrayAccess {
 	public $params = array(
 		'format'	=>	'html',
 	);
+
+	public static function instance() {
+		if(!static::$instance)
+			static::$instance = static::createFromGlobals();
+		return static::$instance;
+	}
+
+	public static function setInstance($instance) {
+		static::$instance = $instance;
+	}
 
 	public function __construct() {
 		$this->url = new \Asgard\Http\URL($this);
@@ -44,6 +55,7 @@ class Request implements \ArrayAccess {
 			$root = dirname($request->server['ORIG_SCRIPT_NAME']);
 		else
 			$root = dirname($request->server['SCRIPT_NAME']);
+
 		if($request->server->has('PATH_INFO'))
 			$url = $request->server['PATH_INFO'];
 		elseif($request->server->has('ORIG_PATH_INFO'))
@@ -52,7 +64,9 @@ class Request implements \ArrayAccess {
 			$url = $request->server['REDIRECT_URL'];
 		else
 			$url = '';
-		$url = preg_replace('/^\//', '', $url);
+		$url = preg_replace('/^'.preg_quote($root, '/').'/', '', $url);
+		$url = trim($url, '/');
+		$root = trim($root, '/');
 
 		$request->setURL($server, $root, $url);
 

@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\Http\Console;
+namespace Asgard\Core\Console;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -18,8 +18,8 @@ class GenerateTestsCommand extends \Asgard\Console\Command {
 		$count = $tg->generateTests($dst);
 		if($count === false) {
 			$output->writeln('<error>Tests generation failed.</error>');
-			$output->writeln('Tests generation failed. Check with: ');
-			$output->writeln('phpunit --bootstrap '.$asgard['kernel']['root'].'/Tests/bootstrap.php '.$asgard['kernel']['root'].'/Tests');
+			$output->writeln('Tests generation failed. Tests should first pass. Check with: ');
+			$output->writeln('phpunit');
 		}
 		else
 			$output->writeln('<info>'.$count.' tests have been generated in: '.realpath($dst).'</info>');

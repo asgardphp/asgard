@@ -77,6 +77,8 @@ class GenerateCommand extends \Asgard\Console\Command {
 				foreach($bundle['entities'][$name]['properties'] as $k=>$v) {
 					if(!$v)
 						$bundle['entities'][$name]['properties'][$k] = array();
+					if(!is_array($v))
+						$bundle['entities'][$name]['properties'][$k] = array('type'=>$v);
 				}
 
 				if(!isset($bundle['entities'][$name]['front']))

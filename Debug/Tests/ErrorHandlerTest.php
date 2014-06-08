@@ -20,26 +20,17 @@ class ErrorHandlerTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testLogging() {
-		$app = new \Asgard\Core\App(array(
-			'request' => new \Asgard\Http\Request,
-			'config' => new \Asgard\Core\Config(array(
-				'log' => true,
-				'log_php_errors' => false
-			)),
-		));
-
-		$errorHandler = new \Asgard\Debug\ErrorHandler($app);
-
+		$errorHandler = new \Asgard\Debug\ErrorHandler();
 		$logger = $this->getMock('Asgard\Core\Tests\Log', array('log'));
 		$logger->expects($this->once())->method('log')->with('error', 'Exception: ', $this->callback(function($a) {
 			return isset($a['file']) && isset($a['line']) && isset($a['trace']);
 		}));
-		$app['logger'] = $logger;
+		$errorHandler->setLogger($logger);
 		$errorHandler->logException(new \Exception);
 
 		$logger = $this->getMock('Asgard\Core\Tests\Log', array('log'));
 		$logger->expects($this->once())->method('log')->with('error', 'A message', $this->callback(array($this, 'checkLog')));
-		$app['logger'] = $logger;
+		$errorHandler->setLogger($logger);
 		$errorHandler->logException(new \Asgard\Debug\PSRException('A message'));
 
 		set_error_handler(array($errorHandler, 'phpErrorHandler'));
@@ -48,21 +39,13 @@ class ErrorHandlerTest extends \PHPUnit_Framework_TestCase {
 		} catch(\ErrorException $e) {
 			$logger = $this->getMock('Asgard\Core\Tests\Log', array('log'));
 			$logger->expects($this->once())->method('log')->with('notice', 'PHP (E_NOTICE): Undefined variable: a', $this->callback(array($this, 'checkLog')));
-			$app['logger'] = $logger;
+			$errorHandler->setLogger($logger);
 			$errorHandler->logException($e);
 		}
 	}
 
 	public function testExceptionHandler() {
-		$app = new \Asgard\Core\App(array(
-			'request' => new \Asgard\Http\Request,
-			'config' => new \Asgard\Core\Config(array(
-				'log' => false,
-				'log_php_errors' => false
-			)),
-		));
-
-		$errorHandler = new \Asgard\Debug\ErrorHandler($app);
+		$errorHandler = new \Asgard\Debug\ErrorHandler();
 
 		set_error_handler(array($errorHandler, 'phpErrorHandler'));
 		try {

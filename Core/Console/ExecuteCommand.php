@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\Db\Console;
+namespace Asgard\Core\Console;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -14,12 +14,10 @@ class ExecuteCommand extends \Asgard\Console\Command {
 		$cmd = $input->getArgument('cmd');
 		try {
 			if(preg_match('/^dump /', $cmd))
-				$cmd = var_dump(substr($cmd, 5));
-			else {
-				if(!preg_match('/;$/', $cmd))
-					$cmd .= ';';
-				eval($cmd);
-			}
+				$cmd = 'var_dump('.substr($cmd, 5).')';
+			if(!preg_match('/;$/', $cmd))
+				$cmd .= ';';
+			eval($cmd);
 		} catch(\Exception $e) {
 			$output->writeln('<error>'.$e->getMessage().'</error>');
 		}

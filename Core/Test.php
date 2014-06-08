@@ -11,7 +11,6 @@ abstract class Test extends \PHPUnit_Framework_TestCase {
 	}
 
 	protected function getBrowser() {
-		$browser = new \Asgard\Utils\TestBrowser(static::getApp(), static::getApp()['kernel']['root'].'/Tests/tested.txt');
-		return $browser;
+		return new \Asgard\Http\Browser\Browser(static::getApp());
 	}
 }

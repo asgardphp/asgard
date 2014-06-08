@@ -29,17 +29,17 @@ class TestsGenerator {
 	protected function doGenerateTests(&$count) {
 		$root = $this->app['kernel']['root'];
 
-		\Asgard\Utils\FileManager::unlink($root.'/Tests/tested.txt');
+		exec('phpunit', $res);
 
-		exec('phpunit --bootstrap '.$root.'/Tests/bootstrap.php '.$root.'/Tests', $res);
+		if(strpos(implode("\n", $res), 'No tests executed') === false) {
+			if(strpos(implode("\n", $res), 'OK (') === false)
+				return false;
+		}
 
-		if(strpos(implode("\n", $res), 'OK (') === false)
-			return false;
-
-		if(!file_exists($root.'/Tests/tested.txt'))
-			return false;
-
-		$tested = array_filter(explode("\n", file_get_contents($root.'/Tests/tested.txt')));
+		if(file_exists($root.'/Tests/tested.txt'))
+			$tested = array_filter(explode("\n", file_get_contents($root.'/Tests/tested.txt')));
+		else
+			$tested = array();
 		if(file_exists($root.'/Tests/ignore.txt'))
 			$tested = array_merge(array_filter(explode("\n", file_get_contents($root.'/Tests/ignore.txt'))));
 		\Asgard\Utils\FileManager::unlink($root.'/Tests/tested.txt');

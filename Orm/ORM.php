@@ -35,7 +35,10 @@ class ORM {
 		$this->prefix = $prefix;
 		$this->app = $app;
 
-		$this->orderBy($entity::getDefinition()->order_by);
+		if($entity::getDefinition()->order_by)
+			$this->orderBy($entity::getDefinition()->order_by);
+		else
+			$this->orderBy('id DESC');
 	}
 	
 	/**

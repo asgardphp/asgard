@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\Db\Console;
+namespace Asgard\Core\Console;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -56,14 +56,14 @@ class InitCommand extends \Asgard\Console\Command {
 					));
 					$db->query('CREATE DATABASE `'.$name.'`');
 				} catch(\PDOException $e) {
-					$this->writeln('<error>The database could not be created.</error>');
+					$output->writeln('<error>The database could not be created.</error>');
 				}
 			}
 
-			if(\Asgard\Utils\FileManager::put($root.'/config/databasae.php', $config))
-				$this->writeln('<info>Database configuration created with success.</info>');
+			if(\Asgard\Utils\FileManager::put($root.'/config/database.php', $config))
+				$output->writeln('<info>Database configuration created with success.</info>');
 			else
-				$this->writeln('<error>Database configuration creation failed.</error>');
+				$output->writeln('<error>Database configuration creation failed.</error>');
 		}
 	}
 }

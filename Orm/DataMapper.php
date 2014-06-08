@@ -235,7 +235,7 @@ class DataMapper {
 					foreach($files as $file)
 						$file->moveToDir($dir);
 				}
-				else
+				elseif($entity->get($name))
 					$entity->get($name)->moveToDir($dir);
 			}
 		}

@@ -50,6 +50,9 @@ class Browser {
 			$body='',
 			array $headers=array()
 		) {
+		if(defined('_TESTING_'))
+			file_put_contents(_TESTING_, $url."\n", FILE_APPEND);
+
 		#build request
 		$get = array();
 		$infos = parse_url($url);

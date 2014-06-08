@@ -42,7 +42,7 @@ class Kernel implements \ArrayAccess {
 		if($this->loaded)
 			return;
 
-		if(file_exists($this['root'].'/storage/compiled.php'))
+		if($this->getEnv() == 'prod' && file_exists($this['root'].'/storage/compiled.php'))
 			include_once $this['root'].'/storage/compiled.php';
 
 		$this->bundles = $this->doGetBundles($this->getConfig()['cache']);
@@ -104,8 +104,6 @@ class Kernel implements \ArrayAccess {
 
 		foreach($bundles as $bundle)
 			$bundle->buildApp($app);
-
-		$app['hooks'] = new \Asgard\Hook\HooksManager($app);
 
 		if($cache)
 			$c->save('app', $app);

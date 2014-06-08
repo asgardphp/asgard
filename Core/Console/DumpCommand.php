@@ -7,23 +7,21 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
 class DumpCommand extends \Asgard\Console\Command {
-	protected $name = 'dump';
-	protected $description = 'Make a backup of a user-content folder';
+	protected $name = 'db:dump';
+	protected $description = 'Dump the database';
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
-		$dst = $input->getArgument('dst') ? $input->getArgument('dst') : $this->getAsgard()['kernel']->getRoot().'/storage/dumps/files/'.time().'.zip';
-		$src = $input->getArgument('src');
-		\Asgard\Utils\FileManager::mkdir(dirname($dst));
-		if(\Asgard\Utils\Zip::zip($src, $dst))
-			$output->writeln('<info>Files have been copied with success.</info>');
+		$asgard = $this->getAsgard();
+		$dst = $input->getArgument('dst') ? $input->getArgument('dst'):$asgard['kernel']['root'].'/storage/dumps/sql/'.time().'.sql';
+		if($asgard['db']->dump($dst))
+			$output->writeln('<info>The database was dumped with success.</info>');
 		else
-			$output->writeln('<error>Files could not be copied.</error>');
+			$output->writeln('<error>The database could not be dumped.</error>');
 	}
 
 	protected function getArguments() {
 		return array(
-			array('src', InputArgument::REQUIRED, 'Source folder'),
-			array('dst', InputArgument::OPTIONAL, 'Destination file'),
+			array('dst', InputArgument::OPTIONAL, 'The destination'),
 		);
 	}
 }

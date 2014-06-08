@@ -130,9 +130,9 @@ class Test extends \PHPUnit_Framework_TestCase {
 		$this->assertTrue(v::each(v::min(5))->valid(array(5,6,7,8,9)));
 		$this->assertFalse(v::each(v::min(5))->valid(array(1,2,3,4,5,6,7,8,9)));
 
-		#Each rule
-		$this->assertFalse(v::min(5)->valid(array(1,2,3,4,5,6,7,8,9)));
-		$this->assertTrue(v::min(5)->valid(array(5,6,7,8,9)));
+		#handle each
+		$this->assertFalse(v::ruleEach('min', 5)->valid(array(1,2,3,4,5,6,7,8,9)));
+		$this->assertTrue(v::rule('min', 5)->valid(array(1,2,3,4,5,6,7,8,9)));
 
 		RulesRegistry::getInstance()->messages(array('min'=>':attribute shall be greater than :min!'));
 		$this->assertEquals('"3" shall be greater than 5!', v::min(5)->errors(3)->first());

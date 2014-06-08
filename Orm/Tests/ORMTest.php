@@ -26,7 +26,37 @@ class ORMTest extends PHPUnit_Framework_TestCase {
 	}
 	
 	public function test1() {
-		static::$app['db']->import(realpath(__dir__.'/sql/ormtest.sql'));
+		$db = static::$app['db'];
+		$db->query('DROP TABLE IF EXISTS `category`;');
+		$db->query('CREATE TABLE `category` (
+		  `id` tinyint NOT NULL PRIMARY KEY,
+		  `title` varchar(255) NOT NULL,
+		  `description` varchar(255) NOT NULL
+		);');
+		$db->query('INSERT INTO `category` (`id`, `title`, `description`) VALUES (\'1\', \'General\', \'General news\');');
+		$db->query('INSERT INTO `category` (`id`, `title`, `description`) VALUES (\'2\', \'Misc\', \'Other news\');');
+
+		$db->query('DROP TABLE IF EXISTS `news`;');
+		$db->query('CREATE TABLE `news` (
+		  `id` tinyint NOT NULL PRIMARY KEY,
+		  `title` varchar(255) NOT NULL,
+		  `content` varchar(255) NOT NULL,
+		  `category_id` int(11) NOT NULL,
+		  `author_id` int(11) NOT NULL,
+		  `score` int(11) NOT NULL
+		);');
+		$db->query('INSERT INTO `news` (`id`, `title`, `content`, `category_id`, `author_id`, `score`) VALUES (\'1\', \'Welcome!\', \'blabla\', 1, 1, 2);');
+		$db->query('INSERT INTO `news` (`id`, `title`, `content`, `category_id`, `author_id`, `score`) VALUES (\'2\', \'1000th visitor!\', \'blabla\', 1, 2, 5);');
+		$db->query('INSERT INTO `news` (`id`, `title`, `content`, `category_id`, `author_id`, `score`) VALUES (\'3\', \'Important\', \'blabla\', 2, 1, 1);');
+
+		$db->query('DROP TABLE IF EXISTS `author`;');
+		$db->query('CREATE TABLE `author` (
+		  `id` tinyint NOT NULL PRIMARY KEY,
+		  `name` varchar(255) NOT NULL
+		);');
+		$db->query('INSERT INTO `author` (`id`, `name`) VALUES (\'1\', \'Bob\');');
+		$db->query('INSERT INTO `author` (`id`, `name`) VALUES (\'2\', \'Joe\');');
+		$db->query('INSERT INTO `author` (`id`, `name`) VALUES (\'3\', \'John\');');
 
 		#load
 		$cat = Asgard\Orm\Tests\Entities\Category::load(1);
@@ -63,7 +93,7 @@ class ORMTest extends PHPUnit_Framework_TestCase {
 		);
 
 		#stats functions
-		$this->assertEquals(2.6667, Asgard\Orm\Tests\Entities\News::avg('score'));
+		$this->assertEquals(26, floor(Asgard\Orm\Tests\Entities\News::avg('score')*10));
 		$this->assertEquals(8, Asgard\Orm\Tests\Entities\News::sum('score'));
 		$this->assertEquals(5, Asgard\Orm\Tests\Entities\News::max('score'));
 		$this->assertEquals(1, Asgard\Orm\Tests\Entities\News::min('score'));
