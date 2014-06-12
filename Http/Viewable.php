@@ -24,7 +24,7 @@ abstract class Viewable {
 			if($this->_view instanceof View)
 				return $this->_view->render();
 			else {
-				if($this->_view === null && !$this->setRelativeView($method.'.php'))
+				if($this->_view === null)
 					return null;
 				return $this->renderView($this->_view, (array)$this);
 			}

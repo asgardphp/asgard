@@ -53,7 +53,7 @@ class File {
 	}
 
 	public function relativeTo($path) {
-		return \Asgard\Common\FileManager::relative($this->src, $path);
+		return \Asgard\Common\FileManager::relativeTo($this->src, $path);
 	}
 
 	protected function formatPath($path) {

@@ -2,6 +2,8 @@
 namespace Asgard\Http\Utils;
 
 class HTML {
+	protected $request;
+
 	protected $include_js = [];
 	protected $include_css = [];
 	protected $code_js = [];

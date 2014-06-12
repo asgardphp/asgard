@@ -260,7 +260,7 @@ class Validator {
 		return true;
 	}
 
-	protected function isNull($input) {
+	protected function checkIsNull($input) {
 		$isNull = $this->isNull;
 		return $input === null || $input === '' || ($isNull && $isNull($input));
 	}
@@ -272,7 +272,7 @@ class Validator {
 			$input = $this->setInput($input);
 
 		#if input is null, return false if required, or true
-		if($this->isNull($input->input())) {
+		if($this->checkIsNull($input->input())) {
 			if(($required = $this->required) instanceof \Closure)
 				return !$required(null, $input->parent(), $this);
 			else
@@ -308,7 +308,7 @@ class Validator {
 		else
 			$required = $this->required;
 
-		if($this->isNull($input->input())) {
+		if($this->checkIsNull($input->input())) {
 			if($required)
 				$errors['rules']['required'] = $this->buildRuleMessage('required', null, ':attribute is required.', $input->input());
 		}

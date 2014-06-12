@@ -35,15 +35,14 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 		$this->assertNull($news->title);
 
 		#hook call static
-		$definition = Classes\News::getDefinition();
 		$this->assertEquals('bla', Classes\News::test1());
 
 		#hook call
-		$definition = Classes\News::getDefinition();
 		$news->title = 'bla';
 		$this->assertEquals('bla', $news->test2());
 
 		#configure
+		$definition = Classes\News::getDefinition();
 		$this->assertTrue($definition->hasProperty('another_property'));
 
 		#i18n
@@ -70,7 +69,6 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals('news', Classes\News::getShortName());
 
 		#toJSON
-		$json = $news->toJSON();
 		$this->assertEquals('{"title":"bla","content":"Test Content","published":"2009-09-09","another_property":""}', $news->toJSON());
 
 		#toArray

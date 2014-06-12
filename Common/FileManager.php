@@ -132,17 +132,14 @@ class FileManager {
 	}
 
 	public static function unlink($file) {
-		if(!file_exists($file)) {
-			if(file_exists($file))
-				$file = $file;
-			else
-				return false;
-		}
+		if(!file_exists($file))
+			return false;
 
 		if(is_dir($file))
 			static::rmdir($file);
 		else
 			unlink($file);
+		
 		return true;
 	}
 	

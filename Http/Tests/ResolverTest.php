@@ -30,12 +30,6 @@ class ResolverTest extends \PHPUnit_Framework_TestCase {
 		$resolver->addRoute(new Route('test/abc', null));
 		$resolver->addRoute(new Route('test/:id/plpl', null));
 
-		$routes = [
-			new Route('test', null),
-			new Route(':a', null),
-			new Route('test/abc', null),
-			new Route('test/:id/plpl', null)
-		];
 		$routes = $resolver->sortRoutes()->getRoutes();
 
 		$res = [];

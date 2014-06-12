@@ -14,7 +14,7 @@ class DALTest extends \PHPUnit_Framework_TestCase {
 			'password' => '',
 			'database' => 'asgard',
 		];
-		static::$db = $db = new \Asgard\Db\DB($config);
+		static::$db = new \Asgard\Db\DB($config);
 		$mysql = new \Asgard\Db\MySQL($config);
 		$mysql->import(__dir__.'/sql/dal.sql');
 	}

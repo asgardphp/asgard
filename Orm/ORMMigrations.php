@@ -275,7 +275,6 @@ class ORMMigrations {
 	}
 
 	protected function createColumn($col, $params) {
-		$res = '';
 		$res = "\n\t\$table->add('$col', '$params[type]')";
 		if($params['nullable'])
 			$res .= "\n		->nullable()";

@@ -76,6 +76,10 @@ class DataMapper {
 		else
 			return $this->prefix.$entityClass::getShortName();
 	}
+
+	public function all($entityClass) {
+		return $this->orm($entityClass)->all();
+	}
 	
 	public function destroyAll($entityClass) {
 		foreach($this->all($entityClass) as $entity)
@@ -220,7 +224,7 @@ class DataMapper {
 			$entity->set($values);
 		
 		if(!$force && $errors = $this->errors($entity)) {
-			$msg = implode("\n", \Asgard\Common\Tools::flateArray($errors));
+			$msg = implode("\n", \Asgard\Common\ArrayUtils::flateArray($errors));
 			throw new EntityException($msg, $errors);
 		}
 
@@ -249,6 +253,7 @@ class DataMapper {
 			}
 		}
 
+		$vars = [];
 		#apply filters before saving
 		foreach($entity->propertyNames() as $name) {
 			if(isset($entity->data['properties'][$name]))

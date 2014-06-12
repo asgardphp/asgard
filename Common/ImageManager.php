@@ -76,7 +76,7 @@ class ImageManager {
 				$width = $orig_width;
 			else
 				$width = $dim['width'];
-			$width = $orig_height;
+			$height = $orig_height;
 		}	
 		else
 			return $this;
@@ -137,7 +137,7 @@ class ImageManager {
 			$type = $this->type;
 						
 		#only if output is not stdout
-		if($dst!==null) {
+		if($dst !== null) {
 			switch($type) {
 				case IMAGETYPE_GIF:
 					$ext = '.gif'; break;
@@ -145,6 +145,8 @@ class ImageManager {
 					$ext = '.jpg'; break;
 				case IMAGETYPE_PNG:
 					$ext = '.png'; break;
+				default:
+					throw new \Exception('Unknown image type.');
 			}
 							
 			#replace file extension

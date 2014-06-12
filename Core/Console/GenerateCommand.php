@@ -113,10 +113,8 @@ class GenerateCommand extends \Asgard\Console\Command {
 
 
 		foreach($bundles as $name=>$bundle) {
-			if($bundle['tests']) {
-				$generatedTests = '';
+			if($bundle['tests'])
 				$tests = [];
-			}
 
 			$dst = $root.'app/'.ucfirst(strtolower($name)).'/';
 			$generator->processFile(__DIR__.'/bundle_template/Bundle.php', $dst.'Bundle.php', ['bundle'=>$bundle]);

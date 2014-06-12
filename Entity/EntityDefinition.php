@@ -225,7 +225,7 @@ class EntityDefinition extends \Asgard\Hook\Hookable {
 	}
 	
 	public function getShortName() {
-		return static::basename(strtolower($this->getClass()));
+		return self::basename(strtolower($this->getClass()));
 	}
 
 	private static function basename($ns) {

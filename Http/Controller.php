@@ -216,9 +216,9 @@ abstract class Controller extends \Asgard\Hook\Hookable {
 	public function setRelativeView($view) {
 		$reflection = new \ReflectionObject($this);
 		$dir = dirname($reflection->getFileName());
-		if(!file_exists($dir.'/../views/'.strtolower(preg_replace('/Controller$/i', '', static::basename(get_class($this)))).'/'.$view))
+		if(!file_exists($dir.'/../views/'.strtolower(preg_replace('/Controller$/i', '', self::basename(get_class($this)))).'/'.$view))
 			return false;
-		$this->setView($dir.'/../views/'.strtolower(preg_replace('/Controller$/i', '', static::basename(get_class($this)))).'/'.$view);
+		$this->setView($dir.'/../views/'.strtolower(preg_replace('/Controller$/i', '', self::basename(get_class($this)))).'/'.$view);
 		return true;
 	}
 

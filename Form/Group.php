@@ -69,6 +69,8 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 			$widget = $this->getWidget($cb, $field->getName(), $field->getValue(), $options);
 		elseif($field instanceof \Asgard\Form\Group)
 			$widget = $this->getWidget($cb, $field->getName(), null, $options);
+		else
+			throw new \Exception('Invalid widget.');
 
 		if($widget instanceof \Asgard\Form\Widget) {
 			if($field instanceof \Asgard\Form\Field)
@@ -392,8 +394,8 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 		$this->fields[$name] = $this->parseFields(new $fieldClass($options), $name);
 	}
 
-	public function trigger($name, array $args=[], $cb=null, $print=false) {
-		return parent::trigger($name, array_merge([$this], $args), $cb, $print);
+	public function trigger($name, array $args=[], $cb=null, &$chain=null) {
+		return parent::trigger($name, array_merge([$this], $args), $cb, $print, $chain);
 	}
 	
 	protected function updateChilds() {

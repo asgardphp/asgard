@@ -2,6 +2,8 @@
 namespace Asgard\Validation\Rules;
 
 class Contains extends \Asgard\Validation\Rule {
+	public $contain;
+
 	public function __construct($contain) {
 		$this->contain = $contain;
 	}

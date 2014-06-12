@@ -4,6 +4,7 @@ namespace Asgard\Http;
 class Route {
 	protected $route;
 	protected $controller;
+	protected $callback;
 	protected $arguments;
 	protected $options;
 

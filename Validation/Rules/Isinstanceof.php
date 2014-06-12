@@ -2,6 +2,8 @@
 namespace Asgard\Validation\Rules;
 
 class Isinstanceof extends \Asgard\Validation\Rule {
+	public $class;
+
 	public function __construct($class) {
 		$this->class = $class;
 	}

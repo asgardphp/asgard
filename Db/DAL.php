@@ -390,7 +390,7 @@ class DAL {
 					$res[] = $column.' '.$direction;
 			}
 			else {
-				$column = $columnstr;
+				$column = $orderbystr;
 
 				if($this->isIdentifier($column))
 					$res[] = $this->replace($column);
@@ -508,6 +508,7 @@ class DAL {
 		list($jointures, $joinparams) = $this->buildJointures();
 		$params = array_merge($params, $joinparams);
 
+		$set = [];
 		foreach($values as $k=>$v)
 			$set[] = $this->replace($k).'=?';
 		$str = ' SET '.implode(', ', $set);

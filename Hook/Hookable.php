@@ -33,24 +33,9 @@ class Hookable {
 	 * 
 	 * @api 
 	*/
-	public function trigger($name, array $args=[], $cb=null) {
+	public function trigger($name, array $args=[], $cb=null, &$chain=null) {
 		if(!$this->getHooksManager()) return;
-		return $this->getHooksManager()->trigger($name, $args, $cb);
-	}
-	
-	/**
-	 * Triggers a hook with a given chain.
-	 * 
-	 * @param string name
-	 * @param array args
-	 * @param Callback cb
-	 * @param boolean print
-	 * 
-	 * @api 
-	*/
-	public function triggerChain(HookChain $chain, $name, array $args=[], $cb=null, $print=false) {
-		if(!$this->getHooksManager()) return;
-		return $this->getHooksManager()->triggerChain($chain, $name, $args, $cb, $print);
+		return $this->getHooksManager()->trigger($name, $args, $cb, $chain);
 	}
 	
 	/**
@@ -96,16 +81,6 @@ class Hookable {
 	public function hookAfter($hookName, $cb) {
 		$args = [$hookName, $cb];
 		return call_user_func_array([$this->getHooksManager(), 'hookAfter'], $args);
-	}
-	
-	/**
-	 * Returns all the hooks for this instance.
-	 * 
-	 * @return array
-	*/
-	public function hooks() {
-		if(!$this->getHooksManager()) return [];
-		return $this->getHooksManager()->getHooks();
 	}
 	
 	/**

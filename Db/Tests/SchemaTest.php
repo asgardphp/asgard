@@ -14,7 +14,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 		$database = 'asgard';
 		try {
 			$db->query('DROP DATABASE `'.$database.'`');
-		} catch(Exception $e) {}
+		} catch(\Exception $e) {}
 		$db->query('CREATE DATABASE `'.$database.'`');
 		$db->query('USE `'.$database.'`');
 	}
@@ -125,7 +125,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 		return $r['CHARACTER_MAXIMUM_LENGTH'];
 	}
 		
-	protected function isPrimary() {
+	protected function isPrimary($table, $column) {
 		return $this->getDB()->query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
                  WHERE TABLE_SCHEMA = 'asgard' 
@@ -134,7 +134,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 		 AND COLUMN_KEY = 'PRI'")->count() > 0;
 	}
 		
-	protected function isUnique() {
+	protected function isUnique($table, $column) {
 		return $this->getDB()->query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
                  WHERE TABLE_SCHEMA = 'asgard' 
@@ -143,7 +143,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 		 AND COLUMN_KEY = 'UNI'")->count() > 0;
 	}
 		
-	protected function isIndex() {
+	protected function isIndex($table, $column) {
 		return $this->getDB()->query("SELECT * 
                  FROM INFORMATION_SCHEMA.COLUMNS 
                  WHERE TABLE_SCHEMA = 'asgard' 

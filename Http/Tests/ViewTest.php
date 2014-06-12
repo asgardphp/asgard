@@ -12,7 +12,6 @@ class ViewTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testViewable() {
-		$view = new _Viewable;
 		$this->assertEquals('<h1>hello world!</h1>', Viewable::widget('Asgard\Hook\Tests\_Viewable', 'test'));
 	}
 }

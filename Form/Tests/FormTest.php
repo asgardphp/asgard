@@ -216,7 +216,6 @@ class FormTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testEntityForm() {
-		$db = static::$app['db'];
 		$mysql = new \Asgard\Db\MySQL(static::$config);
 		$mysql->import(__DIR__.'/formentities.sql');
 

@@ -8,6 +8,7 @@ class BuildCol {
 	protected $nullable = false;
 	protected $autoincrement = false;
 	protected $def;
+	protected $table;
 	
 	public function __construct($table, $name, $type, $length=null) {
 		$this->table = $table;
@@ -208,6 +209,7 @@ class Column {
 	protected $name;
 	protected $type;
 	protected $length;
+	protected $db;
 	
 	public function __construct(DB $db, $table, $name, $type=null, $length=null) {
 		$this->db = $db;
@@ -226,7 +228,7 @@ class Column {
 	
 	public function create() {
 		if($this->length)
-			$sql = 'ALTER TABLE `'.$this->table.'` ADD `'.$this->name.'` '.$this->type.'('.$type->length.')';
+			$sql = 'ALTER TABLE `'.$this->table.'` ADD `'.$this->name.'` '.$this->type.'('.$this->length.')';
 		else
 			$sql = 'ALTER TABLE `'.$this->table.'` ADD `'.$this->name.'` '.$this->type;
 		$this->db->query($sql);
@@ -469,7 +471,7 @@ class Schema {
 	}
 	
 	public function getType($table, $column) {
-		$table = new BuildTable($tableName);
+		$table = new Table($table);
 		$col = $table->col($column);
 		
 		return $col->getType();

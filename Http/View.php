@@ -33,13 +33,15 @@ class View {
 		return $this->params;
 	}
 
-	public function render($params=[]) {
-		if(!$params)
-			$params = $this->params;
-		return static::renderTemplate($this->template, $params);
+	public function render($_template=null, array $_params=[]) {
+		if($_template === null)
+			$_template = $this->template;
+		$_params = array_merge($this->params, $_params);
+
+		return static::renderTemplate($_template, $_params);
 	}
 
-	public static function renderTemplate($_template, array $_params=[]) {
+	public static function renderTemplate($_template, array $_params=array()) {
 		foreach($_params as $_key=>$_value)
 			$$_key = $_value;
 

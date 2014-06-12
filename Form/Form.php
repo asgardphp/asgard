@@ -42,7 +42,7 @@ class Form extends Group {
 		return $this;
 	}
 
-	public function getParam() {
+	public function getParam($param) {
 		if(!isset($this->params[$param]))
 			return;
 		return $this->params[$param];
@@ -116,9 +116,6 @@ class Form extends Group {
 	}
 	
 	public function fetch() {
-		$raw = [];
-		$files = [];
-			
 		if($this->groupName) {
 			if($this->getRequest()->file->get($this->groupName) !== null)
 				$raw = $this->getRequest()->file->get($this->groupName);

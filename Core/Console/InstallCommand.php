@@ -11,8 +11,8 @@ class InstallCommand extends \Asgard\Console\Command {
 	protected $description = 'Install a module into your application';
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
-		$sources = $this->input->getArgument('sources');
-		$migrate = $this->input->getOption('migrate');
+		$sources = $input->getArgument('sources');
+		$migrate = $input->getOption('migrate');
 		$updateComposer = $this->input->getOption('update-composer');
 		$root = $this->getAsgard()['kernel']['root'];
 		if(file_exists($root.'/modules.json'))

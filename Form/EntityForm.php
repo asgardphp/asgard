@@ -132,6 +132,8 @@ class EntityForm extends Form {
 				$errors = $field->myErrors();
 			elseif($field instanceof Group)
 				$errors = $field->errors();
+			else
+				throw new \Exception('The field should not be a: '.get_class($field));
 				
 			foreach($field as $name=>$sub_field) {
 				if($sub_field instanceof Group) {

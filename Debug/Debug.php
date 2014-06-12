@@ -160,7 +160,7 @@ EOT;
 	
 	public static function getCLIBacktrace($backtrace=null) {
 		if(!$backtrace)
-			$backtrace = static::getBacktrace();
+			$backtrace = debug_backtrace();
 			
 		$r = '';
 		for($i=0; $i<count($backtrace); $i++) {

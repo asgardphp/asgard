@@ -30,6 +30,9 @@ class ServicesCommand extends \Asgard\Console\Command {
 
 			$r = new \ReflectionFunction($service);
 			$registered = \Asgard\Common\FileManager::relativeTo($root, $r->getFileName()).':'.$r->getStartLine();
+			
+			$defined = '???';
+			$class = '???';
 			try {
 				$obj = $this->getAsgard()->make($name);
 				$class = gettype($obj)=='object' ? '\\'.get_class($obj):gettype($obj);
@@ -38,10 +41,7 @@ class ServicesCommand extends \Asgard\Console\Command {
 					$r = new \ReflectionClass($class);
 					$defined = \Asgard\Common\FileManager::relativeTo($root, $r->getFileName()).':'.$r->getStartLine();
 				}
-			} catch(\Exception $e) {
-				$defined = '???';
-				$class = '???';
-			}
+			} catch(\Exception $e) {}
 
 			$res = [
 				'name' => $name,

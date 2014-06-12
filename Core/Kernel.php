@@ -126,7 +126,7 @@ class Kernel implements \ArrayAccess {
 
 	protected function doGetBundles($cache=false) {
 		if($cache) {
-			$c = $this->getCache();
+			$c = $this->getCache($cacge);
 			if(($res = $c->fetch('bundles')) !== false)
 				return $res;
 		}

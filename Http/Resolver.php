@@ -57,7 +57,7 @@ class Resolver {
 			if(is_array($method)) {
 				$good = false;
 				foreach($method as $v)
-					if(strtolower($server_method) == $v)
+					if(strtolower($method) == $v)
 						$good = true;
 				if(!$good)
 					return false;
@@ -103,7 +103,7 @@ class Resolver {
 						$replacement = '[0-9]+'; break;
 				}
 			}
-			else
+			if(!isset($replacement))
 				$replacement = '[^\/]+';
 			
 			$regex = preg_replace('/\\\:'.$symbol.'/', '('.$replacement.')', $regex);

@@ -27,7 +27,7 @@ abstract class Field {
 	public function getValidationRules() {
 		$validation = isset($this->options['validation']) ? $this->options['validation']:[];
 		if(isset($this->options['choices']))
-			$constrains[$name]['in'] = array_keys($this->options['choices']);
+			$validation['in'] = array_keys($this->options['choices']);
 
 		return $validation;
 	}
@@ -125,7 +125,7 @@ abstract class Field {
 
 	public function getError() {
 		if(is_array($this->error))
-			return \Asgard\Common\Tools::array_get(array_values($this->error), 0);
+			return \Asgard\Common\ArrayUtils::array_get(array_values($this->error), 0);
 		else
 			return $this->error;
 	}

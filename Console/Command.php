@@ -10,6 +10,8 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 class Command extends \Symfony\Component\Console\Command\Command {
 	protected $name;
 	protected $description;
+	protected $input;
+	protected $output;
 	
 	/**
 	 * Constructor.

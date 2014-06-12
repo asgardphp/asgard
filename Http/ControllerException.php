@@ -2,9 +2,11 @@
 namespace Asgard\Http;
 
 class ControllerException extends \Asgard\Debug\PSRException {
-	public $response;
+	protected $code;
+	protected $response;
 
-	public function __construct($msg='', $response=null, $severity=null) {
+	public function __construct($code=500, $msg='', $severity=null, $response=null) {
+		$this->code = $code;
 		$this->response = $response;
 		parent::__construct($msg, $severity);
 	}
@@ -13,10 +15,18 @@ class ControllerException extends \Asgard\Debug\PSRException {
 		if($this->response)	
 			return $this->response;
 		else
-			return new \Asgard\Core\Response(500);
+			return new \Asgard\Core\Response($this->code);
 	}
 
 	public function setResponse($response) {
 		$this->response = $response;
+	}
+
+	public function getCode() {
+		return $this->code;
+	}
+
+	public function setCode($code) {
+		$this->code = $code;
 	}
 }

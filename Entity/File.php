@@ -5,6 +5,7 @@ class File extends \Asgard\Files\File {
 	protected $url;
 	protected $webDir;
 	protected $toDelete;
+	protected $dir;
 
 	public function toDelete($toDelete=true) {
 		$this->toDelete = $toDelete;

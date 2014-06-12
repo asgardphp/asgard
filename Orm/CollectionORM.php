@@ -30,9 +30,9 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 				$relation_entity = $this->relation['entity'];
 				$link = $this->relation->getLink();
 				$dal = new \Asgard\Db\DAL($relation_entity::getTable());
-				$dal->where([$link => $this->parent->id])->getDAL()->update([$link => 0]);
+				$dal->where([$link => $this->parent->id])->update([$link => 0]);
 				if($ids)
-					$dal->reset()->where(['id IN ('.implode(', ', $ids).')'])->getDAL()->update([$link => $this->parent->id]);
+					$dal->reset()->where(['id IN ('.implode(', ', $ids).')'])->update([$link => $this->parent->id]);
 				break;
 			case 'HMABT':
 				$dal = new \Asgard\Db\DAL($this->relation->getTable());
@@ -65,7 +65,7 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 				$relation_entity = $this->relation['entity'];
 				$dal = new \Asgard\Db\DAL($relation_entity::getTable());
 				foreach($ids as $id)
-					$dal->reset()->where(['id' => $id])->getDAL()->update([$this->relation->getLink() => $this->parent->id]);
+					$dal->reset()->where(['id' => $id])->update([$this->relation->getLink() => $this->parent->id]);
 				break;
 			case 'HMABT':
 				$dal = new \Asgard\Db\DAL($this->relation['join_table']);
@@ -114,7 +114,7 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 				$relation_entity = $this->relation['entity'];
 				$dal = new \Asgard\Db\DAL($relation_entity::getTable());
 				foreach($ids as $id)
-					$dal->reset()->where(['id' => $id])->getDAL()->update([$this->relation->getLink() => 0]);
+					$dal->reset()->where(['id' => $id])->update([$this->relation->getLink() => 0]);
 				break;
 			case 'HMABT':
 				$dal = new \Asgard\Db\DAL($this->relation->getTable());

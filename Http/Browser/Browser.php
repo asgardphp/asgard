@@ -93,17 +93,13 @@ class Browser {
 		$this->catchException = $catchException;
 	}
 
-	public function submit($item=0, $to=null, array $override=[]) {
+	public function submit($xpath='//form', $to=null, array $override=[]) {
 		if($this->last === null)
 			throw new \Exception('No page to submit from.');
 		libxml_use_internal_errors(true);
-		$orig = new \DOMDocument();
-		$orig->loadHTML($this->last->content);
-		$node = $orig->getElementsByTagName('form')->item($item);
 
 		$parser = new FormParser;
-		$parser->parse($node);
-		$parser->clickOn('send');
+		$parser->parse($this->last->content, $xpath);
 		$res = $parser->values();
 		$this->merge($res, $override);
 
