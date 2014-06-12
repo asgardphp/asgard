@@ -12,7 +12,7 @@ class RollbackCommand extends \Asgard\Console\Command {
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$mm = new \Asgard\Migration\MigrationsManager($this->getAsgard()['kernel']->getRoot().'/migrations/');
-		if($migration = $mm->rollback())
+		if($mm->rollback())
 			$output->writeln('<info>Rollback successful.</info>');
 		else
 			$output->writeln('<error>Rollback unsuccessful.</error>');

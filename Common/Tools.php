@@ -29,10 +29,8 @@ class Tools {
 			}
 			else {
 				$tagName = $match[1][0];
-				if($tag[1] == '/') {
-					$openingTag = array_pop($tags);
+				if($tag[1] == '/')
 					$res .= ($tag);
-				}
 				else if ($tag[strlen($tag) - 2] == '/' || $tagName == 'br' || $tagName == 'hr')
 					$res .= ($tag);
 				else {
@@ -66,7 +64,7 @@ class Tools {
 	
 	public static function truncateWords($str, $length, $trailing='...') {
 		$words = explode(' ', $str);
-		$cutwords = array_slice($words, 0, 15);
+		$cutwords = array_slice($words, 0, $length);
 		
 		return implode(' ', $cutwords).(count($words) > count($cutwords) ? $trailing:'');
 	}

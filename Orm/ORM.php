@@ -309,7 +309,7 @@ class ORM {
 								list($v, $alias) = explode(' ', $v);
 							$relation = $current_entity::getDefinition()->relations[$v];
 						}
-						$this->jointure($dal, $relation, $alias, $current_entity, $table);
+						$this->jointure($dal, $relation, $alias, $table);
 					}
 					else {
 						$relationName = $k;
@@ -319,7 +319,7 @@ class ORM {
 						$relation = $current_entity::getDefinition()->relations[$relationName];
 						$entity = $relation['entity'];
 
-						$this->jointure($dal, $relation, $alias, $current_entity, $table);
+						$this->jointure($dal, $relation, $alias, $table);
 						if(!is_array($recJoins))
 							$recJoins = [$recJoins];
 						$this->recursiveJointures($dal, $recJoins, $entity, $relation->name);
@@ -332,7 +332,7 @@ class ORM {
 						list($relation, $alias) = explode(' ', $relation);
 					$relation = $current_entity::getDefinition()->relations[$relation];
 				}
-				$this->jointure($dal, $relation, $alias, $current_entity, $table);
+				$this->jointure($dal, $relation, $alias, $table);
 			}
 		}
 	}
@@ -343,10 +343,9 @@ class ORM {
 	 * @param \Asgard\Db\DAL dal
 	 * @param string relation The name of the relation.
 	 * @param string alias How the related table will be referenced in the SQL query.
-	 * @param \Asgard\Entity\Entity current_entity The entity class from which the jointure is built.
 	 * @param string ref_table The table from which to performs the jointure.
 	*/
-	protected function jointure(\Asgard\Db\DAL $dal, $relation, $alias, $current_entity, $ref_table) {
+	protected function jointure(\Asgard\Db\DAL $dal, $relation, $alias, $ref_table) {
 		if($relation['polymorphic'])
 			$relation_entity = $relation['real_entity'];
 		else
@@ -469,7 +468,6 @@ class ORM {
 					case 'HMABT':
 						$join_table = $rel->getTable();
 						$currentEntity_idfield = $rel->getLinkA();
-						$relationEntity_idfield = $rel->getLinkB();
 
 						$reverse_relation = $rel->reverse();
 						$reverse_relation_name = $reverse_relation['name'];

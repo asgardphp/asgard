@@ -101,8 +101,7 @@ class ImageManager {
 	}
 	
 	public static function getImageType($file) {
-		list($w, $h, $type) = getimagesize($file);
-		return $type;
+		return getimagesize($file)[2];
 	}
 	
 	public static function load($src) {

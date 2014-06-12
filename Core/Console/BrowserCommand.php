@@ -30,7 +30,7 @@ class BrowserCommand extends \Asgard\Console\Command {
 		$browser = new \Asgard\Http\Browser\Browser($this->getAsgard());
 		$browser->getCookies()->setAll($cookies);
 		$browser->getSession()->setAll($session);
-		$response = $browser->req($url, $method, $post, $files, $body, $headers);
+		$response = $browser->req($url, $method, $post, $files, $body, $headers, $server);
 
 		if($input->getOption('showAll') || $input->getOption('showCode'))
 			$output->writeln('Code: '.($response->isOK() ? '<info>':'<error>').$response->getCode().($response->isOK() ? '</info>':'</error>'));

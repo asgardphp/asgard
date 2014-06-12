@@ -1,7 +1,7 @@
 <?php
 namespace Asgard\Form\Fields;
 
-class CountriesField extends Field {
+class CountriesField extends \Asgard\Form\Field {
 	public function __construct(array $params=[]) {
 		$params['choices'] = [
 			'AF' => __('AFGHANISTAN'),

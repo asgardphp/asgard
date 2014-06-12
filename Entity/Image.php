@@ -37,9 +37,6 @@ class Image extends File {
 			$format = $this->format();
 			$dst = preg_replace('/\.[^\.]+$/', '', $dst);
 			$dst .= '.'.$format;
-			// if($rename)
-			// 	$dst = \Asgard\Common\FileManager::getNewFileName($dst);
-			// d($dst);
 			$this->src = \Asgard\Common\ImageManager::load($this->src)->save($dst, $format, $this->quality, $rename);
 
 			return $this->src;

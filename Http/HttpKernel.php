@@ -58,7 +58,7 @@ class HttpKernel {
 
 				$this->app['hooks']->trigger('Asgard.Http.Exception.'.get_class($e), [$e, &$response, $request]);
 				if($response === null)
-					$response = $this->getExceptionResponse($e, $request);
+					$response = $this->getExceptionResponse($e);
 			}
 		}
 
@@ -105,7 +105,7 @@ class HttpKernel {
 		return $response;
 	}
 
-	protected function getExceptionResponse($e, $request) {
+	protected function getExceptionResponse($e) {
 		while(ob_get_length())
 			ob_end_clean();
 		$this->app['errorHandler']->exceptionHandler($e, false);

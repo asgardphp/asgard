@@ -142,11 +142,10 @@ class HooksManager {
 	 * 
 	 * @param string identifier
 	 * @param Callback cb
-	 * @param integer priority Hook priority in the list.
 	 * 
 	 * @api 
 	*/
-	public function hook($identifier, $cb, $priority=0) {
+	public function hook($identifier, $cb) {
 		$this->createhook($identifier, $cb, 'on');
 	}
 	
@@ -159,7 +158,7 @@ class HooksManager {
 	 * 
 	 * @api 
 	*/
-	public function hookBefore($identifier, $cb, $priority=0) {
+	public function hookBefore($identifier, $cb) {
 		$this->createhook($identifier, $cb, 'before');
 	}
 	
@@ -168,11 +167,10 @@ class HooksManager {
 	 * 
 	 * @param string identifier
 	 * @param Callback cb
-	 * @param integer priority Hook priority in the list.
 	 * 
 	 * @api 
 	*/
-	public function hookAfter($identifier, $cb, $priority=0) {
+	public function hookAfter($identifier, $cb) {
 		$this->createhook($identifier, $cb, 'after');
 	}
 	

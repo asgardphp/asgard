@@ -13,13 +13,13 @@ class InitConfigCommand extends \Asgard\Console\Command {
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$root = $this->getAsgard()['kernel']['root'];
 
-		$this->initConfig('config.php', $input, $output);
-		$this->initConfig('config_dev.php', $input, $output);
-		$this->initConfig('config_prod.php', $input, $output);
-		$this->initConfig('config_test.php', $input, $output);
+		$this->initConfig($root, 'config.php', $input, $output);
+		$this->initConfig($root, 'config_dev.php', $input, $output);
+		$this->initConfig($root, 'config_prod.php', $input, $output);
+		$this->initConfig($root, 'config_test.php', $input, $output);
 	}
 
-	protected function initConfig($file, $input, $output) {
+	protected function initConfig($root, $file, $input, $output) {
 		if(file_exists($root.'/config/'.$file)) {
 			if(!$this->confirm('Do you want to override "'.$file.'"?'))
 				return;

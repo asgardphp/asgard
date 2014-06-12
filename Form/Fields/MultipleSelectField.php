@@ -15,7 +15,7 @@ class MultipleSelectField extends \Asgard\Form\Field {
 		$default = $this->value;
 
 		$value = isset($options['value']) ? $options['value']:null;
-		if($value===null) {
+		if($value === null) {
 			foreach($choices as $k=>$v) {
 				if($v == $name) {
 					$value = $k;
@@ -23,7 +23,8 @@ class MultipleSelectField extends \Asgard\Form\Field {
 				}
 			}
 		}
-		throw new \Exception('No value for radio '.$name);
+		if($value === null)
+			throw new \Exception('No value for radio '.$name);
 
 		if($value == $default)
 			$options['attrs']['checked'] = 'checked';
@@ -76,7 +77,8 @@ class MultipleSelectField extends \Asgard\Form\Field {
 				}
 			}
 		}
-		throw new \Exception('No value for checkbox '.$name);
+		if($value === null)
+			throw new \Exception('No value for checkbox '.$name);
 
 		if($value == $default)
 			$options['attrs']['checked'] = 'checked';

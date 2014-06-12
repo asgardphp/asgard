@@ -346,7 +346,6 @@ class DAL {
 	}
 
 	protected function buildWhere($default=null) {
-		$params = [];
 		$r = $this->processConditions($this->where, 'and', false, $default !==null ? $default:$this->getDefaultTable());
 		if($r[0])
 			return [' WHERE '.$r[0], $r[1]];

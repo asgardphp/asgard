@@ -37,7 +37,6 @@ class MySQL {
 	}
 
 	public function dump($dst) {
-		$return = null;
 		$host = $this->config['host'];
 		$user = $this->config['user'];
 		$pwd = $this->config['password'];

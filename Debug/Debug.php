@@ -32,7 +32,7 @@ class Debug {
 
 		$r = '';
 		if(php_sapi_name() === 'cli')
-			$r .= static::getCLIBacktrace($request, $backtrace);
+			$r .= static::getCLIBacktrace($backtrace);
 		else {
 			$r .= static::getHTMLBacktrace($request, $backtrace);
 			$r .= static::getHTMLRequest($request);
@@ -127,7 +127,6 @@ EOT;
 				$start = $trace['line']-5-1;
 				if($start < 1)
 					$start = 1;
-				$end = $trace['line']+5-1;
 				$pos = $trace['line']-$start;
 
 				if(file_exists($trace['file'])) {
@@ -159,17 +158,13 @@ EOT;
 		return $r;
 	}
 	
-	public static function getCLIBacktrace(\Asgard\Http\Request $request, $backtrace=null) {
+	public static function getCLIBacktrace($backtrace=null) {
 		if(!$backtrace)
 			$backtrace = static::getBacktrace();
 			
 		$r = '';
 		for($i=0; $i<count($backtrace); $i++) {
 			$trace = $backtrace[$i];
-			if(isset($backtrace[$i+1]))
-				$next = $backtrace[$i+1];
-			else
-				$next = $backtrace[count($backtrace)-1];
 			
 			if(isset($trace['file']))
 				$r .= $trace['file'].':'.$trace['line']."\n";

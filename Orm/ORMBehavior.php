@@ -6,7 +6,7 @@ class ORMBehavior extends \Asgard\Entity\Behavior {
 	protected $entityClass;
 
 	public function load(\Asgard\Entity\EntityDefinition $definition) {
-		$this->entityClass = $entityClass = $definition->getClass();
+		$this->entityClass = $definition->getClass();
 
 		if(!isset($definition->order_by))
 			$definition->order_by = 'id DESC';

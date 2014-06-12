@@ -58,13 +58,12 @@ class Hookable {
 	 * 
 	 * @param string hookName
 	 * @param Callback cb
-	 * @param integer priority Hook priority.
 	 * 
 	 * @return mixed
 	 * 
 	 * @api 
 	*/
-	public function hook($hookName, $cb, $priority=0) {
+	public function hook($hookName, $cb) {
 		$args = [$hookName, $cb];
 		return call_user_func_array([$this->getHooksManager(), 'hook'], $args);
 	}
@@ -74,13 +73,12 @@ class Hookable {
 	 * 
 	 * @param string hookName
 	 * @param Callback cb
-	 * @param intege priority Hook priority.
 	 * 
 	 * @return mixed
 	 * 
 	 * @api 
 	*/
-	public function hookBefore($hookName, $cb, $priority=0) {
+	public function hookBefore($hookName, $cb) {
 		$args = [$hookName, $cb];
 		return call_user_func_array([$this->getHooksManager(), 'hookBefore'], $args);
 	}
@@ -90,13 +88,12 @@ class Hookable {
 	 * 
 	 * @param string hookName
 	 * @param Callback cb
-	 * @param integer priority Hook priority.
 	 * 
 	 * @return mixed
 	 * 
 	 * @api 
 	*/
-	public function hookAfter($hookName, $cb, $priority=0) {
+	public function hookAfter($hookName, $cb) {
 		$args = [$hookName, $cb];
 		return call_user_func_array([$this->getHooksManager(), 'hookAfter'], $args);
 	}

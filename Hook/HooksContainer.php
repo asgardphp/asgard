@@ -27,7 +27,7 @@ class HooksContainer {
 			$reader = new \Doctrine\Common\Annotations\CachedReader(
 				$reader,
 				\Asgard\Container\Container::instance()['cache'],
-				$debug=\Asgard\Container\Container::instance()['config']['debug']
+				\Asgard\Container\Container::instance()['config']['debug']
 			);
 		}
 

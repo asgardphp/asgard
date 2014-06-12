@@ -48,7 +48,8 @@ class Browser {
 			array $post=[],
 			array $file=[],
 			$body='',
-			array $headers=[]
+			array $headers=[],
+			array $server=[]
 		) {
 		if(defined('_TESTING_'))
 			file_put_contents(_TESTING_, $url."\n", FILE_APPEND);
@@ -66,6 +67,7 @@ class Browser {
 		$request->post->setAll($post);
 		$request->file->setAll($file);
 		$request->header->setAll($headers);
+		$request->server->setAll($server);
 		$request->cookie = $this->cookies;
 		$request->session = $this->session;
 		if(count($post))

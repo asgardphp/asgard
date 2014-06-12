@@ -287,8 +287,6 @@ class Column {
 			
 		$this->change(['type'=>$type]);
 	
-		//~ Schema::renameColumn($this->table, $this->name, $this->name, $type);
-		
 		return $this;
 	}
 	
@@ -296,7 +294,6 @@ class Column {
 			
 		$this->change(['name'=>$name]);
 		
-		//~ Schema::renameColumn($this->table, $this->name, $name);
 		$this->name = $name;
 		
 		return $this;
@@ -473,7 +470,7 @@ class Schema {
 	
 	public function getType($table, $column) {
 		$table = new BuildTable($tableName);
-		$col = $table->col($old);
+		$col = $table->col($column);
 		
 		return $col->getType();
 	}

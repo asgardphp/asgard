@@ -80,12 +80,10 @@ abstract class Entity {
 	public function getValidator() {
 		$constrains = [];
 		$messages = [];
-		$entity = $this;
 		$validator = new \Asgard\Validation\Validator;
 
 		foreach($this->getDefinition()->properties() as $name=>$property) {
 			if($property->get('multiple')) {
-				$propRules = $property->getRules();
 				$constrains[$name] = [];
 				foreach($this->get($name) as $k=>$v) {
 					$validator->attribute($name.'.'.$k, $property->getRules());
