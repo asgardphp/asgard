@@ -44,7 +44,7 @@ class Request implements \ArrayAccess {
 		$request->get->setAll($_GET);
 		$request->post->setAll($_POST);
 		$request->file->setAll($_FILES);
-		$request->header->setAll(\Asgard\Common\Tools::getallheaders());
+		$request->header->setAll(static::getAllHeaders());
 		$request->server->setAll($_SERVER);
 		$request->cookie = new CookieManager;
 		$request->session = new SessionManager;
@@ -161,5 +161,14 @@ class Request implements \ArrayAccess {
 	public function setBody($value) {
 		$this->body = $value;
 		return $this;
+	}
+
+	protected static function getAllHeaders() {
+		$headers = [];
+		foreach($_SERVER as $name => $value) {
+			if(substr($name, 0, 5) == 'HTTP_')
+				$headers[str_replace(' ', '-', strtolower(str_replace('_', ' ', substr($name, 5))))] = $value;
+		}
+		return $headers; 
 	}
 }

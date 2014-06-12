@@ -15,6 +15,8 @@
         "doctrine/cache": "1.*",
         "symfony/yaml": "2.3.*",
         "symfony/translation": "2.3.*",
+        "symfony\/console": "2.3.*",
+        "symfony\/config": "2.3.*",
         "jeremeamia/SuperClosure": "1.*",
         "psr/log": "1.*",
         "nesbot/carbon": "1.*"

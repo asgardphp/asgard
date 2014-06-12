@@ -282,7 +282,7 @@ class DAL {
 		if($brackets)
 			$result = '('.$result.')';
 		
-		return [$result, \Asgard\Common\Tools::flateArray($pdoparams)];
+		return [$result, \Asgard\Common\ArrayUtils::flateArray($pdoparams)];
 	}
 
 	public function removeJointure($alias) {
@@ -610,7 +610,7 @@ class DAL {
 				->offset(null)
 				->orderBy(null)
 				->limit(null);
-			return \Asgard\Common\Tools::array_get($dal->first(), $fct);
+			return \Asgard\Common\ArrayUtils::array_get($dal->first(), $fct);
 		}
 	}
 	

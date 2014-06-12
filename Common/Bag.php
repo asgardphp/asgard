@@ -37,22 +37,22 @@ class Bag implements \ArrayAccess {
 				$this->set($k, $v);
 		}
 		else
-			\Asgard\Common\Tools::string_array_set($this->data, $path, $value);
+			\Asgard\Common\ArrayUtils::string_array_set($this->data, $path, $value);
 		return $this;
 	}
 	
 	public function get($path, $default=null) {
 		if(!$this->has($path))
 			return $default;
-		return \Asgard\Common\Tools::string_array_get($this->data, $path);
+		return \Asgard\Common\ArrayUtils::string_array_get($this->data, $path);
 	}
 	
 	public function has($path) {
-		return \Asgard\Common\Tools::string_array_isset($this->data, $path);
+		return \Asgard\Common\ArrayUtils::string_array_isset($this->data, $path);
 	}
 	
 	public function delete($path) {
-		return \Asgard\Common\Tools::string_array_unset($this->data, $path);
+		return \Asgard\Common\ArrayUtils::string_array_unset($this->data, $path);
 	}
 
     public function offsetSet($offset, $value) {

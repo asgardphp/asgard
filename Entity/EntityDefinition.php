@@ -49,9 +49,9 @@ class EntityDefinition extends \Asgard\Hook\Hookable {
 			foreach($clone as $name=>$property) {
 				if(is_int($name)) {
 					$properties = 
-						\Asgard\Common\Tools::array_before($properties, $name) +
+						\Asgard\Common\ArrayUtils::array_before($properties, $name) +
 						[$property => []] +
-						\Asgard\Common\Tools::array_after($properties, $name);
+						\Asgard\Common\ArrayUtils::array_after($properties, $name);
 				}
 			}
 

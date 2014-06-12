@@ -14,6 +14,14 @@ class Container implements \ArrayAccess {
 			$this->set($name, $instance);
 	}
 
+	public function getRegistry() {
+		return $this->registry;
+	}
+
+	public function getInstances() {
+		return $this->instances;
+	}
+
 	public static function instance() {
 		if(!isset(static::$instance))
 			static::$instance = new static;

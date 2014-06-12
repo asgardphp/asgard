@@ -426,7 +426,7 @@ class Schema {
 	}
 
 	public function dropAll() {
-		$tables = \Asgard\Common\Tools::flateArray($this->db->query('SHOW TABLES')->all());
+		$tables = \Asgard\Common\ArrayUtils::flateArray($this->db->query('SHOW TABLES')->all());
 		foreach($tables as $table)
 			$this->db->query('DROP TABLE '.$table);
 	}

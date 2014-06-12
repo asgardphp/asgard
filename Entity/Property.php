@@ -53,11 +53,11 @@ class Property {
 	public function get($path, $default=null) {
 		if(!$this->has($path))
 			return $default;
-		return \Asgard\Common\Tools::string_array_get($this->params, $path);
+		return \Asgard\Common\ArrayUtils::string_array_get($this->params, $path);
 	}
 	
 	public function has($path) {
-		return \Asgard\Common\Tools::string_array_isset($this->params, $path);
+		return \Asgard\Common\ArrayUtils::string_array_isset($this->params, $path);
 	}
 
 	public function getParams() {

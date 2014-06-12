@@ -111,11 +111,11 @@ EOT;
 				foreach($next['args'] as $arg) {
 					$r .= '<li>';
 					if(is_array($arg))
-						$str = \Asgard\Common\Tools::var_dump_to_string($arg);
+						$str = static::var_dump_to_string($arg);
 					elseif(is_string($arg))
 						$str = $arg;
 					else
-						$str = \Asgard\Common\Tools::var_dump_to_string($arg);
+						$str = static::var_dump_to_string($arg);
 					$r .= '<pre>'.$str.'</pre>';
 					$r .= "</li>\n";
 				}
@@ -188,11 +188,11 @@ EOT;
 			foreach($r->get->all() as $k=>$v) {
 				$res .= '<li>'.$k.': ';
 				if(is_array($v))
-					$str = \Asgard\Common\Tools::var_dump_to_string($v);
+					$str = static::var_dump_to_string($v);
 				elseif(is_string($v))
 					$str = $v;
 				else
-					$str = \Asgard\Common\Tools::var_dump_to_string($v);
+					$str = static::var_dump_to_string($v);
 				$res .= '<pre>'.$str.'</pre>';
 				$res .= '</li>';
 			}
@@ -205,11 +205,11 @@ EOT;
 			foreach($r->post->all() as $k=>$v) {
 				$res .= '<li>'.$k.': ';
 				if(is_array($v))
-					$str = \Asgard\Common\Tools::var_dump_to_string($v);
+					$str = static::var_dump_to_string($v);
 				elseif(is_string($v))
 					$str = $v;
 				else
-					$str = \Asgard\Common\Tools::var_dump_to_string($v);
+					$str = static::var_dump_to_string($v);
 				$res .= '<pre>'.$str.'</pre>';
 				$res .= '</li>';
 			}
@@ -222,11 +222,11 @@ EOT;
 			foreach($r->file->all() as $k=>$v) {
 				$res .= '<li>'.$k.': ';
 				if(is_array($v))
-					$str = \Asgard\Common\Tools::var_dump_to_string($v);
+					$str = static::var_dump_to_string($v);
 				elseif(is_string($v))
 					$str = $v;
 				else
-					$str = \Asgard\Common\Tools::var_dump_to_string($v);
+					$str = static::var_dump_to_string($v);
 				$res .= '<pre>'.$str.'</pre>';
 				$res .= "</li>\n";
 			}
@@ -239,11 +239,11 @@ EOT;
 			foreach($r->cookie->all() as $k=>$v) {
 				$res .= '<li>'.$k.': ';
 				if(is_array($v))
-					$str = \Asgard\Common\Tools::var_dump_to_string($v);
+					$str = static::var_dump_to_string($v);
 				elseif(is_string($v))
 					$str = $v;
 				else
-					$str = \Asgard\Common\Tools::var_dump_to_string($v);
+					$str = static::var_dump_to_string($v);
 				$res .= '<pre>'.$str.'</pre>';
 				$res .= "</li>\n";
 			}
@@ -256,11 +256,11 @@ EOT;
 			foreach($r->session->all() as $k=>$v) {
 				$res .= '<li>'.$k.': ';
 				if(is_array($v))
-					$str = \Asgard\Common\Tools::var_dump_to_string($v);
+					$str = static::var_dump_to_string($v);
 				elseif(is_string($v))
 					$str = $v;
 				else
-					$str = \Asgard\Common\Tools::var_dump_to_string($v);
+					$str = static::var_dump_to_string($v);
 				$res .= '<pre>'.$str.'</pre>';
 				$res .= "</li>\n";
 			}
@@ -273,11 +273,11 @@ EOT;
 			foreach($r->server->all() as $k=>$v) {
 				$res .= '<li>'.$k.': ';
 				if(is_array($v))
-					$str = \Asgard\Common\Tools::var_dump_to_string($v);
+					$str = static::var_dump_to_string($v);
 				elseif(is_string($v))
 					$str = $v;
 				else
-					$str = \Asgard\Common\Tools::var_dump_to_string($v);
+					$str = static::var_dump_to_string($v);
 				$res .= '<pre>'.$str.'</pre>';
 				$res .= "</li>\n";
 			}
@@ -286,5 +286,13 @@ EOT;
 
 		$res .= '</div>';
 		return $res;
+	}
+
+	protected static function var_dump_to_string($var) {
+		ob_start();
+		var_dump($var);
+		$str = ob_get_contents();
+		ob_end_clean();
+		return $str;
 	}
 }

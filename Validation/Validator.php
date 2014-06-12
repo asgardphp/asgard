@@ -341,7 +341,7 @@ class Validator {
 			}
 		}
 
-		$attrErrors = array_filter(\Asgard\Common\Tools::flateArray($errors['attributes']));
+		$attrErrors = array_filter(\Asgard\Common\ArrayUtils::flateArray($errors['attributes']));
 		if(!$errors['self'] && ($errors['rules'] || $attrErrors)) {
 			$allErrors = array_merge($errors['rules'], $attrErrors);
 			if(count($allErrors) === 1)

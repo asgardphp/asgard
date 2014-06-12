@@ -32,15 +32,15 @@ class SessionManager implements \ArrayAccess {
 	}
 	
 	public function has($path) {
-		return \Asgard\Common\Tools::string_array_isset($_SESSION, $path);
+		return \Asgard\Common\ArrayUtils::string_array_isset($_SESSION, $path);
 	}
 	
 	public function delete($path) {
-		return \Asgard\Common\Tools::string_array_unset($_SESSION, $path);
+		return \Asgard\Common\ArrayUtils::string_array_unset($_SESSION, $path);
 	}
 
 	public function get($path) {
-		return \Asgard\Common\Tools::string_array_get($_SESSION, $path);
+		return \Asgard\Common\ArrayUtils::string_array_get($_SESSION, $path);
 	}
 
 	public function set($path, $value=null) {
@@ -49,7 +49,7 @@ class SessionManager implements \ArrayAccess {
 				static::set($k, $v);
 		}
 		else {
-			\Asgard\Common\Tools::string_array_set($_SESSION, $path, $value);
+			\Asgard\Common\ArrayUtils::string_array_set($_SESSION, $path, $value);
 		}
 	}
 

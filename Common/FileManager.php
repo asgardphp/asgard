@@ -2,6 +2,31 @@
 namespace Asgard\Common;
 
 class FileManager {
+	public static function relativeTo($from, $to) {
+		$from = is_dir($from) ? rtrim($from, '\/') . '/' : $from;
+		$to   = is_dir($to)   ? rtrim($to, '\/') . '/'   : $to;
+		$from = str_replace('\\', '/', $from);
+		$to   = str_replace('\\', '/', $to);
+
+		$from     = explode('/', $from);
+		$to       = explode('/', $to);
+		$relPath  = $to;
+
+		foreach($from as $depth => $dir) {
+			if($dir === $to[$depth])
+				array_shift($relPath);
+			else {
+				$remaining = count($from) - $depth;
+				if($remaining > 1) {
+					$padLength = (count($relPath) + $remaining - 1) * -1;
+					$relPath = array_pad($relPath, $padLength, '..');
+					break;
+				}
+			}
+		}
+		return implode('/', $relPath);
+	}
+
 	public static function getNewFileName($dst) {
 		$fileexts = explode('.', $dst);
 		if(count($fileexts) > 1) {
