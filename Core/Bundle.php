@@ -19,25 +19,35 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		$app->register('entitiesmanager', function($app) { return new \Asgard\Entity\EntitiesManager($app); } );
 		
 		#Form
-		$app->register('form', function($app, $args) {
-			if(!isset($args[0]))
-				$args[0] = null;
-			if(!isset($args[1]))
-				$args[1] = array();
-			if(!isset($args[2]))
-				$args[2] = array();
-			if(!isset($args[3]))
-				$args[3] = null;
-			if(!isset($args[4]))
-				$args[4] = $app;
-			return new \Asgard\Form\Form($args[0], $args[1], $args[2], $args[3], $args[4]);
+		$app->register('widgetsManager', function() { return new \Asgard\Form\WidgetsManager(); });
+		$app->register('entityForm', function($app, $entity, $params=[], $request=null) {
+			$form = new \Asgard\Form\EntityForm($entity, $params, $request);
+			$form->setWidgetsManager(clone $app['widgetsManager']);
+			$form->setTranslator($app['translator']);
+			$form->setHooks($app['hooks']);
+			$form->setWidgetsManager($app['widgetsManager']);
+			$form->setApp($app);
+			return $form;
+		});
+		$app->register('form', function($app, $name=null, $params=[], $fields=[], $request=null) {
+			$form = new \Asgard\Form\Form($name, $params, $fields, $request);
+			$form->setWidgetsManager(clone $app['widgetsManager']);
+			$form->setTranslator($app['translator']);
+			$form->setHooks($app['hooks']);
+			$form->setWidgetsManager($app['widgetsManager']);
+			$form->setApp($app);
+			return $form;
 		});
 
 		#Hook
 		$app->register('hooks', function($app) { return new \Asgard\Hook\HooksManager($app); } );
 
 		#Http
-		$app->register('httpKernel', function($app) { return new \Asgard\Http\HttpKernel($app); } );
+		$app->register('httpKernel', function($app) {
+			$httpKernel = new \Asgard\Http\HttpKernel($app);
+			$httpKernel->start($app['kernel']['root'].'/app/start.php');
+			return $httpKernel;
+		});
 		$app->register('resolver', function($app) {
 			$resolver = new \Asgard\Http\Resolver($app['cache']);
 			$resolver->setHttpKernel($app['httpKernel']);
@@ -54,7 +64,7 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		});
 
 		#Common
-		$app->register('paginator', function($app, $args) { return new \Asgard\Utils\Paginator($args[0], $args[1], $args[2], $app['request']); });
+		$app->register('paginator', function($app, $page, $per_page, $total) { return new \Asgard\Common\Paginator($page, $per_page, $total, $app['request']); });
 
 		#Validation
 		$app->register('validator', function() { return new \Asgard\Validation\Validator; } );
@@ -72,5 +82,12 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		$app['rulesregistry']->registerNamespace('Asgard\Orm\Rules');
 
 		parent::run($app);
+
+		if($app->has('translator')) {
+			foreach(glob($this->getPath().'/../Validation/locales/'.$app['translator']->getLocale().'/*') as $file)
+				$app['translator']->addResource('yaml', $file, $app['translator']->getLocale());
+			foreach(glob($this->getPath().'/../Form/locales/'.$app['translator']->getLocale().'/*') as $file)
+				$app['translator']->addResource('yaml', $file, $app['translator']->getLocale());
+		}
 	}
 }

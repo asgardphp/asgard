@@ -9,13 +9,20 @@ use Jeremeamia\SuperClosure\SerializableClosure;
  * @author Michel Hognerud <michel@hognerud.net>
 */
 class HooksManager {
-	public $registry = array();
+	protected static $instance;
+	public $registry = [];
 	protected $app;
 	
+	public static function instance() {
+		if(!static::$instance)
+			static::$instance = new static;
+		return static::$instance;
+	}
+
 	/**
 	 * Constructor.
 	 * 
-	 * @param \Asgard\Core\App app Application container.
+	 * @param \Asgard\Container\Container app Application container.
 	*/
 	public function __construct($app=null) {
 		$this->app = $app;
@@ -31,16 +38,16 @@ class HooksManager {
 	 * 
 	 * @api 
 	*/
-	public function trigger($name, array $args=array(), $cb=null, &$chain=null) {
+	public function trigger($name, array $args=[], $cb=null, &$chain=null) {
 		$chain = new HookChain($this->app);
 		if(is_string($name))
 			$name = explode('.', $name);
 
 		$chain->calls = array_merge(
-			$this->get(array_merge($name, array('before'))),
-			$this->get(array_merge($name, array('on'))),
-			$cb !== null ? array($cb):array(),
-			$this->get(array_merge($name, array('after')))
+			$this->get(array_merge($name, ['before'])),
+			$this->get(array_merge($name, ['on'])),
+			$cb !== null ? [$cb]:[],
+			$this->get(array_merge($name, ['after']))
 		);
 
 		return $chain->run($args);
@@ -104,7 +111,7 @@ class HooksManager {
 		$result =& $this->registry;
 		foreach($identifier as $key) {
 			if(!isset($result[$key]))
-				return array();
+				return [];
 			else
 				$result =& $result[$key];
 		}
@@ -112,7 +119,7 @@ class HooksManager {
 		if(isset($result[$last]))
 			return $result[$last];
 		else
-			return array();
+			return [];
 	}
 	
 	/**

@@ -18,7 +18,7 @@ class InstallCommand extends \Asgard\Console\Command {
 		if(file_exists($root.'/modules.json'))
 			$modules = json_decode(file_get_contents($root.'/modules.json'), true);
 		else
-			$modules = array();
+			$modules = [];
 		if(file_exists($root.'/composer.json'))
 			$appComposer = json_decode(file_get_contents($root.'/composer.json'), true);
 		else
@@ -34,7 +34,7 @@ class InstallCommand extends \Asgard\Console\Command {
 	}
 
 	protected function install($src, $migrate, $updateComposer, $root, $modules, $appComposer) {
-		$tmp = sys_get_temp_dir().'/'.\Asgard\Utils\Tools::randStr(10);
+		$tmp = sys_get_temp_dir().'/'.\Asgard\Common\Tools::randStr(10);
 
 		if(!$this->gitInstall($src, $tmp)) {
 			$this->output->writeln('<error>The files could not be downloaded.</error>');
@@ -65,7 +65,7 @@ class InstallCommand extends \Asgard\Console\Command {
 		if(file_exists($tmp.'/asgard.json'))
 			$asgard = json_decode(file_get_contents($tmp.'/asgard.json'), true);
 		else
-			$asgard = array();
+			$asgard = [];
 		if(!isset($asgard['name'])) {
 			$this->output->write('<error>Name missing for '.$src.'.</error>');
 			continue;
@@ -132,27 +132,27 @@ class InstallCommand extends \Asgard\Console\Command {
 	}
 
 	protected function getOptions() {
-		return array(
-			array('migrate', null, InputOption::VALUE_NONE, 'Automatically execute the migrations.', null),
-			array('update-composer', null, InputOption::VALUE_NONE, 'Automatically updates composer.', null),
-		);
+		return [
+			['migrate', null, InputOption::VALUE_NONE, 'Automatically execute the migrations.', null],
+			['update-composer', null, InputOption::VALUE_NONE, 'Automatically updates composer.', null],
+		];
 	}
 
 	protected function getArguments() {
-		return array(
-			array('sources', InputArgument::IS_ARRAY, 'Source folder'),
-		);
+		return [
+			['sources', InputArgument::IS_ARRAY, 'Source folder'],
+		];
 	}
 
 	protected function gitInstall($src, $tmp) {
 		$cmd = 'git clone '.$src.' '.$tmp;
 
 		$process = proc_open($cmd,
-			array(
-			   0 => array("pipe", "r"),
-			   1 => array("pipe", "w"),
-			   2 => array("pipe", "w"),
-			),
+			[
+			   0 => ["pipe", "r"],
+			   1 => ["pipe", "w"],
+			   2 => ["pipe", "w"],
+			],
 			$pipes
 		);
 
@@ -163,11 +163,11 @@ class InstallCommand extends \Asgard\Console\Command {
 		$cmd = 'composer update --working-dir '.$dir;
 
 		$process = proc_open($cmd,
-			array(
-			   0 => array("pipe", "r"),
-			   1 => array("pipe", "w"),
-			   2 => array("pipe", "w"),
-			),
+			[
+			   0 => ["pipe", "r"],
+			   1 => ["pipe", "w"],
+			   2 => ["pipe", "w"],
+			],
 			$pipes
 		);
 

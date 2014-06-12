@@ -1,1 +1,1 @@
-<h1><% echo $<?php echo $entity['meta']['name'] ?> %></h1>
+<h1><%=$<?=$entity['meta']['name'] ?> %></h1>

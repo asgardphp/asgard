@@ -3,10 +3,11 @@ namespace Asgard\Validation;
 use Symfony\Component\Translation\TranslatorInterface;
 
 class Validator {
-	protected $rules = array();
-	protected $attributes = array();
+	protected $params = [];
+	protected $rules = [];
+	protected $attributes = [];
 	protected $defaultMessage;
-	protected $messages = array();
+	protected $messages = [];
 	protected $required;
 	protected $isNull;
 	protected $registry;
@@ -14,6 +15,7 @@ class Validator {
 	protected $parent;
 	protected $name;
 	protected $translator;
+	protected $formatParameters;
 
 	public function setTranslator(TranslatorInterface $translator) {
 		$this->translator = $translator;
@@ -21,80 +23,82 @@ class Validator {
 	}
 
 	public function getTranslator() {
-		return $this->translator;
+		if($this->translator)
+			return $this->translator;
+		elseif($this->parent)
+			return $this->parent->getTranslator();
 	}
 
 	#to capture the rules calls and required
 	public function __call($name, array $args) {
 		if($name == 'attribute')
-			return call_user_func_array(array($this, 'callAttribute'), $args);
+			return call_user_func_array([$this, 'callAttribute'], $args);
 		if($name == 'attributes')
-			return call_user_func_array(array($this, 'callAttributes'), $args);
+			return call_user_func_array([$this, 'callAttributes'], $args);
 		if($name == 'rules')
-			return call_user_func_array(array($this, 'callRules'), $args);
+			return call_user_func_array([$this, 'callRules'], $args);
 		if($name == 'rule')
-			return call_user_func_array(array($this, 'callRule'), $args);
+			return call_user_func_array([$this, 'callRule'], $args);
 		if($name == 'ruleEach')
-			return call_user_func_array(array($this, 'callRuleEach'), $args);
-		return call_user_func_array(array($this, 'callRule'), array($name, $args));
+			return call_user_func_array([$this, 'callRuleEach'], $args);
+		return call_user_func_array([$this, 'callRule'], [$name, $args]);
 	}
 
 	#same in static
 	public static function __callStatic($name, array $args) {
 		$v = new static;
 		if($name == 'attribute')
-			return call_user_func_array(array($v, 'callAttribute'), $args);
+			return call_user_func_array([$v, 'callAttribute'], $args);
 		if($name == 'attributes')
-			return call_user_func_array(array($v, 'callAttributes'), $args);
+			return call_user_func_array([$v, 'callAttributes'], $args);
 		if($name == 'rules')
-			return call_user_func_array(array($v, 'callRules'), $args);
+			return call_user_func_array([$v, 'callRules'], $args);
 		if($name == 'rule')
-			return call_user_func_array(array($v, 'callRule'), $args);
+			return call_user_func_array([$v, 'callRule'], $args);
 		if($name == 'ruleEach')
-			return call_user_func_array(array($v, 'callRuleEach'), $args);
-		return call_user_func_array(array($v, 'callRule'), array($name, $args));
+			return call_user_func_array([$v, 'callRuleEach'], $args);
+		return call_user_func_array([$v, 'callRule'], [$name, $args]);
 	}
 
 	#to define several rules
-	protected function callRules(array $rules) {
+	protected function callRules(array $rules, $each=false) {
+		if(count($rules) === 2 && isset($rules['each']) && isset($rules['self'])) {
+			$this->callRules($rules['each'], true);
+			$this->callRules($rules['self'], false);
+			return $this;
+		}
+
 		foreach($rules as $key=>$value) {
 			if(is_numeric($key))
-				$this->rule($value);
+				$this->rule($value, $each);
 			else
-				$this->rule($key, $value);
+				$this->rule($key, $value, $each);
 		}
 		return $this;
 	}
 
 	#to define one rule
-	protected function callRule($rule, $params=array()) {
+	protected function callRule($rule, $params=[], $each=false) {
 		if(!is_array($params))
-			$params = array($params);
+			$params = [$params];
 		if($rule === 'required')
 			$this->required = isset($params[0]) ? $params[0]:true;
 		elseif($rule === 'isNull')
 			$this->isNull = $params[0];
 		else {
+			if(is_string($rule) && preg_match('/\||:/', $rule)) {
+				foreach(explode('|', $rule) as $r) {
+					list($r, $params) = explode(':', $r);
+					$params = explode(',', $params);
+					$this->callRule($r, $params);
+				}
+				return $this;
+			}
 			$rule = $this->getRule($rule, $params);
 			if($rule instanceof static)
 				$rule->setParent($this);
-			$this->rules[] = $rule;
-		}
-		return $this;
-	}
-
-	protected function callRuleEach($rule, $params=array()) {
-		if(!is_array($params))
-			$params = array($params);
-		if($rule === 'required')
-			$this->required = isset($params[0]) ? $params[0]:true;
-		elseif($rule === 'isNull')
-			$this->isNull = $params[0];
-		else {
-			$rule = $this->getRule($rule, $params);
-			if($rule instanceof static)
-				$rule->setParent($this);
-			$rule->handleEach(true);
+			if($each)
+				$rule->handleEach(true);
 			$this->rules[] = $rule;
 		}
 		return $this;
@@ -102,7 +106,7 @@ class Validator {
 
 	#set attribute validator / or get attribute if not rules provided
 	protected function callAttribute($attribute, $rules=null) {
-		if(is_string($attribute))
+		if(!is_array($attribute))
 			$attribute = explode('.', $attribute);
 
 		$next = array_shift($attribute);
@@ -112,7 +116,9 @@ class Validator {
 				$this->attributes[$next]->setParent($this);
 				$this->attributes[$next]->setName($next);
 			}
-			$this->attributes[$next]->attribute($attribute, $rules);
+			$res = $this->attributes[$next]->attribute($attribute, $rules);
+			if($rules === null)
+				return $res;
 			return $this;
 		}
 		else {
@@ -296,7 +302,7 @@ class Validator {
 		else
 			$input = $this->setInput($input);
 
-		$errors = array('self'=>null, 'rules'=>array(), 'attributes'=>array());
+		$errors = ['self'=>null, 'rules'=>[], 'attributes'=>[]];
 		if($this->required instanceof \Closure)
 			$required = $this->required();
 		else
@@ -325,14 +331,25 @@ class Validator {
 				}
 			}
 			foreach($this->attributes as $attribute=>$validator) {
-				if(isset($errors['attributes'][$attribute]))
-					$errors['attributes'][$attribute] = $this->mergeErrors($errors['attributes'][$attribute], $validator->_errors($input->attribute($attribute)));
-				else
-					$errors['attributes'][$attribute] = $validator->_errors($input->attribute($attribute));
+				$attrErrors = $validator->_errors($input->attribute($attribute));
+				if($attrErrors['self'] || $attrErrors['attributes']) {
+					if(isset($errors['attributes'][$attribute]))
+						$errors['attributes'][$attribute] = $this->mergeErrors($errors['attributes'][$attribute], $attrErrors);
+					else
+						$errors['attributes'][$attribute] = $attrErrors;
+				}
 			}
 		}
-		if($errors['rules'] || $errors['attributes'])
-			$errors['self'] = $this->getMessage();
+
+		$attrErrors = array_filter(\Asgard\Common\Tools::flateArray($errors['attributes']));
+		if(!$errors['self'] && ($errors['rules'] || $attrErrors)) {
+			$allErrors = array_merge($errors['rules'], $attrErrors);
+			if(count($allErrors) === 1)
+				$errors['self'] = array_values($allErrors)[0];
+			else
+				$errors['self'] = $this->getMessage();
+		}
+
 		return $errors;
 	}
 
@@ -354,7 +371,7 @@ class Validator {
 		return $errors1;
 	}
 
-	protected function getName() {
+	public function getName() {
 		if($this->name)
 			return $this->name;
 		elseif($this->parent)
@@ -382,9 +399,9 @@ class Validator {
 		if($message = $this->defaultMessage) {}
 		else $message = ':attribute is not valid.';
 
-		$params = array(
+		$params = [
 			'attribute' => $this->getName(),
-		);
+		];
 		return $this->format($message, $params);
 	}
 
@@ -396,9 +413,9 @@ class Validator {
 		elseif($message = $this->getDefaultMessage()) {}
 		else $message = ':attribute is not valid.';
 
-		$params = array(
+		$params = [
 			'attribute' => $this->getName(),
-		);
+		];
 		if(is_string($input) || is_numeric($input))
 			$params['input'] = $input;
 		if($rule instanceof Rule) {
@@ -406,17 +423,38 @@ class Validator {
 			$rule->formatParameters($params);
 		}
 
-		if($this->translator)
-			$message = $this->translator->trans($message);
+		if($this->getTranslator())
+			$message = $this->getTranslator()->trans($message);
 
 		return $this->format($message, $params);
 	}
 
+	public function formatParameters($formatParameters) {
+		$this->formatParameters = $formatParameters;
+		return $this;
+	}
+
 	protected function format($message, array $params) {
+		if($fm = $this->formatParameters)
+			$fm($params);
+
 		foreach($params as $k=>$v) {
 			if(is_string($v) || is_numeric($v))
 				$message = str_replace(':'.$k, $v, $message);
 		}
 		return ucfirst($message);
+	}
+
+	public function set($key, $value) {
+		$this->params[$key] = $value;
+	}
+
+	public function get($key) {
+		if(!isset($this->params[$key])) {
+			if(!$this->parent)
+				throw new \Exception('Parameter '.$key.' does not exist.');
+			return $this->parent->get($key);
+		}
+		return $this->params[$key];
 	}
 }

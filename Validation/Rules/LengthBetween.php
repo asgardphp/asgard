@@ -11,9 +11,9 @@ class LengthBetween extends \Asgard\Validation\Rule {
 	}
 
 	public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\Validator $validator) {
-		if($this->min !== null && strlen($input) < $this->min)
+		if($this->min !== null && strlen($input) <= $this->min)
 			return false;
-		if($this->max !== null && strlen($input) > $this->max)
+		if($this->max !== null && strlen($input) >= $this->max)
 			return false;
 	}
 

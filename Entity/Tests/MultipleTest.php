@@ -8,8 +8,8 @@ class MultipleTest extends \PHPUnit_Framework_TestCase {
 		if(!defined('_ENV_'))
 			define('_ENV_', 'test');
 
-		$app = new \Asgard\Core\App();
-		$app['config'] = new \Asgard\Core\Config();
+		$app = new \Asgard\Container\Container();
+		$app['config'] = new \Asgard\Config\Config();
 		$app['hooks'] = new \Asgard\Hook\HooksManager($app);
 		$app['cache'] = new \Asgard\Cache\NullCache;
 		$app['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($app);
@@ -24,10 +24,10 @@ class MultipleTest extends \PHPUnit_Framework_TestCase {
 
 		$e->names[] = 'Bob';
 		$e->names->add('Joe');
-		$this->assertEquals(array(
+		$this->assertEquals([
 			'Bob',
 			'Joe',
-		), $e->names->all());
+		], $e->names->all());
 	}
 
 	public function testRemove() {
@@ -39,13 +39,13 @@ class MultipleTest extends \PHPUnit_Framework_TestCase {
 		$e->names[] = 'Joe';
 		$e->names->remove(0);
 
-		$this->assertEquals(array(
+		$this->assertEquals([
 			'Joe',
-		), $e->names->all());
+		], $e->names->all());
 
 		unset($e->names[0]);
-		$this->assertEquals(array(
-		), $e->names->all());
+		$this->assertEquals([
+		], $e->names->all());
 	}
 
 	public function testGet() {
@@ -68,14 +68,14 @@ class MultipleTest extends \PHPUnit_Framework_TestCase {
 		$e->names[] = 'Bob';
 		$e->names[] = 'Joe';
 
-		$r = array();
+		$r = [];
 		foreach($e->names as $v)
 			$r[] = $v;
 
-		$this->assertEquals(array(
+		$this->assertEquals([
 			'Bob',
 			'Joe',
-		), $r);
+		], $r);
 	}
 
 	public function testSerialize() {

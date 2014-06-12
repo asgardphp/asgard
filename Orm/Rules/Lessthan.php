@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\Orm\Validation;
+namespace Asgard\Orm\Rules;
 
 class Lessthan extends \Asgard\Validation\Rule {
 	public $less;

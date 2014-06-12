@@ -11,26 +11,26 @@ class ORMBehavior extends \Asgard\Entity\Behavior {
 		if(!isset($definition->order_by))
 			$definition->order_by = 'id DESC';
 		
-		$definition->addProperty('id', array(
+		$definition->addProperty('id', [
 			'type'     => 'text', 
 			'editable' => false, 
 			'required' => false,
 			'position' => 0,
 			'defaut'   => 0,
-			'orm'      => array(
+			'orm'      => [
 				'type'              => 'int(11)',
 				'auto_increment'	=> true,
 				'key'	            => 'PRI',
 				'nullable'	        => false,
-			),
-		));	
+			],
+		]);	
 
 		foreach($definition->relations as $name=>$params)
 			$definition->relations[$name] = new EntityRelation($definition, $name, $params);
 		
-		$definition->hook('get', array($this, 'hookGet'));
-		$definition->hook('getI18N', array($this, 'hookgetI18N'));
-		$definition->hook('validation', array($this, 'hookValidation'));
+		$definition->hook('get', [$this, 'hookGet']);
+		$definition->hook('getI18N', [$this, 'hookgetI18N']);
+		$definition->hook('validation', [$this, 'hookValidation']);
 	}
 
 	protected function getDataMapper() {
@@ -71,7 +71,7 @@ class ORMBehavior extends \Asgard\Entity\Behavior {
 		#Article::where() / ::limit() / ::orderBy() / ..
 		if(method_exists('Asgard\Orm\ORM', $name)) {
 			$processed = true;
-			return call_user_func_array(array($this->getDataMapper()->orm($this->entityClass), $name), $args);
+			return call_user_func_array([$this->getDataMapper()->orm($this->entityClass), $name], $args);
 		}
 	}
 
@@ -84,7 +84,7 @@ class ORMBehavior extends \Asgard\Entity\Behavior {
 
 	#Article::loadBy('title', 'hello world')
 	public function static_loadBy($property, $value) {
-		return $this->getDataMapper()->orm($this->entityClass)->where(array($property => $value))->first();
+		return $this->getDataMapper()->orm($this->entityClass)->where([$property => $value])->first();
 	}
 
 	#Article::getRelationProperty('category')
@@ -133,7 +133,7 @@ class ORMBehavior extends \Asgard\Entity\Behavior {
 	}
 
 	#Article::create()
-	public function static_create(array $values=array(), $force=false) {
+	public function static_create(array $values=[], $force=false) {
 		return $this->getDataMapper()->create($this->entityClass, $values, $force);
 	}
 

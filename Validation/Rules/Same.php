@@ -12,7 +12,11 @@ class Same extends \Asgard\Validation\Rule {
 		return $input == $parentInput->attribute($this->as)->input();
 	}
 
+	public function formatParameters(array &$params) {
+		$params['as'] = explode('.', $this->as)[count($this->as)-1];
+	}
+
 	public function getMessage() {
-		return ':attribute must be same as '.explode('.', $this->as)[count($this->as)-1].'.';
+		return ':attribute must be same as :as.';
 	}
 }

@@ -9,7 +9,7 @@ class Callback extends \Asgard\Validation\Rule {
 	}
 
 	public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\Validator $validator) {
-		return call_user_func_array($this->cb, array($input, $parentInput, $validator));
+		return call_user_func_array($this->cb, [$input, $parentInput, $validator]);
 	}
 
 	public function getMessage() {

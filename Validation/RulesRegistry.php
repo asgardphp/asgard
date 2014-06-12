@@ -3,11 +3,11 @@ namespace Asgard\Validation;
 
 class RulesRegistry {
 	protected static $instance;
-	protected $messages = array();
-	protected $rules = array();
-	protected $namespaces = array(
+	protected $messages = [];
+	protected $rules = [];
+	protected $namespaces = [
 		'\\Asgard\\Validation\\Rules\\'
-	);
+	];
 
 	public static function getInstance() {
 		if(!static::$instance)
@@ -49,7 +49,7 @@ class RulesRegistry {
 		return $this;
 	}
 
-	public function getRule($rule, $params=array()) {
+	public function getRule($rule, $params=[]) {
 		if($rule === 'required' || $rule === 'isNull')
 			return;
 

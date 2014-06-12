@@ -5,6 +5,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
+use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 class Command extends \Symfony\Component\Console\Command\Command {
 	protected $name;
@@ -23,7 +24,7 @@ class Command extends \Symfony\Component\Console\Command\Command {
 	/**
 	 * Returns the asgard application.
 	 * 
-	 * @return \Asgard\Core\App
+	 * @return \Asgard\Container\Container
 	*/
 	protected function getAsgard() {
 		return $this->getApplication()->getAsgard();
@@ -77,5 +78,12 @@ class Command extends \Symfony\Component\Console\Command\Command {
 		$arguments['command'] = $command;
 
 		return $instance->run(new ArrayInput($arguments), new NullOutput);
+	}
+
+	public function confirm($questionStr) {
+		$helper = $this->getHelperSet()->get('question');
+		$question = new ConfirmationQuestion($questionStr, false);
+
+		return $helper->ask($input, $output, $question);
 	}
 }

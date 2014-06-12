@@ -3,15 +3,15 @@ namespace Asgard\Db;
 
 class DAL {
 	public $db = null;
-	public $tables = array();
-	public $columns = array();
-	public $where = array();
+	public $tables = [];
+	public $columns = [];
+	public $where = [];
 	public $offset = null;
 	public $limit = null;
 	public $orderBy = null;
 	public $groupBy = null;
-	public $joins = array();
-	public $params = array();
+	public $joins = [];
+	public $params = [];
 
 	public $into = null;
 
@@ -30,7 +30,7 @@ class DAL {
 	}
 	
 	public function from($tables) {
-		$this->tables = array();
+		$this->tables = [];
 		return $this->addFrom($tables);
 	}
 	
@@ -86,7 +86,7 @@ class DAL {
 			$alias = $table_alias[1];
 		else
 			$alias = $table;
-		$this->joins[$alias] = array($type, $table, $conditions);
+		$this->joins[$alias] = [$type, $table, $conditions];
 		return $this;
 	}
 
@@ -111,17 +111,17 @@ class DAL {
 	public function reset() {
 		$this->columns = null;
 		$this->tables = null;
-		$this->where = array();
+		$this->where = [];
 		$this->offset = null;
 		$this->limit = null;
 		$this->orderBy = null;
 		$this->groupBy = null;
-		$this->joins = array();
+		$this->joins = [];
 		
 		return $this;
 	}
 	
-	public function query($sql=null, array $params=array()) {
+	public function query($sql=null, array $params=[]) {
 		if($sql === null) {
 			$sql = $this->buildSQL();
 			$params = $this->getParameters();
@@ -152,12 +152,12 @@ class DAL {
 	public function getPaginator() {
 		if($this->page === null || $this->per_page === null)
 			return;
-		return new \Asgard\Utils\Paginator($this->count(), $this->page, $this->per_page);
+		return new \Asgard\Common\Paginator($this->count(), $this->page, $this->per_page);
 	}
 
 	/* SETTERS */
 	public function select($columns) {
-		$this->columns = array();
+		$this->columns = [];
 		return $this->addSelect($columns);
 	}
 
@@ -238,18 +238,18 @@ class DAL {
 	/* CONDITIONS PROCESSING */
 	protected function processConditions($params, $condition = 'and', $brackets=false, $table=null) {
 		if(count($params) == 0)
-			return array('', array());
+			return ['', []];
 		
 		$string_conditions = '';
 		
 		if(!is_array($params)) {
 			if($condition == 'and')
-				return array($this->replace($params, $table), array());
+				return [$this->replace($params, $table), []];
 			else
-				return array($this->replace($condition, $table), array());
+				return [$this->replace($condition, $table), []];
 		}
 
-		$pdoparams = array();
+		$pdoparams = [];
 
 		foreach($params as $key=>$value) {
 			if(!is_array($value)) {
@@ -282,7 +282,7 @@ class DAL {
 		if($brackets)
 			$result = '('.$result.')';
 		
-		return array($result, \Asgard\Utils\Tools::flateArray($pdoparams));
+		return [$result, \Asgard\Common\Tools::flateArray($pdoparams)];
 	}
 
 	public function removeJointure($alias) {
@@ -307,7 +307,7 @@ class DAL {
 
 	protected function identifierQuotes($str) {
 		return preg_replace_callback('/[a-z_][a-z0-9._]*/', function($matches) {
-			$res = array();
+			$res = [];
 			foreach(explode('.', $matches[0]) as $substr)
 				$res[] = '`'.$substr.'`';
 			return implode('.', $res);
@@ -316,7 +316,7 @@ class DAL {
 	
 	/* BUILDERS */
 	protected function buildColumns() {
-		$select = array();
+		$select = [];
 		if(!$this->columns)
 			return '*';
 		else {
@@ -346,19 +346,19 @@ class DAL {
 	}
 
 	protected function buildWhere($default=null) {
-		$params = array();
+		$params = [];
 		$r = $this->processConditions($this->where, 'and', false, $default !==null ? $default:$this->getDefaultTable());
 		if($r[0])
-			return array(' WHERE '.$r[0], $r[1]);
+			return [' WHERE '.$r[0], $r[1]];
 		else
-			return array('', array());
+			return ['', []];
 	}
 
 	protected function buildGroupby() {
 		if(!$this->groupBy)
 			return;
 
-		$res = array();
+		$res = [];
 
 		foreach(explode(',', $this->groupBy) as $column) {
 			if($this->isIdentifier(trim($column)))
@@ -374,7 +374,7 @@ class DAL {
 		if(!$this->orderBy)
 			return;
 
-		$res = array();
+		$res = [];
 
 		foreach(explode(',', $this->orderBy) as $orderbystr) {
 			$orderbystr = trim($orderbystr);
@@ -404,7 +404,7 @@ class DAL {
 	}
 
 	protected function buildJointures() {
-		$params = array();
+		$params = [];
 		$jointures = '';
 		foreach($this->joins as $alias=>$jointure) {
 			$type = $jointure[0];
@@ -415,11 +415,11 @@ class DAL {
 			$jointures .= $res[0];
 			$params = array_merge($params, $res[1]);
 		}
-		return array($jointures, $params);
+		return [$jointures, $params];
 	}
 
 	protected function buildJointure($type, $table, $conditions, $alias=null) {
-		$params = array();
+		$params = [];
 		$jointure = '';
 		switch($type) {
 			case 'leftjoin':
@@ -445,7 +445,7 @@ class DAL {
 			$jointure .= ' ON '.$r[0];
 			$params = array_merge($params, $r[1]);
 		}
-		return array($jointure, $params);
+		return [$jointure, $params];
 	}
 
 	protected function buildLimit() {
@@ -466,7 +466,7 @@ class DAL {
 	}
 
 	public function buildTables($with_alias=true) {
-		$tables = array();
+		$tables = [];
 		if(!$this->tables)
 			throw new \Exception('Must set tables with method from($tables) before running the query.');
 		foreach($this->tables as $alias=>$table) {
@@ -479,7 +479,7 @@ class DAL {
 	}
 
 	public function buildSQL() {
-		$params = array();
+		$params = [];
 
 		$tables = $this->buildTables();
 		$columns = $this->buildColumns();
@@ -500,7 +500,7 @@ class DAL {
 	public function buildUpdateSQL(array $values) {
 		if(count($values) == 0)
 			throw new \Exception('Update values should not be empty.');
-		$params = array();
+		$params = [];
 
 		$tables = $this->buildTables();
 		$orderBy = $this->buildOrderBy();
@@ -522,8 +522,8 @@ class DAL {
 		return 'UPDATE '.$tables.$jointures.$str.$where.$orderBy.$limit;
 	}
 
-	public function buildDeleteSQL(array $del_tables=array()) {
-		$params = array();
+	public function buildDeleteSQL(array $del_tables=[]) {
+		$params = [];
 
 		$tables = $this->buildTables(count($del_tables) > 0);
 		$orderBy = $this->buildOrderBy();
@@ -556,10 +556,10 @@ class DAL {
 		else
 			$into = array_keys($this->tables)[0];
 
-		$params = array();
+		$params = [];
 		$into = $this->identifierQuotes($into);
 
-		$cols = array();
+		$cols = [];
 		foreach($values as $k=>$v)
 			$cols[] = $this->replace($k);
 		$str = ' ('.implode(', ', $cols).') VALUES ('.implode(', ', array_fill(0, count($values), '?')).')';
@@ -582,7 +582,7 @@ class DAL {
 		return $this->db->query($sql, $params)->id();
 	}
 	
-	public function delete(array $tables=array()) {
+	public function delete(array $tables=[]) {
 		$sql = $this->buildDeleteSQL($tables);
 		$params = $this->getParameters();
 		return $this->db->query($sql, $params)->affected();
@@ -599,7 +599,7 @@ class DAL {
 				->offset(null)
 				->orderBy(null)
 				->limit(null);
-			$res = array();
+			$res = [];
 			foreach($dal->get() as $v)
 				$res[$v['groupby']] = $v[$fct];
 			return $res;
@@ -610,7 +610,7 @@ class DAL {
 				->offset(null)
 				->orderBy(null)
 				->limit(null);
-			return \Asgard\Utils\Tools::array_get($dal->first(), $fct);
+			return \Asgard\Common\Tools::array_get($dal->first(), $fct);
 		}
 	}
 	

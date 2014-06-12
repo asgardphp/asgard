@@ -18,10 +18,10 @@ class CompileCommand extends \Asgard\Console\Command {
 
 		$classes = require __DIR__.'/compile/classes.php';
 
-		$this->callSilent('compile', array(
+		$this->callSilent('compile', [
 			'--config' => implode(',', $classes),
 			'--output' => $outputPath,
 			'--strip_comments' => 1,
-		));
+		]);
 	}
 }

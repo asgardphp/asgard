@@ -9,11 +9,11 @@ namespace Asgard\Orm;
 class ORM {
 	protected $entity;
 	protected $with;
-	protected $where = array();
+	protected $where = [];
 	protected $orderBy;
 	protected $limit;
 	protected $offset;
-	protected $join = array();
+	protected $join = [];
 	protected $page;
 	protected $per_page;
 	protected $db;
@@ -68,7 +68,7 @@ class ORM {
 		$newOrm = $relation_entity::orm();
 		$newOrm->where($this->where);
 
-		$newOrm->join(array($reverse_relation_name => $this->join));
+		$newOrm->join([$reverse_relation_name => $this->join]);
 
 		return $newOrm;
 	}
@@ -104,12 +104,12 @@ class ORM {
 		}
 
 		if($relation['polymorphic']) {
-			$this->where(array($relation['link_type'] => $entity->getShortName()));
+			$this->where([$relation['link_type'] => $entity->getShortName()]);
 			$relation['real_entity'] = $entity->getShortName();
 		}
 		$this->join($relation);
 
-		$this->where(array($relation->name.'.id' => $entity->id));
+		$this->where([$relation->name.'.id' => $entity->id]);
 
 		return $this;
 	}
@@ -172,7 +172,7 @@ class ORM {
 	protected static function unserializeSet(\Asgard\Entity\Entity $entity, array $data, $lang=null) {
 		foreach($data as $k=>$v) {
 			if($entity::hasProperty($k))
-				$data[$k] = $entity->property($k)->unserialize($v, $entity);
+				$data[$k] = $entity->property($k)->unserialize($v, $entity, $k);
 			else
 				unset($data[$k]);
 		}
@@ -211,7 +211,7 @@ class ORM {
 	 * @return array
 	*/
 	public function values($property) {
-		$res = array();
+		$res = [];
 		foreach($this->get() as $one)
 			$res[] = $one->get($property);
 		return $res;
@@ -267,19 +267,19 @@ class ORM {
 
 		if($current_entity::isI18N()) {
 			$translation_table = $this->geti18nTable();
-			$selects = array($table.'.*');
+			$selects = [$table.'.*'];
 			foreach($current_entity::getDefinition()->properties() as $name=>$property) {
 				if($property->i18n)
 					$selects[] = $translation_table.'.'.$name;
 			}
 			$dal->select($selects);
 			$dal->from($table);
-			$dal->leftjoin(array(
-				$translation_table => $this->processConditions(array(
+			$dal->leftjoin([
+				$translation_table => $this->processConditions([
 					$table.'.id = '.$translation_table.'.id',
 					$translation_table.'.locale' => $this->locale
-				))
-			));
+				])
+			]);
 		}
 		else
 			$dal->from($table);
@@ -321,7 +321,7 @@ class ORM {
 
 						$this->jointure($dal, $relation, $alias, $current_entity, $table);
 						if(!is_array($recJoins))
-							$recJoins = array($recJoins);
+							$recJoins = [$recJoins];
 						$this->recursiveJointures($dal, $recJoins, $entity, $relation->name);
 					}
 				}
@@ -360,44 +360,44 @@ class ORM {
 			case 'belongsTo':
 				$link = $relation->getLink();
 				$table = $relation_entity::getTable();
-				$dal->rightjoin(array(
-					$table.' '.$alias => $this->processConditions(array(
+				$dal->rightjoin([
+					$table.' '.$alias => $this->processConditions([
 						$ref_table.'.'.$link.' = '.$alias.'.id'
-					))
-				));
+					])
+				]);
 				break;
 			case 'hasMany':
 				$link = $relation->getLink();
 				$table = $relation_entity::getTable();
-				$dal->rightjoin(array(
-					$table.' '.$alias => $this->processConditions(array(
+				$dal->rightjoin([
+					$table.' '.$alias => $this->processConditions([
 						$ref_table.'.id'.' = '.$alias.'.'.$link
-					))
-				));
+					])
+				]);
 				break;
 			case 'HMABT':
-				$dal->rightjoin(array(
-					$relation->getTable($this->prefix) => $this->processConditions(array(
+				$dal->rightjoin([
+					$relation->getTable($this->prefix) => $this->processConditions([
 						$relation->getTable($this->prefix).'.'.$relation->getLinkA().' = '.$ref_table.'.id',
-					))
-				));
-				$dal->rightjoin(array(
-					$relation_entity::getTable().' '.$alias => $this->processConditions(array(
+					])
+				]);
+				$dal->rightjoin([
+					$relation_entity::getTable().' '.$alias => $this->processConditions([
 						$relation->getTable($this->prefix).'.'.$relation->getLinkB().' = '.$alias.'.id',
-					))
-				));
+					])
+				]);
 				break;
 		}
 
 		if($relation_entity::isI18N()) {
 			$table = $relation_entity::getTable();
 			$translation_table = $table.'_translation';
-			$dal->leftjoin(array(
-				$translation_table.' '.$relationName.'_translation' => $this->processConditions(array(
+			$dal->leftjoin([
+				$translation_table.' '.$relationName.'_translation' => $this->processConditions([
 					$table.'.id = '.$relationName.'_translation.id',
 					$relationName.'_translation.locale' => $this->locale
-				))
-			));
+				])
+			]);
 		}
 	}
 	
@@ -409,8 +409,8 @@ class ORM {
 	 * @return array Array of \Asgard\Entity\Entity
 	*/
 	public function get() {
-		$entities = array();
-		$ids = array();
+		$entities = [];
+		$ids = [];
 		$current_entity = $this->entity;
 
 		$dal = $this->getDAL();
@@ -434,7 +434,7 @@ class ORM {
 					case 'belongsTo':
 						$link = $rel->getLink();
 						
-						$orm = $relation_entity::where(array('id IN ('.implode(', ', $ids).')'));
+						$orm = $relation_entity::where(['id IN ('.implode(', ', $ids).')']);
 						if(is_callable($closure))
 							$closure($orm);
 						$res = $orm->get();
@@ -453,7 +453,7 @@ class ORM {
 					case 'hasMany':
 						$link = $rel->getLink();
 						
-						$orm = $relation_entity::where(array($link.' IN ('.implode(', ', $ids).')'));
+						$orm = $relation_entity::where([$link.' IN ('.implode(', ', $ids).')']);
 						if(is_callable($closure))
 							$closure($orm);
 						$res = $orm->get();
@@ -475,9 +475,9 @@ class ORM {
 						$reverse_relation_name = $reverse_relation['name'];
 
 						$orm = $relation_entity::join($reverse_relation_name)
-							->where(array(
+							->where([
 								$current_entity::getTable().'.id IN ('.implode(', ', $ids).')',
-							));
+							]);
 
 						if(is_callable($closure))
 							$closure($orm);
@@ -488,7 +488,7 @@ class ORM {
 								return $id == $result['__ormrelid'];
 							});
 							$filter = array_values($filter);
-							$mres = array();
+							$mres = [];
 							foreach($filter as $m)
 								$mres[] = $this->toEntity($m, $relation_entity);
 							$entity->$relation_name = $mres;
@@ -511,8 +511,8 @@ class ORM {
 	 * 
 	 * @return array Array of \Asgard\Entity\Entity
 	*/
-	public function selectQuery($sql, array $args=array()) {
-		$entities = array();
+	public function selectQuery($sql, array $args=[]) {
+		$entities = [];
 		$entity = $this->entity;
 		
 		$dal = new \Asgard\Db\DAL($this->getDB());
@@ -545,12 +545,12 @@ class ORM {
 	/**
 	 * Returns the paginator tool.
 	 * 
-	 * @return \Asgard\Utils\Paginator
+	 * @return \Asgard\Common\Paginator
 	*/
 	public function getPaginator() {
 		$page = $this->page !== null ? $this->page : 1;
 		$per_page = $this->per_page !== null ? $this->per_page : 10;
-		return $this->app->make('paginator', array($this->count(), $page, $per_page));
+		return $this->app->make('paginator', [$this->count(), $page, $per_page]);
 	}
 	
 	/**
@@ -623,7 +623,7 @@ class ORM {
 		if(is_array($conditions))
 			$this->where[] = $this->processConditions($conditions);
 		else
-			$this->where[] = $this->processConditions(array($conditions=>$val));
+			$this->where[] = $this->processConditions([$conditions=>$val]);
 		
 		return $this;
 	}
@@ -755,12 +755,12 @@ class ORM {
 	 * @return \Asgard\Orm\ORM $this
 	*/
 	public function reset() {
-		$this->where = array();
-		$this->with = array();
+		$this->where = [];
+		$this->with = [];
 		$this->orderBy = null;
 		$this->limit = null;
 		$this->offset = null;
-		$this->join = array();
+		$this->join = [];
 		
 		return $this;
 	}

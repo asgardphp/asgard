@@ -21,24 +21,24 @@ class ErrorHandlerTest extends \PHPUnit_Framework_TestCase {
 
 	public function testLogging() {
 		$errorHandler = new \Asgard\Debug\ErrorHandler();
-		$logger = $this->getMock('Asgard\Core\Tests\Log', array('log'));
+		$logger = $this->getMock('Log', ['log']);
 		$logger->expects($this->once())->method('log')->with('error', 'Exception: ', $this->callback(function($a) {
 			return isset($a['file']) && isset($a['line']) && isset($a['trace']);
 		}));
 		$errorHandler->setLogger($logger);
 		$errorHandler->logException(new \Exception);
 
-		$logger = $this->getMock('Asgard\Core\Tests\Log', array('log'));
-		$logger->expects($this->once())->method('log')->with('error', 'A message', $this->callback(array($this, 'checkLog')));
+		$logger = $this->getMock('Log', ['log']);
+		$logger->expects($this->once())->method('log')->with('error', 'A message', $this->callback([$this, 'checkLog']));
 		$errorHandler->setLogger($logger);
 		$errorHandler->logException(new \Asgard\Debug\PSRException('A message'));
 
-		set_error_handler(array($errorHandler, 'phpErrorHandler'));
+		set_error_handler([$errorHandler, 'phpErrorHandler']);
 		try {
 			echo $a;
 		} catch(\ErrorException $e) {
-			$logger = $this->getMock('Asgard\Core\Tests\Log', array('log'));
-			$logger->expects($this->once())->method('log')->with('notice', 'PHP (E_NOTICE): Undefined variable: a', $this->callback(array($this, 'checkLog')));
+			$logger = $this->getMock('Log', ['log']);
+			$logger->expects($this->once())->method('log')->with('notice', 'PHP (E_NOTICE): Undefined variable: a', $this->callback([$this, 'checkLog']));
 			$errorHandler->setLogger($logger);
 			$errorHandler->logException($e);
 		}
@@ -47,7 +47,7 @@ class ErrorHandlerTest extends \PHPUnit_Framework_TestCase {
 	public function testExceptionHandler() {
 		$errorHandler = new \Asgard\Debug\ErrorHandler();
 
-		set_error_handler(array($errorHandler, 'phpErrorHandler'));
+		set_error_handler([$errorHandler, 'phpErrorHandler']);
 		try {
 			$a;
 		} catch(\ErrorException $e) {
@@ -62,7 +62,7 @@ class ErrorHandlerTest extends \PHPUnit_Framework_TestCase {
 }
 
 class Log {
-	public function log($level, $message, array $context = array()) {
+	public function log($level, $message, array $context = []) {
 	}
 }
 

@@ -3,19 +3,18 @@ namespace Asgard\Form;
 
 class EntityForm extends Form {
 	protected $entity;
-	protected $locales = array();
+	protected $locales = [];
 
 	public function __construct(
 		\Asgard\Entity\Entity $entity, 
-		array $params=array(),
-		\Asgard\Http\Request $request=null,
-		$app=null
+		array $params=[],
+		\Asgard\Http\Request $request=null
 	) {
 		$this->entity = $entity;
 
-		$this->locales = isset($params['locales']) ? $params['locales']:array();
+		$this->locales = isset($params['locales']) ? $params['locales']:[];
 	
-		$fields = array();
+		$fields = [];
 		foreach($entity->properties() as $name=>$property) {
 			if(isset($params['only']) && !in_array($name, $params['only']))
 				continue;
@@ -25,7 +24,7 @@ class EntityForm extends Form {
 				continue;
 
 			if($this->locales && $property->get('i18n')) {
-				$i18ngroup = array();
+				$i18ngroup = [];
 				foreach($this->locales as $locale)
 					$i18ngroup[$locale] = $this->addAttributeField($entity, $name, $property, $locale);
 				$fields[$name] = $i18ngroup;
@@ -38,60 +37,61 @@ class EntityForm extends Form {
 			isset($params['name']) ? $params['name']:$entity->getShortName(),
 			$params,
 			$fields,
-			$request,
-			$app
+			$request
 		);
 	}
 
 	protected function addAttributeField(\Asgard\Entity\Entity $entity, $name, \Asgard\Entity\Property $property, $locale=null) {
-		$field_params = array();
+		$field_params = [];
 
 		$field_params['form'] = $this;
 
-		if($property->form_hidden)
-			$field_params['default'] = '';
-		elseif($entity->get($name, $locale) !== null)
-			$field_params['default'] = $entity->get($name, $locale);
+		return $this->getAttributeField($entity, $name, $locale, $property, $field_params);
+	}
 
-		$field_type = 'Asgard\Form\Fields\TextField';
-		if($property->type == 'boolean')
-			$field_type = 'Asgard\Form\Fields\BooleanField';
-		elseif($property->type == 'file') {
-			if($property->get('multiple'))
-				$field_type = 'Asgard\Form\Fields\MultipleFileField';
-			else
-				$field_type = 'Asgard\Form\Fields\FileField';
-		}
-		elseif($property->type == 'image') {
-			if($property->get('multiple'))
-				$field_type = 'Asgard\Form\Fields\MultipleImageField';
-			else
-				$field_type = 'Asgard\Form\Fields\ImageField';
-		}
-		elseif($property->type == 'date')
-			$field_type = 'Asgard\Form\Fields\DateField';
+	protected function getMultiple($fieldClass, $property, $field_params) {
+		return new DynamicGroup(function($data) use($fieldClass, $property, $field_params) {
+			return $this->doGetAttributeField($fieldClass, $property, $field_params);
+		});
+	}
 
-		if($property->in) {
-			foreach($property->in as $v)
-				$field_params['choices'][$v] = $v;
-			if($property->get('multiple'))
-				$field_type = 'Asgard\Form\Fields\MultipleselectField';
-			else
-				$field_type = 'Asgard\Form\Fields\SelectField';
-		}
+	protected function getAttributeField($entity, $name, $locale, $property, $field_params) {
+		if(method_exists($property, 'getFormField'))
+			$fieldClass = $property->getFormField();
+		else
+			$fieldClass = 'Asgard\Form\Fields\TextField';
 
+		if($property->get('multiple')) {
+			$group = $this->getMultiple($fieldClass, $property, $field_params);
+			foreach($entity->get($name, $locale) as $k=>$one) {
+				$params = $field_params;
+				if($property->get('form.hidden'))
+					$params['default'] = '';
+				elseif($entity->get($name, $locale) !== null)
+					$params['default'] = $entity->get($name, $locale)[$k];
+
+				$group[] = $this->doGetAttributeField($fieldClass, $property, $params);
+			}
+			return $group;
+		}
+		else {
+			if($property->get('form.hidden'))
+				$field_params['default'] = '';
+			elseif($entity->get($name, $locale) !== null)
+				$field_params['default'] = $entity->get($name, $locale);
+
+			return $this->doGetAttributeField($fieldClass, $property, $field_params);
+		}
+	}
+
+	protected function doGetAttributeField($class, $property, $params) {
 		if(isset($property->get('form')['validation'])) {
-			$field_params['validation'] = $property->get('form')['validation'];
+			$params['validation'] = $property->get('form')['validation'];
 			if(isset($property->get('form')['messages']))
-				$field_params['messages'] = $property->get('form')['messages'];
+				$params['messages'] = $property->get('form')['messages'];
 		}
 
-		$field_class = $field_type;
-
-		$field = new $field_class($field_params);
-
-		if($property->type == 'longtext')
-			$field->setDefaultRender('textarea');
+		$field = new $class($params);
 
 		return $field;
 	}
@@ -100,41 +100,41 @@ class EntityForm extends Form {
 		$entity = $this->entity;
 		$relation = $entity::getDefinition()->relation($name);
 
-		$ids = array(''=>$this->getTranslator()->trans('Choose'));
+		$ids = [''=>$this->getTranslator()->trans('Choose')];
 		foreach($relation['entity']::all() as $v)
 			$ids[$v->id] = (string)$v;
 				
 		if($relation['has'] == 'one') {
-			$this->addField(new Fields\SelectField(array(
+			$this->addField(new Fields\SelectField([
 				'type'	=>	'integer',
 				'choices'		=>	$ids,
 				'default'	=>	($this->entity->isOld() && $this->entity->$name ? $this->entity->$name->id:null),
-			)), $name);
+			]), $name);
 		}
 		elseif($relation['has'] == 'many') {
-			$this->addField(new Fields\MultipleSelectField(array(
+			$this->addField(new Fields\MultipleSelectField([
 				'type'	=>	'integer',
 				'choices'		=>	$ids,
-				'default'	=>	($this->entity->isOld() ? $this->entity->$name()->ids():array()),
-			)), $name);
+				'default'	=>	($this->entity->isOld() ? $this->entity->$name()->ids():[]),
+			]), $name);
 		}
 	}
 	
 	public function errors($field=null) {
 		if(!$this->isSent())
-			return array();
+			return [];
 
 		if(!$field)
 			$field = $this;
 
-		if(is_subclass_of($field, 'Asgard\Form\Group')) {
-			if($field instanceof \Asgard\Form\EntityForm)
+		if($field instanceof Group) {
+			if($field instanceof static)
 				$errors = $field->myErrors();
-			elseif($field instanceof \Asgard\Form\Form)
+			elseif($field instanceof Group)
 				$errors = $field->errors();
 				
 			foreach($field as $name=>$sub_field) {
-				if(is_subclass_of($sub_field, 'Asgard\Form\Group')) {
+				if($sub_field instanceof Group) {
 					$field_errors = $this->errors($sub_field);
 					if(count($field_errors) > 0)
 						$errors[$sub_field->name] = $field_errors;
@@ -157,7 +157,7 @@ class EntityForm extends Form {
 		$data = array_filter($data, function($v) {
 			if($v instanceof \Asgard\Form\HttpFile && $v->error())
 				return false;
-			return $v !== null; 
+			return $v !== null;
 		});
 		if($this->locales)
 			$this->entity->set($data, 'all');

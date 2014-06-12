@@ -1,6 +1,6 @@
 <?php
 namespace Asgard\Form\Fields;
 
-class ImageField extends \Asgard\Form\Field {
+class ImageField extends FileField {
 	protected $default_render = 'image';
 }

@@ -7,7 +7,7 @@ class Route {
 	protected $arguments;
 	protected $options;
 
-	public function __construct($route, $callback, $arguments=array(), $options=array()) {
+	public function __construct($route, $callback, $arguments=[], $options=[]) {
 		$this->route = $route;
 		$this->callback = $callback;
 		$this->arguments = $arguments;

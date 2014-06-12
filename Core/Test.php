@@ -6,7 +6,7 @@ abstract class Test extends \PHPUnit_Framework_TestCase {
 
 	protected static function getApp() {
 		if(!static::$app)
-			static::$app = \Asgard\Core\App::instance();
+			static::$app = \Asgard\Container\Container::instance();
 		return static::$app;
 	}
 

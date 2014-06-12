@@ -7,7 +7,7 @@ class CookieManager implements \ArrayAccess {
 	}
 
 	public function clear() {
-		$_COOKIE = array();
+		$_COOKIE = [];
 		return $this;
 	}
 

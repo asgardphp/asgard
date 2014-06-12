@@ -10,7 +10,7 @@ class Tracker {
 
 	public function getList() {
 		if(!file_exists($this->dir.'/migrations.json'))
-			return array();
+			return [];
 		$migrations = json_decode(file_get_contents($this->dir.'/migrations.json'), true);
 		if(file_exists($this->dir.'/tracking.json'))
 			$tracking = json_decode(file_get_contents($this->dir.'/tracking.json'), true);
@@ -61,7 +61,7 @@ class Tracker {
 	}
 
 	public function getUntil($untilMigration) {
-		$list = array();
+		$list = [];
 		if(!in_array($untilMigration, array_keys($this->getList())))
 			throw new \Exception($untilMigration.' is not in the list.');
 		foreach(array_reverse($this->getList()) as $migration=>$params) {
@@ -77,7 +77,7 @@ class Tracker {
 		$list = $this->getList();
 		if(isset($list[$migrationName]))
 			return;
-		$list[$migrationName] = array('added'=>time()+microtime());
+		$list[$migrationName] = ['added'=>time()+microtime()];
 		$this->writeMigrations($list);
 	}
 
@@ -117,9 +117,9 @@ class Tracker {
 				return $a['added'] > $b['added'];
 		});
 
-		$migrations = array();
+		$migrations = [];
 		foreach($res as $migration=>$params)
-			$migrations[$migration] = array('added'=>$params['added']);
+			$migrations[$migration] = ['added'=>$params['added']];
 
 		file_put_contents($this->dir.'/migrations.json', json_encode($migrations, JSON_PRETTY_PRINT));
 	}
@@ -136,10 +136,10 @@ class Tracker {
 				return $a['added'] > $b['added'];
 		});
 
-		$tracking = array();
+		$tracking = [];
 		foreach($res as $migration=>$params) {
 			if(isset($params['migrated']))
-				$tracking[$migration] = array('migrated'=>$params['migrated']);
+				$tracking[$migration] = ['migrated'=>$params['migrated']];
 		}
 
 		file_put_contents($this->dir.'/tracking.json', json_encode($tracking, JSON_PRETTY_PRINT));

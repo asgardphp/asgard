@@ -4,11 +4,12 @@ namespace Asgard\Form;
 class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 	protected $groupName = null;
 	protected $dad;
-	protected $data = array();
-	protected $fields = array();
-	protected $errors = array();
+	protected $data = [];
+	protected $fields = [];
+	protected $errors = [];
 	protected $hasfile;
 	protected $request;
+	protected $widgetsManager;
 
 	public function __construct(
 		array $fields,
@@ -26,8 +27,64 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 		return $this->dad->getTranslator();
 	}
 
-	public function render($render_callback, Field $field, array $options=array()) {
-		return $this->dad->render($render_callback, $field, $options);
+	public function getWidget($class, $name, $value, $options) {
+		$reflector = new \ReflectionClass($class);
+		return $reflector->newInstanceArgs([$name, $value, $options, $this]);
+	}
+
+	public function getWidgetsManager() {
+		if($this->dad)
+			return $this->dad->getWidgetsManager();
+		elseif($this->widgetsManager)
+			return $this->widgetsManager;
+		else
+			return $this->widgetsManager = new WidgetsManager;
+	}
+
+	public function setWidgetsManager($wm) {
+		$this->widgetsManager = $wm;
+		return $this;
+	}
+
+	protected function doRender($render_callback, $field, &$options) {
+		if(!is_string($render_callback) && is_callable($render_callback))
+			$cb = $render_callback;
+		else
+			$cb = $this->getWidgetsManager()->getWidget($render_callback);
+
+		if($cb === null)
+			throw new \Exception('Invalid widget name: '.$render_callback);
+
+		if($field instanceof \Asgard\Form\Field) {
+			$options['field'] = $field;
+			$options = $field->options+$options;
+			$options['id'] = $field->getID();
+		}
+		elseif($field instanceof \Asgard\Form\Group)
+			$options['group'] = $field;
+
+		if(is_callable($cb))
+			$widget = $cb($field, $options);
+		elseif($field instanceof \Asgard\Form\Field)
+			$widget = $this->getWidget($cb, $field->getName(), $field->getValue(), $options);
+		elseif($field instanceof \Asgard\Form\Group)
+			$widget = $this->getWidget($cb, $field->getName(), null, $options);
+
+		if($widget instanceof \Asgard\Form\Widget) {
+			if($field instanceof \Asgard\Form\Field)
+				$widget->field = $field;
+			elseif($field instanceof \Asgard\Form\Group)
+				$widget->group = $field;
+		}
+
+		return $widget;
+	}
+
+	public function render($render_callback, $field, array $options=[]) {
+		if($this->dad)
+			return $this->dad->doRender($render_callback, $field, $options);
+
+		return $this->doRender($render_callback, $field, $options);
 	}
 
 	protected function setErrors(array $errors) {
@@ -35,6 +92,11 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 			if(isset($this->fields[$name]))
 				$this->fields[$name]->setErrors($error);
 		}
+	}
+
+	public function resetFields() {
+		$this->fields = [];
+		return $this;
 	}
 
 	public function getFields() {
@@ -49,7 +111,7 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 		if($this->dad)
 			$parents = $this->dad->getParents();
 		else
-			$parents = array();
+			$parents = [];
 
 		if($this->groupName !== null)
 			$parents[] = $this->groupName;
@@ -77,7 +139,7 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 	protected function parseFields($fields, $name) {
 		if(is_array($fields)) {
 			return new self($fields, $this, $name, 
-				(isset($this->data[$name]) ? $this->data[$name]:array())
+				(isset($this->data[$name]) ? $this->data[$name]:[])
 			);
 		}
 		elseif($fields instanceof Field) {
@@ -100,7 +162,7 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 			$group->setName($name);
 			$group->setDad($this);
 			$group->setData(
-				(isset($this->data[$name]) ? $this->data[$name]:array())
+				(isset($this->data[$name]) ? $this->data[$name]:[])
 			);
 				
 			return $group;
@@ -143,7 +205,7 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 	}
 	
 	public function setFields(array $fields) {
-		$this->fields = array();
+		$this->fields = [];
 		$this->addFields($fields, $this);
 	}
 	
@@ -152,7 +214,7 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 	}
 	
 	public function reset() {
-		$this->setData(array(), array());
+		$this->setData([], []);
 		
 		return $this;
 	}
@@ -166,7 +228,7 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 	}
 	
 	public function getData() {
-		$res = array();
+		$res = [];
 		
 		foreach($this->fields as $field) {
 			if($field instanceof \Asgard\Form\Field)
@@ -195,9 +257,9 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 	
 	public function errors() {
 		if(!$this->isSent())
-			return array();
+			return [];
 		
-		$errors = array();
+		$errors = [];
 	
 		foreach($this->fields as $name=>$field) {
 			if($field instanceof self) {
@@ -215,7 +277,7 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 	}
 	
 	protected function getReportErrors(\Asgard\Validation\Report $report) {
-		$errors = array();
+		$errors = [];
 		if($report->attributes()) {
 			foreach($report->attributes() as $attribute=>$attrReport) {
 				$attrErrors = $this->getReportErrors($attrReport);
@@ -228,10 +290,14 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 		return $errors;
 	}
 
+	public function getApp() {
+		return $this->dad->getApp();
+	}
+
 	protected function getValidator() {
 		$validator = new \Asgard\Validation\Validator;
-		$constrains = array();
-		$messages = array();
+		$constrains = [];
+		$messages = [];
 		
 		foreach($this->fields as $name=>$field) {
 			if($field instanceof Field) {
@@ -242,6 +308,11 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 			}
 		}
 
+		$validator->set('group', $this);
+		if($app = $this->getApp()) {
+			$validator->setRegistry($app['rulesregistry']);
+			$validator->setTranslator($app['translator']);
+		}
 		$validator->attributes($constrains);
 		$validator->attributesMessages($messages);
 		return $validator;
@@ -252,7 +323,7 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 
 		$report = $this->getValidator()->errors($data);
 
-		$errors = array();
+		$errors = [];
 		foreach($this->fields as $name=>$field) {
 			if($field instanceof Fields\FileField && isset($this->data[$name])) {
 				$f = $this->data[$name];
@@ -316,20 +387,20 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 		return $this->fields[$name];
 	}
 
-	public function add($name, $field, array $options=array()) {
+	public function add($name, $field, array $options=[]) {
 		$fieldClass = $field.'Field';
 		$this->fields[$name] = $this->parseFields(new $fieldClass($options), $name);
 	}
 
-	public function trigger($name, array $args=array(), $cb=null, $print=false) {
-		return parent::trigger($name, array_merge(array($this), $args), $cb, $print);
+	public function trigger($name, array $args=[], $cb=null, $print=false) {
+		return parent::trigger($name, array_merge([$this], $args), $cb, $print);
 	}
 	
 	protected function updateChilds() {
 		foreach($this->fields as $name=>$field) {
 			if($field instanceof \Asgard\Form\Group) {
 				$field->setData(
-					(isset($this->data[$name]) ? $this->data[$name]:array())
+					(isset($this->data[$name]) ? $this->data[$name]:[])
 				);
 			}
 			elseif($field instanceof \Asgard\Form\Field) {
@@ -338,7 +409,7 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 				else {
 					if($this->isSent()) {
 						if(isset($field->params['multiple']) && $field->params['multiple'])
-							$field->setValue(array());
+							$field->setValue([]);
 						else
 							$field->setValue('');
 					}

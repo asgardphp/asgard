@@ -17,9 +17,9 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 	
 	public function sync($ids) {
 		if(!$ids)
-			$ids = array();
+			$ids = [];
 		if(!is_array($ids))
-			$ids = array($ids);
+			$ids = [$ids];
 		foreach($ids as $k=>$v) {
 			if($v instanceof \Asgard\Entity\Entity)
 				$ids[$k] = (int)$v->id;
@@ -30,20 +30,20 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 				$relation_entity = $this->relation['entity'];
 				$link = $this->relation->getLink();
 				$dal = new \Asgard\Db\DAL($relation_entity::getTable());
-				$dal->where(array($link => $this->parent->id))->getDAL()->update(array($link => 0));
+				$dal->where([$link => $this->parent->id])->getDAL()->update([$link => 0]);
 				if($ids)
-					$dal->reset()->where(array('id IN ('.implode(', ', $ids).')'))->getDAL()->update(array($link => $this->parent->id));
+					$dal->reset()->where(['id IN ('.implode(', ', $ids).')'])->getDAL()->update([$link => $this->parent->id]);
 				break;
 			case 'HMABT':
 				$dal = new \Asgard\Db\DAL($this->relation->getTable());
-				$dal->where(array($this->relation->getLinkA() => $this->parent->id))->delete();
+				$dal->where([$this->relation->getLinkA() => $this->parent->id])->delete();
 				$dal->reset();
 				$i = 1;
 				foreach($ids as $id) {
 					if(isset($this->relation['sortfield']) && $this->relation['sortfield'])
-						$dal->insert(array($this->relation->getLinkA() => $this->parent->id, $this->relation->getLinkB() => $id, $this->relation['sortfield'] => $i++));
+						$dal->insert([$this->relation->getLinkA() => $this->parent->id, $this->relation->getLinkB() => $id, $this->relation['sortfield'] => $i++]);
 					else
-						$dal->insert(array($this->relation->getLinkA() => $this->parent->id, $this->relation->getLinkB() => $id));
+						$dal->insert([$this->relation->getLinkA() => $this->parent->id, $this->relation->getLinkB() => $id]);
 				}
 				break;
 			default:
@@ -55,7 +55,7 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 	
 	public function add($ids) {
 		if(!is_array($ids))
-			$ids = array($ids);
+			$ids = [$ids];
 		foreach($ids as $k=>$id)
 			if($id instanceof \Asgard\Entity\Entity)
 				$ids[$k] = (int)$id->id;
@@ -65,17 +65,17 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 				$relation_entity = $this->relation['entity'];
 				$dal = new \Asgard\Db\DAL($relation_entity::getTable());
 				foreach($ids as $id)
-					$dal->reset()->where(array('id' => $id))->getDAL()->update(array($this->relation->getLink() => $this->parent->id));
+					$dal->reset()->where(['id' => $id])->getDAL()->update([$this->relation->getLink() => $this->parent->id]);
 				break;
 			case 'HMABT':
 				$dal = new \Asgard\Db\DAL($this->relation['join_table']);
 				$i = 1;
 				foreach($ids as $id) {
-					$dal->reset()->where(array($this->relation->getLinkA() => $this->parent->id, $this->relation->getLinkB() => $id))->delete();
+					$dal->reset()->where([$this->relation->getLinkA() => $this->parent->id, $this->relation->getLinkB() => $id])->delete();
 					if(isset($this->relation['sortfield']) && $this->relation['sortfield'])
-						$dal->insert(array($this->relation->getLinkA() => $this->parent->id, $this->relation->getLinkB() => $id, $this->sortfield => $i++));
+						$dal->insert([$this->relation->getLinkA() => $this->parent->id, $this->relation->getLinkB() => $id, $this->sortfield => $i++]);
 					else
-						$dal->insert(array($this->relation->getLinkA() => $this->parent->id, $this->relation->getLinkB() => $id));
+						$dal->insert([$this->relation->getLinkA() => $this->parent->id, $this->relation->getLinkB() => $id]);
 				}
 				break;
 			default:
@@ -85,7 +85,7 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 		return $this;
 	}
 
-	public function create(array $params=array()) {
+	public function create(array $params=[]) {
 		$relEntity = $this->relation['entity'];
 		$new = new $relEntity;
 		switch($this->relation['type']) {
@@ -103,7 +103,7 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 	
 	public function remove($ids) {
 		if(!is_array($ids))
-			$ids = array($ids);
+			$ids = [$ids];
 		foreach($ids as $k=>$id) {
 			if($id instanceof \Asgard\Entity\Entity)
 				$ids[$k] = $id->id;
@@ -114,12 +114,12 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 				$relation_entity = $this->relation['entity'];
 				$dal = new \Asgard\Db\DAL($relation_entity::getTable());
 				foreach($ids as $id)
-					$dal->reset()->where(array('id' => $id))->getDAL()->update(array($this->relation->getLink() => 0));
+					$dal->reset()->where(['id' => $id])->getDAL()->update([$this->relation->getLink() => 0]);
 				break;
 			case 'HMABT':
 				$dal = new \Asgard\Db\DAL($this->relation->getTable());
 				foreach($ids as $id)
-					$dal->reset()->where(array($this->relation->getLinkA() => $this->parent->id, $this->relation->getLinkB() => $id))->delete();
+					$dal->reset()->where([$this->relation->getLinkA() => $this->parent->id, $this->relation->getLinkB() => $id])->delete();
 				break;
 			default:
 				throw new \Exception('Collection only works with hasMany and HMABT');

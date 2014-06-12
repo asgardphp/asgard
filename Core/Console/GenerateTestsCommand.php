@@ -14,7 +14,7 @@ class GenerateTestsCommand extends \Asgard\Console\Command {
 		$asgard = $this->getAsgard();
 		$dst = $input->getArgument('dst') ? $input->getArgument('dst'):$asgard['kernel']['root'].'/Tests/AutoTest.php';
 
-		$tg = new \Asgard\Http\Generator\TestsGenerator($asgard);
+		$tg = new \Asgard\Core\Generator\TestsGenerator($asgard);
 		$count = $tg->generateTests($dst);
 		if($count === false) {
 			$output->writeln('<error>Tests generation failed.</error>');
@@ -26,8 +26,8 @@ class GenerateTestsCommand extends \Asgard\Console\Command {
 	}
 
 	protected function getArguments() {
-		return array(
-			array('dst', InputArgument::OPTIONAL, 'Destination file. Defaults to: Tests/AutoTest.php'),
-		);
+		return [
+			['dst', InputArgument::OPTIONAL, 'Destination file. Defaults to: Tests/AutoTest.php'],
+		];
 	}
 }

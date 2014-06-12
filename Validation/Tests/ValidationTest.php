@@ -8,9 +8,9 @@ use Asgard\Validation\InputBag;
 class Test extends \PHPUnit_Framework_TestCase {
 	public function test() {
 		$v = new v;
-		$v->rules(array(
+		$v->rules([
 			'min' => 5,
-		));
+		]);
 		$this->assertFalse($v->valid(3));
 		$this->assertTrue($v->valid(7));
 
@@ -18,38 +18,46 @@ class Test extends \PHPUnit_Framework_TestCase {
 		$this->assertTrue(v::min(5)->valid(7));
 
 		$report = v::min(5)->errors(3);
-		$this->assertEquals('"3" is not valid.', $report->error());
+		$this->assertEquals('"3" is not valid.', v::min(5)->min(6)->errors(3)->error());
+		$this->assertEquals('"3" must be greater than 5.', $report->error());
 		$this->assertEquals('"3" must be greater than 5.', $report->first());
 
 		$v = new v;
-		$v->attribute('article.score', array(
+		$v->attribute('article.score', [
 			'min' => 5
-		));
-		$this->assertTrue($v->valid(array('article'=>array('score' => 7))));
-		$this->assertFalse($v->valid(array('article'=>array('score' => 3))));
+		]);
+		$this->assertTrue($v->valid(['article'=>['score' => 7]]));
+		$this->assertFalse($v->valid(['article'=>['score' => 3]]));
 
+		#required
 		$v = new v;
 		$v->attribute('article', 'required');
-		$this->assertTrue($v->valid(array('article'=>'a')));
-		$this->assertFalse($v->valid(array()));
+		$this->assertTrue($v->valid(['article'=>'a']));
+		$this->assertFalse($v->valid([]));
 
+		#short syntax
+		$this->assertTrue(v::rule('lengthbetween:1,3|contains:c')->valid('ac'));
+		$this->assertFalse(v::rule('lengthbetween:1,3|contains:c')->valid('aaaaac'));
+		$this->assertFalse(v::rule('lengthbetween:1,3|contains:c')->valid('aa'));
+
+		#attribute
 		$v = new v;
 		$v->attribute('article')->min(5);
-		$this->assertTrue($v->valid(array('article'=>7)));
-		$this->assertTrue(v::attribute('article', v::min(5))->valid(array('article'=>7)));
-		$this->assertFalse(v::attribute('article', v::min(5))->valid(array('article'=>3)));
+		$this->assertTrue($v->valid(['article'=>7]));
+		$this->assertTrue(v::attribute('article', v::min(5))->valid(['article'=>7]));
+		$this->assertFalse(v::attribute('article', v::min(5))->valid(['article'=>3]));
 
 		$this->assertFalse(v::required()->valid(null));
 		$this->assertTrue(v::required()->valid(1));
 
-		$this->assertFalse(v::attribute('user.confirm', v::same('password'))->valid(array('user' => array('password'=>123, 'confirm'=>321))));
-		$this->assertTrue(v::attribute('user.confirm', v::same('password'))->valid(array('user' => array('password'=>123, 'confirm'=>123))));
-		$this->assertFalse(v::attribute('user.confirm', v::same('<.password'))->valid(array('user' => array('confirm'=>123), 'password'=>321)));
-		$this->assertTrue(v::attribute('user.confirm', v::same('<.password'))->valid(array('user' => array('confirm'=>123), 'password'=>123)));
-		$this->assertEquals('Confirm must be same as password.', v::attribute('confirm', v::same('password'))->errors(array('password'=>123, 'confirm'=>321))->attribute('confirm')->first());
+		$this->assertFalse(v::attribute('user.confirm', v::same('password'))->valid(['user' => ['password'=>123, 'confirm'=>321]]));
+		$this->assertTrue(v::attribute('user.confirm', v::same('password'))->valid(['user' => ['password'=>123, 'confirm'=>123]]));
+		$this->assertFalse(v::attribute('user.confirm', v::same('<.password'))->valid(['user' => ['confirm'=>123], 'password'=>321]));
+		$this->assertTrue(v::attribute('user.confirm', v::same('<.password'))->valid(['user' => ['confirm'=>123], 'password'=>123]));
+		$this->assertEquals('Confirm must be same as password.', v::attribute('confirm', v::same('password'))->errors(['password'=>123, 'confirm'=>321])->attribute('confirm')->first());
 
-		$this->assertEquals('Score must be greater than 5.', v::attribute('score', v::min(5))->errors(array('score'=>3))->attribute('score')->first());
-		$this->assertEquals('Score must be greater than 5.', v::attribute('score', v::min(5))->errors(array('score'=>3))->attribute('score')->error('min'));
+		$this->assertEquals('Score must be greater than 5.', v::attribute('score', v::min(5))->errors(['score'=>3])->attribute('score')->first());
+		$this->assertEquals('Score must be greater than 5.', v::attribute('score', v::min(5))->errors(['score'=>3])->attribute('score')->error('min'));
 
 		v::min(5)->assert(7);
 		try {
@@ -67,23 +75,23 @@ class Test extends \PHPUnit_Framework_TestCase {
 		$v = new v;
 		$this->assertTrue($v->rule(function($input) { return $input >= 5; })->valid(7));
 
-		$report = v::attributes(array('title'=>array('min'=>5), 'content'=>v::min(5)))->errors(array('title'=>2, 'content'=>1));
-		$first = array();
+		$report = v::attributes(	['title'=>['min'=>5], 'content'=>v::min(5)])->errors(['title'=>2, 'content'=>1]);
+		$first = [];
 		foreach($report->attributes() as $attribute=>$r)
 			$first[$attribute] = $r->first();
-		$this->assertEquals(array('title'=>'Title must be greater than 5.', 'content'=>'Content must be greater than 5.'), $first);
+		$this->assertEquals(['title'=>'Title must be greater than 5.', 'content'=>'Content must be greater than 5.'], $first);
 
-		$this->assertEquals('Array is not valid.', v::int(5)->errors(array())->error());
-		$this->assertEquals('Object is not valid.', v::int(5)->errors(new \stdClass)->error());
-		$this->assertEquals('"a" is not valid.', v::int(5)->errors('a')->error());
-		$this->assertEquals('Score is not valid.', v::attribute('score', v::int(5))->errors(array('score'=>'a'))->error('score'));
+		$this->assertEquals('Array must be an integer.', v::int()->errors([])->error());
+		$this->assertEquals('Object must be an integer.', v::int()->errors(new \stdClass)->error());
+		$this->assertEquals('"a" must be an integer.', v::int()->errors('a')->error());
+		$this->assertEquals('Score must be an integer.', v::attribute('score', v::int())->errors(['score'=>'a'])->error('score'));
 
 		$this->assertTrue(v::min(5)->errors(3)->hasError());
 		$this->assertFalse(v::min(5)->errors(7)->hasError());
 		
-		$this->assertEquals(array('title', 'content'), v::attributes(array('title'=>v::min(5), 'content'=>v::min(5)))->errors(array('title'=>3, 'content'=>3))->failed());
+		$this->assertEquals(['title', 'content'], v::attributes(['title'=>v::min(5), 'content'=>v::min(5)])->errors(['title'=>3, 'content'=>3])->failed());
 
-		$this->assertEquals('"3" is not valid.', (string)v::min(5)->errors(3));
+		$this->assertEquals('"3" must be greater than 5.', (string)v::min(5)->errors(3));
 
 		$this->assertTrue(v::equal(1)->valid(1));
 		$this->assertFalse(v::equal(1)->valid(2));
@@ -127,14 +135,14 @@ class Test extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals('"7" is invalid.', v::all(v::min(5), v::equal(6))->errors(7)->first());
 
 		#Rule each
-		$this->assertTrue(v::each(v::min(5))->valid(array(5,6,7,8,9)));
-		$this->assertFalse(v::each(v::min(5))->valid(array(1,2,3,4,5,6,7,8,9)));
+		$this->assertTrue(v::each(v::min(5))->valid([5,6,7,8,9]));
+		$this->assertFalse(v::each(v::min(5))->valid([1,2,3,4,5,6,7,8,9]));
 
 		#handle each
-		$this->assertFalse(v::ruleEach('min', 5)->valid(array(1,2,3,4,5,6,7,8,9)));
-		$this->assertTrue(v::rule('min', 5)->valid(array(1,2,3,4,5,6,7,8,9)));
+		$this->assertFalse(v::rule('min', 5, true)->valid([1,2,3,4,5,6,7,8,9]));
+		$this->assertTrue(v::rule('min', 5)->valid([1,2,3,4,5,6,7,8,9]));
 
-		RulesRegistry::getInstance()->messages(array('min'=>':attribute shall be greater than :min!'));
+		RulesRegistry::getInstance()->messages(['min'=>':attribute shall be greater than :min!']);
 		$this->assertEquals('"3" shall be greater than 5!', v::min(5)->errors(3)->first());
 
 		RulesRegistry::getInstance()->register('test', function($input){ return $input == 'a'; });
@@ -146,33 +154,33 @@ class Test extends \PHPUnit_Framework_TestCase {
 		$this->assertFalse(v::ble('a')->valid('b'));
 
 		RulesRegistry::getInstance()->register('greaterThan', function($input, $parent, $v){ $v->min($parent->input('min')); });
-		$this->assertFalse(v::attribute('title', v::greaterThan(5))->valid(array('title'=>'4', 'min'=>5)));
-		$this->assertTrue(v::attribute('title', v::greaterThan(5))->valid(array('title'=>'4', 'min'=>4)));
+		$this->assertFalse(v::attribute('title', v::greaterThan(5))->valid(['title'=>'4', 'min'=>5]));
+		$this->assertTrue(v::attribute('title', v::greaterThan(5))->valid(['title'=>'4', 'min'=>4]));
 
-		$this->assertFalse(v::attribute('payment', array('required'=>true))->valid(array('amount'=>500)));
-		$this->assertFalse(v::attribute('payment', array('required'=>function($input, $parent, $v) {
+		$this->assertFalse(v::attribute('payment', ['required'=>true])->valid(['amount'=>500]));
+		$this->assertFalse(v::attribute('payment', ['required'=>function($input, $parent, $v) {
 			if($parent->attribute('amount')->input() >= 400)
 				return true;
-		}))->valid(array('amount'=>500)));
-		$this->assertTrue(v::attribute('payment', array('required'=>function($input, $parent, $v) {
+		}])->valid(['amount'=>500]));
+		$this->assertTrue(v::attribute('payment', ['required'=>function($input, $parent, $v) {
 			if($parent->attribute('amount')->input() >= 400)
 				return true;
-		}))->valid(array('amount'=>300)));
-		$this->assertTrue(v::attribute('payment', array('required'=>function($input, $parent, $v) {
+		}])->valid(['amount'=>300]));
+		$this->assertTrue(v::attribute('payment', ['required'=>function($input, $parent, $v) {
 			if($parent->attribute('amount')->input() >= 400)
 				return true;
-		}))->valid(array('amount'=>500, 'payment'=>10)));
+		}])->valid(['amount'=>500, 'payment'=>10]));
 
 		#Report
-		$this->assertEquals(array(
+		$this->assertEquals([
 			'min' => '"2" shall be greater than 5!',
 			'equal' => '"2" must be equal to 6.',
-		), v::min(5)->equal(6)->errors(2)->errors());
+		], v::min(5)->equal(6)->errors(2)->errors());
 
-		$this->assertEquals('Score is not valid.', v::attribute('score', v::min(5))->errors(array('score'=>3))->first());
+		$this->assertEquals('Score shall be greater than 5!', v::attribute('score', v::min(5))->errors(['score'=>3])->first());
 
 		#Setting a subreport
-		$report = (new v)->errors(array('users'=>array()));
+		$report = (new v)->errors(['users'=>[]]);
 		$report->attribute('users.user1', v::min(5)->errors(3));
 		$this->assertEquals('"3" shall be greater than 5!', $report->first('users.user1'));
 
@@ -182,12 +190,12 @@ class Test extends \PHPUnit_Framework_TestCase {
 
 		#Input
 		$v = new v;
-		$v->attribute('category.title', v::lengthBetween(10, null))->valid(array('category'=>array('title'=>'blabla')));
+		$v->attribute('category.title', v::lengthBetween(10, null))->valid(['category'=>['title'=>'blabla']]);
 		$this->assertEquals('blabla', $v->getInput()->attribute('category.title')->input());
 		$this->assertEquals('blabla', $v->getInput()->attributes()['category']->attributes()['title']->input());
 
 		#hasAttribute
-		$input = new InputBag(array('title'=>123));
+		$input = new InputBag(['title'=>123]);
 		$this->assertTrue($input->hasAttribute('title'));
 		$this->assertFalse($input->hasAttribute('content'));
 
@@ -197,9 +205,9 @@ class Test extends \PHPUnit_Framework_TestCase {
 
 		#rule messages
 		$v = new v;
-		$this->assertEquals('Must be over min!', $v->ruleMessages(array(
+		$this->assertEquals('Must be over min!', $v->ruleMessages([
 			'min' => 'Must be over min!'
-		))->getRuleMessage('min'));
+		])->getRuleMessage('min'));
 
 		#a supprimer? l.151/152 de Validator
 		$this->assertFalse(v::rule(new \Asgard\Validation\Rules\Min(5))->valid(4));
@@ -214,22 +222,22 @@ class Test extends \PHPUnit_Framework_TestCase {
 		$this->assertFalse(v::contains('a')->contains('b')->valid('ac'));
 		$this->assertFalse(v::contains('a')->contains('b')->valid('bc'));
 		$this->assertTrue(v::contains('a')->contains('b')->valid('abc'));
-		$this->assertEquals(array(
+		$this->assertEquals([
 			'contains' => '"c" must contain "a".',
 			'contains-1' => '"c" must contain "b".',
-		), v::contains('a')->contains('b')->errors('c')->errors());
+		], v::contains('a')->contains('b')->errors('c')->errors());
 
 		#2 times the same rule in an attribute validator
-		$this->assertEquals(array(
+		$this->assertEquals([
 			'contains' => '"c" must contain "a".',
 			'contains-1' => '"c" must contain "b".',
-		), v::contains('a')->rule(v::contains('b'))->errors('c')->errors());
+		], v::contains('a')->rule(v::contains('b'))->errors('c')->errors());
 
 		#merging attributes validators
-		$this->assertEquals(array(
+		$this->assertEquals([
 			'contains' => 'Title must contain "a".',
 			'contains-1' => 'Title must contain "b".',
-		), v::rule(v::attribute('title', v::contains('a')))->attribute('title', v::contains('b'))->errors(array('title'=>'c'))->attribute('title')->errors());
+		], v::rule(v::attribute('title', v::contains('a')))->attribute('title', v::contains('b'))->errors(['title'=>'c'])->attribute('title')->errors());
 
 		#rule not found
 		try {

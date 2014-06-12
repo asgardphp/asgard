@@ -1,5 +1,5 @@
 <?php
 namespace Asgard\Http\Browser;
 
-class CookieManager extends \Asgard\Utils\Bag {
+class CookieManager extends \Asgard\Common\Bag {
 }

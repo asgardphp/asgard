@@ -12,12 +12,12 @@ class RoutesCommand extends \Asgard\Console\Command {
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$table = $this->getHelperSet()->get('table');
-		$table->setHeaders(array('Method', 'Host', 'URL', 'Controller', 'Action'));
+		$table->setHeaders(['Method', 'Host', 'URL', 'Controller', 'Action']);
 
 		$routes = $this->getAsgard()['resolver']->sortRoutes()->getRoutes();
 		foreach($routes as $route) {
 			$cb = $route->getCallback();
-			$table->addRow(array(
+			$table->addRow([
 				$route->get('method'),
 				$route->get('host'),
 				'/'.$route->getRoute(),
@@ -33,7 +33,7 @@ class RoutesCommand extends \Asgard\Console\Command {
 								$cb
 				),
 				$route instanceof \Asgard\Http\ControllerRoute ? $route->getAction():'',
-			));
+			]);
 		}
 
 		$table->render($output);

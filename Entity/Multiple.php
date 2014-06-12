@@ -2,14 +2,31 @@
 namespace Asgard\Entity;
 
 class Multiple implements \ArrayAccess, \Iterator {
-	protected $elements = array();
+	protected $elements = [];
+    protected $definition;
+    protected $entity;
+    protected $name;
+
+    public function __construct($definition, $entity, $name) {
+        $this->definition = $definition;
+        $this->entity = $entity;
+        $this->name = $name;
+    }
+
+    public function size() {
+        return count($this->elements);
+    }
 
 	public function all() {
 		return $this->elements;
 	}
 
 	public function add($element) {
+        if($element === null)
+            return;
+        $this->definition->processBeforeAdd($this->entity, $this->name, $element);
 		$this->elements[] = $element;
+        return $element;
 	}
 
 	public function remove($offset) {
@@ -31,7 +48,7 @@ class Multiple implements \ArrayAccess, \Iterator {
     }
 
     public function offsetExists($offset) {
-        throw new \LogicException('Not implemented.');
+        return isset($this->elements[$offset]);
     }
 
     public function offsetUnset($offset) {

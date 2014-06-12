@@ -28,7 +28,7 @@ class DB {
 		switch($driver) {
 			case 'mysql':
 				$parameters = 'mysql:host='.$config['host'].(isset($config['port']) ? ';port='.$config['port']:'').(isset($config['database']) ? ';dbname='.$config['database']:'');
-				return new \PDO($parameters, $user, $password, array(\PDO::MYSQL_ATTR_FOUND_ROWS => true, \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8'));
+				return new \PDO($parameters, $user, $password, [\PDO::MYSQL_ATTR_FOUND_ROWS => true, \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8']);
 			case 'pgsql':
 				$parameters = 'pgsql:host='.$config['host'].(isset($config['port']) ? ' port='.$config['port']:'').(isset($config['database']) ? ' dbname='.$config['database']:'');
 				return new \PDO($parameters, $user, $password);
@@ -55,54 +55,6 @@ class DB {
 	}
 	
 	/**
-	 * Import an SQL file
-	 * 
-	 * @param String file SQL file path
-	 * 
-	 * @throws \Exception When file is not accessible
-	 * 
-	 * @return Integer 1 for success, 0 for failure
-	*/
-	public function import($src) {
-		if(!file_exists(realpath($src)))
-			throw new \Exception('File '.$src.' does not exist.');
-		$host = $this->config['host'];
-		$user = $this->config['user'];
-		$pwd = $this->config['password'];
-		$db = $this->config['database'];
-		$cmd = 'mysql -h '.$host.' -u '.$user.($pwd ? ' -p'.$pwd:'').' '.$db.' < '.realpath($src);
-		$process = proc_open($cmd,
-			array(
-			   0 => array("pipe", "r"),
-			   1 => array("pipe", "w"),
-			   2 => array("pipe", "w"),
-			),
-			$pipes
-		);
-		return proc_close($process) === 0;
-	}
-
-	public function dump($dst) {
-		$return = null;
-		$host = $this->config['host'];
-		$user = $this->config['user'];
-		$pwd = $this->config['password'];
-		$db = $this->config['database'];
-
-		\Asgard\Utils\FileManager::mkdir(dirname($dst));
-		$cmd = 'mysqldump --user='.$user.' --password='.$pwd.' --host='.$host.' '.$db.' > '.$dst;
-		$process = proc_open($cmd,
-			array(
-			   0 => array("pipe", "r"),
-			   1 => array("pipe", "w"),
-			   2 => array("pipe", "w"),
-			),
-			$pipes
-		);
-		return proc_close($process) === 0;
-	}
-	
-	/**
 	 * Executes an SQL query
 	 * 
 	 * @param String sql SQL query
@@ -110,7 +62,7 @@ class DB {
 	 * 
 	 * @return Asgard\Db\Query Query object
 	*/
-	public function query($sql, array $args=array()) {
+	public function query($sql, array $args=[]) {
 		return new Query($this->db, $sql, $args);
 	}
 	

@@ -8,8 +8,15 @@
     "autoload": {
         "psr-4": {"Asgard\\Form\\": "."}
     },
+    "require": {
+        "asgard/common": "dev-master",
+        "asgard/http": "dev-master",
+        "asgard/hook": "dev-master",
+        "asgard/validation": "dev-master",
+        "asgard/files": "dev-master",
+        "asgard/container": "dev-master"
+    },
     "suggest": {
-        "asgard/ckeditor": "dev-master",
-        "asgard/captcha": "dev-master"
+        "asgard/entity": "dev-master"
     }
 }

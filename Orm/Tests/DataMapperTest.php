@@ -8,7 +8,7 @@ class DataMapperTest extends \PHPUnit_Framework_TestCase {
 		if(!defined('_ENV_'))
 			define('_ENV_', 'test');
 
-		$app = new \Asgard\Core\App;
+		$app = new \Asgard\Container\Container;
 		static::$app = $app;
 	}
 

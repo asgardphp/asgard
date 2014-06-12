@@ -1,0 +1,14 @@
+{
+	"name": "asgard/config",
+	"license": "MIT",
+	"authors": [{
+		"name": "Michel Hognerud",
+		"email": "michel@hognerud.net"
+	}],
+    "autoload": {
+        "psr-4": {"Asgard\\Config\\": "."}
+    },
+    "require": {
+        "asgard/common": "dev-master"
+    }
+}

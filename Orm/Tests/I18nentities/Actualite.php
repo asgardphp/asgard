@@ -3,41 +3,41 @@ namespace Asgard\Orm\Tests\I18nentities;
 
 class Actualite extends \Asgard\Entity\Entity {
 	public static function definition(\Asgard\Entity\EntityDefinition $definition) {
-		$definition->properties = array(
+		$definition->properties = [
 			'titre',
-			'date'    =>    array(
-				'validation' => array(
+			'date'    =>    [
+				'validation' => [
 					'required'	=>	false,
-				)
-			),
-			'lieu'    =>    array(
-				'validation' => array(
+				]
+			],
+			'lieu'    =>    [
+				'validation' => [
 					'required'	=>	false,
-				)
-			),
+				]
+			],
 			'introduction',
-			'contenu' => array(
-				'validation' => array(
+			'contenu' => [
+				'validation' => [
 					'required'	=>	true,
-				)
-			),
-			'test'	=>	array(
+				]
+			],
+			'test'	=>	[
 				'i18n'	=>	true,
-				'validation' => array(
+				'validation' => [
 					'required'	=>	false,
-				)
-			),
-		);
+				]
+			],
+		];
 
-		$definition->behaviors = array(
+		$definition->behaviors = [
 			new \Asgard\Orm\ORMBehavior
-		);
+		];
 
-		$definition->relations = array(
-			'commentaires'	=>	array(
+		$definition->relations = [
+			'commentaires'	=>	[
 				'entity'	=>	'\Asgard\Orm\Tests\I18nentities\Commentaire',
 				'has'		=>	'many',
-			),
-		);
+			],
+		];
 	}
 }

@@ -13,17 +13,25 @@ class InitConfigCommand extends \Asgard\Console\Command {
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$root = $this->getAsgard()['kernel']['root'];
 
-		if(file_exists($root.'/config/config.php'))
-			$output->writeln('File "config/config.php" already exists.');
-		else {
-			$config = file_get_contents(__DIR__.'/stubs/config.php.stub');
-			$key = \Asgard\Utils\Tools::randStr(10);
-			$config = str_replace('_KEY_', $key, $config);
+		$this->initConfig('config.php', $input, $output);
+		$this->initConfig('config_dev.php', $input, $output);
+		$this->initConfig('config_prod.php', $input, $output);
+		$this->initConfig('config_test.php', $input, $output);
+	}
 
-			if(\Asgard\Utils\FileManager::put($root.'/config/config.php', $config))
-				$output->writeln('<info>Configuration created with success.</info>');
-			else
-				$output->writeln('<error>Configuration creation failed.</error>');
+	protected function initConfig($file, $input, $output) {
+		if(file_exists($root.'/config/'.$file)) {
+			if(!$this->confirm('Do you want to override "'.$file.'"?'))
+				return;
 		}
+
+		$config = file_get_contents(__DIR__.'/stubs/'.$file.'.stub');
+		$key = \Asgard\Common\Tools::randStr(10);
+		$config = str_replace('_KEY_', $key, $config);
+
+		if(\Asgard\Common\FileManager::put($root.'/config/'.$file, $config))
+			$output->writeln('<info>Configuration file "'.$file.'" created with success.</info>');
+		else
+			$output->writeln('<error>Configuration file "'.$file.'" creation failed.</error>');
 	}
 }

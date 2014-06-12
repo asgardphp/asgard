@@ -20,8 +20,8 @@ class DumpCommand extends \Asgard\Console\Command {
 	}
 
 	protected function getArguments() {
-		return array(
-			array('dst', InputArgument::OPTIONAL, 'The destination'),
-		);
+		return [
+			['dst', InputArgument::OPTIONAL, 'The destination'],
+		];
 	}
 }

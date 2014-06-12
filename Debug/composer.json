@@ -1,0 +1,15 @@
+{
+	"name": "asgard/debug",
+	"license": "MIT",
+	"authors": [{
+		"name": "Michel Hognerud",
+		"email": "michel@hognerud.net"
+	}],
+    "autoload": {
+        "psr-4": {"Asgard\\Debug\\": "."}
+    },
+    "require": {
+        "asgard/http": "dev-master",
+        "asgard/common": "dev-master"
+    }
+}

@@ -4,7 +4,7 @@ namespace Asgard\Debug;
 class ErrorHandler {
 	protected static $reservedMemory;
 	protected static $errorAtStart;
-	protected $ignoreDirs = array();
+	protected $ignoreDirs = [];
 	protected $logPHPErrors = false;
 	protected $logger;
 
@@ -14,9 +14,9 @@ class ErrorHandler {
 		static::$errorAtStart = error_get_last();
 
 		$errorHandler = new static();
-		set_error_handler(array($errorHandler, 'phpErrorHandler'));
-		set_exception_handler(array($errorHandler, 'exceptionHandler'));
-		register_shutdown_function(array($errorHandler, 'shutdownFunction'));
+		set_error_handler([$errorHandler, 'phpErrorHandler']);
+		set_exception_handler([$errorHandler, 'exceptionHandler']);
+		register_shutdown_function([$errorHandler, 'shutdownFunction']);
 		return $errorHandler;
 	}
 
@@ -26,7 +26,7 @@ class ErrorHandler {
 	        $exceptionHandler = set_exception_handler(function() {});
 	        restore_exception_handler();
 			$exception = new FatalErrorException($e['message'], $e['type'], 0, $e['file'], $e['line']);
-			call_user_func_array($exceptionHandler, array($exception));
+			call_user_func_array($exceptionHandler, [$exception]);
 		}
 	}
 
@@ -55,10 +55,10 @@ class ErrorHandler {
 						unset($trace[$i]['params']);
 					}
 				}
-				$lastStep = array(
+				$lastStep = [
 					'line' => $e->getLine(),
 					'file' => $e->getFile(),
-				);
+				];
 				array_unshift($trace, $lastStep);
 			}
 			else
@@ -137,11 +137,11 @@ class ErrorHandler {
 		if(!$this->isLogging())
 			return;
 
-		$context = array(
+		$context = [
 			'file' => $file,
 			'line' => $line,
 			'trace' => $trace,
-		);
+		];
 		$this->logger->log($severity, $message, $context);
 	}
 
@@ -155,7 +155,7 @@ class ErrorHandler {
 	}
 
 	public static function getPHPErrorSeverity($code) {
-		$PHP_ERROR_LEVELS = array(
+		$PHP_ERROR_LEVELS = [
 			E_PARSE => \Psr\Log\LogLevel::ERROR,
 			E_ERROR => \Psr\Log\LogLevel::ERROR,
 			E_CORE_ERROR => \Psr\Log\LogLevel::ERROR,
@@ -169,12 +169,12 @@ class ErrorHandler {
 			E_NOTICE => \Psr\Log\LogLevel::NOTICE,
 			E_USER_NOTICE => \Psr\Log\LogLevel::NOTICE,
 			E_STRICT => \Psr\Log\LogLevel::NOTICE,
-		);
+		];
 		return $PHP_ERROR_LEVELS[$code];
 	}
 
 	public static function getPHPError($code) {
-		$errors = array(
+		$errors = [
 			1 => 'E_ERROR',
 			2 => 'E_WARNING',
 			4 => 'E_PARSE',
@@ -190,7 +190,7 @@ class ErrorHandler {
 			4096 => 'E_RECOVERABLE_ERROR',
 			8192 => 'E_DEPRECATED',
 			16384 => 'E_USER_DEPRECATED',
-		);
+		];
 		return $errors[$code];
 	}
 }

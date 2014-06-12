@@ -14,7 +14,7 @@ class Application extends \Symfony\Component\Console\Application {
 	/**
 	 * Constructor.
 	 * 
-	 * @param \Asgard\Core\App asgard The application container
+	 * @param \Asgard\Container\Container asgard The application container
 	*/
 	public function __construct($name, $version, $asgard) {
 		$this->asgard = $asgard;
@@ -38,7 +38,7 @@ class Application extends \Symfony\Component\Console\Application {
 	/**
 	 * Returns the asgard application container.
 	 * 
-	 * @return \Asgard\Core\App The application container.
+	 * @return \Asgard\Container\Container The application container.
 	*/
 	public function getAsgard() {
 		return $this->asgard;

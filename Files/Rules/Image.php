@@ -11,7 +11,7 @@ class Image extends \Asgard\Validation\Rule {
 		$mime = \finfo_file($finfo, $input->get(null, true));
 		\finfo_close($finfo);
 		list($mime) = explode(';', $mime);
-		return in_array($mime, array('image/jpeg', 'image/png', 'image/gif'));
+		return in_array($mime, ['image/jpeg', 'image/png', 'image/gif']);
 	}
 
 	public function getMessage() {

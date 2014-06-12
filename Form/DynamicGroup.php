@@ -16,6 +16,8 @@ class DynamicGroup extends Group {
 
 	public function setData(array $data) {
 		$this->data = array_values($data);
+
+		$this->resetFields();
 		
 		foreach($data as $name=>$data)
 			$this->newField($name, $data);
@@ -25,7 +27,7 @@ class DynamicGroup extends Group {
 		return $this;
 	}
 
-	public function def($field=null) {
+	public function field($field=null) {
 		$default_render = $this->default_render;
 		if($default_render === null)
 			return $field->def();
@@ -34,7 +36,7 @@ class DynamicGroup extends Group {
 	}
 
 	public function renderTemplate($offset='') {
-		$randstr = \Asgard\Utils\Tools::randstr(10);
+		$randstr = \Asgard\Common\Tools::randstr(10);
 		$jq = $this->renderNew('{{'.$randstr.'}}');
 		$jq = addcslashes($jq, "'");
 		$jq = str_replace("\r\n", "\n", $jq);
@@ -68,12 +70,16 @@ class DynamicGroup extends Group {
 			return;
 
 		if($default_render === null)
-			$r = $field->def();
+			$r = $this->renderField($field);
 		else
 			$r = $default_render($field);
 
 		unset($this[$offset]);
 
 		return $r;
+	}
+
+	protected function renderField($field) {
+		return $field->def();
 	}
 }

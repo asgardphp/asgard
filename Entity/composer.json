@@ -6,9 +6,15 @@
 		"email": "michel@hognerud.net"
 	}],
     "autoload": {
-        "psr-4": {"Asgard\\Core\\": "."}
+        "psr-4": {"Asgard\\Entity\\": "."}
     },
     "require": {
-        "nesbot/Carbon": "*"
+        "asgard/container": "dev-master",
+        "asgard/cache": "dev-master",
+        "asgard/hook": "dev-master",
+        "asgard/config": "dev-master",
+        "asgard/common": "dev-master",
+        "asgard/files": "dev-master",
+        "asgard/validation": "dev-master"
     }
 }

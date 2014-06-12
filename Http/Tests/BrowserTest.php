@@ -8,7 +8,7 @@ class BrowserTest extends \PHPUnit_Framework_TestCase {
 		if(!defined('_ENV_'))
 			define('_ENV_', 'test');
 
-		$app = new \Asgard\Core\App;
+		$app = new \Asgard\Container\Container;
 		$app['cache'] = new \Asgard\Cache\NullCache;
 		$app['resolver'] = new \Asgard\Http\Resolver($app);
 		$app['httpkernel'] = new \Asgard\Http\HttpKernel($app);
@@ -16,7 +16,7 @@ class BrowserTest extends \PHPUnit_Framework_TestCase {
 		$app['resolver'] = new \Asgard\Http\Resolver($app['cache']);
 		$app['resolver']->addRoute(new \Asgard\Http\ControllerRoute('', 'Asgard\Http\Tests\Fixtures\HomeController', 'home'));
 		$app->register('paginator', function($app, $args) {
-			return new \Asgard\Utils\Paginator($args[0], $args[1], $args[2]);
+			return new \Asgard\Common\Paginator($args[0], $args[1], $args[2]);
 		});
 		static::$app = $app;
 	}

@@ -8,12 +8,12 @@ use \Asgard\Http\Request;
 
 class ControllerTest extends \PHPUnit_Framework_TestCase {
 	public function testAnnotationsAndRouteFor() {
-		\Asgard\Core\App::instance()['cache'] = new \Asgard\Cache\NullCache;
+		\Asgard\Container\Container::instance()['cache'] = new \Asgard\Cache\NullCache;
 		$routes = \Asgard\Http\Tests\Fixtures\Controllers\FooController::fetchRoutes();
 		$route = $routes[0];
 		$this->assertEquals('page/:id', $route->getRoute());
 		$this->assertEquals('example.com', $route->get('host'));
-		$this->assertEquals(array('src'=>array('type'=>'regex', 'regex'=>'.+')), $route->get('requirements'));
+		$this->assertEquals(['src'=>['type'=>'regex', 'regex'=>'.+']], $route->get('requirements'));
 		$this->assertEquals('get', $route->get('method'));
 		$this->assertEquals('foo', $route->get('name'));
 
@@ -21,7 +21,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testFilters() {
-		$app = new \Asgard\Core\App;
+		$app = new \Asgard\Container\Container;
 		$app['hooks'] = new \Asgard\Hook\HooksManager($app);
 		$controller = new \Asgard\Http\Tests\Fixtures\Controllers\FooController($app);
 		$controller->addFilter(new _Filter);
@@ -39,9 +39,9 @@ class ControllerTest extends \PHPUnit_Framework_TestCase {
 		$callback = $resolver->getCallback($request);
 		$arguments = $resolver->getArguments($request);
 
-		$app = new \Asgard\Core\App;
+		$app = new \Asgard\Container\Container;
 		$app['hooks'] = new \Asgard\Hook\HooksManager($app);
-		$response = call_user_func_array($callback, array_merge($arguments, array($app, $request)));
+		$response = call_user_func_array($callback, array_merge($arguments, [$app, $request]));
 		$this->assertEquals('hello!', $response->content);
 	}
 }

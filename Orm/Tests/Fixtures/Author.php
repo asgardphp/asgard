@@ -3,19 +3,19 @@ namespace Asgard\Orm\Tests\Fixtures;
 
 class Author extends \Asgard\Entity\Entity {
 	public static function definition(\Asgard\Entity\EntityDefinition $definition) {
-		$definition->properties = array(
+		$definition->properties = [
 			'name'
-		);
+		];
 
-		$definition->relations = array(
-			'post' => array(
+		$definition->relations = [
+			'post' => [
 				'entity' => 'Asgard\Orm\Tests\Fixtures\Post',
 				'has' => 'many'
-			)
-		);
+			]
+		];
 
-		$definition->behaviors = array(
+		$definition->behaviors = [
 			new \Asgard\Orm\ORMBehavior
-		);
+		];
 	}
 }

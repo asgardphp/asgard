@@ -22,8 +22,8 @@ class RemoveCommand extends \Asgard\Console\Command {
 	}
 
 	protected function getArguments() {
-		return array(
-			array('migration', InputArgument::REQUIRED, 'The migration name'),
-		);
+		return [
+			['migration', InputArgument::REQUIRED, 'The migration name'],
+		];
 	}
 }

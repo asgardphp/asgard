@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\Orm\Validation;
+namespace Asgard\Orm\Rules;
 
 class Relationrequired extends \Asgard\Validation\Rule {
 	public function validate($input) {

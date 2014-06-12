@@ -21,12 +21,12 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 
 	protected function getDB() {
 		if(!$this->db) {
-			$this->db = new \Asgard\Db\DB(array(
+			$this->db = new \Asgard\Db\DB([
 				'host' => 'localhost',
 				'user' => 'root',
 				'password' => '',
 				'database' => 'asgard',
-			));
+			]);
 		}
 		return $this->db;
 	}
@@ -307,7 +307,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 		});
 		
 		$schema->table('test', function($table) {
-			$table->primary(array('id', 'title'));
+			$table->primary(['id', 'title']);
 		});
 	}
 }

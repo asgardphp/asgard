@@ -3,7 +3,7 @@ namespace Asgard\Http\Browser;
 
 class Field {
     protected $value;
-    protected $choices = array();
+    protected $choices = [];
     protected $type;
 
     function __construct(\DOMNode $node) {
@@ -73,7 +73,7 @@ class Field {
                 break;
             case 'checkbox':
                 if(!is_array($this->value))
-                    $this->value = array();
+                    $this->value = [];
                 if($node->getAttribute('checked') == 'checked')
                     $this->value = $inputValue;
                 break;
@@ -94,7 +94,7 @@ class Field {
 }
 
 class FormParser {
-    protected $fields = array();
+    protected $fields = [];
     protected $submit = null;
 
     public function has($name) {
@@ -118,7 +118,7 @@ class FormParser {
     }
 
     protected function getPath($name) {
-        $path = array();
+        $path = [];
         $matches = null;
         preg_match('/^([^\[]+)/', $name, $matches);
         $path[] = $matches[0];
@@ -129,7 +129,7 @@ class FormParser {
     }
 
     public function values() {
-        $res = array();
+        $res = [];
         foreach($this->fields as $name=>$field) {
             $value = $field->getValue();
             if($value === null)
@@ -159,18 +159,15 @@ class FormParser {
     public function parse($html, $xpath) {
         $doc = new \DOMDocument();
         $doc->loadHTML($html);
-        // $xpath = new \DOMXPath($doc);
         $domxpath = new \DOMXPath($doc);
         $node = $domxpath->evaluate($xpath)->item(0);
 
-    // // public function parse(\DOMNode $node) {
         $document = new \DOMDocument('1.0', 'UTF-8');
         $node = $document->importNode($node, true);
         $root = $document->appendChild($document->createElement('_root'));
         $root->appendChild($node);
         $xpath = new \DOMXPath($document);
 
-        // d($xpath);
         foreach ($xpath->query('descendant::input | descendant::textarea | descendant::select', $root) as $node) {
             if (!$node->hasAttribute('name'))
                 continue;

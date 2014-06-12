@@ -15,19 +15,15 @@ class AutoMigrateCommand extends \Asgard\Console\Command {
 		$migration = $input->getArgument('migration') ? $input->getArgument('migration'):'Automigrate';
 
 		$mm = new \Asgard\Migration\MigrationsManager($this->getAsgard()['kernel']['root'].'/migrations/', $asgard);
-		if($mm->getTracker()->getDownList()) {
-			$output->writeln('<error>All migrations must have been executed before running automigrate.</error>');
-			return;
-		}
 		$om = new \Asgard\Orm\ORMMigrations($mm);
 		
-		$entities = array();
+		$entities = [];
 
 		$bundles = $asgard['kernel']->getAllBundles();
 		foreach($bundles as $bundle) {
 			$bundle = $bundle->getPath();
 			foreach(glob($bundle.'/Entities/*.php') as $file) {
-				$class = $asgard['autoloader']->loadClassFile($file);
+				$class = \Asgard\Common\Tools::loadClassFile($file);
 				if(is_subclass_of($class, 'Asgard\Entity\Entity'))
 					$entities[] = $class;
 			}
@@ -39,15 +35,15 @@ class AutoMigrateCommand extends \Asgard\Console\Command {
 		else
 			$output->writeln('<error>The migration could not be generated.</error>');
 
-		if($mm->migrateAll(true))
+		if($mm->migrate($migration, true))
 			$output->writeln('<info>Migration succeded.</info>');
 		else
 			$output->writeln('<error>Migration failed.</error>');
 	}
 
 	protected function getArguments() {
-		return array(
-			array('migration', InputArgument::OPTIONAL, 'The migration name'),
-		);
+		return [
+			['migration', InputArgument::OPTIONAL, 'The migration name'],
+		];
 	}
 }

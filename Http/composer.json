@@ -11,6 +11,9 @@
     "require": {
         "doctrine/annotations": "1.*",
         "doctrine/cache": "1.*",
-        "asgard/utils": "dev-master"
+        "asgard/common": "dev-master",
+        "asgard/hook": "dev-master",
+        "asgard/container": "dev-master",
+        "asgard/debug": "dev-master"
     }
 }

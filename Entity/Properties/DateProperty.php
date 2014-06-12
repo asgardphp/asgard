@@ -32,7 +32,7 @@ class DateProperty extends \Asgard\Entity\Property {
 		return \Carbon\Carbon::createFromFormat('Y-m-d', $str);
 	}
 
-	protected function doSet($val) {
+	public function doSet($val) {
 		if($val instanceof \Carbon\Carbon)
 			return $val;
 		elseif(is_string($val)) {
@@ -49,5 +49,9 @@ class DateProperty extends \Asgard\Entity\Property {
 
 	public function toString($obj) {
 		return $obj->format('Y-m-d');
+	}
+
+	public function getFormField() {
+		return 'Asgard\Form\Fields\DateField';
 	}
 }

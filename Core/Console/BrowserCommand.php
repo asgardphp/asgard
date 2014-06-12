@@ -14,16 +14,15 @@ class BrowserCommand extends \Asgard\Console\Command {
 		$method = $input->getArgument('method');
 		$url = $input->getArgument('url');
 		
-		$headers = $input->getOption('h') ? json_decode($input->getOption('h')):array();
-		$post = $input->getOption('p') ? json_decode($input->getOption('p')):array();
-		$session = $input->getOption('ss') ? json_decode($input->getOption('ss')):array();
-		$server = $input->getOption('sr') ? json_decode($input->getOption('sr')):array();
-		$cookies = $input->getOption('c') ? json_decode($input->getOption('c')):array();
+		$headers = $input->getOption('h') ? json_decode($input->getOption('h')):[];
+		$post = $input->getOption('p') ? json_decode($input->getOption('p')):[];
+		$session = $input->getOption('ss') ? json_decode($input->getOption('ss')):[];
+		$server = $input->getOption('sr') ? json_decode($input->getOption('sr')):[];
+		$cookies = $input->getOption('c') ? json_decode($input->getOption('c')):[];
 		$body = $input->getOption('b');
-		$files = $input->getOption('f') ? json_decode($input->getOption('f')):array();
+		$files = $input->getOption('f') ? json_decode($input->getOption('f')):[];
 		if($files) {
 			$files = json_decode($files);
-			#todo
 			foreach($files as $k=>$v)
 				$files[$k] = new \Asgard\Http\HttpFile($v['path'], $v['name'], $v['size'], $v['error']);
 		}
@@ -52,27 +51,27 @@ class BrowserCommand extends \Asgard\Console\Command {
 	}
 
 	protected function getOptions() {
-		return array(
-			array('showAll', null, InputOption::VALUE_NONE, 'Show the whole response'),
-			array('showSession', null, InputOption::VALUE_NONE, 'Show response session'),
-			array('showCookies', null, InputOption::VALUE_NONE, 'Show response cookies'),
-			array('showHeaders', null, InputOption::VALUE_NONE, 'Show response headers'),
-			array('showCode', null, InputOption::VALUE_NONE, 'Show response code'),
-			array('showContent', null, InputOption::VALUE_NONE, 'Show response content'),
-			array('h', null, InputOption::VALUE_OPTIONAL, 'Headers'),
-			array('p', null, InputOption::VALUE_OPTIONAL, 'Post data'),
-			array('f', null, InputOption::VALUE_OPTIONAL, 'Files'),
-			array('ss', null, InputOption::VALUE_OPTIONAL, 'Session data'),
-			array('sr', null, InputOption::VALUE_OPTIONAL, 'Server data'),
-			array('c', null, InputOption::VALUE_OPTIONAL, 'Cookies'),
-			array('b', null, InputOption::VALUE_OPTIONAL, 'Body'),
-		);
+		return [
+			['showAll', null, InputOption::VALUE_NONE, 'Show the whole response'],
+			['showSession', null, InputOption::VALUE_NONE, 'Show response session'],
+			['showCookies', null, InputOption::VALUE_NONE, 'Show response cookies'],
+			['showHeaders', null, InputOption::VALUE_NONE, 'Show response headers'],
+			['showCode', null, InputOption::VALUE_NONE, 'Show response code'],
+			['showContent', null, InputOption::VALUE_NONE, 'Show response content'],
+			['h', null, InputOption::VALUE_OPTIONAL, 'Headers'],
+			['p', null, InputOption::VALUE_OPTIONAL, 'Post data'],
+			['f', null, InputOption::VALUE_OPTIONAL, 'Files'],
+			['ss', null, InputOption::VALUE_OPTIONAL, 'Session data'],
+			['sr', null, InputOption::VALUE_OPTIONAL, 'Server data'],
+			['c', null, InputOption::VALUE_OPTIONAL, 'Cookies'],
+			['b', null, InputOption::VALUE_OPTIONAL, 'Body'],
+		];
 	}
 
 	protected function getArguments() {
-		return array(
-			array('method', InputArgument::REQUIRED, 'The HTTP method'),
-			array('url', InputArgument::REQUIRED, 'The HTTP url'),
-		);
+		return [
+			['method', InputArgument::REQUIRED, 'The HTTP method'],
+			['url', InputArgument::REQUIRED, 'The HTTP url'],
+		];
 	}
 }

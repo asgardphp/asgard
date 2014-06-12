@@ -15,4 +15,8 @@ class BooleanProperty extends \Asgard\Entity\Property {
 	public function _getDefault() {
 		return false;
 	}
+
+	public function getFormField() {
+		return 'Asgard\Form\Fields\BooleanField';
+	}
 }

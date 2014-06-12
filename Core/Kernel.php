@@ -3,10 +3,10 @@ namespace Asgard\Core;
 
 class Kernel implements \ArrayAccess {
 	const VERSION = 0.1;
-	protected $params = array();
+	protected $params = [];
 	protected $app;
 	protected $config;
-	protected $addedBundles = array();
+	protected $addedBundles = [];
 	protected $bundles;
 	protected $loaded = false;
 
@@ -18,16 +18,15 @@ class Kernel implements \ArrayAccess {
 		if(!$this->app) {
 			$this->app = $this->buildApp($this->getConfig()['cache']);
 			$this->app['kernel'] = $this;
-			\Asgard\Core\App::setInstance($this->app);
+			\Asgard\Container\Container::setInstance($this->app);
 		}
 		return $this->app;
 	}
 
 	public function getConfig() {
 		if(!$this->config) {
-			$config = new \Asgard\Core\Config();
+			$this->config = $config = new \Asgard\Config\Config();
 			$config->loadConfigDir($this['root'].'/config', $this->getEnv());
-			$this->config = $config;
 		}
 		return $this->config;
 	}
@@ -88,19 +87,20 @@ class Kernel implements \ArrayAccess {
 		}
 	}
 
-	protected function getCache() {
-		return new \Doctrine\Common\Cache\FilesystemCache($this['root'].'/storage/cache/');
+	protected function getCache($cache) {
+		$reflector = new \ReflectionClass($cache);
+		return $reflector->newInstanceArgs([$this['root'].'/storage/cache/']);
 	}
 
 	protected function buildApp($cache=false) {
 		if($cache) {
-			$c = $this->getCache();
+			$c = $this->getCache($cache);
 			if(($res = $c->fetch('app')) !== false)
 				return $this->app = $res;
 		}
 
 		$bundles = $this->getAllBundles();
-		$app = $this->app = \Asgard\Core\App::instance();
+		$app = $this->app = \Asgard\Container\Container::instance();
 
 		foreach($bundles as $bundle)
 			$bundle->buildApp($app);
@@ -126,7 +126,6 @@ class Kernel implements \ArrayAccess {
 
 	protected function doGetBundles($cache=false) {
 		if($cache) {
-			#todo use config cache driver?
 			$c = $this->getCache();
 			if(($res = $c->fetch('bundles')) !== false)
 				return $res;
@@ -183,7 +182,7 @@ class Kernel implements \ArrayAccess {
 	}
 
 	protected function getBundles() {
-		return array();
+		return [];
 	}
 
 	public function addBundles($bundles) {

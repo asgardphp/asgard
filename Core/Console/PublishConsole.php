@@ -57,20 +57,20 @@ class PublishCommand extends \Asgard\Console\Command {
 	}
 
 	protected function getOptions() {
-		return array(
-			array('all', null, InputOption::VALUE_NONE, 'Publish all files.', null),
-			array('app', null, InputOption::VALUE_NONE, 'Publish app files.', null),
-			array('tests', null, InputOption::VALUE_NONE, 'Publish test files.', null),
-			array('web', null, InputOption::VALUE_NONE, 'Publish web files.', null),
-			array('migrations', null, InputOption::VALUE_NONE, 'Publish migrations.', null),
-			array('config', null, InputOption::VALUE_NONE, 'Publish config files.', null),
-			array('migrate', null, InputOption::VALUE_NONE, 'Automatically execute the migrations.', null),
-		);
+		return [
+			['all', null, InputOption::VALUE_NONE, 'Publish all files.', null],
+			['app', null, InputOption::VALUE_NONE, 'Publish app files.', null],
+			['tests', null, InputOption::VALUE_NONE, 'Publish test files.', null],
+			['web', null, InputOption::VALUE_NONE, 'Publish web files.', null],
+			['migrations', null, InputOption::VALUE_NONE, 'Publish migrations.', null],
+			['config', null, InputOption::VALUE_NONE, 'Publish config files.', null],
+			['migrate', null, InputOption::VALUE_NONE, 'Automatically execute the migrations.', null],
+		];
 	}
 
 	protected function getArguments() {
-		return array(
-			array('bundle', InputArgument::REQUIRED, 'Path to bundle'),
-		);
+		return [
+			['bundle', InputArgument::REQUIRED, 'Path to bundle'],
+		];
 	}
 }

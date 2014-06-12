@@ -8,25 +8,27 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 		if(!defined('_ENV_'))
 			define('_ENV_', 'test');
 
-		$app = new \Asgard\Core\App();
+		$app = new \Asgard\Container\Container();
 		$app['hooks'] = new \Asgard\Hook\HooksManager($app);
 		$app['kernel'] = new \Asgard\Core\Kernel();
-		$app['config'] = new \Asgard\Core\Config();
+		$app['config'] = new \Asgard\Config\Config();
 		$app['config']->set('locale', 'en');
-		$app['config']->set('locales', array('en', 'fr'));
+		$app['config']->set('locales', ['en', 'fr']);
 		$app['cache'] = new \Asgard\Cache\NullCache;
 		$app['translator'] = new \Symfony\Component\Translation\Translator('en');
 		$app['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($app);
-		$app['db'] = new \Asgard\Db\DB(array(
+		$config = [
 			'database' => 'asgard',
 			'user' => 'root',
 			'password' => '',
 			'host' => 'localhost'
-		));
+		];
+		$app['db'] = new \Asgard\Db\DB($config);
 		\Asgard\Entity\Entity::setApp($app);
 		static::$app = $app;
 
-		$app['db']->import(realpath(__DIR__.'/sql/i18ntest.sql'));
+		$mysql = new \Asgard\Db\MySQL($config);
+		$mysql->import(realpath(__DIR__.'/sql/i18ntest.sql'));
 	}
 
 	#get default
@@ -66,7 +68,7 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 		$actu->test = 'Hi';
 		$actu->save(null, true);
 		$dal = new \Asgard\Db\DAL(static::$app['db'], static::$app['config']->get('database/prefix').'actualite_translation');
-		$r = $dal->where(array('locale'=>'en', 'id'=>2))->first();
+		$r = $dal->where(['locale'=>'en', 'id'=>2])->first();
 		$this->assertEquals('Hi', $r['test']);
 	}
 }

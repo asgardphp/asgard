@@ -8,39 +8,36 @@ class DBTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function test1() {
-		$db = new \Asgard\Db\DB(array(
+		$config = [
 			'host' => 'localhost',
 			'user' => 'root',
 			'password' => '',
 			'database' => 'asgard',
-		));
-		$db2 = new \Asgard\Db\DB(array(
-			'host' => 'localhost',
-			'user' => 'root',
-			'password' => '',
-			'database' => 'asgard',
-		));
+		];
+		$db = new \Asgard\Db\DB($config);
+		$db2 = new \Asgard\Db\DB($config);
+		$mysql = new \Asgard\Db\MySQL($config);
 
 		$this->assertTrue($db->getDB() instanceof \PDO);
 
-		$db->import(__dir__.'/sql/test1.sql');
-		$db->query('SELECT title FROM news WHERE id=?', array(1));
+		$mysql->import(__dir__.'/sql/test1.sql');
+		$db->query('SELECT title FROM news WHERE id=?', [1]);
 
 		$this->assertEquals('The first news!', $db->query('SELECT title FROM news')->first()['title']);
 
-		$db->query('INSERT INTO news (title) VALUES (?)', array('Another news!'));
+		$db->query('INSERT INTO news (title) VALUES (?)', ['Another news!']);
 		$this->assertEquals(2, $db->id());
 
-		$rows = array(
-			array(
+		$rows = [
+			[
 				'id' => '1',
 				'title' => 'The first news!',
-			),
-			array(
+			],
+			[
 				'id' => '2',
 				'title' => 'Another news!',
-			)
-		);
+			]
+		];
 		$this->assertEquals(
 			$rows,
 			$db->query('SELECT * FROM news')->all()
@@ -52,21 +49,21 @@ class DBTest extends \PHPUnit_Framework_TestCase {
 		}
 
 		$db->beginTransaction();
-		$db->query('INSERT INTO news (title) VALUES (?)', array('Another news!'));
+		$db->query('INSERT INTO news (title) VALUES (?)', ['Another news!']);
 		$this->assertEquals(2, $db2->query('SELECT * FROM news ORDER BY id DESC')->first()['id']);
 		$db->commit();
 		$this->assertEquals(3, $db2->query('SELECT * FROM news ORDER BY id DESC')->first()['id']);
 
 		$db->beginTransaction();
-		$db->query('INSERT INTO news (title) VALUES (?)', array('Another news!'));
+		$db->query('INSERT INTO news (title) VALUES (?)', ['Another news!']);
 		$this->assertEquals(3, $db2->query('SELECT * FROM news ORDER BY id DESC')->first()['id']);
 		$db->rollback();
 		$this->assertEquals(3, $db->query('SELECT * FROM news ORDER BY id DESC')->first()['id']);
 
 		$this->assertEquals(3, $db->query('SELECT * FROM news')->count());
 
-		$this->assertEquals(5, $db->query('INSERT INTO news (title) VALUES (?)', array('Another news!'))->id());
+		$this->assertEquals(5, $db->query('INSERT INTO news (title) VALUES (?)', ['Another news!'])->id());
 
-		$this->assertEquals(4, $db->query('UPDATE news SET title = ?', array('test'))->affected());
+		$this->assertEquals(4, $db->query('UPDATE news SET title = ?', ['test'])->affected());
 	}
 }

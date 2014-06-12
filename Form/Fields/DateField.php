@@ -13,11 +13,12 @@ class DateField extends \Asgard\Form\Field {
 	}
 
 	public function getValue() {
-		if(isset($this->options['data_type']))
+		if(isset($this->options['data_type'])) {
 			if($this->options['data_type'] == 'date')
 				return $this->value;
 			elseif($this->options['data_type'] == 'string')
 				return $this->value->format('d/m/Y');
+		}
 		return $this->value;
 	}
 

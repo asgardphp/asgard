@@ -3,28 +3,28 @@ namespace Asgard\Core\Tests;
 
 class BundleTest {
 	// public function testAddBundlesDirs() {
-	// 	$app = new \Asgard\Core\App;
+	// 	$app = new \Asgard\Container\Container;
 	// 	$bm = new \Asgard\Core\BundlesManager($app);
 	// 	$bm->addBundlesDirs(__DIR__.'/Fixtures/bundles/');
 	// 	$this->assertInstanceOf('Asgard\Core\Tests\Fixtures\Bundles\Bundle\Bundle', $bm->getBundles()[0]);
 	// }
 
 	// public function testAddBundles() {
-	// 	$app = new \Asgard\Core\App;
+	// 	$app = new \Asgard\Container\Container;
 	// 	$bm = new \Asgard\Core\BundlesManager($app);
 	// 	$bm->addBundles(new \Asgard\Core\Tests\Fixtures\Bundles\Bundle\Bundle);
 	// 	$this->assertInstanceOf('Asgard\Core\Tests\Fixtures\Bundles\Bundle\Bundle', $bm->getBundles()[0]);
 	// }
 
 	// public function testAddBundlesWithoutClass() {
-	// 	$app = new \Asgard\Core\App;
+	// 	$app = new \Asgard\Container\Container;
 	// 	$bm = new \Asgard\Core\BundlesManager($app);
 	// 	$bm->addBundles(__DIR__.'/Fixtures/bundles');
 	// 	$this->assertInstanceOf('Asgard\Core\BundleLoader', $bm->getBundles()[0]);
 	// }
 
 	// public function testGetBundlesPaths() {
-	// 	$app = new \Asgard\Core\App;
+	// 	$app = new \Asgard\Container\Container;
 	// 	$bm = new \Asgard\Core\BundlesManager($app);
 	// 	$bm->addBundles(new \Asgard\Core\Tests\Fixtures\Bundles\Bundle\Bundle);
 	// 	$this->assertEquals(
@@ -36,7 +36,7 @@ class BundleTest {
 	// }
 
 	// public function testLoadBundles() {
-	// 	$bm = new \Asgard\Core\BundlesManager(new \Asgard\Core\App);
+	// 	$bm = new \Asgard\Core\BundlesManager(new \Asgard\Container\Container);
 	// 	$bundle = $this->getMock('Asgard\Core\BundleLoader', array('load', 'run'));
 	// 	$bundle->expects($this->once())->method('load');
 	// 	$bundle->expects($this->once())->method('run');
@@ -45,9 +45,9 @@ class BundleTest {
 	// }
 
 	// public function testBundleLoad() {
-	// 	$autoloader = $this->getMock('Asgard\Core\Autoloader', array('preloadDir'));
+	// 	$autoloader = $this->getMock('Asgard\Autoloader\Autoloader', array('preloadDir'));
 	// 	$autoloader->expects($this->once())->method('preloadDir')->with(realpath(__DIR__.'/Fixtures/bundles/bundle'));
-	// 	$app = new \Asgard\Core\App(array(
+	// 	$app = new \Asgard\Container\Container(array(
 	// 		'autoloader' => $autoloader
 	// 	));
 	// 	$bm = new \Asgard\Core\BundlesManager($app);
@@ -61,12 +61,12 @@ class BundleTest {
 	// 	$translator->expects($this->once())->method('fetchLocalesFromDir')->with(realpath(__DIR__.'/Fixtures/bundles/bundle/locales'));
 	// 	$translator->expects($this->once())->method('addLocales')->with(null);
 	// 	$hook = $this->getMock('StdClass', array('hooks'));
-	// 	$hook->expects($this->once())->method('hooks')->with(array());
+	// 	$hook->expects($this->once())->method('hooks')->with([]);
 	// 	$resolver = $this->getMock('StdClass', array('addRoutes'));
-	// 	$resolver->expects($this->once())->method('addRoutes')->with(array());
+	// 	$resolver->expects($this->once())->method('addRoutes')->with([]);
 	// 	$clirouter = $this->getMock('StdClass', array('addRoutes'));
-	// 	$clirouter->expects($this->once())->method('addRoutes')->with(array());
-	// 	$app = new \Asgard\Core\App(array(
+	// 	$clirouter->expects($this->once())->method('addRoutes')->with([]);
+	// 	$app = new \Asgard\Container\Container(array(
 	// 		'translator' => $translator,
 	// 		'hook' => $hook,
 	// 		'resolver' => $resolver,

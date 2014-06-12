@@ -34,7 +34,7 @@ class URL {
 		return $this->base().$this->get();
 	}
 	
-	public function full(array $params=array()) {
+	public function full(array $params=[]) {
 		$r = $this->current();
 		if($params = array_merge($this->request->get->all(), $params))
 			$r .= '?'.http_build_query($params);

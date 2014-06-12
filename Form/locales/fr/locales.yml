@@ -1,1 +1,6 @@
 Choose: Choisir
+The uploaded file exceeds the max filesize.: La taille du fichier uploadé dépasse la limite.
+The uploaded file was only partially uploaded.: Le fichier a seulement été partiellement téléchargé.
+Missing a temporary folder.: Il manque un dossier temporaire.
+Failed to write file to disk.: "L'écriture sur le disque a failli."
+A PHP extension stopped the file upload.: Une extension PHP a arrêté le téléchargement du fichier.

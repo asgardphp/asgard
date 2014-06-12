@@ -5,7 +5,7 @@ class EntityRelation implements \ArrayAccess {
 	protected $entityClass;
 	protected $reverseRelation;
 	public $name;
-	public $params = array();
+	public $params = [];
 
 	public function __construct(\Asgard\Entity\EntityDefinition $entityDefinition, $name, array $params) {
 		$entityClass = $entityDefinition->getClass();
@@ -18,13 +18,13 @@ class EntityRelation implements \ArrayAccess {
 			$this->params['link'] = $name.'_id';
 			$this->params['link_type'] = $name.'_type';
 
-			$entityDefinition->addProperty($this->params['link'], array('type' => 'integer', 'required' => (isset($this->params['required']) && $this->params['required']), 'editable'=>false));
-			$entityDefinition->addProperty($this->params['link_type'], array('type' => 'text', 'required' => (isset($this->params['required']) && $this->params['required']), 'editable'=>false));
+			$entityDefinition->addProperty($this->params['link'], ['type' => 'integer', 'required' => (isset($this->params['required']) && $this->params['required']), 'editable'=>false]);
+			$entityDefinition->addProperty($this->params['link_type'], ['type' => 'text', 'required' => (isset($this->params['required']) && $this->params['required']), 'editable'=>false]);
 		}
 		else {
 			if($this->params['has'] == 'one') {
 				$this->params['link'] = $name.'_id';
-				$entityDefinition->addProperty($this->params['link'], array('type' => 'integer', 'required' => (isset($this->params['required']) && $this->params['required']), 'editable'=>false));
+				$entityDefinition->addProperty($this->params['link'], ['type' => 'integer', 'required' => (isset($this->params['required']) && $this->params['required']), 'editable'=>false]);
 			}
 		}
 	}
@@ -87,25 +87,22 @@ class EntityRelation implements \ArrayAccess {
 		$relation_entity = $this->params['entity'];
 		$name = $this->name;
 
-		$rev_relations = array();
-		// if(isset($relation_entity::$relations))
-			// foreach($relation_entity::$relations as $rev_rel_name=>$rev_rel) {
-			foreach($relation_entity::getDefinition()->relations() as $rev_rel_name=>$rev_rel) {
-				$relEntityClass = preg_replace('/^\\\/', '', strtolower($rev_rel['entity']));
+		$rev_relations = [];
+		foreach($relation_entity::getDefinition()->relations() as $rev_rel_name=>$rev_rel) {
+			$relEntityClass = preg_replace('/^\\\/', '', strtolower($rev_rel['entity']));
 
-				if($relEntityClass == $entityName
-					|| $this['as'] && $this['as'] == $rev_rel['entity']
-					) {
-					if($rev_rel_name == $name)
-						continue;
-					if(isset($relation['for']) && $relation['for']!=$rev_rel_name)
-						continue;
-					if(isset($rev_rel['for']) && $rev_rel['for']!=$name)
-						continue;
-					// $rev_relations[] = array_merge(array('name'=>$rev_rel_name), $rev_rel);
-					$rev_relations[] = $rev_rel;
-				}
+			if($relEntityClass == $entityName
+				|| $this['as'] && $this['as'] == $rev_rel['entity']
+				) {
+				if($rev_rel_name == $name)
+					continue;
+				if(isset($relation['for']) && $relation['for']!=$rev_rel_name)
+					continue;
+				if(isset($rev_rel['for']) && $rev_rel['for']!=$name)
+					continue;
+				$rev_relations[] = $rev_rel;
 			}
+		}
 
 		if(count($rev_relations) == 0)
 			throw new \Exception('No reverse relation for '.$entityName.': '.$name);
@@ -141,9 +138,9 @@ class EntityRelation implements \ArrayAccess {
     }
 
 	public function getRules() {
-		$res = isset($this->params['validation']) ? $this->params['validation']:array();
+		$res = isset($this->params['validation']) ? $this->params['validation']:[];
 		if(!is_array($res))
-			$res = array('validation' => $res);
+			$res = ['validation' => $res];
 		if(isset($this->params['required']))
 			$res['relationrequired'] = $this->params['required'];
 

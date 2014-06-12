@@ -21,8 +21,8 @@ class RestoreCommand extends \Asgard\Console\Command {
 	}
 
 	protected function getArguments() {
-		return array(
-			array('src', InputArgument::REQUIRED, 'The source'),
-		);
+		return [
+			['src', InputArgument::REQUIRED, 'The source'],
+		];
 	}
 }

@@ -3,21 +3,21 @@ namespace Asgard\Entity\Tests\Classes;
 
 class News extends \Asgard\Entity\Entity {
 	public static function definition(\Asgard\Entity\EntityDefinition $definition) {
-		$definition->properties = array(
-			'title' => array(
-				'validation' => array(
+		$definition->properties = [
+			'title' => [
+				'validation' => [
 					'required' => true,
-				)
-			),
+				]
+			],
 			'content',
 			'published' => 'date'
-		);
+		];
 
 		$definition->addProperty('another_property');
 
-		$definition->behaviors = array(
+		$definition->behaviors = [
 			new TestBehavior
-		);
+		];
 	}
 
 	public function __toString() {

@@ -1,5 +1,5 @@
 <?php
-class Post extends \Asgard\Migration\Migration {
+class Post extends \Asgard\Migration\DBMigration {
 	public function up() {
 		$this->app['schema']->create('post_translation', function($table) {	
 			$table->add('id', 'int(11)');	

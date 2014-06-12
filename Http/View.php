@@ -3,16 +3,16 @@ namespace Asgard\Http;
 
 class View {
 	protected $template;
-	protected $params = array();
+	protected $params = [];
 
-	public function __construct($template, array $params=array()) {
+	public function __construct($template, array $params=[]) {
 		$this->template = $template;
 		$this->params = $params;
 	}
 
 	public function reset() {
 		$this->template = null;
-		$this->params = array();
+		$this->params = [];
 	}
 
 	public function template($template) {
@@ -24,7 +24,7 @@ class View {
 		return $this->template;
 	}
 
-	public function params(array $params=array()) {
+	public function params(array $params=[]) {
 		$this->params = array_merge($this->params, $params);
 		return $this;
 	}
@@ -33,13 +33,13 @@ class View {
 		return $this->params;
 	}
 
-	public function render($params=array()) {
+	public function render($params=[]) {
 		if(!$params)
 			$params = $this->params;
 		return static::renderTemplate($this->template, $params);
 	}
 
-	public static function renderTemplate($_template, array $_params=array()) {
+	public static function renderTemplate($_template, array $_params=[]) {
 		foreach($_params as $_key=>$_value)
 			$$_key = $_value;
 

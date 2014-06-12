@@ -8,13 +8,15 @@ class DALTest extends \PHPUnit_Framework_TestCase {
 		if(!defined('_ENV_'))
 			define('_ENV_', 'test');
 
-		static::$db = $db = new \Asgard\Db\DB(array(
+		$config = [
 			'host' => 'localhost',
 			'user' => 'root',
 			'password' => '',
 			'database' => 'asgard',
-		));
-		$db->import(__dir__.'/sql/dal.sql');
+		];
+		static::$db = $db = new \Asgard\Db\DB($config);
+		$mysql = new \Asgard\Db\MySQL($config);
+		$mysql->import(__dir__.'/sql/dal.sql');
 	}
 
 	protected static function getDAL() {
@@ -63,59 +65,59 @@ class DALTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals('SELECT * FROM `news` WHERE `id`=4', $this->getDAL()->from('news')->where('id=4')->buildSQL());
 		$this->assertEquals('SELECT * FROM `news` WHERE `id`=?', $this->getDAL()->from('news')->where('id=?', 4)->buildSQL());
 		$this->assertEquals('SELECT * FROM `news` WHERE `id`=?', $this->getDAL()->from('news')->where('id', 4)->buildSQL());
-		$this->assertEquals('SELECT * FROM `news` WHERE `id`=?', $this->getDAL()->from('news')->where(array('id' => 4))->buildSQL());
-		$this->assertEquals('SELECT * FROM `news` WHERE `id`=?', $this->getDAL()->from('news')->where(array('id=?' => 4))->buildSQL());
+		$this->assertEquals('SELECT * FROM `news` WHERE `id`=?', $this->getDAL()->from('news')->where(['id' => 4])->buildSQL());
+		$this->assertEquals('SELECT * FROM `news` WHERE `id`=?', $this->getDAL()->from('news')->where(['id=?' => 4])->buildSQL());
 
-		$dal = $this->getDAL()->from('news')->where(array(
+		$dal = $this->getDAL()->from('news')->where([
 			'id=?' => 4,
 			'news.title LIKE ?' => '%test%'
-		));
+		]);
 		$this->assertEquals('SELECT * FROM `news` WHERE `id`=? AND `news`.`title` LIKE ?', $dal->buildSQL());
-		$this->assertEquals(array(4, '%test%'), $dal->getParameters());
+		$this->assertEquals([4, '%test%'], $dal->getParameters());
 
-		$dal = $this->getDAL()->from('news')->where(array(
-			'or' => array(
+		$dal = $this->getDAL()->from('news')->where([
+			'or' => [
 				'id=?' => 4,
-				'and' => array(
+				'and' => [
 					'news.title LIKE ?' => '%test%',
 					'news.content LIKE ?' => '%bla%'
-				)
-			)
-		));
+				]
+			]
+		]);
 		$this->assertEquals('SELECT * FROM `news` WHERE `id`=? OR (`news`.`title` LIKE ? AND `news`.`content` LIKE ?)', $dal->buildSQL());
-		$this->assertEquals(array(4, '%test%', '%bla%'), $dal->getParameters());
+		$this->assertEquals([4, '%test%', '%bla%'], $dal->getParameters());
 
-		$dal = $this->getDAL()->from('news')->where(array(
-			array('news.title LIKE ?' => '%test%'),
-			array('news.title LIKE ?' => '%bla%'),
-		));
+		$dal = $this->getDAL()->from('news')->where([
+			['news.title LIKE ?' => '%test%'],
+			['news.title LIKE ?' => '%bla%'],
+		]);
 		$this->assertEquals('SELECT * FROM `news` WHERE `news`.`title` LIKE ? AND `news`.`title` LIKE ?', $dal->buildSQL());
-		$this->assertEquals(array('%test%', '%bla%'), $dal->getParameters());
+		$this->assertEquals(['%test%', '%bla%'], $dal->getParameters());
 
 		/* LEFTJOIN, #rightjoin, #innerjoin */
 		$this->assertEquals('SELECT * FROM `news` `n` LEFT JOIN `category` ON COUNT(*)=3', $this->getDAL()->from('news n')->leftjoin('category', 'COUNT(*)=3')->buildSQL());
 
-		$dal = $this->getDAL()->from('news n')->leftjoin('category', array('COUNT(*)=?' => 3));
+		$dal = $this->getDAL()->from('news n')->leftjoin('category', ['COUNT(*)=?' => 3]);
 		$this->assertEquals('SELECT * FROM `news` `n` LEFT JOIN `category` ON COUNT(*)=?', $dal->buildSQL());
-		$this->assertEquals(array(3), $dal->getParameters());
+		$this->assertEquals([3], $dal->getParameters());
 
-		$dal = $this->getDAL()->from('news n')->leftjoin('category', array('COUNT(*)=?' => 3));
+		$dal = $this->getDAL()->from('news n')->leftjoin('category', ['COUNT(*)=?' => 3]);
 		$this->assertEquals('SELECT * FROM `news` `n` LEFT JOIN `category` ON COUNT(*)=?', $dal->buildSQL());
-		$this->assertEquals(array(3), $dal->getParameters());
+		$this->assertEquals([3], $dal->getParameters());
 
 		$this->assertEquals('SELECT * FROM `news` `n` LEFT JOIN `category` ON `category`.`id`=`news`.`id`', $this->getDAL()->from('news n')->leftjoin('category', 'category.id=news.id')->buildSQL());
 		$this->assertEquals('SELECT * FROM `news` `n` LEFT JOIN `category` `c` ON `c`.`id`=`news`.`id`', $this->getDAL()->from('news n')->leftjoin('category c', 'c.id=news.id')->buildSQL());
-		$this->assertEquals('SELECT * FROM `news` `n` LEFT JOIN `category` `c` ON `c`.`id`=`news`.`id`', $this->getDAL()->from('news n')->leftjoin('category c', array('c.id=news.id'))->buildSQL());
+		$this->assertEquals('SELECT * FROM `news` `n` LEFT JOIN `category` `c` ON `c`.`id`=`news`.`id`', $this->getDAL()->from('news n')->leftjoin('category c', ['c.id=news.id'])->buildSQL());
 
-		$this->assertEquals('SELECT * FROM `news` `n`', $this->getDAL()->from('news n')->leftjoin('category c', array('c.id=news.id'))->removeJointure('c')->buildSQL());
+		$this->assertEquals('SELECT * FROM `news` `n`', $this->getDAL()->from('news n')->leftjoin('category c', ['c.id=news.id'])->removeJointure('c')->buildSQL());
 
-		$this->assertEquals('SELECT * FROM `news` `n` LEFT JOIN `category` `c` ON `c`.`id`=`news`.`id` LEFT JOIN `tag` `t` ON `t`.`id`=`news`.`id` AND `t`.`id`=`news`.`id`', $this->getDAL()->from('news n')->leftjoin(array(
+		$this->assertEquals('SELECT * FROM `news` `n` LEFT JOIN `category` `c` ON `c`.`id`=`news`.`id` LEFT JOIN `tag` `t` ON `t`.`id`=`news`.`id` AND `t`.`id`=`news`.`id`', $this->getDAL()->from('news n')->leftjoin([
 			'category c' => 'c.id=news.id',
-			'tag t' => array(
+			'tag t' => [
 				't.id=news.id',
 				't.id=news.id',
-			)
-		))->buildSQL());
+			]
+		])->buildSQL());
 
 		/* NEXT, QUERY AND GET */
 		$query = $this->getDAL()->query('SELECT * FROM news');
@@ -124,7 +126,7 @@ class DALTest extends \PHPUnit_Framework_TestCase {
 		$this->assertCount(3, $data);
 
 		$dal = $this->getDAL()->from('news');
-		$_data = array();
+		$_data = [];
 		while($n = $dal->next())
 			$_data[] = $n;
 		$this->assertEquals($data, $_data);
@@ -151,55 +153,55 @@ class DALTest extends \PHPUnit_Framework_TestCase {
 		$dal = $this->getDAL()->from('news');
 		$dal->paginate(3, 10);
 		$this->assertEquals('SELECT * FROM `news` LIMIT 20, 10', $dal->buildSQL());
-		$this->assertInstanceOf('Asgard\Utils\Paginator', $dal->getPaginator());
+		$this->assertInstanceOf('Asgard\Common\Paginator', $dal->getPaginator());
 
 		/* COUNT */
 		$this->assertEquals(3, $this->getDAL()->from('news')->count());
 		$res = $this->getDAL()->from('news')->count('category_id');
-		$this->assertEquals(array(1=>'2', 2=>'1'), $res);
+		$this->assertEquals([1=>'2', 2=>'1'], $res);
 
 		/* MIN, MAX, AVG, SUM */
 		$this->assertEquals(1, $this->getDAL()->from('news')->min('score'));
 		$res = $this->getDAL()->from('news')->min('score', 'category_id');
-		$this->assertEquals(array(1=>'2', 2=>'1'), $res);
+		$this->assertEquals([1=>'2', 2=>'1'], $res);
 
 		/* UPDATE */
 		$dal = $this->getDAL()->from('news n')->where('id>?', 3)->orderBy('id ASC')->limit(5);
-		$sql = $dal->buildUpdateSQL(array(
+		$sql = $dal->buildUpdateSQL([
 			'title' => 'bla',
 			'content' => 'ble',
-		));
+		]);
 		$this->assertEquals('UPDATE `news` `n` SET `title`=?, `content`=? WHERE `id`>? ORDER BY `id` ASC LIMIT 5', $sql);
-		$this->assertEquals(array('bla', 'ble', 3), $dal->getParameters());
-		$this->assertEquals(0, $dal->update(array('title' => 'bla', 'content' => 'ble')));
+		$this->assertEquals(['bla', 'ble', 3], $dal->getParameters());
+		$this->assertEquals(0, $dal->update(['title' => 'bla', 'content' => 'ble']));
 
 		$dal = $this->getDAL()->from('news n, category c')->where('id>?', 3)->orderBy('id ASC')->limit(5);
-		$sql = $dal->buildUpdateSQL(array(
+		$sql = $dal->buildUpdateSQL([
 			'title' => 'bla',
 			'content' => 'ble',
-		));
+		]);
 		$this->assertEquals('UPDATE `news` `n`, `category` `c` SET `title`=?, `content`=? WHERE `id`>? ORDER BY `id` ASC LIMIT 5', $sql);
-		$this->assertEquals(array('bla', 'ble', 3), $dal->getParameters());
+		$this->assertEquals(['bla', 'ble', 3], $dal->getParameters());
 
 		/* DELETE */
 		$dal = $this->getDAL()->from('news n')->where('id>?', 3)->orderBy('id ASC')->limit(5);
 		$this->assertEquals('DELETE FROM `news` WHERE `id`>? ORDER BY `id` ASC LIMIT 5', $dal->buildDeleteSQL());
-		$this->assertEquals(array(3), $dal->getParameters());
+		$this->assertEquals([3], $dal->getParameters());
 		$this->assertEquals(0, $dal->delete());
 
 		$dal = $this->getDAL()->from('news n, category c')->where('id>?', 3)->orderBy('id ASC')->limit(5);
 		$this->assertEquals('DELETE FROM `news`, `category` WHERE `id`>? ORDER BY `id` ASC LIMIT 5', $dal->buildDeleteSQL());
-		$this->assertEquals(array(3), $dal->getParameters());
+		$this->assertEquals([3], $dal->getParameters());
 
 		$dal = $this->getDAL()->from('news n')->leftJoin('category')->where('id>?', 3)->orderBy('id ASC')->limit(5);
-		$this->assertEquals('DELETE `n` FROM `news` `n` LEFT JOIN `category` WHERE `n`.`id`>? ORDER BY `n`.`id` ASC LIMIT 5', $dal->buildDeleteSQL(array('n')));
-		$this->assertEquals(array(3), $dal->getParameters());
+		$this->assertEquals('DELETE `n` FROM `news` `n` LEFT JOIN `category` WHERE `n`.`id`>? ORDER BY `n`.`id` ASC LIMIT 5', $dal->buildDeleteSQL(['n']));
+		$this->assertEquals([3], $dal->getParameters());
 
 		/* INSERT */
 		$dal = $this->getDAL()->into('news');
-		$this->assertEquals('INSERT INTO `news` (`id`) VALUES (?)', $dal->buildInsertSQL(array('id'=>5)));
-		$this->assertEquals(array(5), $dal->getParameters());
-		$this->assertEquals(5, $dal->insert(array('id'=>5)));
+		$this->assertEquals('INSERT INTO `news` (`id`) VALUES (?)', $dal->buildInsertSQL(['id'=>5]));
+		$this->assertEquals([5], $dal->getParameters());
+		$this->assertEquals(5, $dal->insert(['id'=>5]));
 
 		/* EXCEPTION */
 		$this->setExpectedException('Exception');

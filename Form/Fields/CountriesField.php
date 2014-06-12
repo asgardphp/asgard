@@ -2,8 +2,8 @@
 namespace Asgard\Form\Fields;
 
 class CountriesField extends Field {
-	public function __construct(array $params=array()) {
-		$params['choices'] = array(
+	public function __construct(array $params=[]) {
+		$params['choices'] = [
 			'AF' => __('AFGHANISTAN'),
 			'AX' => __('Ã…LAND ISLANDS'),
 			'AL' => __('ALBANIA'),
@@ -253,7 +253,7 @@ class CountriesField extends Field {
 			'YE' => __('YEMEN'),
 			'ZM' => __('ZAMBIA'),
 			'ZW' => __('ZIMBABWE')
-		);
+		];
 		parent::__construct($params);
 	}
 }

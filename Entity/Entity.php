@@ -4,9 +4,9 @@ namespace Asgard\Entity;
 abstract class Entity {
 	protected static $app;
 	#public for behaviors
-	public $data = array(
-		'properties'	=>	array(),
-	);
+	public $data = [
+		'properties'	=>	[],
+	];
 	protected $locale;
 	protected $locales;
 
@@ -71,48 +71,38 @@ abstract class Entity {
 
 	public function loadDefault() {
 		foreach(static::properties() as $name=>$property)
-			$this->set($name, $property->getDefault());
+			$this->set($name, $property->getDefault($this, $name));
 				
 		return $this;
 	}
 	
 	/* VALIDATION */
 	public function getValidator() {
-		$constrains = array();
-		$messages = array();
+		$constrains = [];
+		$messages = [];
 		$entity = $this;
 		$validator = new \Asgard\Validation\Validator;
 
 		foreach($this->getDefinition()->properties() as $name=>$property) {
 			if($property->get('multiple')) {
-				$rules = array();
-				foreach($property->getRules() as $rule=>$params) {
-					if($rule === 'self') {
-						foreach($params as $_rule=>$_params) {
-							if($rule = $validator->getRegistry()->getRule($_rule, $_params)) {
-								$rule->handleEach(false);
-								$rules[] = $rule;
-							}
-						}
-					}
-					else {
-						if($rule = $validator->getRegistry()->getRule($rule, $params)) {
-							$rule->handleEach(true);
-							$rules[] = $rule;
-						}
-					}
+				$propRules = $property->getRules();
+				$constrains[$name] = [];
+				foreach($this->get($name) as $k=>$v) {
+					$validator->attribute($name.'.'.$k, $property->getRules());
+					$validator->attribute($name.'.'.$k)->formatParameters(function(&$params) use($name) {
+						$params['attribute'] = $name;
+					});
 				}
-				$constrains[$name] = $rules;
 			}
 			else
-				$constrains[$name] = $property->getRules();
+				$validator->attribute($name, $property->getRules());
 			$messages[$name] = $property->getMessages();
 		}
 
 		$messages = array_merge($messages, static::getDefinition()->messages());
 		
+		$validator->set('entity', $this);
 		$validator->setRegistry(static::$app['rulesregistry']);
-		$validator->attributes($constrains);
 		$validator->ruleMessages($messages);
 
 		return $validator;
@@ -121,7 +111,7 @@ abstract class Entity {
 	public function valid() {
 		$data = $this->toArrayRaw();
 		$validator = $this->getValidator();
-		return $this->getDefinition()->trigger('validation', array($this, $validator, &$data), function($chain, $entity, $validator, &$data) {
+		return $this->getDefinition()->trigger('validation', [$this, $validator, &$data], function($chain, $entity, $validator, &$data) {
 			return $validator->valid($data);
 		});
 	}
@@ -129,11 +119,11 @@ abstract class Entity {
 	public function errors() {
 		$data = $this->toArrayRaw();
 		$validator = $this->getValidator();
-		$errors = $this->getDefinition()->trigger('validation', array($this, $validator, &$data), function($chain, $entity, $validator, &$data) {
+		$errors = $this->getDefinition()->trigger('validation', [$this, $validator, &$data], function($chain, $entity, $validator, &$data) {
 			return $validator->errors($data);
 		});
 
-		$e = array();
+		$e = [];
 		foreach($data as $property=>$value) {
 			if($propertyErrors = $errors->attribute($property)->errors())
 				$e[$property] = $propertyErrors;
@@ -173,9 +163,6 @@ abstract class Entity {
 	}
 
 	public function set($name, $value=null, $lang=null, $hook=true) {
-		if($hook)
-			$this->trigger('set', array($this, $name, &$value, $lang));
-
 		if(is_array($name)) {
 			$lang = $value;
 			$vars = $name;
@@ -185,25 +172,10 @@ abstract class Entity {
 		}
 
 		if(static::getDefinition()->hasProperty($name)) {
-			if(static::getDefinition()->property($name)->setHook) {
-				$hook = static::getDefinition()->property($name)->setHook;
-				$value = call_user_func_array($hook, array($value));
-			}
+			if(!$lang)
+				$lang = $this->getLocale();
 
-			if(static::getDefinition()->property($name)->i18n) {
-				if(!$lang)
-					$lang = $this->locale;
-				if($lang == 'all') {
-					$val = array();
-					foreach($value as $one => $v)
-						$val[$one] = static::getDefinition()->property($name)->set($v, $this);
-					$value = $val;
-				}
-				else
-					$value = static::getDefinition()->property($name)->set($value, $this);
-			}
-			else
-				$value = static::getDefinition()->property($name)->set($value, $this);
+			static::getDefinition()->processBeforeSet($this, $name, $value, $lang, $hook);
 
 			if(static::getDefinition()->property($name)->i18n && $lang != 'all')
 				$this->data['properties'][$name][$lang] = $value;
@@ -221,14 +193,14 @@ abstract class Entity {
 			$lang = $this->locale;
 		$entity = $this;
 
-		if($res = $this->getDefinition()->trigger('get', array($this, $name, $lang)))
+		if($res = $this->getDefinition()->trigger('get', [$this, $name, $lang]))
 			return $res;
 
 		if($this->getDefinition()->hasProperty($name)) {
 			if($entity::property($name)->i18n) {
 				if($lang == 'all') {
 					$langs = $this->locales;
-					$res = array();
+					$res = [];
 					foreach($langs as $lang)
 						$res[$lang] = $entity->get($name, $lang);
 					return $res;
@@ -236,8 +208,8 @@ abstract class Entity {
 				elseif(isset($entity->data['properties'][$name][$lang]))
 					return $entity->data['properties'][$name][$lang];
 				else {
-					$i18n = $this->getDefinition()->trigger('getI18N', array($this, $name, $lang));
-					if($i18n === null) $i18n = array();
+					$i18n = $this->getDefinition()->trigger('getI18N', [$this, $name, $lang]);
+					if($i18n === null) $i18n = [];
 					foreach ($i18n as $k=>$v)
 						$this->_set($k, $v, $lang);
 					if(!isset($entity->data['properties'][$name][$lang]))
@@ -254,7 +226,7 @@ abstract class Entity {
 	
 	/* UTILS */
 	public function toArrayRaw() {
-		$res = array();
+		$res = [];
 		
 		foreach($this->properties() as $name=>$property) {
 			if(isset($this->data['properties'][$name])) {
@@ -271,7 +243,7 @@ abstract class Entity {
 	}
 	
 	public function toArray() {
-		$res = array();
+		$res = [];
 		
 		foreach($this->properties() as $name=>$property) {
 			$res[$name] = $this->get($name);

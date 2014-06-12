@@ -20,11 +20,11 @@ class HookTest extends \PHPUnit_Framework_TestCase {
 		});
 		$this->assertEquals('yo', $hooks->trigger('test'));
 
-		$mock = $this->getMock('StdClass', array('on', 'after'));
+		$mock = $this->getMock('StdClass', ['on', 'after']);
 		$mock->expects($this->once())->method('on');
 		$mock->expects($this->once())->method('after');
-		$hooks->hook('foo', array($mock, 'on'));
-		$hooks->hookAfter('foo', array($mock, 'after'));
+		$hooks->hook('foo', [$mock, 'on']);
+		$hooks->hookAfter('foo', [$mock, 'after']);
 		$hooks->trigger('foo');
 
 		$this->assertCount(2, $hooks->get('foo'));
@@ -33,49 +33,49 @@ class HookTest extends \PHPUnit_Framework_TestCase {
 	public function testHooks() {
 		$hooks = new HooksManager;
 
-		$mock = $this->getMock('StdClass', array('on', 'after'));
+		$mock = $this->getMock('StdClass', ['on', 'after']);
 		$mock->expects($this->once())->method('on');
 		$mock->expects($this->once())->method('after');
 
-		$hooks->hooks(array(
-			'foo' => array(
-				array($mock, 'on'),
-				array($mock, 'after'),
-			)
-		));
+		$hooks->hooks([
+			'foo' => [
+				[$mock, 'on'],
+				[$mock, 'after'],
+			]
+		]);
 		$hooks->trigger('foo');
 	}
 
 	public function testExecuted() {
 		$hooks = new HooksManager;
 
-		$hooks->hooks(array(
-			'foo' => array(
+		$hooks->hooks([
+			'foo' => [
 				function($chain) { },
 				function() { },
-			)
-		));
-		$hooks->trigger('foo', array(), null, $chain);
+			]
+		]);
+		$hooks->trigger('foo', [], null, $chain);
 		$this->assertEquals(2, $chain->executed);
 	}
 
 	public function testChainStop() {
 		$hooks = new HooksManager;
 
-		$hooks->hooks(array(
-			'foo' => array(
+		$hooks->hooks([
+			'foo' => [
 				function($chain) { $chain->stop(); },
 				function() { },
-			)
-		));
-		$hooks->trigger('foo', array(), null, $chain);
+			]
+		]);
+		$hooks->trigger('foo', [], null, $chain);
 		$this->assertEquals(1, $chain->executed);
 	}
 
 	public function testHooksContainer() {
 		$hooks = new HooksManager();
 
-		\Asgard\Core\App::instance()['cache'] = new \Asgard\Cache\NullCache();
+		\Asgard\Container\Container::instance()['cache'] = new \Asgard\Cache\NullCache();
 
 		$fhooks = \Asgard\Hook\Tests\Fixtures\Hooks::fetchHooks();
 

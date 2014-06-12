@@ -30,13 +30,13 @@ class SwiftMessage extends \Swift_Message {
 		return parent::addPart($text, 'text/plain');
 	}
 
-	public function htmlView($view, $data=array()) {
+	public function htmlView($view, $data=[]) {
 		$data['message'] = $this;
 		$res = $this->buildView($view, $data);
 		return $this->html($res);
 	}
 
-	public function textView($view, $data=array()) {
+	public function textView($view, $data=[]) {
 		$data['message'] = $this;
 		$res = $this->buildView($view, $data);
 		return $this->text($res);
@@ -50,7 +50,7 @@ class SwiftMessage extends \Swift_Message {
 		return ob_get_clean();
 	}
 
-	public function attachFile($file, $options=array()) {
+	public function attachFile($file, $options=[]) {
 		$attachment = \Swift_Attachment::fromPath($file);
 		if(isset($options['filename']))
 			$attachment->setFilename($options['filename']);
@@ -59,7 +59,7 @@ class SwiftMessage extends \Swift_Message {
 		return parent::attach($attachment);
 	}
 
-	public function attachData($data, $options=array()) {
+	public function attachData($data, $options=[]) {
 		$attachment = \Swift_Attachment::newInstance($data);
 		if(isset($options['filename']))
 			$attachment->setFilename($options['filename']);
@@ -68,7 +68,7 @@ class SwiftMessage extends \Swift_Message {
 		return parent::attach($attachment);
 	}
 
-	public function embedFile($file, $options=array()) {
+	public function embedFile($file, $options=[]) {
 		$image = \Swift_Image::fromPath($file);
 		if(isset($options['filename']))
 			$image->setFilename($options['filename']);
@@ -77,7 +77,7 @@ class SwiftMessage extends \Swift_Message {
 		return parent::embed($image);
 	}
 
-	public function embedData($data, $options=array()) {
+	public function embedData($data, $options=[]) {
 		$image = \Swift_Image::newInstance($data);
 		if(isset($options['filename']))
 			$image->setFilename($options['filename']);

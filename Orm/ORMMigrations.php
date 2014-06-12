@@ -10,28 +10,28 @@ class ORMMigrations {
 
 	public function autoMigrate($entities, \Asgard\Db\Schema $s) {
 		if(!is_array($entities))
-			$entities = array($entities);
+			$entities = [$entities];
 		$this->processSchemas($this->getEntitiesSchemas($entities), $s);
 	}
 
 	public function generateMigration(array $entities, $migrationName, \Asgard\Db\DB $db) {
 		if(!is_array($entities))
-			$entities = array($entities);
+			$entities = [$entities];
 		$entitiesSchemas = $this->getEntitiesSchemas($entities);
 		$sqlSchemas = $this->getSQLSchemas($db);
 		$up = $this->buildMigration($entitiesSchemas, $sqlSchemas, false);
 		$down = $this->buildMigration($sqlSchemas, $entitiesSchemas, true);
-		return $this->migrationsManager->create($up, $down, $migrationName);
+		return $this->migrationsManager->create($up, $down, $migrationName, '\Asgard\Migration\DBMigration');
 	}
 
 	protected function getEntitiesSchemas(array $entities) {
-		$schemas = array();
+		$schemas = [];
 		foreach($entities as $class) {
-			$schema = array();
+			$schema = [];
 			
 			foreach($class::getDefinition()->properties() as $name=>$prop) {
 				if(!$prop->orm)
-					$col = array();
+					$col = [];
 				else
 					$col = $prop->orm;
 				if($prop->get('multiple'))
@@ -55,22 +55,22 @@ class ORMMigrations {
 
 				if($prop->i18n) {
 					if(!isset($schemas[$class::getTable().'_translation'])) {
-						$schemas[$class::getTable().'_translation'] = array(
-							'id' => array(
+						$schemas[$class::getTable().'_translation'] = [
+							'id' => [
 								'type'	=>	'int(11)',
 								'nullable'	=>	false,
 								'auto_increment'	=>	false,
 								'default'	=>	null,
 								'key'	=>	null,
-							),
-							'locale' => array(
+							],
+							'locale' => [
 								'type'	=>	'varchar(50)',
 								'nullable'	=>	false,
 								'auto_increment'	=>	false,
 								'default'	=>	null,
 								'key'	=>	null,
-							),
-						);
+							],
+						];
 					}
 					$schemas[$class::getTable().'_translation'][$name] = $col;
 				}
@@ -82,33 +82,24 @@ class ORMMigrations {
 				if($rel->type() == 'HMABT') {
 					$table_name = $rel->getTable();
 					if(!isset($schemas[$table_name])) {
-						$arr = array(
-							$rel->getLinkA()	=>	array(
+						$arr = [
+							$rel->getLinkA()	=>	[
 								'type'	=>	'int(11)',
 								'nullable'	=>	false,
 								'auto_increment'	=>	false,
 								'default'	=>	null,
 								'key'	=>	null,
-							),
-							$rel->getLinkB()	=>	array(
+							],
+							$rel->getLinkB()	=>	[
 								'type'	=>	'int(11)',
 								'nullable'	=>	false,
 								'auto_increment'	=>	false,
 								'default'	=>	null,
 								'key'	=>	null,
-							),
-						);
+							],
+						];
 						$schemas[$table_name] = $arr;
 					}
-					#todo
-					if($rel['sortable'])
-						$schemas[$table_name][$rel['sortable']] = array(
-							'type'	=>	'int(11)',
-							'nullable'	=>	false,
-							'auto_increment'	=>	false,
-							'default'	=>	null,
-							'key'	=>	null,
-						);
 				}
 			}
 
@@ -155,13 +146,13 @@ class ORMMigrations {
 	}
 
 	protected function getSQLSchemas(\Asgard\Db\DB $db) {
-		$tables = array();
+		$tables = [];
 		foreach($db->query('SHOW TABLES')->all() as $v) {
 			$table = array_values($v)[0];
 			$description = $db->query('Describe `'.$table.'`')->all();
 			$pos = 0;
 			foreach($description as $k=>$v) {
-				$params = array();
+				$params = [];
 				$name = $v['Field'];
 				$params['type'] = $v['Type'];
 				$params['nullable'] = ($v['Null'] == 'YES');

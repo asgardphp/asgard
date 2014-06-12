@@ -4,7 +4,7 @@ namespace Asgard\Http;
 class HttpKernel {
 	protected $app;
 	protected $loaded = false;
-	protected $requests = array();
+	protected $requests = [];
 	protected $start;
 	protected $end;
 
@@ -26,7 +26,7 @@ class HttpKernel {
 
 		$response = $this->process($request);
 
-		$this->app['hooks']->trigger('Asgard.Http.Output', array($response, $request));
+		$this->app['hooks']->trigger('Asgard.Http.Output', [$response, $request]);
 		return $response;
 	}
 
@@ -56,7 +56,7 @@ class HttpKernel {
 					$this->app['errorHandler']->logException($e);
 				}
 
-				$this->app['hooks']->trigger('Asgard.Http.Exception.'.get_class($e), array($e, &$response, $request));
+				$this->app['hooks']->trigger('Asgard.Http.Exception.'.get_class($e), [$e, &$response, $request]);
 				if($response === null)
 					$response = $this->getExceptionResponse($e, $request);
 			}
@@ -65,7 +65,7 @@ class HttpKernel {
 		try {
 			if($this->end !== null)
 				include $this->end;
-			$this->app['hooks']->trigger('Asgard.Http.End', array($response));
+			$this->app['hooks']->trigger('Asgard.Http.End', [$response]);
 		} catch(\Exception $e) {
 			$this->app['errorHandler']->logException($e);
 		}
@@ -92,7 +92,7 @@ class HttpKernel {
 			$app = $this->app;
 			include $this->start;
 		}
-		if($response = $this->app['hooks']->trigger('Asgard.Http.Start', array($request)))
+		if($response = $this->app['hooks']->trigger('Asgard.Http.Start', [$request]))
 			return $response;
 
 		$callback = $resolver->getCallback($request);
@@ -100,7 +100,7 @@ class HttpKernel {
 			throw new Exceptions\NotFoundException;
 		$arguments = $resolver->getArguments($request);
 
-		$response = call_user_func_array($callback, array_merge($arguments, array($this->app, $request)));
+		$response = call_user_func_array($callback, array_merge($arguments, [$this->app, $request]));
 
 		return $response;
 	}

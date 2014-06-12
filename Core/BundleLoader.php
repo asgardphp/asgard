@@ -22,22 +22,19 @@ class BundleLoader {
 	}
 
 	public function run($app) {
-		if($app->has('autoloader'))
-			$app['autoloader']->preloadDir($this->getPath());
-
 		$bundleData = $app['cache']->fetch('bundles/'.$this->getID());
 		if($bundleData !== false) {
 			$hooks = $bundleData['hooks'];
 			$routes = $bundleData['routes'];
 		}
 		else {
-			$hooks = $app->has('hooks') ? $this->loadHooks():array();
-			$routes = $app->has('resolver') ? $this->loadControllers():array();
+			$hooks = $app->has('hooks') ? $this->loadHooks():[];
+			$routes = $app->has('resolver') ? $this->loadControllers():[];
 			
-			$app['cache']->save('bundles/'.$this->getID(), array(
+			$app['cache']->save('bundles/'.$this->getID(), [
 				'hooks' => $hooks,
 				'routes' => $routes,
-			));
+			]);
 		}
 
 		if($app->has('translator')) {
@@ -56,10 +53,10 @@ class BundleLoader {
 	}
 
 	protected function loadHooks() {
-		$hooks = array();
+		$hooks = [];
 		if(file_exists($this->getPath().'/Hooks/')) {
 			foreach(glob($this->getPath().'/Hooks/*.php') as $filename) {
-				$class = \Asgard\Core\Autoloader::loadClassFile($filename);
+				$class = \Asgard\Common\Tools::loadClassFile($filename);
 				if(is_subclass_of($class, 'Asgard\Hook\HooksContainer'))
 					$hooks = array_merge_recursive($hooks, $class::fetchHooks());
 			}
@@ -70,7 +67,7 @@ class BundleLoader {
 	protected function loadConsole($app) {
 		if(file_exists($this->getPath().'/Console/')) {
 			foreach(glob($this->getPath().'/Console/*.php') as $filename) {
-				$class = \Asgard\Core\Autoloader::loadClassFile($filename);
+				$class = \Asgard\Common\Tools::loadClassFile($filename);
 				if(is_subclass_of($class, 'Symfony\Component\Console\Command\Command'))
 					$app['console']->add(new $class);
 			}
@@ -78,10 +75,10 @@ class BundleLoader {
 	}
 
 	protected function loadControllers() {
-		$routes = array();
+		$routes = [];
 		if(file_exists($this->getPath().'/Controllers/')) {
 			foreach(glob($this->getPath().'/Controllers/*.php') as $filename) {
-				$class = \Asgard\Core\Autoloader::loadClassFile($filename);
+				$class = \Asgard\Common\Tools::loadClassFile($filename);
 				if(is_subclass_of($class, 'Asgard\Http\Controller'))
 					$routes = array_merge($routes, $class::fetchRoutes());
 			}

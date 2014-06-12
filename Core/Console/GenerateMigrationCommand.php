@@ -14,19 +14,15 @@ class GenerateMigrationCommand extends \Asgard\Console\Command {
 		$asgard = $this->getAsgard();
 		$migration = $input->getArgument('migration') ? $input->getArgument('migration'):'Automigrate';
 
-		$mm = new \Asgard\Migration\MigrationsManager($this->getAsgard()['kernel']->getRoot().'/migrations/', $asgard);
-		if($mm->getTracker()->getDownList()) {
-			$output->writeln('<error>All migrations must have been executed before running automigrate.</error>');
-			return;
-		}
+		$mm = new \Asgard\Migration\MigrationsManager($this->getAsgard()['kernel']['root'].'/migrations/', $asgard);
 		$om = new \Asgard\Orm\ORMMigrations($mm);
 		
-		$entities = array();
+		$entities = [];
 
 		$bundles = $asgard['bundlesManager']->getBundlesPath();
 		foreach($bundles as $bundle) {
 			foreach(glob($bundle.'/Entities/*.php') as $file) {
-				$class = $asgard['autoloader']->loadClassFile($file);
+				$class = \Asgard\Common\Tools::loadClassFile($file);
 				if(is_subclass_of($class, 'Asgard\Entity\Entity'))
 					$entities[] = $class;
 			}
@@ -40,8 +36,8 @@ class GenerateMigrationCommand extends \Asgard\Console\Command {
 	}
 
 	protected function getArguments() {
-		return array(
-			array('migration', InputArgument::OPTIONAL, 'The migration name'),
-		);
+		return [
+			['migration', InputArgument::OPTIONAL, 'The migration name'],
+		];
 	}
 }

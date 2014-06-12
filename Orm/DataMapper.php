@@ -2,7 +2,7 @@
 namespace Asgard\Orm;
 
 class EntityException extends \Exception implements \Asgard\Entity\EntityExceptionInterface {
-	protected $errors = array();
+	protected $errors = [];
 
 	public function __construct($msg, array $errors) {
 		parent::__construct($msg);
@@ -27,6 +27,11 @@ class DataMapper {
 		$this->app = $app;
 	}
 
+	public function setApp($app) {
+		$this->app = $app;
+		return $this;
+	}
+
 	public function isNew(\Asgard\Entity\Entity $entity) {
 		return $entity->id === null;
 	}
@@ -40,7 +45,7 @@ class DataMapper {
 			return;
 
 		$entity = new $entityClass;
-		$res = $this->orm($entityClass)->where(array('id' => $id))->getDAL()->first();
+		$res = $this->orm($entityClass)->where(['id' => $id])->getDAL()->first();
 		if($res)
 			$entity->_set(static::unserialize($entity, $res));
 
@@ -58,7 +63,7 @@ class DataMapper {
 		if($this->isNew($entity))
 			return $this->orm(get_class($entity));
 		else
-			return $this->orm(get_class($entity))->where(array('id' => $entity->id));
+			return $this->orm(get_class($entity))->where(['id' => $entity->id]);
 	}
 	
 	public function getTranslationTable($entityClass) {
@@ -87,7 +92,7 @@ class DataMapper {
 	
 	public function getI18N(\Asgard\Entity\Entity $entity, $lang=null) {
 		$dal = new \Asgard\Db\DAL($this->db, $this->getTranslationTable($entity));
-		$res = $dal->where(array('id' => $entity->id))->where(array('locale'=>$lang))->first();
+		$res = $dal->where(['id' => $entity->id])->where(['locale'=>$lang])->first();
 		if(!$res)
 			return;
 		unset($res['id']);
@@ -114,7 +119,7 @@ class DataMapper {
 					if(!$relEntity)
 						return;
 				}
-				return $relEntity::where(array('id' => $entity->get($link)));
+				return $relEntity::where(['id' => $entity->get($link)]);
 			case 'hasMany':
 			case 'HMABT':
 				return new \Asgard\Orm\CollectionORM($entity, $name, $this->db, $this->locale, $this->prefix);
@@ -126,7 +131,7 @@ class DataMapper {
 	protected static function unserialize(\Asgard\Entity\Entity $entity, array $data) {
 		foreach($data as $k=>$v) {
 			if($entity::hasProperty($k))
-				$data[$k] = $entity->property($k)->unserialize($v, $entity);
+				$data[$k] = $entity->property($k)->unserialize($v, $entity, $k);
 			else
 				unset($data[$k]);
 		}
@@ -135,41 +140,41 @@ class DataMapper {
 	}
 
 	public function destroy(\Asgard\Entity\Entity $entity) {
-		$orms = array();
+		return $entity::trigger('destroy', [$entity], function($chain, $entity) {
+			$orms = [];
 
-		foreach($entity::getDefinition()->relations() as $name=>$relation) {
-			if(isset($relation['cascade']['delete']) && $relation['cascade']['delete']) {
-				$orm = $entity->$name();
-				if(!is_object($orm))
-					continue;
-				$orm->getDAL()->rsc();
-				$orms[] = $orm;
-			}
-		}
-
-		if($entity::isI18N())
-			$r = static::entityORM($entity)->getDAL()->delete(array($this->getTable($entity), $this->getTranslationTable($entity)));
-		else
-			$r = static::entityORM($entity)->getDAL()->delete();
-
-		$entity::trigger('destroy', array($entity));
-
-		//Files
-		foreach($entity::getDefinition()->properties() as $name=>$prop) {
-			if($prop instanceof \Asgard\Entity\Properties\FileProperty) {
-				if($prop->get('multiple')) {
-					foreach($entity->get($name) as $file)
-						$file->delete();
+			foreach($entity::getDefinition()->relations() as $name=>$relation) {
+				if(isset($relation['cascade']['delete']) && $relation['cascade']['delete']) {
+					$orm = $entity->$name();
+					if(!is_object($orm))
+						continue;
+					$orm->getDAL()->rsc();
+					$orms[] = $orm;
 				}
-				else
-					$entity->get($name)->delete();
 			}
-		}
 
-		foreach($orms as $orm)
-			$orm->delete();
+			if($entity::isI18N())
+				$r = static::entityORM($entity)->getDAL()->delete([$this->getTable($entity), $this->getTranslationTable($entity)]);
+			else
+				$r = static::entityORM($entity)->getDAL()->delete();
 
-		return $r;
+			//Files
+			foreach($entity::getDefinition()->properties() as $name=>$prop) {
+				if($prop instanceof \Asgard\Entity\Properties\FileProperty) {
+					if($prop->get('multiple')) {
+						foreach($entity->get($name) as $file)
+							$file->delete();
+					}
+					else
+						$entity->get($name)->delete();
+				}
+			}
+
+			foreach($orms as $orm)
+				$orm->delete();
+
+			return $r;
+		});
 	}
 
 	public function create($entityClass, $values=null, $force=false) {
@@ -184,7 +189,7 @@ class DataMapper {
 			$data[$name] = $entity->relation($name);
 			$validator->attribute($name, $relation->getRules());
 		}
-		return $entity->trigger('validation', array($entity, $validator, &$data), function($chain, $entity, $validator, &$data) {
+		return $entity->trigger('validation', [$entity, $validator, &$data], function($chain, $entity, $validator, &$data) {
 			return $validator->valid($data);
 		});
 	}
@@ -196,11 +201,11 @@ class DataMapper {
 			$data[$name] = $entity->relation($name);
 			$validator->attribute($name, $relation->getRules());
 		}
-		$errors = $entity::trigger('validation', array($entity, $validator, &$data), function($chain, $entity, $validator, &$data) {
+		$errors = $entity::trigger('validation', [$entity, $validator, &$data], function($chain, $entity, $validator, &$data) {
 			return $validator->errors($data);
 		});
 
-		$e = array();
+		$e = [];
 		foreach($data as $property=>$value) {
 			if($propertyErrors = $errors->attribute($property)->errors())
 				$e[$property] = $propertyErrors;
@@ -215,28 +220,32 @@ class DataMapper {
 			$entity->set($values);
 		
 		if(!$force && $errors = $this->errors($entity)) {
-			$msg = implode("\n", \Asgard\Utils\Tools::flateArray($errors));
+			$msg = implode("\n", \Asgard\Common\Tools::flateArray($errors));
 			throw new EntityException($msg, $errors);
 		}
 
-		$entity::trigger('save', array($entity));
+		$entity::trigger('save', [$entity]);
 
 		//Files
-		$webdir = $this->app['kernel']['webdir'];
 		foreach($entity::getDefinition()->properties() as $name=>$prop) {
 			if($prop instanceof \Asgard\Entity\Properties\FileProperty) {
-				$dir = $prop->get('dir');
-				if(!$dir)
-					$dir = $webdir;
-				else
-					$dir = $webdir.'/'.$dir;
 				if($prop->get('multiple')) {
 					$files = $entity->$name = array_values($entity->$name->all());
-					foreach($files as $file)
-						$file->moveToDir($dir);
+					foreach($files as $k=>$file) {
+						if($file->shouldDelete()) {
+							$file->delete();
+							unset($files[$k]);
+						}
+						else
+							$file->save();
+					}
 				}
-				elseif($entity->get($name))
-					$entity->get($name)->moveToDir($dir);
+				elseif($file = $entity->get($name)) {
+					if($file->shouldDelete())
+						$file->delete();
+					else
+						$file->save();
+				}
 			}
 		}
 
@@ -271,8 +280,8 @@ class DataMapper {
 		}
 		
 		//Persist i18n
-		$values = array();
-		$i18n = array();
+		$values = [];
+		$i18n = [];
 		foreach($vars as $p => $v) {
 			if($entity::property($p)->i18n) {
 				foreach($v as $lang=>$lang_value)
@@ -289,21 +298,21 @@ class DataMapper {
 			$entity->id = $orm->getDAL()->insert($values);
 		//existing
 		elseif(count($vars) > 0) {
-			if(!$orm->reset()->where(array('id'=>$entity->id))->getDAL()->update($values))
+			if(!$orm->reset()->where(['id'=>$entity->id])->getDAL()->update($values))
 				$entity->id = $orm->getDAL()->insert($values);
 		}		
 		
 		//Persist i18n
 		foreach($i18n as $lang=>$values) {
 			$dal = new \Asgard\Db\DAL($this->db, $this->getTranslationTable($entity));
-			if(!$dal->where(array('id'=>$entity->id, 'locale'=>$lang))->update($values))
+			if(!$dal->where(['id'=>$entity->id, 'locale'=>$lang])->update($values))
 				$dal->insert(
 					array_merge(
 						$values, 
-						array(
+						[
 							'locale'=>$lang,
 							'id'=>$entity->id,
-						)
+						]
 					)
 				);
 		}
@@ -319,8 +328,8 @@ class DataMapper {
 			if($type == 'hasOne') {
 				$relation_entity = $rel['entity'];
 				$link = $reverse_rel->getLink();
-				$relation_entity::where(array($link => $entity->id))->getDAL()->update(array($link => 0));
-				$relation_entity::where(array('id' => $entity->data[$relation]))->getDAL()->update(array($link => $entity->id));
+				$relation_entity::where([$link => $entity->id])->getDAL()->update([$link => 0]);
+				$relation_entity::where(['id' => $entity->data[$relation]])->getDAL()->update([$link => $entity->id]);
 			}
 			elseif($type == 'hasMany' || $type == 'HMABT')
 				$entity->$relation()->sync($entity->data[$relation]);

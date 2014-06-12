@@ -15,9 +15,9 @@ class FooController extends \Asgard\Http\Controller {
 	}
 
 	public function jsonAction(\Asgard\Http\Request $request) {
-		return array(
-			new Entity(array('title'=>'hello', 'content'=>'world')),
-			new Entity(array('title'=>'welcome', 'content'=>'home')),
-		);
+		return [
+			new Entity(['title'=>'hello', 'content'=>'world']),
+			new Entity(['title'=>'welcome', 'content'=>'home']),
+		];
 	}
 }

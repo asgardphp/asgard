@@ -3,14 +3,14 @@ namespace Asgard\Form;
 
 abstract class Widget {
 	protected $label;
-	protected $field;
+	public $field;
 	protected $name;
 	protected $value;
 	protected $options;
 	protected $form;
 	protected static $app;
 
-	public function __construct($name, $value=null, array $options=array(), $form=null) {
+	public function __construct($name, $value=null, array $options=[], $form=null) {
 		$this->name = $name;
 		$this->value = $value;
 		$this->form = $form;

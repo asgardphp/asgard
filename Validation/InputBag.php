@@ -4,7 +4,7 @@ namespace Asgard\Validation;
 class InputBag {
 	protected $parent;
 	protected $input;
-	protected $attributes = array();
+	protected $attributes = [];
 
 	public function __construct($input) {
 		$this->input = $input;
@@ -31,7 +31,7 @@ class InputBag {
 	}
 
 	public function attribute($attribute) {
-		if(is_string($attribute))
+		if(!is_array($attribute))
 			$attribute = explode('.', $attribute);
 
 		$next = array_shift($attribute);

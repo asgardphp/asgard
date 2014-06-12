@@ -2,25 +2,16 @@
 namespace Asgard\Files;
 
 class File {
-	protected $url;
 	protected $src;
 	protected $name;
-	protected $webDir;
 
-	public function __construct($src=null, $name=null, $webDir=null, $url=null) {
+	public function __construct($src=null, $name=null) {
 		$this->setSrc($src);
 		$this->name = $name;
-		if($webDir)
-			$this->webDir = realpath($webDir);
-		$this->url = $url;
 	}
 
 	public function setSrc($src) {
 		$this->src = realpath($src);
-	}
-
-	public function setUrl($url) {
-		$this->url = $url;
 	}
 
 	public function setName($name) {
@@ -32,10 +23,6 @@ class File {
 			return $this->name;
 		else
 			return basename($this->src);
-	}
-
-	public function setWebDir($webDir) {
-		$this->webDir = realpath($webDir);
 	}
 
 	public function isUploaded() {
@@ -63,16 +50,6 @@ class File {
 
 	public function src() {
 		return $this->src;
-	}
-
-	public function srcFromWebDir() {
-		if(!$this->isIn($this->webDir))
-			return;
-		return str_replace($this->formatPath($this->webDir).DIRECTORY_SEPARATOR, '', $this->formatPath($this->src));
-	}
-
-	public function relativeToWebDir() {
-		return $this->relativeTo($this->webDir);
 	}
 
 	public function relativeTo($path) {
@@ -104,18 +81,6 @@ class File {
 		return preg_replace('/\/|\\\/', DIRECTORY_SEPARATOR, realpath($path));
 	}
 
-	public function url($default=null) {
-		$webDir = $this->webDir;
-		if($this->exists() && strpos($this->src, $webDir) === 0)
-			$src = $this->src;
-		else
-			$src = $default;
-		if($this->url)
-			return $this->url->to(str_replace($webDir.DIRECTORY_SEPARATOR, '', $src));
-		else
-			return str_replace($webDir.DIRECTORY_SEPARATOR, '', $src);
-	}
-
 	public function moveToDir($dir, $rename=true) {
 		if($this->isIn($dir))
 			return;
@@ -134,7 +99,7 @@ class File {
 
 	public function move($dst, $rename=true) {
 		if(!$this->src || $this->isAt($dst)) return;
-		$filename = \Asgard\Utils\FileManager::move($this->src, $dst, $rename);
+		$filename = \Asgard\Common\FileManager::move($this->src, $dst, $rename);
 		if(!$filename)
 			return false;
 		$this->src = realpath(dirname($dst).'/'.$filename);
@@ -142,22 +107,18 @@ class File {
 	}
 
 	public function delete() {
-		if($r = \Asgard\Utils\FileManager::unlink($this->src))
+		if($r = \Asgard\Common\FileManager::unlink($this->src))
 			$this->src = null;
 		return $r;
 	}
 
 	public function copy($dst, $rename=true) {
-		$dst = \Asgard\Utils\FileManager::copy($this->src, $dst, $rename);
+		$dst = \Asgard\Common\FileManager::copy($this->src, $dst, $rename);
 		if($dst) {
 			$copy = clone $this;
 			$copy->setSrc($dst);
 			return $copy;
 		}
 		return false;
-	}
-
-	public function __toString() {
-		return $this->url();
 	}
 }

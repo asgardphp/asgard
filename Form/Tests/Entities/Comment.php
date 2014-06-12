@@ -3,22 +3,22 @@ namespace Asgard\Form\Tests\Entities;
 
 class Comment extends \Asgard\Entity\Entity {
 	public static function definition(\Asgard\Entity\EntityDefinition $definition) {
-		$definition->properties = array(
-			'content' => array(
+		$definition->properties = [
+			'content' => [
 				'required'
-			)
-		);
+			]
+		];
 
-		$definition->behaviors = array(
+		$definition->behaviors = [
 			new \Asgard\Orm\ORMBehavior
-		);
+		];
 
-		$definition->relations = array(
-			'user' => array(
+		$definition->relations = [
+			'user' => [
 				'entity' => 'Asgard\Form\Tests\Entities\User',
 				'has' => 'one'
-			)
-		);
+			]
+		];
 	}
 
 	public function __toString() {

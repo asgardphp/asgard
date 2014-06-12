@@ -8,7 +8,7 @@ class Browser {
 	protected $app;
 	protected $catchException = false;
 
-	public function __construct(\Asgard\Core\App $app) {
+	public function __construct(\Asgard\Container\Container $app) {
 		$this->app = $app;
 		$this->cookies = new CookieManager;
 		$this->session = new SessionManager;
@@ -26,35 +26,35 @@ class Browser {
 		return $this->last;
 	}
 
-	public function get($url='', $body='', array $headers=array()) {
-		return $this->req($url, 'GET', array(), array(), $body, $headers);
+	public function get($url='', $body='', array $headers=[]) {
+		return $this->req($url, 'GET', [], [], $body, $headers);
 	}
 
-	public function post($url='', array $post=array(), array $files=array(), $body='', array $headers=array()) {
+	public function post($url='', array $post=[], array $files=[], $body='', array $headers=[]) {
 		return $this->req($url, 'POST', $post, $files, $body, $headers);
 	}
 
-	public function put($url='', array $post=array(), array $files=array(), $body='', array $headers=array()) {
+	public function put($url='', array $post=[], array $files=[], $body='', array $headers=[]) {
 		return $this->req($url, 'PUT', $post, $files, $body, $headers);
 	}
 
-	public function delete($url='', $body='', array $headers=array()) {
-		return $this->req($url, 'DELETE', array(), array(), $body, $headers);
+	public function delete($url='', $body='', array $headers=[]) {
+		return $this->req($url, 'DELETE', [], [], $body, $headers);
 	}
 
 	public function req(
 			$url='',
 			$method='GET',
-			array $post=array(),
-			array $file=array(),
+			array $post=[],
+			array $file=[],
 			$body='',
-			array $headers=array()
+			array $headers=[]
 		) {
 		if(defined('_TESTING_'))
 			file_put_contents(_TESTING_, $url."\n", FILE_APPEND);
 
 		#build request
-		$get = array();
+		$get = [];
 		$infos = parse_url($url);
 		if(isset($infos['query'])) {
 			parse_str($infos['query'], $get);
@@ -77,7 +77,6 @@ class Browser {
 		$request->url->setHost('localhost');
 		$request->url->setRoot('');
 
-		// $httpKernel = new \Asgard\Http\HttpKernel($this->app);
 		$httpKernel = $this->app['httpKernel'];
 		$res = $httpKernel->process($request, $this->catchException);
 
@@ -92,7 +91,7 @@ class Browser {
 		$this->catchException = $catchException;
 	}
 
-	public function submit($item=0, $to=null, array $override=array()) {
+	public function submit($item=0, $to=null, array $override=[]) {
 		if($this->last === null)
 			throw new \Exception('No page to submit from.');
 		libxml_use_internal_errors(true);

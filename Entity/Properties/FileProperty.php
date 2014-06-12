@@ -2,7 +2,7 @@
 namespace Asgard\Entity\Properties;
 
 class FileProperty extends \Asgard\Entity\Property {
-	protected static $defaultExtensions = array('pdf', 'doc', 'jpg', 'jpeg', 'png', 'docx', 'gif', 'rtf', 'ppt', 'xls', 'zip', 'txt');
+	protected static $defaultExtensions = ['pdf', 'doc', 'jpg', 'jpeg', 'png', 'docx', 'gif', 'rtf', 'ppt', 'xls', 'zip', 'txt'];
 
 	public function __construct($params) {
 		$params['extensions'] = static::$defaultExtensions;
@@ -12,7 +12,7 @@ class FileProperty extends \Asgard\Entity\Property {
 	public function getRules() {
 		$rules = parent::getRules();
 		$rules['isNull'] = function($input) {
-			return !$input->src();
+			return !$input || $input->shouldDelete() || !$input->src();
 		};
 		if(!isset($rules['extension']))
 			$rules['extension'] = $this->get('extensions');
@@ -29,7 +29,7 @@ class FileProperty extends \Asgard\Entity\Property {
 
 	protected function _getDefault($entity=null) {
 		if($this->multiple)
-			return array();
+			return [];
 		else
 			return null;
 	}
@@ -40,21 +40,29 @@ class FileProperty extends \Asgard\Entity\Property {
 	}
 
 	protected function doUnserialize($str, $entity=null) {
-		if(!$str)
+		if(!$str || !file_exists($str))
 			return null;
-		$file = new \Asgard\Files\File($str);
+		$file = new \Asgard\Entity\File($str);
 		$file->setWebDir($this->definition->getApp()['kernel']['webdir']);
 		$file->setUrl($this->definition->getApp()['request']->url);
+		$file->setDir($this->get('dir'));
 		return $file;
 	}
 
-	protected function doSet($val, $entity=null) {
+	public function doSet($val, $entity=null) {
 		if(is_string($val) && $val !== null)
-			$val = new \Asgard\Files\File($val);
+			$val = new \Asgard\Entity\File($val);
 		if(is_object($val)) {
+			if($val instanceof \Asgard\Form\HttpFile)
+				$val = new \Asgard\Entity\File($val->src(), $val->getName());
 			$val->setWebDir($this->definition->getApp()['kernel']['webdir']);
 			$val->setUrl($this->definition->getApp()['request']->url);
+			$val->setDir($this->get('dir'));
 		}
 		return $val;
+	}
+
+	public function getFormField() {
+		return 'Asgard\Form\Fields\FileField';
 	}
 }

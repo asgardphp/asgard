@@ -3,13 +3,13 @@ namespace Asgard\Entity\Tests\Fixtures;
 
 class EntityWithFile extends \Asgard\Entity\Entity {
 	public static function definition(\Asgard\Entity\EntityDefinition $definition) {
-		$definition->properties = array(
+		$definition->properties = [
 			'name',
-			'files' => array(
+			'files' => [
 				'type' => 'file',
 				'multiple' => true
-			),
+			],
 			'file' => 'file',
-		);
+		];
 	}
 }

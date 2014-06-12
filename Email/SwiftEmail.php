@@ -1,6 +1,8 @@
 <?php
 namespace Asgard\Email;
 
+require 'vendor/swiftmailer/swiftmailer/lib/swift_required.php';
+
 class SwiftEmail implements DriverInterface {
 	protected $transport;
 
@@ -20,7 +22,7 @@ class SwiftEmail implements DriverInterface {
 			if(isset($this->transport['username']))
 				$transport->setUsername($this->transport['username']);
 			if(isset($this->transport['password']))
-				$transport->setUsername($this->transport['password']);
+				$transport->setPassword($this->transport['password']);
 		}
 		elseif(isset($this->transport['transport']) && $this->transport['transport'] == 'sendmail')
 			$transport = \Swift_SendmailTransport::newInstance($this->transport['command']);

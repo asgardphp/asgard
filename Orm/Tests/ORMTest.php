@@ -6,21 +6,21 @@ class ORMTest extends PHPUnit_Framework_TestCase {
 		if(!defined('_ENV_'))
 			define('_ENV_', 'test');
 
-		$app = new \Asgard\Core\App;
+		$app = new \Asgard\Container\Container;
 		$app['hooks'] = new \Asgard\Hook\HooksManager($app);
-		$app['config'] = new \Asgard\Core\Config;
+		$app['config'] = new \Asgard\Config\Config;
 		$app['cache'] = new \Asgard\Cache\NullCache;
-		$app->register('paginator', function($app, $args) {
-			return new \Asgard\Utils\Paginator($args[0], $args[1], $args[2]);
+		$app->register('paginator', function($app, $page, $per_page, $total) {
+			return new \Asgard\Common\Paginator($page, $per_page, $total);
 		});
 		$app['rulesregistry'] = new \Asgard\Validation\RulesRegistry;
 		$app['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($app);
-		$app['db'] = new \Asgard\Db\DB(array(
+		$app['db'] = new \Asgard\Db\DB([
 			'database' => 'asgard',
 			'user' => 'root',
 			'password' => '',
 			'host' => 'localhost'
-		));
+		]);
 		\Asgard\Entity\Entity::setApp($app);
 		static::$app = $app;
 	}
@@ -113,7 +113,7 @@ class ORMTest extends PHPUnit_Framework_TestCase {
 		);
 
 		#next
-		$news = array();
+		$news = [];
 		$orm = Asgard\Orm\Tests\Entities\News::orm();
 		while($n = $orm->next())
 			$news[] = $n;
@@ -121,13 +121,13 @@ class ORMTest extends PHPUnit_Framework_TestCase {
 
 		#values
 		$this->assertEquals(
-			array('Welcome!', '1000th visitor!', 'Important'),
+			['Welcome!', '1000th visitor!', 'Important'],
 			Asgard\Orm\Tests\Entities\News::orderBy('id ASC')->values('title')
 		);
 
 		#ids
 		$this->assertEquals(
-			array(1, 2, 3),
+			[1, 2, 3],
 			Asgard\Orm\Tests\Entities\News::orderBy('id ASC')->ids()
 		);
 
@@ -142,13 +142,13 @@ class ORMTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals(1, $cats[0]->data['news'][0]->data['author']->id);
 
 		#selectQuery
-		$cats = Asgard\Orm\Tests\Entities\Category::selectQuery('SELECT * FROM category WHERE title=?', array('General'));
+		$cats = Asgard\Orm\Tests\Entities\Category::selectQuery('SELECT * FROM category WHERE title=?', ['General']);
 		$this->assertEquals(1, $cats[0]->id);
 
 		#paginate
 		$orm = Asgard\Orm\Tests\Entities\News::paginate(1, 2);
 		$paginator = $orm->getPaginator();
-		$this->assertTrue($paginator instanceof \Asgard\Utils\Paginator);
+		$this->assertTrue($paginator instanceof \Asgard\Common\Paginator);
 		$this->assertEquals(2, count($orm->get()));
 		$this->assertEquals(1, count(Asgard\Orm\Tests\Entities\News::paginate(2, 2)->get()));
 
@@ -160,29 +160,29 @@ class ORMTest extends PHPUnit_Framework_TestCase {
 
 		#two jointures with the same name
 		$r = Asgard\Orm\Tests\Entities\News::first()
-		->join(array(
+		->join([
 			'author' => 'news n1',
 			'category' => 'news n2',
-		))
+		])
 		->where('n2.title', 'Welcome!')
 		->get();
 		$this->assertCount(2, $r);
 
 		#validation
-		static::$app['rulesregistry']->registerNamespace('Asgard\Orm\Validation');
+		static::$app['rulesregistry']->registerNamespace('Asgard\Orm\Rules');
 		$cat = Asgard\Orm\Tests\Entities\Category::load(1);
-		$this->assertEquals(array(
-			'news' => array(
+		$this->assertEquals([
+			'news' => [
 				'morethan' => 'News must have more than 3 elements.'
-			)
-		), $cat->errors());
+			]
+		], $cat->errors());
 		$cat = new Asgard\Orm\Tests\Entities\Category;
-		$this->assertEquals(array(
-			'news' => array(
+		$this->assertEquals([
+			'news' => [
 				'relationrequired' => 'News is required.',
 				'morethan' => 'News must have more than 3 elements.'
-			)
-		), $cat->errors());
+			]
+		], $cat->errors());
 
 		#
 
@@ -234,9 +234,9 @@ class ORMTest extends PHPUnit_Framework_TestCase {
 		->news() #get the news
 		->where('score > 3') #whose score is greater than 3
 		->author() #the authors from the previous news
-		->with(array( #along with their comments
+		->with([ #along with their comments
 			'comments'
-		))
+		])
 		->paginate(1, 10) #paginate, 10 authors per page, page 1
 		->get();
 	}

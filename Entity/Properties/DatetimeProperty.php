@@ -30,7 +30,7 @@ class DatetimeProperty extends \Asgard\Entity\Property {
 		return \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $str);
 	}
 
-	protected function doSet($val) {
+	public function doSet($val) {
 		if($val instanceof \Carbon\Carbon)
 			return $val;
 		elseif(is_string($val)) {
@@ -45,5 +45,9 @@ class DatetimeProperty extends \Asgard\Entity\Property {
 
 	public function getSQLType() {
 		return 'datetime';
+	}
+
+	public function getFormField() {
+		return 'Asgard\Form\Fields\DatetimeField';
 	}
 }

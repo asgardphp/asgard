@@ -66,10 +66,10 @@ class BuildCol {
 
 class BuildTable {
 	protected $name;
-	protected $cols = array();
-	protected $primary = array();
-	protected $indexes = array();
-	protected $uniques = array();
+	protected $cols = [];
+	protected $primary = [];
+	protected $indexes = [];
+	protected $uniques = [];
 	
 	public function __construct($name) {
 		$this->name = $name;
@@ -191,7 +191,7 @@ class Table {
 		} catch(\Asgard\Db\DBException $e) {}
 	
 		if(!is_array($keys))
-			$keys = array($keys);
+			$keys = [$keys];
 		$sql = 'ALTER TABLE  `'.$this->name.'` ADD PRIMARY KEY (';
 		foreach($keys as $k=>$v)
 			$keys[$k] = '`'.$v.'`';
@@ -285,7 +285,7 @@ class Column {
 		else
 			$type = $this->type;
 			
-		$this->change(array('type'=>$type));
+		$this->change(['type'=>$type]);
 	
 		//~ Schema::renameColumn($this->table, $this->name, $this->name, $type);
 		
@@ -294,7 +294,7 @@ class Column {
 	
 	public function rename($name) {
 			
-		$this->change(array('name'=>$name));
+		$this->change(['name'=>$name]);
 		
 		//~ Schema::renameColumn($this->table, $this->name, $name);
 		$this->name = $name;
@@ -303,7 +303,7 @@ class Column {
 	}
 	
 	public function nullable() {
-		$this->change(array('nullable'=>true));
+		$this->change(['nullable'=>true]);
 		
 		return $this;
 	}
@@ -312,37 +312,37 @@ class Column {
 		$sql = 'UPDATE `'.$this->table.'` set `'.$this->name.'` = 0 where `'.$this->name.'` is null';
 		$this->db->query($sql);
 		
-		$this->change(array('nullable'=>false));
+		$this->change(['nullable'=>false]);
 		
 		return $this;
 	}
 	
 	public function def($val) {
-		$this->change(array('default'=>$val));
+		$this->change(['default'=>$val]);
 		
 		return $this;
 	}
 	
 	public function first() {
-		$this->change(array('after'=>false));
+		$this->change(['after'=>false]);
 		
 		return $this;
 	}
 	
 	public function after($what) {
-		$this->change(array('after'=>$what));
+		$this->change(['after'=>$what]);
 		
 		return $this;
 	}
 	
 	public function autoincrement() {
-		$this->change(array('autoincrement'=>true));
+		$this->change(['autoincrement'=>true]);
 		
 		return $this;
 	}
 	
 	public function notAutoincrement() {
-		$this->change(array('autoincrement'=>false));
+		$this->change(['autoincrement'=>false]);
 		
 		return $this;
 	}
@@ -426,7 +426,7 @@ class Schema {
 	}
 
 	public function dropAll() {
-		$tables = \Asgard\Utils\Tools::flateArray($this->db->query('SHOW TABLES')->all());
+		$tables = \Asgard\Common\Tools::flateArray($this->db->query('SHOW TABLES')->all());
 		foreach($tables as $table)
 			$this->db->query('DROP TABLE '.$table);
 	}

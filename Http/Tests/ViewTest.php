@@ -6,9 +6,9 @@ use \Asgard\Http\Viewable;
 
 class ViewTest extends \PHPUnit_Framework_TestCase {
 	public function testView() {
-		$view = new View(__DIR__.'/Fixtures/template.php', array('test' => 'hello!'));
+		$view = new View(__DIR__.'/Fixtures/template.php', ['test' => 'hello!']);
 		$this->assertEquals('<h1>hello!</h1>', $view->render());
-		$this->assertEquals('<h1>hello!</h1>', View::renderTemplate(__DIR__.'/Fixtures/template.php', array('test' => 'hello!')));
+		$this->assertEquals('<h1>hello!</h1>', View::renderTemplate(__DIR__.'/Fixtures/template.php', ['test' => 'hello!']));
 	}
 
 	public function testViewable() {

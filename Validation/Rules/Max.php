@@ -10,7 +10,7 @@ class Max extends \Asgard\Validation\Rule {
 	}
 
 	public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\Validator $validator) {
-		return $input >= $this->max;
+		return $input <= $this->max;
 	}
 
 	public function getMessage() {

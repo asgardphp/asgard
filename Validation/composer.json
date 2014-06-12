@@ -7,8 +7,5 @@
 	}],
     "autoload": {
         "psr-4": {"Asgard\\Validation\\": "."}
-    },
-    "require-dev": {
-        "symfony/translation": "2.3.*"
     }
 }

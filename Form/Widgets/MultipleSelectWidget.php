@@ -2,32 +2,32 @@
 namespace Asgard\Form\Widgets;
 
 class MultipleSelectWidget extends \Asgard\Form\Widget {
-	public function render(array $options=array()) {
+	public function render(array $options=[]) {
 		$options = $this->options+$options;
 
-		$attrs = array();
+		$attrs = [];
 		if(isset($options['attrs']))
 			$attrs = $options['attrs'];
 		$attrs['multiple'] = 'multiple';
 
 		$value = $this->value;
-		$choices = isset($options['choices']) ? $options['choices']:array();
+		$choices = isset($options['choices']) ? $options['choices']:[];
 
-		return \Asgard\Form\HTMLHelper::tag('select', array(
+		return \Asgard\Form\HTMLHelper::tag('select', [
 			'name'	=>	$this->name.'[]',
 			'id'	=>	isset($options['id']) ? $options['id']:null,
-		)+$attrs, function() use($choices, $value) {
+		]+$attrs, function() use($choices, $value) {
 			$str = '';
 			foreach($choices as $k=>$v)
 				if(is_array($value) && in_array($k, $value))
-					$str .= \Asgard\Form\HTMLHelper::tag('option', array(
+					$str .= \Asgard\Form\HTMLHelper::tag('option', [
 						'value'	=>	$k,
 						'selected'	=>	'selected',
-					), $v);
+					], $v);
 				else
-					$str .= \Asgard\Form\HTMLHelper::tag('option', array(
+					$str .= \Asgard\Form\HTMLHelper::tag('option', [
 						'value'	=>	$k,
-					), $v);
+					], $v);
 			return $str;
 		});
 	}

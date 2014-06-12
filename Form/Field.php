@@ -10,7 +10,7 @@ abstract class Field {
 	protected $default_render = 'text';
 	protected $error;
 
-	public function __construct(array $options=array()) {
+	public function __construct(array $options=[]) {
 		$this->options = $options;
 		if(isset($options['data_type']))
 			$this->data_type = $options['data_type'];
@@ -25,7 +25,7 @@ abstract class Field {
 	}
 
 	public function getValidationRules() {
-		$validation = isset($this->options['validation']) ? $this->options['validation']:array();
+		$validation = isset($this->options['validation']) ? $this->options['validation']:[];
 		if(isset($this->options['choices']))
 			$constrains[$name]['in'] = array_keys($this->options['choices']);
 
@@ -33,12 +33,12 @@ abstract class Field {
 	}
 
 	public function getValidationMessages() {
-		$messages = isset($this->options['messages']) ? $this->options['messages']:array();
+		$messages = isset($this->options['messages']) ? $this->options['messages']:[];
 		return $messages;
 	}
 
 	public function __call($name, array $args) {
-		return $this->render($name, isset($args[0]) ? $args[0]:array());
+		return $this->render($name, isset($args[0]) ? $args[0]:[]);
 	}
 
 	public function setDefaultRender($default_render) {
@@ -53,13 +53,13 @@ abstract class Field {
 		return '<label for="'.$this->getID().'">'.$this->label().'</label>';
 	}
 
-	public function def(array $options=array()) {
+	public function def(array $options=[]) {
 		if(!$this->default_render)
 			throw new \Exception('No default render function for this field');
 		return $this->render($this->default_render, $options);
 	}
 
-	public function render($render_callback, array $options=array()) {
+	public function render($render_callback, array $options=[]) {
 		return $this->dad->render($render_callback, $this, $options);
 	}
 	
@@ -125,7 +125,7 @@ abstract class Field {
 
 	public function getError() {
 		if(is_array($this->error))
-			return \Asgard\Utils\Tools::array_get(array_values($this->error), 0);
+			return \Asgard\Common\Tools::array_get(array_values($this->error), 0);
 		else
 			return $this->error;
 	}

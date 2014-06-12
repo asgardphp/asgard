@@ -3,10 +3,10 @@ namespace Asgard\Validation;
 
 class Report {
 	protected $self;
-	protected $rules=array();
-	protected $attributes=array();
+	protected $rules=[];
+	protected $attributes=[];
 
-	public function __construct(array $errors=array()) {
+	public function __construct(array $errors=[]) {
 		if(isset($errors['self']))
 			$this->self = $errors['self'];
 		if(isset($errors['rules']))
@@ -49,7 +49,7 @@ class Report {
 	}
 
 	public function failed() {
-		$failed = array();
+		$failed = [];
 		foreach($this->attributes as $attribute=>$report) {
 			$attrFailed = $report->failed();
 			if($attrFailed)

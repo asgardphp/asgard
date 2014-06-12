@@ -3,11 +3,11 @@ namespace Asgard\Core\Tests;
 
 class CoreTest extends \PHPUnit_Framework_TestCase {
 	public function testInstance() {
-		$this->isInstanceOf('Asgard\Core\App', \Asgard\Core\App::instance());
+		$this->isInstanceOf('Asgard\Container\Container', \Asgard\Container\Container::instance());
 	}
 
 	public function testAutofacade() {
-		$app = \Asgard\Core\App::instance();
+		$app = \Asgard\Container\Container::instance();
 		$app->setAutofacade(true);
 
 		$this->assertFalse(class_exists('Test'));
@@ -21,13 +21,13 @@ class CoreTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testSetGet() {
-		$app = new \Asgard\Core\App;
+		$app = new \Asgard\Container\Container;
 		$app['test'] = '1245';
 		$this->assertEquals('1245', $app['test']);
 	}
 
 	public function testRegisterAndMake() {
-		$app = new \Asgard\Core\App;
+		$app = new \Asgard\Container\Container;
 		$app->register('test', function() {
 			return new \StdClass;
 		});
@@ -39,7 +39,7 @@ class CoreTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testHas() {
-		$app = new \Asgard\Core\App;
+		$app = new \Asgard\Container\Container;
 		$app['test1'] = 123;
 		$app->register('test3', function() { return 123; });
 		$this->assertTrue($app->has('test1'));
@@ -48,7 +48,7 @@ class CoreTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testRemove() {
-		$app = new \Asgard\Core\App;
+		$app = new \Asgard\Container\Container;
 		
 		$app['test'] = 123;
 		$this->assertTrue($app->has('test'));

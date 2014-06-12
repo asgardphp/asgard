@@ -9,7 +9,7 @@ class ResolverTest extends \PHPUnit_Framework_TestCase {
 	public function testGetRoute() {
 		$cache = new \Asgard\Cache\NullCache;
 		$resolver = new Resolver($cache);
-		$route = new Route('test/:id/plpl', 'callback', array(1,2,3));
+		$route = new Route('test/:id/plpl', 'callback', [1,2,3]);
 
 		$resolver->addRoute($route);
 
@@ -18,7 +18,7 @@ class ResolverTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals(null, $resolver->getCallback($request));
 		$request->url->setURL('test/1/plpl');
 		$this->assertEquals('callback', $resolver->getCallback($request));
-		$this->assertEquals(array(1,2,3), $resolver->getArguments($request));
+		$this->assertEquals([1,2,3], $resolver->getArguments($request));
 	}
 
 	public function testSortRoutes() {
@@ -30,26 +30,26 @@ class ResolverTest extends \PHPUnit_Framework_TestCase {
 		$resolver->addRoute(new Route('test/abc', null));
 		$resolver->addRoute(new Route('test/:id/plpl', null));
 
-		$routes = array(
+		$routes = [
 			new Route('test', null),
 			new Route(':a', null),
 			new Route('test/abc', null),
 			new Route('test/:id/plpl', null)
-		);
+		];
 		$routes = $resolver->sortRoutes()->getRoutes();
 
-		$res = array();
+		$res = [];
 		foreach($routes as $r)
 			$res[] = $r->getRoute();
-		$this->assertEquals(array(
+		$this->assertEquals([
 			'test/abc', 'test/:id/plpl', 'test', ':a'
-		), $res);
+		], $res);
 	}
 
 	public function testParameter() {
 		$cache = new \Asgard\Cache\NullCache;
 		$resolver = new Resolver($cache);
-		$route = new Route('test/:id/plpl', 'callback', array(1,2,3));
+		$route = new Route('test/:id/plpl', 'callback', [1,2,3]);
 
 		$resolver->addRoute($route);
 
@@ -62,6 +62,6 @@ class ResolverTest extends \PHPUnit_Framework_TestCase {
 	public function testBuildRoute() {
 		$cache = new \Asgard\Cache\NullCache;
 		$resolver = new Resolver($cache);
-		$this->assertEquals('test/1/plpl', $resolver->buildRoute('test/:id/plpl', array('id'=>1)));
+		$this->assertEquals('test/1/plpl', $resolver->buildRoute('test/:id/plpl', ['id'=>1]));
 	}
 }

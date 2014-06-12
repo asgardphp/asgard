@@ -2,10 +2,10 @@
 namespace Asgard\Http;
 
 class Resolver {
-	protected $routes = array();
+	protected $routes = [];
 	protected $httpKernel;
 	protected $cache;
-	protected $results = array();
+	protected $results = [];
 
 	public function __construct($cache) {
 		$this->cache = $cache;
@@ -67,13 +67,13 @@ class Resolver {
 		}
 				
 		$regex = static::getRegexFromRoute($route, $requirements);
-		$matches = array();
+		$matches = [];
 		$res = preg_match_all('/^'.$regex.'(?:\.[a-zA-Z0-9]{1,5})?\/?$/', $with, $matches);
 		
 		if($res == 0)
 			return false;
 		else {
-			$results = array();
+			$results = [];
 			/* EXTRACTS VARIABLES */
 			preg_match_all('/:([a-zA-Z0-9_]+)/', $route, $keys);
 			for($i=0; $i<count($keys[1]); $i++)
@@ -113,7 +113,7 @@ class Resolver {
 	}
 
 	public function getRoute(\Asgard\Http\Request $request) {
-		$request_key = sha1(serialize(array($request->method(), $request->url->get())));
+		$request_key = sha1(serialize([$request->method(), $request->url->get()]));
 
 		$results = $this->cache->fetch('Router/requests/'.$request_key, function() use($request) {
 			/* PARSE ALL ROUTES */
@@ -124,7 +124,7 @@ class Resolver {
 
 				/* IF THE ROUTE MATCHES */
 				if(($results = static::match($request, $route, $requirements, $method)) !== false)
-					return array('route' => $r, 'params' => $results);
+					return ['route' => $r, 'params' => $results];
 			}
 		});
 
@@ -175,7 +175,7 @@ class Resolver {
 		return $this;
 	}
 	
-	public static function buildRoute($route, array $params=array()) {
+	public static function buildRoute($route, array $params=[]) {
 		foreach($params as $symbol=>$param) {
 			$count = 0;
 			$route = str_replace(':'.$symbol, $param, $route, $count);
@@ -202,7 +202,7 @@ class Resolver {
 		return $this->routes;
 	}
 
-	public function url_for($what, array $params=array()) {
+	public function url_for($what, array $params=[]) {
 		#controller/action
 		if(is_array($what)) {
 			$controller = strtolower($what[0]);

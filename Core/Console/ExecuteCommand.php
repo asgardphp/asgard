@@ -24,8 +24,8 @@ class ExecuteCommand extends \Asgard\Console\Command {
 	}
 
 	protected function getArguments() {
-		return array(
-			array('cmd', InputArgument::REQUIRED, 'PHP code'),
-		);
+		return [
+			['cmd', InputArgument::REQUIRED, 'PHP code'],
+		];
 	}
 }

@@ -2,7 +2,7 @@
 namespace Asgard\Entity;
 
 class EntitiesManager {
-	protected $entities = array();
+	protected $entities = [];
 	protected $app;
 
 	public function __construct($app) {

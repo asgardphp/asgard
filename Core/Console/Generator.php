@@ -27,9 +27,10 @@ class Generator {
 		ob_end_clean();
 
 		$content = str_replace('<%', '<?php', $content);
+		$content = str_replace('<%=', '<?=', $content);
 		$content = str_replace('%>', '?>', $content);
 
-		\Asgard\Utils\FileManager::put($_dst, $content);
+		\Asgard\Common\FileManager::put($_dst, $content);
 	}
 
 	public function outputPHP($v) {

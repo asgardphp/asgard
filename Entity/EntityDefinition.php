@@ -5,15 +5,15 @@ class EntityDefinition extends \Asgard\Hook\Hookable {
 	protected $entityClass;
 
 	protected $app;
-	protected $metas = array();
-	protected $properties = array();
-	public $behaviors = array();
-	public $messages = array();
-	public $relations = array();
-	protected $calls = array();
-	protected $statics = array();
-	protected $staticsCatchAll = array();
-	protected $callsCatchAll = array();
+	protected $metas = [];
+	protected $properties = [];
+	public $behaviors = [];
+	public $messages = [];
+	public $relations = [];
+	protected $calls = [];
+	protected $statics = [];
+	protected $staticsCatchAll = [];
+	protected $callsCatchAll = [];
 
 	public function __construct($entityClass, $app) {
 		$reflectionClass = new \ReflectionClass($entityClass);
@@ -26,7 +26,7 @@ class EntityDefinition extends \Asgard\Hook\Hookable {
 		$entityClass::definition($this);
 
 		$behaviors = $this->behaviors;
-		$this->behaviors = array();
+		$this->behaviors = [];
 		$this->loadBehaviors($behaviors);
 	}
 
@@ -39,7 +39,7 @@ class EntityDefinition extends \Asgard\Hook\Hookable {
 	}
 
 	public function __sleep() {
-		return array('entityClass', 'metas', 'properties', 'behaviors', 'messages', 'relations', 'calls', 'statics', 'staticsCatchAll', 'callsCatchAll');
+		return ['entityClass', 'metas', 'properties', 'behaviors', 'messages', 'relations', 'calls', 'statics', 'staticsCatchAll', 'callsCatchAll'];
 	}
 
 	public function __set($name, $value) {
@@ -49,13 +49,13 @@ class EntityDefinition extends \Asgard\Hook\Hookable {
 			foreach($clone as $name=>$property) {
 				if(is_int($name)) {
 					$properties = 
-						\Asgard\Utils\Tools::array_before($properties, $name) +
-						array($property => array()) +
-						\Asgard\Utils\Tools::array_after($properties, $name);
+						\Asgard\Common\Tools::array_before($properties, $name) +
+						[$property => []] +
+						\Asgard\Common\Tools::array_after($properties, $name);
 				}
 			}
 
-			$this->properties = array();
+			$this->properties = [];
 			foreach($properties as $name=>$property)
 				$this->addProperty($name, $property);
 		}
@@ -85,7 +85,7 @@ class EntityDefinition extends \Asgard\Hook\Hookable {
 		else {
 			foreach($this->callsCatchAll as $behavior) {
 				$processed = false;
-				$res = call_user_func_array(array($behavior, 'callCatchAll'), array($entity, $name, $arguments, &$processed));
+				$res = call_user_func_array([$behavior, 'callCatchAll'], [$entity, $name, $arguments, &$processed]);
 				if($processed)
 					return $res;
 			}
@@ -104,20 +104,20 @@ class EntityDefinition extends \Asgard\Hook\Hookable {
 		else {
 			foreach($this->staticsCatchAll as $behavior) {
 				$processed = false;
-				$res = call_user_func_array(array($behavior, 'staticCatchAll'), array($name, $arguments, &$processed));
+				$res = call_user_func_array([$behavior, 'staticCatchAll'], [$name, $arguments, &$processed]);
 				if($processed)
 					return $res;
 			}
 
 			if(method_exists($this, $name))
-				return call_user_func_array(array($this, $name), $arguments);
+				return call_user_func_array([$this, $name], $arguments);
 
 			throw new \Exception('Static method '.$name.' does not exist for entity '.$this->entityClass);
 		}
 	}
 
 	public function loadBehaviors($behaviors) {
-		$this->app['hooks']->trigger('Asgard.Entity.LoadBehaviors', array(&$behaviors));
+		$this->app['hooks']->trigger('Asgard.Entity.LoadBehaviors', [&$behaviors]);
 
 		foreach($behaviors as $behavior)
 			$this->loadBehavior($behavior);
@@ -132,9 +132,9 @@ class EntityDefinition extends \Asgard\Hook\Hookable {
 		$reflection = new \ReflectionClass($behavior);
 		foreach($reflection->getMethods() as $methodReflection) {
 			if(strpos($methodReflection->getName(), 'call_') === 0)
-				$this->calls[str_replace('call_', '', $methodReflection->getName())] = array($behavior, $methodReflection->getName());
+				$this->calls[str_replace('call_', '', $methodReflection->getName())] = [$behavior, $methodReflection->getName()];
 			elseif(strpos($methodReflection->getName(), 'static_') === 0)
-				$this->statics[str_replace('static_', '', $methodReflection->getName())] = array($behavior, $methodReflection->getName());
+				$this->statics[str_replace('static_', '', $methodReflection->getName())] = [$behavior, $methodReflection->getName()];
 			elseif($methodReflection->getName() === 'staticCatchAll')
 				$this->staticsCatchAll[] = $behavior;
 			elseif($methodReflection->getName() === 'callCatchAll')
@@ -152,7 +152,7 @@ class EntityDefinition extends \Asgard\Hook\Hookable {
 		if($property === null)
 			$property = 'text';
 		if(is_string($property))
-			$property = array('type'=>$property);
+			$property = ['type'=>$property];
 		if(is_array($property)) {
 			foreach($property as $k=>$v) {
 				if(is_int($k)) {
@@ -161,14 +161,10 @@ class EntityDefinition extends \Asgard\Hook\Hookable {
 				}
 			}
 
-			if(!isset($property['type']) || !$property['type']) {
-				if(isset($property['multiple']) && $property['multiple'])
-					$property['type'] = 'array';
-				else
-					$property['type'] = 'text';
-			}
+			if(!isset($property['type']) || !$property['type'])
+				$property['type'] = 'text';
 
-			$property = $this->app->make('Asgard.Entity.PropertyType', array($property['type'], $property), function($type, $params) {
+			$property = $this->app->make('Asgard.Entity.PropertyType', [$property['type'], $property], function($type, $params) {
 				$class = '\Asgard\Entity\Properties\\'.ucfirst($type).'Property';
 				return new $class($params);
 			});
@@ -234,5 +230,53 @@ class EntityDefinition extends \Asgard\Hook\Hookable {
 
 	private static function basename($ns) {
 		return basename(str_replace('\\', DIRECTORY_SEPARATOR, $ns));
+	}
+
+	public function processBeforeSet($entity, $name, &$value, $lang=null, $hook=true) {
+		if($hook)
+			$this->trigger('set', [$entity, $name, &$value, $lang]);
+	
+		if($this->property($name)->setHook) {
+			$hook = $this->property($name)->setHook;
+			$value = call_user_func_array($hook, [$value]);
+		}
+
+		if($this->property($name)->i18n) {
+			if($lang == 'all') {
+				$val = [];
+				foreach($value as $one => $v)
+					$val[$one] = $this->property($name)->set($v, $this, $name);
+				$value = $val;
+			}
+			else
+				$value = $this->property($name)->set($value, $this, $name);
+		}
+		else
+			$value = $this->property($name)->set($value, $this, $name);
+	}
+
+	public function processBeforeAdd($entity, $name, &$value, $lang=null, $hook=true) {
+		if($hook)
+			$this->trigger('set', [$entity, $name, &$value, $lang]);
+	
+		if($this->property($name)->setHook) {
+			$hook = $this->property($name)->setHook;
+			$value = call_user_func_array($hook, [$value]);
+		}
+
+		if($this->property($name)->i18n) {
+			if(!$lang)
+				$lang = $entity->getLocale();
+			if($lang == 'all') {
+				$val = [];
+				foreach($value as $one => $v)
+					$val[$one] = $this->property($name)->doSet($v, $this, $name);
+				$value = $val;
+			}
+			else
+				$value = $this->property($name)->doSet($value, $this, $name);
+		}
+		else
+			$value = $this->property($name)->doSet($value, $this, $name);
 	}
 }

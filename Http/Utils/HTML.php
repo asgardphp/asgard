@@ -2,11 +2,11 @@
 namespace Asgard\Http\Utils;
 
 class HTML {
-	protected $include_js = array();
-	protected $include_css = array();
-	protected $code_js = array();
-	protected $code_css = array();
-	protected $code = array();
+	protected $include_js = [];
+	protected $include_css = [];
+	protected $code_js = [];
+	protected $code_css = [];
+	protected $code = [];
 	
 	protected $title = '';
 	protected $description = '';

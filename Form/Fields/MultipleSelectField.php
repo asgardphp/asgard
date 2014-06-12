@@ -7,10 +7,10 @@ class MultipleSelectField extends \Asgard\Form\Field {
 	public function getChoices() {
 		if(isset($this->options['choices']))
 			return $this->options['choices'];
-		return array();
+		return [];
 	}
 
-	public function getRadio($name, array $options=array()) {
+	public function getRadio($name, array $options=[]) {
 		$choices = $this->getChoices();
 		$default = $this->value;
 
@@ -31,13 +31,13 @@ class MultipleSelectField extends \Asgard\Form\Field {
 		return $this->getTopForm()->getWidget('radio', $this->getName(), $value, $options);
 	}
 
-	public function getRadios(array $options=array()) {
+	public function getRadios(array $options=[]) {
 		if(isset($options['choices']))
 			$choices = $options['choices'];
 		else
 			$choices = $this->getChoices();
 
-		$radios = array();
+		$radios = [];
 		foreach($choices as $k=>$v) {
 			$radio_options = $options;
 			$radio_options['value'] = $k;
@@ -47,13 +47,13 @@ class MultipleSelectField extends \Asgard\Form\Field {
 		return $radios;
 	}
 
-	public function getCheckboxes(array $options=array()) {
+	public function getCheckboxes(array $options=[]) {
 		if(isset($options['choices']))
 			$choices = $options['choices'];
 		else
 			$choices = $this->getChoices();
 
-		$checkboxes = array();
+		$checkboxes = [];
 		foreach($choices as $k=>$v) {
 			$checkbox_options = $options;
 			$checkbox_options['value'] = $k;
@@ -63,7 +63,7 @@ class MultipleSelectField extends \Asgard\Form\Field {
 		return $checkboxes;
 	}
 
-	public function getCheckbox($name, array $options=array()) {
+	public function getCheckbox($name, array $options=[]) {
 		$choices = $this->getChoices();
 		$default = $this->value;
 
@@ -86,7 +86,7 @@ class MultipleSelectField extends \Asgard\Form\Field {
 	
 	public function getValue() {
 		if(!$this->value)
-			return array();
+			return [];
 		return $this->value;
 	}
 }

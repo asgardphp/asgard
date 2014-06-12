@@ -3,34 +3,34 @@ namespace Asgard\Orm\Tests\Fixtures;
 
 class Post extends \Asgard\Entity\Entity {
 	public static function definition(\Asgard\Entity\EntityDefinition $definition) {
-		$definition->properties = array(
-			'title' => array(
-				'orm' => array(
+		$definition->properties = [
+			'title' => [
+				'orm' => [
 					'default' => 'a',
 					'nullable' => false,
 					'key' => 'UNI'
-				)
-			),
+				]
+			],
 			'posted' => 'date',
-			'content' => array(
+			'content' => [
 				'type' => 'longtext',
 				'i18n' => true
-			)
-		);
+			]
+		];
 
-		$definition->relations = array(
-			'author' => array(
+		$definition->relations = [
+			'author' => [
 				'entity' => 'Asgard\Orm\Tests\Fixtures\Author',
 				'has' => 'one'
-			),
-			'categories' => array(
+			],
+			'categories' => [
 				'entity' => 'Asgard\Orm\Tests\Fixtures\Category',
 				'has' => 'many'
-			),
-		);
+			],
+		];
 
-		$definition->behaviors = array(
+		$definition->behaviors = [
 			new \Asgard\Orm\ORMBehavior
-		);
+		];
 	}
 }

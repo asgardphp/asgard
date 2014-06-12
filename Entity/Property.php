@@ -4,10 +4,11 @@ namespace Asgard\Entity;
 use Jeremeamia\SuperClosure\SerializableClosure;
 
 class Property {
+	protected $entity;
 	protected $position;
 	protected $definition;
 	protected $name;
-	public $params = array();
+	public $params = [];
 
 	public function __construct($params) {
 		$this->params = $params;
@@ -18,7 +19,7 @@ class Property {
 			if($v instanceof \Closure)
 				$this->params[$k] = new SerializableClosure($v);
 		}
-		return array('position', 'definition', 'name', 'params');
+		return ['position', 'definition', 'name', 'params'];
 	}
 
 	public function setPosition($position) {
@@ -49,10 +50,14 @@ class Property {
 		return $this->get($what);
 	}
 
-	public function get($what) {
-		if(!isset($this->params[$what]))
-			return;
-		return $this->params[$what];
+	public function get($path, $default=null) {
+		if(!$this->has($path))
+			return $default;
+		return \Asgard\Common\Tools::string_array_get($this->params, $path);
+	}
+	
+	public function has($path) {
+		return \Asgard\Common\Tools::string_array_isset($this->params, $path);
 	}
 
 	public function getParams() {
@@ -67,9 +72,9 @@ class Property {
 		return $this->getName();
 	}
 
-	public function getDefault() {
+	public function getDefault($entity, $name) {
 		if($this->get('multiple'))
-			return new Multiple();
+			return new Multiple($this->definition, $entity, $name);
 		elseif(isset($this->params['default'])) {
 			if(is_callable($this->params['default']))
 				return $this->params['default']();
@@ -77,7 +82,7 @@ class Property {
 				return $this->params['default'];
 		}
 		else
-			return $this->_getDefault();
+			return $this->_getDefault($entity);
 	}
 
 	protected function _getDefault() {
@@ -85,9 +90,9 @@ class Property {
 	}
 
 	public function getRules() {
-		$res = isset($this->params['validation']) ? $this->params['validation']:array();
+		$res = isset($this->params['validation']) ? $this->params['validation']:[];
 		if(!is_array($res))
-			$res = array('validation' => $res);
+			$res = [$res];
 		if($this->get('required'))
 			$res['required'] = true;
 
@@ -95,16 +100,19 @@ class Property {
 	}
 
 	public function getMessages() {
-		return array();
+		return [];
 	}
 
 	public function serialize($val) {
 		if($this->get('multiple')) {
 			if(!$val instanceof Multiple)
-				return serialize(array());
-			$r = array();
-			foreach($val as $v)
-				$r[] = $this->doSerialize($v);
+				return serialize([]);
+			$r = [];
+			foreach($val as $v) {
+				$s = $this->doSerialize($v);
+				if($s !== null)
+					$r[] = $s;
+			}
 			return serialize($r);
 		}
 		else
@@ -112,43 +120,49 @@ class Property {
 	}
 
 	protected function doSerialize($val) {
-		return (string)$val;
+		if(is_string($val) || is_numeric($val) || is_bool($val) || is_null($val))
+			return $val;
+		else
+			return serialize($val);
 	}
 
-	public function unserialize($str) {
+	public function unserialize($str, $entity, $name) {
 		if($this->get('multiple')) {
 			$arr = unserialize($str);
 			if(!is_array($arr))
-				return array();
-			$r = new Multiple();
+				return [];
+			$r = new Multiple($this->definition, $entity, $name);
 			foreach($arr as $v)
-				$r[] = $this->doUnserialize($v);
+				$r[] = $this->doUnserialize($v, $entity);
 			return $r;
 		}
 		else
-			return $this->doUnserialize($str);
+			return $this->doUnserialize($str, $entity);
 	}
 
 	protected function doUnserialize($str) {
-		return $str;
+		$json = json_decode($str);
+		if($json === null)
+			return $str;
+		return $json;
 	}
 
-	public function set($val) {
+	public function set($val, $entity, $name) {
 		if($this->get('multiple')) {
 			if($val instanceof Multiple)
 				return $val;
-			$res = new Multiple();
+			$res = new Multiple($this->definition, $entity, $name);
 			if(is_array($val)) {
 				foreach($val as $v)
-					$res[] = $this->doSet($v);
+					$res[] = $this->doSet($v, $entity);
 			}
 			return $res;
 		}
 		else
-			return $this->doSet($val);
+			return $this->doSet($val, $entity);
 	}
 
-	protected function doSet($val) {
+	public function doSet($val) {
 		return $val;
 	}
 }

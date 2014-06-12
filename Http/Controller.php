@@ -13,15 +13,15 @@ abstract class Controller extends \Asgard\Hook\Hookable {
 
 	/* ANNOTATIONS */
 	public static function fetchRoutes() {
-		$routes = array();
+		$routes = [];
 		$class = get_called_class();
 
 		$reader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
 		$reader->addNamespace('Asgard\Http\Annotations');
 		$reader = new \Doctrine\Common\Annotations\CachedReader(
 			$reader,
-			\Asgard\Core\App::instance()['cache'],
-			\Asgard\Core\App::instance()['config']['debug']
+			\Asgard\Container\Container::instance()['cache'],
+			\Asgard\Container\Container::instance()['config']['debug']
 		);
 
 		$reflection = new \ReflectionClass($class);
@@ -39,12 +39,12 @@ abstract class Controller extends \Asgard\Hook\Hookable {
 					$route,
 					$class,
 					Resolver::formatActionName($method->getName()),
-					array(
+					[
 						'host' => $routeAnnot->host,
 						'requirements' => $routeAnnot->requirements,
 						'method' => $routeAnnot->method,
 						'name'	=>	$routeAnnot->name
-					)
+					]
 				);
 			}
 		}
@@ -60,15 +60,15 @@ abstract class Controller extends \Asgard\Hook\Hookable {
 	}
 
 	public static function routesFor($action) {
-		$routes = array();
+		$routes = [];
 		$class = get_called_class();
 
 		$reader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
 		$reader->addNamespace('Asgard\Http\Annotations');
 		$reader = new \Doctrine\Common\Annotations\CachedReader(
 			$reader,
-			\Asgard\Core\App::instance()['cache'],
-			\Asgard\Core\App::instance()['config']['debug']
+			\Asgard\Container\Container::instance()['cache'],
+			\Asgard\Container\Container::instance()['config']['debug']
 		);
 
 		$reflection = new \ReflectionClass($class);
@@ -86,12 +86,12 @@ abstract class Controller extends \Asgard\Hook\Hookable {
 					$route,
 					$class,
 					Resolver::formatActionName($method->getName()),
-					array(
+					[
 						'host' => $routeAnnot->host,
 						'requirements' => $routeAnnot->requirements,
 						'method' => $routeAnnot->method,
 						'name'	=>	$routeAnnot->name
-					)
+					]
 				);
 			}
 		}
@@ -112,13 +112,13 @@ abstract class Controller extends \Asgard\Hook\Hookable {
 	public function addFilter($filter) {
 		$filter->setController($this);
 		if(method_exists($filter, 'before')) 
-			$this->hook('before', array($filter, 'before'), $filter->getBeforePriority());
+			$this->hook('before', [$filter, 'before'], $filter->getBeforePriority());
 		if(method_exists($filter, 'after'))
-			$this->hook('after', array($filter, 'after'), $filter->getAfterPriority());
+			$this->hook('after', [$filter, 'after'], $filter->getAfterPriority());
 	}
 
 	/* EXECUTION */
-	public static function staticRun($controllerClassName, $actionShortName, \Asgard\Core\App $app, $request=null, $response=null) {
+	public static function staticRun($controllerClassName, $actionShortName, \Asgard\Container\Container $app, $request=null, $response=null) {
 		$controller = new $controllerClassName();
 		$controller->setApp($app);
 		return $controller->run($actionShortName, $app, $request, $response);
@@ -136,22 +136,22 @@ abstract class Controller extends \Asgard\Hook\Hookable {
 		$this->request = $request;
 		$this->response = $response;
 
-		$app['hooks']->trigger('Asgard.Http.Controller', array($this));
+		$app['hooks']->trigger('Asgard.Http.Controller', [$this]);
 
 		if(method_exists($this, 'before')) {
 			$this->hook('before', function($chain, $this, $request) {
-				return call_user_func_array(array($this, 'before'), array($request));
+				return call_user_func_array([$this, 'before'], [$request]);
 			});
 		}
 		if(method_exists($this, 'after')) {
 			$this->hook('after', function($chain, $this, &$result) {
-				return call_user_func_array(array($this, 'after'), array(&$result));
+				return call_user_func_array([$this, 'after'], [&$result]);
 			});
 		}
 
-		if(!$result = $this->trigger('before', array($this, $request))) {
-			$result = $this->doRun($actionName, array($request));
-			$this->trigger('after', array($this, &$result));
+		if(!$result = $this->trigger('before', [$this, $request])) {
+			$result = $this->doRun($actionName, [$request]);
+			$this->trigger('after', [$this, &$result]);
 		}
 
 		if($result !== null) {
@@ -166,11 +166,11 @@ abstract class Controller extends \Asgard\Hook\Hookable {
 			return $this->response;
 	}
 
-	protected function doRun($method, array $params=array()) {
+	protected function doRun($method, array $params=[]) {
 		$this->_view = null;
 
 		ob_start();
-		$result = call_user_func_array(array($this, $method), $params);
+		$result = call_user_func_array([$this, $method], $params);
 		$controllerBuffer =  ob_get_clean();
 
 		if($result !== null)
@@ -191,12 +191,12 @@ abstract class Controller extends \Asgard\Hook\Hookable {
 	}
 
 	/* VIEW */
-	public static function widget($class, $method, array $params=array()) {
+	public static function widget($class, $method, array $params=[]) {
 		$controller = new $class;
 		return $controller->doRun($method, $params);
 	}
 	
-	protected function renderView($_view, array $_args=array()) {
+	protected function renderView($_view, array $_args=[]) {
 		foreach($_args as $_key=>$_value)
 			$$_key = $_value;
 
@@ -235,8 +235,8 @@ abstract class Controller extends \Asgard\Hook\Hookable {
 		throw new Exception\NotFoundException($msg);
 	}
 	
-	public function url_for($action, $params=array()) {
-		return $this->app['resolver']->url_for(array(get_called_class(), $action), $params);
+	public function url_for($action, $params=[]) {
+		return $this->app['resolver']->url_for([get_called_class(), $action], $params);
 	}
 
 	private static function basename($ns) {

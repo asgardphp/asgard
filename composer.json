@@ -28,7 +28,10 @@
     },
     "replace": {
         "asgard/cache": "self.version",
+        "asgard/common": "self.version",
+        "asgard/config": "self.version",
         "asgard/console": "self.version",
+        "asgard/container": "self.version",
         "asgard/core": "self.version",
         "asgard/db": "self.version",
         "asgard/debug": "self.version",
@@ -40,7 +43,6 @@
         "asgard/http": "self.version",
         "asgard/migration": "self.version",
         "asgard/orm": "self.version",
-        "asgard/utils": "self.version",
         "asgard/validation": "self.version"
     }
 }

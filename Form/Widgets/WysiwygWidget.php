@@ -2,13 +2,13 @@
 namespace Asgard\Form\Widgets;
 
 class WysiwygWidget extends \Asgard\Form\Widget {
-	public function render(array $options=array()) {
+	public function render(array $options=[]) {
 		$options = $this->options+$options;
 		
-		$attrs = array(
+		$attrs = [
 			'rows'	=>	10,
 			'cols'	=>	80,
-		);
+		];
 		if(isset($options['attrs']))
 			$attrs = $options['attrs'];
 		$id = isset($options['id']) ? $options['id']:null;
@@ -18,10 +18,10 @@ class WysiwygWidget extends \Asgard\Form\Widget {
 		$this->form->getApp()['html']->includeJS('ckeditor/ckeditor/ckeditor.js');
 		$this->form->getApp()['html']->includeJS('ckeditor/ckeditor/_samples/sample.js');
 		$this->form->getApp()['html']->includeCSS('ckeditor/ckeditor/_samples/sample.css');
-		return \Asgard\Form\HTMLHelper::tag('textarea', array(
+		return \Asgard\Form\HTMLHelper::tag('textarea', [
 			'name'	=>	$this->name,
 			'id'	=>	$id,
-		)+$attrs,
+		]+$attrs,
 		$this->value ? $this->form->getApp()['html']->sanitize($this->value):'').
 		"<script>
 		//<![CDATA[

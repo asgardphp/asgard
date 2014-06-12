@@ -1,27 +1,16 @@
 <?php
-return array(
-	'all' => array(
-		'debug_url' => 'code:%file%:%line%',
-		'key'	=>	'_KEY_',
-		'locale'	=>	'en',
-		'locales'	=>	array(
-			'fr', 'en'
-		),
-		'cache_driver'	=>	null,
-		'cache'	=>	false,
-		'error_display' => true,
-		'debug' => true,
-		'email' => array(
-			'driver' => 'Asgard\Email\SwiftEmail'
-		)
-	),
-	'dev'	=>	array(
-	),
-	'test'	=>	array(
-	),
-	'prod'	=>	array(
-		'cache'	=>	true,
-		'debug' => false,
-		'error_display' => false,
-	),
-);
+return [
+	'debug_url'         => 'code:%file%:%line%',
+	'key'               => '_KEY_',
+	'locale'            => 'en',
+	'locales'           => ['fr', 'en'],
+	'cache_driver'      => null,
+	'cache'             => false,
+	'error_display'     => true,
+	'debug'             => true,
+	'email'             => [
+		'driver'        => 'Asgard\Email\SwiftEmail'
+	],
+	'debug'             => true,
+	'log'               => false,
+];

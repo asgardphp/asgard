@@ -8,7 +8,7 @@ use \Asgard\Http\Request;
 
 class FiltersTest extends \PHPUnit_Framework_TestCase {
 	public function testLayout() {
-		$app = new \Asgard\Core\App;
+		$app = new \Asgard\Container\Container;
 		$app['hooks'] = new \Asgard\Hook\HooksManager($app);
 		$controller = new \Asgard\Http\Tests\Fixtures\Controllers\FooController($app);
 		$controller->addFilter(new \Asgard\Http\Filters\PageLayout(function($content) { return '<h1>'.$content.'</h1>'; }));
@@ -18,10 +18,10 @@ class FiltersTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testJson() {
-		$app = new \Asgard\Core\App;
+		$app = new \Asgard\Container\Container;
 		$app['hooks'] = new \Asgard\Hook\HooksManager($app);
 		$app['cache'] = new \Asgard\Cache\NullCache();
-		$app['config'] = new \Asgard\Core\Config();
+		$app['config'] = new \Asgard\Config\Config();
 		$app['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($app);
 		\Asgard\Entity\Entity::setApp($app);
 

@@ -15,7 +15,7 @@ class HookChain {
 	/**
 	 * Constructor.
 	 * 
-	 * @param \Asgard\Core\App app Application container.
+	 * @param \Asgard\Container\Container app Application container.
 	*/
 	public function __construct($app=null) {
 		$this->app = $app;
@@ -30,7 +30,7 @@ class HookChain {
 		foreach($this->calls as $call) {
 			if($call instanceof \Jeremeamia\SuperClosure\SerializableClosure)
 				$call = $call->getClosure();
-			$res = call_user_func_array($call, array_merge(array($this), $args));
+			$res = call_user_func_array($call, array_merge([$this], $args));
 			$this->executed++;
 			if($res !== null)
 				return $res;

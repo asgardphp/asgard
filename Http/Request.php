@@ -14,9 +14,9 @@ class Request implements \ArrayAccess {
 
 	public $isInitial = false;
 
-	public $params = array(
+	public $params = [
 		'format'	=>	'html',
-	);
+	];
 
 	public static function instance() {
 		if(!static::$instance)
@@ -30,13 +30,13 @@ class Request implements \ArrayAccess {
 
 	public function __construct() {
 		$this->url = new \Asgard\Http\URL($this);
-		$this->get = new \Asgard\Utils\Bag;
-		$this->post = new \Asgard\Utils\Bag;
-		$this->file = new \Asgard\Utils\Bag;
-		$this->server = new \Asgard\Utils\Bag;
-		$this->cookie = new \Asgard\Utils\Bag;
-		$this->header = new \Asgard\Utils\Bag;
-		$this->session = new \Asgard\Utils\Bag;
+		$this->get = new \Asgard\Common\Bag;
+		$this->post = new \Asgard\Common\Bag;
+		$this->file = new \Asgard\Common\Bag;
+		$this->server = new \Asgard\Common\Bag;
+		$this->cookie = new \Asgard\Common\Bag;
+		$this->header = new \Asgard\Common\Bag;
+		$this->session = new \Asgard\Common\Bag;
 	}
 
 	public static function createFromGlobals() {
@@ -44,13 +44,15 @@ class Request implements \ArrayAccess {
 		$request->get->setAll($_GET);
 		$request->post->setAll($_POST);
 		$request->file->setAll($_FILES);
-		$request->header->setAll(\Asgard\Utils\Tools::getallheaders());
+		$request->header->setAll(\Asgard\Common\Tools::getallheaders());
 		$request->server->setAll($_SERVER);
 		$request->cookie = new CookieManager;
 		$request->session = new SessionManager;
 		$request->body = file_get_contents('php://input');
 
 		$server = trim($request->server['SERVER_NAME'], '/');
+		if(isset($request->server['SERVER_PORT']) && $request->server['SERVER_PORT'] != '80')
+			$server .= ':'.$request->server['SERVER_PORT'];
 		if($request->server->has('ORIG_SCRIPT_NAME'))
 			$root = dirname($request->server['ORIG_SCRIPT_NAME']);
 		else

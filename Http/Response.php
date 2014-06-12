@@ -4,8 +4,8 @@ namespace Asgard\Http;
 class Response {
 	public $content;
 	public $code = 200;
-	public $headers = array();
-	protected static $codes = array(
+	public $headers = [];
+	protected static $codes = [
 		200 => 'OK',
 		201 => 'Created',
 		204 => 'No Content',
@@ -17,7 +17,7 @@ class Response {
 		404 => 'Not Found',
 		
 		500 => 'Internal Server Error',
-	);
+	];
 
 	public function __construct($code = 200) {
 		$this->code = $code;
@@ -60,7 +60,7 @@ class Response {
 		if(headers_sent())
 			return;
 	
-		$headers = array();
+		$headers = [];
 		if(array_key_exists($this->code, static::$codes))
 			$headers[] = 'HTTP/1.1 '.$this->code.' '.static::$codes[$this->code];
 		else
@@ -79,7 +79,7 @@ class Response {
 	
 	public function redirect($url='') {
 		if(!preg_match('/^http:\/\//', $url))
-			$url = \Asgard\Core\App::instance()['request']->url->to($url);
+			$url = \Asgard\Container\Container::instance()['request']->url->to($url);
 		$this->headers['Location'] = $url;
 		return $this;
 	}

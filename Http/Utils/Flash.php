@@ -2,7 +2,7 @@
 namespace Asgard\Http\Utils;
 
 class Flash {
-	protected $messages = array();
+	protected $messages = [];
 	protected $session;
 	protected $cb;
 
@@ -49,9 +49,9 @@ class Flash {
 
 	public function show($type, $cat=null, $cb=null) {
 		if($cat)
-			$messages = isset($this->messages[$type][$cat]) ? \Asgard\Utils\Tools::flateArray($this->messages[$type][$cat]):array();
+			$messages = isset($this->messages[$type][$cat]) ? \Asgard\Common\Tools::flateArray($this->messages[$type][$cat]):[];
 		else
-			$messages = isset($this->messages[$type]) ? \Asgard\Utils\Tools::flateArray($this->messages[$type]):array();
+			$messages = isset($this->messages[$type]) ? \Asgard\Common\Tools::flateArray($this->messages[$type]):[];
 		foreach($messages as $msg) {
 			if($cb)
 				echo $cb($msg, $type);
@@ -61,7 +61,7 @@ class Flash {
 		if($cat)
 			unset($this->messages[$type][$cat]);
 		else
-			$this->messages[$type] = array();	
+			$this->messages[$type] = [];	
 		$this->persist();
 	}
 }

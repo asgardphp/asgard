@@ -6,7 +6,7 @@ class MigrationsManager {
 	protected $app;
 	protected $tracker;
 
-	public function __construct($directory, $app=array()) {
+	public function __construct($directory, $app=[]) {
 		$this->directory = $directory;
 		$this->app = $app;
 		$this->tracker = new Tracker($directory);
@@ -19,27 +19,27 @@ class MigrationsManager {
 	public function add($file) {
 		$code = file_get_contents($file);
 		$dst = $this->directory.'/'.basename($file);
-		$dst = \Asgard\Utils\FileManager::getNewFilename($dst);
+		$dst = \Asgard\Common\FileManager::getNewFilename($dst);
 		$migrationName = explode('.', basename($dst))[0];
 		$code = preg_replace('/{{migrationMame}}/', $migrationName, $code);
-		if($r = \Asgard\Utils\FileManager::put($dst, $code))
+		if($r = \Asgard\Common\FileManager::put($dst, $code))
 			$this->tracker->add($migrationName);
 		if(!$r)
 			return false;
 		return $migrationName;
 	}
 
-	public function create($up, $down, $name) {
+	public function create($up, $down, $name, $class='\Asgard\Migration\Migration') {
 		$up = implode("\n\t\t", explode("\n", $up));
 		$down = implode("\n\t\t", explode("\n", $down));
 		$name = ucfirst(strtolower($name));
 
 		$dst = $this->directory.'/'.$name.'.php';
-		$dst = \Asgard\Utils\FileManager::getNewFilename($dst);
+		$dst = \Asgard\Common\FileManager::getNewFilename($dst);
 		$name = str_replace('.php', '', basename($dst));
 			
 		$migration = '<?php
-class '.$name.' extends \Asgard\Migration\Migration {
+class '.$name.' extends '.$class.' {
 	public function up() {
 		'.$up.'
 	}
@@ -48,7 +48,7 @@ class '.$name.' extends \Asgard\Migration\Migration {
 		'.$down."
 	}
 }";
-		$dst = \Asgard\Utils\FileManager::put($dst, $migration, true);
+		$dst = \Asgard\Common\FileManager::put($dst, $migration, true);
 
 		$this->tracker->add($name);
 
@@ -62,7 +62,7 @@ class '.$name.' extends \Asgard\Migration\Migration {
 	public function remove($migrationName) {
 		if($this->tracker->isUp($migrationName))
 			return;
-		if(\Asgard\Utils\FileManager::unlink($this->directory.'/'.$migrationName.'.php'))
+		if(\Asgard\Common\FileManager::unlink($this->directory.'/'.$migrationName.'.php'))
 			$this->tracker->remove($migrationName);
 	}
 
@@ -80,10 +80,10 @@ class '.$name.' extends \Asgard\Migration\Migration {
 	public function migrateFile($file) {
 		if(!file_exists($file))
 			throw new \Exception($file.' does not exists.');
-		$class = \Asgard\Core\Autoloader::loadClassFile($file);
+		$class = \Asgard\Common\Tools::loadClassFile($file);
 		$migration = new $class($this->app);
 
-		$migration->up();
+		$migration->_up();
 	}
 
 	public function migrateAll($tracking=false) {
@@ -114,7 +114,7 @@ class '.$name.' extends \Asgard\Migration\Migration {
 		require_once $this->directory.'/'.$migrationName.'.php';
 		$migration = new $migrationName($this->app);
 
-		$migration->down();
+		$migration->_down();
 		$this->tracker->unmigrate($migrationName);
 		return true;
 	}

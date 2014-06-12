@@ -1,0 +1,14 @@
+{
+	"name": "asgard/email",
+	"license": "MIT",
+	"authors": [{
+		"name": "Michel Hognerud",
+		"email": "michel@hognerud.net"
+	}],
+    "autoload": {
+        "psr-4": {"Asgard\\Email\\": "."}
+    },
+    "suggest": {
+        "swiftmailer/swiftmailer": "5.0.*"
+    }
+}

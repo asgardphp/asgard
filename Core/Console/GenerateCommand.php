@@ -17,17 +17,17 @@ class GenerateCommand extends \Asgard\Console\Command {
 	
 		$yaml = new \Symfony\Component\Yaml\Parser();
 		$raw = $yaml->parse(file_get_contents($path));
-		$bundles = array();
+		$bundles = [];
 
-		$overrideFiles = $input->getArgument('override-bundles');
+		$overrideFiles = $input->getOption('override-bundles');
 		$generator = new Generator($asgard);
 		$generator->setOverrideFiles($overrideFiles);
 		
 		foreach($raw as $bundle_name=>$raw_bundle) {
 			if(file_exists($root.'app/'.$bundle_name.'/')) {
-				if($input->getArgument('override-bundles'))
-					\Asgard\Utils\FileManager::rmdir($root.'app/'.$bundle_name.'/');
-				elseif($input->getArgument('skip'))
+				if($input->getOption('override-bundles'))
+					\Asgard\Common\FileManager::rmdir($root.'app/'.$bundle_name.'/');
+				elseif($input->getOption('skip'))
 					continue;
 			}
 			
@@ -36,13 +36,13 @@ class GenerateCommand extends \Asgard\Console\Command {
 			$bundle['namespace'] = 'App\\'.ucfirst($bundle['name']);
 			
 			if(!isset($bundle['entities']))
-				$bundle['entities'] = array();
+				$bundle['entities'] = [];
 			if(!isset($bundle['controllers']))
-				$bundle['controllers'] = array();
+				$bundle['controllers'] = [];
 
 			foreach($bundle['entities'] as $name=>$entity) {
 				if(!isset($bundle['entities'][$name]['meta']))
-					$bundle['entities'][$name]['meta'] = array();
+					$bundle['entities'][$name]['meta'] = [];
 				if(isset($bundle['entities'][$name]['meta']['name']))
 					$bundle['entities'][$name]['meta']['name'] = strtolower($bundle['entities'][$name]['meta']['name']);
 				else
@@ -60,6 +60,8 @@ class GenerateCommand extends \Asgard\Console\Command {
 					$bundle['entities'][$name]['meta']['label'] = $bundle['entities'][$name]['meta']['name'];
 				if(isset($bundle['entities'][$name]['meta']['label_plural']))
 					$bundle['entities'][$name]['meta']['label_plural'] = strtolower($bundle['entities'][$name]['meta']['label_plural']);
+				elseif(isset($bundle['entities'][$name]['meta']['plural']))
+					$bundle['entities'][$name]['meta']['label_plural'] = strtolower($bundle['entities'][$name]['meta']['plural']);
 				else
 					$bundle['entities'][$name]['meta']['label_plural'] = $bundle['entities'][$name]['meta']['label'].'s';
 				if(!isset($bundle['entities'][$name]['meta']['name_field'])) {
@@ -68,23 +70,23 @@ class GenerateCommand extends \Asgard\Console\Command {
 				}
 					
 				if(!isset($bundle['entities'][$name]['properties']))
-					$bundle['entities'][$name]['properties'] = array();
+					$bundle['entities'][$name]['properties'] = [];
 				if(!isset($bundle['entities'][$name]['relations']))
-					$bundle['entities'][$name]['relations'] = array();
+					$bundle['entities'][$name]['relations'] = [];
 				if(!isset($bundle['entities'][$name]['behaviors']))
-					$bundle['entities'][$name]['behaviors'] = array();
+					$bundle['entities'][$name]['behaviors'] = [];
 
 				foreach($bundle['entities'][$name]['properties'] as $k=>$v) {
 					if(!$v)
-						$bundle['entities'][$name]['properties'][$k] = array();
+						$bundle['entities'][$name]['properties'][$k] = [];
 					if(!is_array($v))
-						$bundle['entities'][$name]['properties'][$k] = array('type'=>$v);
+						$bundle['entities'][$name]['properties'][$k] = ['type'=>$v];
 				}
 
 				if(!isset($bundle['entities'][$name]['front']))
 					$bundle['entities'][$name]['front'] = false;
 				if(!is_array($bundle['entities'][$name]['front'])) 
-					$bundle['entities'][$name]['front'] = array('index', 'show');
+					$bundle['entities'][$name]['front'] = ['index', 'show'];
 			}
 
 			foreach($bundle['controllers'] as $name=>$controller) {
@@ -92,7 +94,7 @@ class GenerateCommand extends \Asgard\Console\Command {
 				if(!isset($bundle['controllers'][$name]['prefix']))
 					$bundle['controllers'][$name]['prefix'] = null;
 				if(!isset($bundle['controllers'][$name]['actions']))
-					$bundle['controllers'][$name]['actions'] = array();
+					$bundle['controllers'][$name]['actions'] = [];
 				foreach($bundle['controllers'][$name]['actions'] as $aname=>$action) {
 					if(!isset($bundle['controllers'][$name]['actions'][$aname]['template']))
 						$bundle['controllers'][$name]['actions'][$aname]['template'] = strtolower($aname).'.php';
@@ -113,15 +115,15 @@ class GenerateCommand extends \Asgard\Console\Command {
 		foreach($bundles as $name=>$bundle) {
 			if($bundle['tests']) {
 				$generatedTests = '';
-				$tests = array();
+				$tests = [];
 			}
 
 			$dst = $root.'app/'.ucfirst(strtolower($name)).'/';
-			$generator->processFile(__DIR__.'/bundle_template/Bundle.php', $dst.'Bundle.php', array('bundle'=>$bundle));
+			$generator->processFile(__DIR__.'/bundle_template/Bundle.php', $dst.'Bundle.php', ['bundle'=>$bundle]);
 			foreach($bundle['entities'] as $name=>$entity) {
-				$generator->processFile(__DIR__.'/bundle_template/entities/_Entity.php', $dst.'Entities/'.ucfirst($bundle['entities'][$name]['meta']['name']).'.php', array('bundle'=>$bundle, 'entity'=>$entity));
+				$generator->processFile(__DIR__.'/bundle_template/entities/_Entity.php', $dst.'Entities/'.ucfirst($bundle['entities'][$name]['meta']['name']).'.php', ['bundle'=>$bundle, 'entity'=>$entity]);
 				if($entity['front']) {
-					$generator->processFile(__DIR__.'/bundle_template/controllers/_EntityController.php', $dst.'Controllers/'.ucfirst($bundle['entities'][$name]['meta']['name']).'Controller.php', array('bundle'=>$bundle, 'entity'=>$entity));
+					$generator->processFile(__DIR__.'/bundle_template/controllers/_EntityController.php', $dst.'Controllers/'.ucfirst($bundle['entities'][$name]['meta']['name']).'Controller.php', ['bundle'=>$bundle, 'entity'=>$entity]);
 
 					if($bundle['tests']) {
 						include_once $dst.'controllers/'.ucfirst($bundle['entities'][$name]['meta']['name']).'Controller.php';
@@ -130,9 +132,9 @@ class GenerateCommand extends \Asgard\Console\Command {
 
 					if(in_array('index', $entity['front']) || isset($entity['front']['index'])) {
 						if(isset($entity['front']['index']))
-							\Asgard\Utils\FileManager::copy($entity['front']['index'], $dst.'views/'.$bundle['entities'][$name]['meta']['name'].'/index.php', false);
+							\Asgard\Common\FileManager::copy($entity['front']['index'], $dst.'views/'.$bundle['entities'][$name]['meta']['name'].'/index.php', false);
 						else
-							$generator->processFile(__DIR__.'/bundle_template/views/_entity/index.php', $dst.'views/'.$bundle['entities'][$name]['meta']['name'].'/index.php', array('bundle'=>$bundle, 'entity'=>$entity));
+							$generator->processFile(__DIR__.'/bundle_template/views/_entity/index.php', $dst.'views/'.$bundle['entities'][$name]['meta']['name'].'/index.php', ['bundle'=>$bundle, 'entity'=>$entity]);
 						if($bundle['tests']) {
 							$indexRoute = $class::routeFor('index')->getRoute();
 							$tests[$indexRoute] = '
@@ -142,9 +144,9 @@ class GenerateCommand extends \Asgard\Console\Command {
 					}
 					if(in_array('show', $entity['front']) || isset($entity['front']['show'])) {
 						if(isset($entity['front']['show']))
-							\Asgard\Utils\FileManager::copy($entity['front']['show'], $dst.'views/'.$bundle['entities'][$name]['meta']['name'].'/show.php', false);
+							\Asgard\Common\FileManager::copy($entity['front']['show'], $dst.'views/'.$bundle['entities'][$name]['meta']['name'].'/show.php', false);
 						else
-							$generator->processFile(__DIR__.'/bundle_template/views/_entity/show.php', $dst.'views/'.$bundle['entities'][$name]['meta']['name'].'/show.php', array('bundle'=>$bundle, 'entity'=>$entity));
+							$generator->processFile(__DIR__.'/bundle_template/views/_entity/show.php', $dst.'views/'.$bundle['entities'][$name]['meta']['name'].'/show.php', ['bundle'=>$bundle, 'entity'=>$entity]);
 						if($bundle['tests']) {
 							$showRoute = $class::routeFor('show')->getRoute();
 							$tests[$showRoute] = '
@@ -156,7 +158,7 @@ class GenerateCommand extends \Asgard\Console\Command {
 			}
 
 			foreach($bundle['controllers'] as $name=>$controller) {
-				$generator->processFile(__DIR__.'/bundle_template/controllers/_Controller.php', $dst.'Controllers/'.$controller['name'].'.php', array('bundle'=>$bundle, 'controller'=>$controller));
+				$generator->processFile(__DIR__.'/bundle_template/controllers/_Controller.php', $dst.'Controllers/'.$controller['name'].'.php', ['bundle'=>$bundle, 'controller'=>$controller]);
 
 				if($bundle['tests']) {
 					include_once $dst.'controllers/'.$controller['name'].'.php';
@@ -178,7 +180,7 @@ class GenerateCommand extends \Asgard\Console\Command {
 						$content = '';
 						if($params['viewFile'])
 							$content = file_get_contents($params['viewFile']);
-						\Asgard\Utils\FileManager::put($dst.'views/'.strtolower(preg_replace('/Controller$/', '', $controller['name'])).'/'.$params['template'], $content);
+						\Asgard\Common\FileManager::put($dst.'views/'.strtolower(preg_replace('/Controller$/', '', $controller['name'])).'/'.$params['template'], $content);
 					}
 				}
 			}
@@ -186,7 +188,7 @@ class GenerateCommand extends \Asgard\Console\Command {
 			if($bundle['tests'])
 				$bundle['generatedTests'] = $tests;
 
-			$asgard['hooks']->trigger('Asgard.Core.Generate.bundleBuild', array(&$bundle, $root.'app/'.strtolower($bundle['name']).'/', $generator));
+			$asgard['hooks']->trigger('Asgard.Core.Generate.bundleBuild', [&$bundle, $root.'app/'.strtolower($bundle['name']).'/', $generator]);
 
 			if($bundle['tests']) {
 				if(!$this->addToTests($bundle['generatedTests'], $root.'/Tests/'.ucfirst($bundle['name']).'.php'))
@@ -223,11 +225,16 @@ class '.$dst.' extends \Asgard\Core\Test {
 	}
 
 	protected function getArguments() {
-		return array(
-			array('path', InputArgument::REQUIRED, 'Path to the YAML file'),
-			array('override-bundles', InputArgument::OPTIONAL, 'Override existing bundles'),
-			array('override-files', InputArgument::OPTIONAL, 'Override existing files'),
-			array('skip', InputArgument::OPTIONAL, 'Skip existing bundles'),
-		);
+		return [
+			['path', InputArgument::REQUIRED, 'Path to the YAML file']
+		];
+	}
+
+	protected function getOptions() {
+		return [
+			['override-bundles', null, InputOption::VALUE_NONE, 'Override existing bundles', null],
+			['override-files', null, InputOption::VALUE_NONE, 'Override existing files', null],
+			['skip', null, InputOption::VALUE_NONE, 'Skip existing bundles', null],
+		];
 	}
 }

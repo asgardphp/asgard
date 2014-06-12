@@ -3,19 +3,19 @@ namespace Asgard\Orm\Tests\Fixtures;
 
 class Category extends \Asgard\Entity\Entity {
 	public static function definition(\Asgard\Entity\EntityDefinition $definition) {
-		$definition->properties = array(
+		$definition->properties = [
 			'name'
-		);
+		];
 
-		$definition->relations = array(
-			'posts' => array(
+		$definition->relations = [
+			'posts' => [
 				'entity' => 'Asgard\Orm\Tests\Fixtures\Post',
 				'has' => 'many'
-			)
-		);
+			]
+		];
 
-		$definition->behaviors = array(
+		$definition->behaviors = [
 			new \Asgard\Orm\ORMBehavior
-		);
+		];
 	}
 }

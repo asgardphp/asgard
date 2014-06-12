@@ -12,11 +12,11 @@ class ListCommand extends \Asgard\Console\Command {
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$table = $this->getHelperSet()->get('table');
-		$table->setHeaders(array('Name', 'Status', 'Migrated', 'Added'));
+		$table->setHeaders(['Name', 'Status', 'Migrated', 'Added']);
 
 		$tracker = new \Asgard\Migration\Tracker($this->getAsgard()['kernel']['root'].'/migrations/');
 		foreach($tracker->getList() as $migration=>$params)
-			$table->addRow(array($migration, isset($params['migrated']) ? 'up':'down', isset($params['migrated']) ? date('d/m/Y H:i:s', $params['migrated']):'', date('d/m/Y H:i:s', $params['added'])));
+			$table->addRow([$migration, isset($params['migrated']) ? 'up':'down', isset($params['migrated']) ? date('d/m/Y H:i:s', $params['migrated']):'', date('d/m/Y H:i:s', $params['added'])]);
 
 		$table->render($output);
 	}

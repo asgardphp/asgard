@@ -16,20 +16,21 @@ class FileTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals(__DIR__.DIRECTORY_SEPARATOR.'fixtures'.DIRECTORY_SEPARATOR.'file.txt', $file->src());
 	}
 
-	public function testUrl() {
-		$file = new File(__DIR__.'/fixtures/file.txt');
-		$file->setWebDir(__DIR__.'/fixtures/');
-		$url = new \Asgard\Http\Url(new \Asgard\Http\Request);
-		$url->setHost('localhost');
-		$url->setRoot('folder');
-		$file->setUrl($url);
-		$this->assertEquals('http://localhost/folder/file.txt', $file->url());
-		$this->assertEquals('http://localhost/folder/file.txt', $file->__toString());
-	}
+	#todo for entity file
+	// public function testUrl() {
+	// 	$file = new File(__DIR__.'/fixtures/file.txt');
+	// 	$file->setWebDir(__DIR__.'/fixtures/');
+	// 	$url = new \Asgard\Http\Url(new \Asgard\Http\Request);
+	// 	$url->setHost('localhost');
+	// 	$url->setRoot('folder');
+	// 	$file->setUrl($url);
+	// 	$this->assertEquals('http://localhost/folder/file.txt', $file->url());
+	// 	$this->assertEquals('http://localhost/folder/file.txt', $file->__toString());
+	// }
 
 	public function testCopyMoveAndDelete() {
-		\Asgard\Utils\FileManager::unlink(__DIR__.'/tests/');
-		\Asgard\Utils\FileManager::unlink(__DIR__.'/dir/');
+		\Asgard\Common\FileManager::unlink(__DIR__.'/tests/');
+		\Asgard\Common\FileManager::unlink(__DIR__.'/dir/');
 
 		$file = new File(__DIR__.'/fixtures/file.txt');
 

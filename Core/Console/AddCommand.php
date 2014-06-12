@@ -22,8 +22,8 @@ class AddCommand extends \Asgard\Console\Command {
 	}
 
 	protected function getArguments() {
-		return array(
-			array('src', InputArgument::REQUIRED, 'The migration file'),
-		);
+		return [
+			['src', InputArgument::REQUIRED, 'The migration file'],
+		];
 	}
 }

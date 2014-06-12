@@ -28,6 +28,6 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
 		$body = '{"abc":123}';
 		$request->setBody($body);
 		$this->assertEquals($body, $request->getBody());
-		$this->assertEquals(array('abc'=>123), $request->getJSON());
+		$this->assertEquals(['abc'=>123], $request->getJSON());
 	}
 }

@@ -4,16 +4,16 @@ namespace Asgard\Http;
 abstract class Viewable {
 	protected $_view;
 
-	public static function widget($class, $method, array $params=array()) {
+	public static function widget($class, $method, array $params=[]) {
 		$viewable = new $class;
 		return $viewable->doRun($method, $params);
 	}
 
-	protected function doRun($method, array $params=array()) {
+	protected function doRun($method, array $params=[]) {
 		$this->_view = null;
 
 		ob_start();
-		$result = call_user_func_array(array($this, $method), $params);
+		$result = call_user_func_array([$this, $method], $params);
 		$viewableBuffer =  ob_get_clean();
 
 		if($result !== null)
@@ -32,7 +32,7 @@ abstract class Viewable {
 		return null;
 	}
 	
-	protected function renderView($_view, array $_args=array()) {
+	protected function renderView($_view, array $_args=[]) {
 		foreach($_args as $_key=>$_value)
 			$$_key = $_value;
 
