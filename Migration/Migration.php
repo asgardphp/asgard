@@ -1,7 +1,7 @@
 <?php
 namespace Asgard\Migration;
 
-abstract class Migration {
+class Migration {
 	protected $app;
 
 	public function __construct($app) {

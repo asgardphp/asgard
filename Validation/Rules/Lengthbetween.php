@@ -1,7 +1,7 @@
 <?php
 namespace Asgard\Validation\Rules;
 
-class LengthBetween extends \Asgard\Validation\Rule {
+class Lengthbetween extends \Asgard\Validation\Rule {
 	public $min;
 	public $max;
 
