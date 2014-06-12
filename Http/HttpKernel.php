@@ -112,7 +112,7 @@ class HttpKernel {
 
 		$trace = $this->app['errorHandler']->getBacktraceFromException($e);
 		
-		if($e instanceof PSRException)
+		if($e instanceof \Asgard\Debug\PSRException)
 			$msg = $e->getMessage();
 		elseif($e instanceof \ErrorException)
 			$msg = 'PHP ('.$this->app['errorHandler']->getPHPError($e->getCode()).'): '.$e->getMessage();

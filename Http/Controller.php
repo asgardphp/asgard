@@ -232,7 +232,7 @@ abstract class Controller extends \Asgard\Hook\Hookable {
 	}
 
 	public function notFound($msg=null) {
-		throw new Exception\NotFoundException($msg);
+		throw new Exceptions\NotFoundException($msg);
 	}
 	
 	public function url_for($action, $params=[]) {

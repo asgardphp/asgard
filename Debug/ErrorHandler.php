@@ -9,7 +9,6 @@ class ErrorHandler {
 	protected $logger;
 
 	public static function initialize() {
-		ini_set('log_errors', 0);
 		static::$reservedMemory = str_repeat('a', 10240);
 		static::$errorAtStart = error_get_last();
 

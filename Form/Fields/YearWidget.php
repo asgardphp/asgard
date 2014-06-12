@@ -1,7 +1,7 @@
 <?php
 namespace Asgard\Form\Fields;
 
-class YearField extends Field {
+class YearField extends \Asgard\Form\Field {
 	public function __construct(array $params=[]) {
 		$params['validation']['type'] = 'integer';
 		$params['choices'] = ['Year'];
