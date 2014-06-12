@@ -174,6 +174,13 @@ class MigrationsTest extends \PHPUnit_Framework_TestCase {
 '    \}'."\n".
 '\}/', file_get_contents(__DIR__.'/migrations/migrations.json'));
 
-		$this->assertFileEquals(__DIR__.'/Fixtures/migrations/Post.php', __DIR__.'/migrations/Post.php');
+		$this->assertEquals(static::lines(file_get_contents(__DIR__.'/Fixtures/migrations/Post.php')), static::lines(file_get_contents(__DIR__.'/migrations/Post.php')));
+	}
+
+	private static function lines($s) {
+		$s = str_replace("\r\n", "\n", $s);
+		$s = str_replace("\r", "\n", $s);
+		$s = preg_replace("/\n{2,}/", "\n\n", $s);
+		return $s;
 	}
 }
