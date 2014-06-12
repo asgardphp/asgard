@@ -8,6 +8,9 @@ class Migration {
 		$this->app = $app;
 	}
 
+	public function up() {}
+	public function down() {}
+
 	public function _up() {
 		$this->up();
 	}
