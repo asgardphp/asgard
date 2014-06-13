@@ -10,7 +10,7 @@ class HttpFile extends \Asgard\Files\File {
 		$this->type = $type;
 		$this->size = $size;
 		$this->error = $error;
-		parent::__construct($src, $name, $webDir, $url);
+		parent::__construct($src, $name);
 	}
 
 	public static function createFromArray(array $arr) {

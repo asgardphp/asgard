@@ -3,7 +3,7 @@ namespace Asgard\Core\Tests;
 
 class CoreTest extends \PHPUnit_Framework_TestCase {
 	public function testInstance() {
-		$this->isInstanceOf('Asgard\Container\Container', \Asgard\Container\Container::instance());
+		$this->assertInstanceOf('Asgard\Container\Container', \Asgard\Container\Container::instance());
 	}
 
 	public function testAutofacade() {
@@ -33,8 +33,8 @@ class CoreTest extends \PHPUnit_Framework_TestCase {
 		});
 		$first = $app->make('test');
 		$second = $app->make('test');
-		$this->isInstanceOf('StdClass', $first);
-		$this->isInstanceOf('StdClass', $second);
+		$this->assertInstanceOf('StdClass', $first);
+		$this->assertInstanceOf('StdClass', $second);
 		$this->assertFalse($first === $second);
 	}
 

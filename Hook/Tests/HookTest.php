@@ -51,7 +51,7 @@ class HookTest extends \PHPUnit_Framework_TestCase {
 
 		$hooks->hooks([
 			'foo' => [
-				function($chain) { },
+				function() { },
 				function() { },
 			]
 		]);

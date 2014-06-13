@@ -25,7 +25,7 @@ class CSRFField extends \Asgard\Form\Fields\HiddenField {
 		}
 	}
 
-	public function error($attr, $value) {
+	public function error() {
 		return $this->value == $this->dad->getRequest()->session['_csrf_token'];
 	}
 }

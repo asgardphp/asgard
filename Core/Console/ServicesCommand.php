@@ -38,7 +38,7 @@ class ServicesCommand extends \Asgard\Console\Command {
 					$r = new \ReflectionClass($class);
 					$defined = \Asgard\Common\FileManager::relativeTo($root, $r->getFileName()).':'.$r->getStartLine();
 				}
-			} catch(\Exception $e) {} #defined = ??? / clas = ???
+			} catch(\Exception $e) {} #defined = ??? / class = ???
 
 			$res = [
 				'name' => $name,

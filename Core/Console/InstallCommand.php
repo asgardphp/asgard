@@ -131,22 +131,15 @@ class InstallCommand extends \Asgard\Console\Command {
 
 	protected function gitInstall($src, $tmp) {
 		$cmd = 'git clone '.$src.' '.$tmp;
-
-		$process = proc_open($cmd,
-			[
-			   0 => ["pipe", "r"],
-			   1 => ["pipe", "w"],
-			   2 => ["pipe", "w"],
-			],
-			$pipes
-		);
-
-		return proc_close($process) === 0;
+		return $this->runCommand($cmd);
 	}
 
 	protected function updateComposer($dir) {
 		$cmd = 'composer update --working-dir '.$dir;
+		return $this->runCommand($cmd);
+	}
 
+	protected function runCommand($cmd) {
 		$process = proc_open($cmd,
 			[
 			   0 => ["pipe", "r"],

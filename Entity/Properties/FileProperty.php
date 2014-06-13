@@ -27,11 +27,8 @@ class FileProperty extends \Asgard\Entity\Property {
 			return 'varchar(255)';
 	}
 
-	protected function _getDefault($entity=null) {
-		if($this->multiple)
-			return [];
-		else
-			return null;
+	protected function _getDefault() {
+		return null;
 	}
 
 	protected function doSerialize($obj) {
@@ -39,7 +36,7 @@ class FileProperty extends \Asgard\Entity\Property {
 			return $obj->src();
 	}
 
-	protected function doUnserialize($str, $entity=null) {
+	protected function doUnserialize($str) {
 		if(!$str || !file_exists($str))
 			return null;
 		$file = new \Asgard\Entity\File($str);
@@ -49,7 +46,7 @@ class FileProperty extends \Asgard\Entity\Property {
 		return $file;
 	}
 
-	public function doSet($val, $entity=null) {
+	public function doSet($val) {
 		if(is_string($val) && $val !== null)
 			$val = new \Asgard\Entity\File($val);
 		if(is_object($val)) {

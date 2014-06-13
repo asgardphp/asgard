@@ -36,6 +36,7 @@ class ErrorHandlerTest extends \PHPUnit_Framework_TestCase {
 		set_error_handler([$errorHandler, 'phpErrorHandler']);
 		try {
 			echo $a;
+			$this->assertTrue(false, 'Should not reach this line.');
 		} catch(\ErrorException $e) {
 			$logger = $this->getMock('Log', ['log']);
 			$logger->expects($this->once())->method('log')->with('notice', 'PHP (E_NOTICE): Undefined variable: a', $this->callback([$this, 'checkLog']));
@@ -49,7 +50,8 @@ class ErrorHandlerTest extends \PHPUnit_Framework_TestCase {
 
 		set_error_handler([$errorHandler, 'phpErrorHandler']);
 		try {
-			$a;
+			echo $a;
+			$this->assertTrue(false, 'Should not reach this line.');
 		} catch(\ErrorException $e) {
 			$errorHandler->exceptionHandler($e, false);
 		}

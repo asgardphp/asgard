@@ -8,8 +8,9 @@ class Request implements \ArrayAccess {
 	public $file;
 	public $server;
 	public $cookie;
+	public $header;
 	public $session;
-	public $data = '';
+	public $body = '';
 	public $url;
 
 	public $isInitial = false;

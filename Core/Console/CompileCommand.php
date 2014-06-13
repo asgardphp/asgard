@@ -9,13 +9,13 @@ class CompileCommand extends \Asgard\Console\Command {
 		$this->getApplication()->add(new \ClassPreloader\Command\PreCompileCommand);
 
 		$app = $this->getAsgard();
-		$this->outputPath = $app['kernel']['root'].'/storage/compiled.php';
+		$outputPath = $app['kernel']['root'].'/storage/compiled.php';
 
 		$classes = require __DIR__.'/compile/classes.php';
 
 		$this->callSilent('compile', [
 			'--config' => implode(',', $classes),
-			'--output' => $this->outputPath,
+			'--output' => $outputPath,
 			'--strip_comments' => 1,
 		]);
 	}

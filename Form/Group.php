@@ -208,7 +208,7 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 	
 	public function setFields(array $fields) {
 		$this->fields = [];
-		$this->addFields($fields, $this);
+		$this->addFields($fields);
 	}
 	
 	public function setName($name) {
@@ -216,7 +216,7 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 	}
 	
 	public function reset() {
-		$this->setData([], []);
+		$this->setData([]);
 		
 		return $this;
 	}

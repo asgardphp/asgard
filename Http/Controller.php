@@ -76,7 +76,7 @@ abstract class Controller extends \Asgard\Hook\Hookable {
 		$prefix = $prefix !== null ? $prefix->value:'';
 
 		foreach($reflection->getMethods() as $method) {
-			if(!preg_match('/Action$/i', $method->getName()))
+			if(!preg_match('/Action$/i', $method->getName()) || $method->getName() !== $action.'Action')
 				continue;
 			$routeAnnot = $reader->getMethodAnnotation($method, 'Asgard\Http\Annotations\Route');
 			if($routeAnnot !== null) {
@@ -112,9 +112,9 @@ abstract class Controller extends \Asgard\Hook\Hookable {
 	public function addFilter($filter) {
 		$filter->setController($this);
 		if(method_exists($filter, 'before')) 
-			$this->hook('before', [$filter, 'before'], $filter->getBeforePriority());
+			$this->hook('before', [$filter, 'before']);
 		if(method_exists($filter, 'after'))
-			$this->hook('after', [$filter, 'after'], $filter->getAfterPriority());
+			$this->hook('after', [$filter, 'after']);
 	}
 
 	/* EXECUTION */

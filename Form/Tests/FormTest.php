@@ -231,7 +231,7 @@ class FormTest extends \PHPUnit_Framework_TestCase {
 
 		$form->addRelation('comments');
 		return;
-
+/*
 		$this->assertEquals([], $form->errors());
 		$form->save();
 		$this->assertEquals($user->name, 'Bob');
@@ -242,7 +242,7 @@ class FormTest extends \PHPUnit_Framework_TestCase {
 			'name' => '..'
 		], $this->errors());
 		$this->setExpectedException('Asgard\Form\FormException');
-		$form->save();
+		$form->save();*/
 
 		#__construct
 		#addRelation

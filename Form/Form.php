@@ -153,7 +153,6 @@ class Form extends Group {
 				return $this->getRequest()->post->has($this->groupName);
 			elseif($method == 'GET')
 				return $this->getRequest()->get->has($this->groupName);
-			return false;
 		}
 		else {
 			if($method == 'POST' || $method == 'PUT')
@@ -166,7 +165,6 @@ class Form extends Group {
 				if($this->has($k))
 					return true;
 			}
-			return false;
 		}
 
 		return false;

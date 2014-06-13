@@ -245,9 +245,9 @@ class DAL {
 		
 		if(!is_array($params)) {
 			if($condition == 'and')
-				return [$this->replace($params, $table), []];
+				return [$this->replace($params), []];
 			else
-				return [$this->replace($condition, $table), []];
+				return [$this->replace($condition), []];
 		}
 
 		$pdoparams = [];
