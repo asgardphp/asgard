@@ -686,7 +686,7 @@ class ORM {
 	*/
 	public function update(array $values) {
 		while($entity = $this->next())
-			$this->dataMapper->save($entity);
+			$this->dataMapper->save($entity, $values);
 
 		return $this;
 	}

@@ -44,9 +44,10 @@ class Debug {
 		if(!$backtrace)
 			$backtrace = debug_backtrace();
 
-		$jquery = $request->url->to('js/jquery.js');
-			
 		$r = '<b>Backtrace</b><br>'."\n";
+
+		#Javascript
+		$jquery = $request->url->to('js/jquery.js');
 		$r .= <<<EOT
 <script src="$jquery"></script>
 <style>
@@ -86,6 +87,8 @@ $(function(){
 });
 </script>
 EOT;
+
+		#Backtrace
 		for($i=0; $i<count($backtrace); $i++) {
 			$trace = $backtrace[$i];
 			if(isset($backtrace[$i+1]))
@@ -93,69 +96,73 @@ EOT;
 			else
 				$next = $backtrace[count($backtrace)-1];
 			
+			#Links
 			if(isset($trace['file'])) {
 				$url = static::$url;
 				$url = str_replace('%file%', $trace['file'], $url);
 				$url = str_replace('%line%', $trace['line'], $url);
 				$r .= '<a href="'.$url.'">'.$trace['file'].'</a> ('.$trace['line'].')';
 			}
+
+			#Class
 			if(isset($next['class']))
 				$r .= ' at '.$next['class'].(isset($next['function']) ? $next['type'].$next['function'].'()':'');
+
+			#Function
 			elseif(isset($next['function']))
 				$r .= ' at '.$next['function'];
 			$r .= "<br>\n";
 
+			#Arguments
 			if(isset($next['args']) && count($next['args']) > 0) {
 				$r .= '<div><span class="toggle"><span>+</span>Args:</span>'."<br>\n";
 				$r .= '<div style="display:none"><ul>';
 				foreach($next['args'] as $arg) {
 					$r .= '<li>';
-					if(is_array($arg))
-						$str = static::var_dump_to_string($arg);
-					elseif(is_string($arg))
-						$str = $arg;
-					else
-						$str = static::var_dump_to_string($arg);
-					$r .= '<pre>'.$str.'</pre>';
+					$r .= '<pre>'.static::var_dump_to_string($arg).'</pre>';
 					$r .= "</li>\n";
 				}
 				$r .= '</ul></div>';
 				$r .= '</div>';
 			}
 			
+			#Code snippet
 			if(isset($trace['line'])) {
 				$start = $trace['line']-5-1;
-				if($start < 1)
-					$start = 1;
+				$start = $start < 1 ? 1:$start;
 				$pos = $trace['line']-$start;
 
-				if(file_exists($trace['file'])) {
-					ob_start();
-					highlight_string(file_get_contents($trace['file']));
-					$code = ob_get_contents();
-					ob_end_clean();
-					$code = explode('<br />', $code);
-					$code = array_slice($code, $start, 11);
-					
-					if($code) {
-						$r .= '<div><span class="toggle"><span>+</span>Code:</span>'."<br>\n";
-						$r .= '<div style="display:none"><code>';
-						foreach($code as $k=>$line) {
-							if($pos == $k+1)
-								$r .= '<span style="float:left; display:inline-block; width:50px; color:#000">'.($start+$k+1).'</span>
-								<div class="current_line" style="display:inline-block; background-color:#ccc;">'.$line.'</div><br>';
-							else
-								$r .= '<span style="float:left; display:inline-block; width:50px; color:#000">'.($start+$k+1).'</span>'.$line.'<br>';
-						}
-						$r .= '</code></div></div>';
-					}
-				}
+				if(file_exists($trace['file']))
+					$r .= static::getCode($trace['file'], $start, 11, $pos);
 			}
 			
 			$r .= '<hr/>';
 		}
 
 		return $r;
+	}
+
+	protected static function getCode($file, $offset, $limit, $pos) {
+		ob_start();
+		highlight_string(file_get_contents($file));
+		$code = ob_get_contents();
+		ob_end_clean();
+		$code = explode('<br />', $code);
+		$code = array_slice($code, $offset, $limit);
+		
+		if($code) {
+			$r = '<div><span class="toggle"><span>+</span>Code:</span>'."<br>\n";
+			$r .= '<div style="display:none"><code>';
+			foreach($code as $k=>$line) {
+				if($pos == $k+1)
+					$r .= '<span style="float:left; display:inline-block; width:50px; color:#000">'.($offset+$k+1).'</span>
+					<div class="current_line" style="display:inline-block; background-color:#ccc;">'.$line.'</div><br>';
+				else
+					$r .= '<span style="float:left; display:inline-block; width:50px; color:#000">'.($offset+$k+1).'</span>'.$line.'<br>';
+			}
+			$r .= '</code></div></div>';
+			return $r;
+		}
 	}
 	
 	public static function getCLIBacktrace($backtrace=null) {
@@ -176,114 +183,35 @@ EOT;
 	public static function getHTMLRequest(\Asgard\Http\Request $r) {
 		$res = '<b>Request</b><br>';
 		$res .= '<div>';
-
-		if($r->get->size()) {
-			$res .= '<div><span class="toggle"><span>+</span>GET:</span>';
-			$res .= '<div style="display:none"><ul>';
-			foreach($r->get->all() as $k=>$v) {
-				$res .= '<li>'.$k.': ';
-				if(is_array($v))
-					$str = static::var_dump_to_string($v);
-				elseif(is_string($v))
-					$str = $v;
-				else
-					$str = static::var_dump_to_string($v);
-				$res .= '<pre>'.$str.'</pre>';
-				$res .= '</li>';
-			}
-			$res .= '</ul></div></div>';
-		}
-
-		if($r->post->size()) {
-			$res .= '<div><span class="toggle"><span>+</span>POST:</span>';
-			$res .= '<div style="display:none"><ul>';
-			foreach($r->post->all() as $k=>$v) {
-				$res .= '<li>'.$k.': ';
-				if(is_array($v))
-					$str = static::var_dump_to_string($v);
-				elseif(is_string($v))
-					$str = $v;
-				else
-					$str = static::var_dump_to_string($v);
-				$res .= '<pre>'.$str.'</pre>';
-				$res .= '</li>';
-			}
-			$res .= '</ul></div></div>';
-		}
-
-		if($r->file->size()) {
-			$res .= '<div><span class="toggle"><span>+</span>FILES:</span>';
-			$res .= '<div style="display:none"><ul>';
-			foreach($r->file->all() as $k=>$v) {
-				$res .= '<li>'.$k.': ';
-				if(is_array($v))
-					$str = static::var_dump_to_string($v);
-				elseif(is_string($v))
-					$str = $v;
-				else
-					$str = static::var_dump_to_string($v);
-				$res .= '<pre>'.$str.'</pre>';
-				$res .= "</li>\n";
-			}
-			$res .= '</ul></div></div>';
-		}
-
-		if($r->cookie->size()) {
-			$res .= '<div><span class="toggle"><span>+</span>COOKIES:</span>';
-			$res .= '<div style="display:none"><ul>';
-			foreach($r->cookie->all() as $k=>$v) {
-				$res .= '<li>'.$k.': ';
-				if(is_array($v))
-					$str = static::var_dump_to_string($v);
-				elseif(is_string($v))
-					$str = $v;
-				else
-					$str = static::var_dump_to_string($v);
-				$res .= '<pre>'.$str.'</pre>';
-				$res .= "</li>\n";
-			}
-			$res .= '</ul></div></div>';
-		}
-
-		if($r->session->size()) {
-			$res .= '<div><span class="toggle"><span>+</span>SESSION:</span>';
-			$res .= '<div style="display:none"><ul>';
-			foreach($r->session->all() as $k=>$v) {
-				$res .= '<li>'.$k.': ';
-				if(is_array($v))
-					$str = static::var_dump_to_string($v);
-				elseif(is_string($v))
-					$str = $v;
-				else
-					$str = static::var_dump_to_string($v);
-				$res .= '<pre>'.$str.'</pre>';
-				$res .= "</li>\n";
-			}
-			$res .= '</ul></div></div>';
-		}
-
-		if($r->server->size()) {
-			$res .= '<div><span class="toggle"><span>+</span>SERVER:</span>';
-			$res .= '<div style="display:none"><ul>';
-			foreach($r->server->all() as $k=>$v) {
-				$res .= '<li>'.$k.': ';
-				if(is_array($v))
-					$str = static::var_dump_to_string($v);
-				elseif(is_string($v))
-					$str = $v;
-				else
-					$str = static::var_dump_to_string($v);
-				$res .= '<pre>'.$str.'</pre>';
-				$res .= "</li>\n";
-			}
-			$res .= '</ul></div></div>';
-		}
-
+		$res .= static::inputs($r, 'get', 'GET');
+		$res .= static::inputs($r, 'post', 'POST');
+		$res .= static::inputs($r, 'file', 'FILES');
+		$res .= static::inputs($r, 'cookie', 'COOKIES');
+		$res .= static::inputs($r, 'session', 'SESSION');
+		$res .= static::inputs($r, 'server', 'SERVER');
 		$res .= '</div>';
 		return $res;
 	}
 
+	protected static function inputs($r, $input, $name) {
+		if($r->$input->size()) {
+			$res = '<div><span class="toggle"><span>+</span>'.$name.':</span>';
+			$res .= '<div style="display:none"><ul>';
+			foreach($r->get->all() as $k=>$v) {
+				$res .= '<li>'.$k.': ';
+				$str = static::var_dump_to_string($v);
+				$res .= '<pre>'.$str.'</pre>';
+				$res .= '</li>';
+			}
+			$res .= '</ul></div></div>';
+			return $res;
+		}
+	}
+
 	protected static function var_dump_to_string($var) {
+		if(is_string($var))
+			return $var;
+
 		ob_start();
 		var_dump($var);
 		$str = ob_get_contents();

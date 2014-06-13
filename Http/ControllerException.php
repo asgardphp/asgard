@@ -15,14 +15,14 @@ class ControllerException extends \Asgard\Debug\PSRException {
 		if($this->response)	
 			return $this->response;
 		else
-			return new \Asgard\Core\Response($this->code);
+			return new \Asgard\Http\Response($this->code);
 	}
 
 	public function setResponse($response) {
 		$this->response = $response;
 	}
 
-	public function getCode() {
+	public function getHTTPCode() {
 		return $this->code;
 	}
 
