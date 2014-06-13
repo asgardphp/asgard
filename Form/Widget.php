@@ -4,6 +4,7 @@ namespace Asgard\Form;
 abstract class Widget {
 	protected $label;
 	public $field;
+	public $group;
 	protected $name;
 	protected $value;
 	protected $options;

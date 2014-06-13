@@ -50,14 +50,15 @@ class Container implements \ArrayAccess {
 
 	public function set($name, $value) {
 		$name = strtolower($name);
-		if(
-			$this->autofacade
-			&& preg_match('/^[a-zA-Z_][a-zA-Z0-9_]+$/', $name)
-			&& !class_exists(ucfirst($name))) {
-			eval('class '.ucfirst($name).' extends \Asgard\Container\Facade {}');
-		}
+		if($this->autofacade)
+			$this->createFacade($name);
 
 		$this->instances[$name] = $value;
+	}
+
+	protected function createFacade($name) {
+		if(preg_match('/^[a-zA-Z_][a-zA-Z0-9_]+$/', $name) && !class_exists(ucfirst($name)))
+			eval('class '.ucfirst($name).' extends \Asgard\Container\Facade {}');
 	}
 
 	public function has($name) {
@@ -72,12 +73,8 @@ class Container implements \ArrayAccess {
 
 	public function register($name, $callback) {
 		$name = strtolower($name);
-		if(
-			$this->autofacade
-			&& preg_match('/^[a-zA-Z_][a-zA-Z0-9_]+$/', $name)
-			&& !class_exists(ucfirst(strtolower($name)))) {
-			eval('class '.ucfirst(strtolower($name)).' extends \Asgard\Container\Facade {}');
-		}
+		if($this->autofacade)
+			$this->createFacade($name);
 
 		if($callback instanceof \Closure)
 			$callback = new SerializableClosure($callback);
@@ -123,13 +120,8 @@ class Container implements \ArrayAccess {
 
 	public function __wakeup() {
 		if($this->autofacade) {
-			foreach($this->instances as $name=>$instance) {
-				if(
-					preg_match('/^[a-zA-Z_][a-zA-Z0-9_]+$/', $name)
-					&& !class_exists(ucfirst($name))) {
-					eval('class '.ucfirst($name).' extends \Asgard\Container\Facade {}');
-				}
-			}
+			foreach($this->instances as $name=>$instance)
+				$this->createFacade($name);
 		}
 	}
 }

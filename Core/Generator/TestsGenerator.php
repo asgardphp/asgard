@@ -31,6 +31,8 @@ class TestsGenerator {
 
 		exec('phpunit', $res);
 
+		if(!is_array($res))
+			return false;
 		if(strpos(implode("\n", $res), 'No tests executed') === false) {
 			if(strpos(implode("\n", $res), 'OK (') === false)
 				return false;

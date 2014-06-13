@@ -2,6 +2,14 @@
 namespace Asgard\Validation;
 use Symfony\Component\Translation\TranslatorInterface;
 
+ /**
+  * @method static attribute($attribute, $rules=null)
+  * @method $this attributes(array $attributes)
+  * @method $this rules(array $rules, $each=false)
+  * @method $this rule($rule, $params=[], $each=false)
+  * @method $this isNull($param=true)
+  * @method $this required($param=true)
+  */
 class Validator {
 	protected $params = [];
 	protected $rules = [];
@@ -39,8 +47,6 @@ class Validator {
 			return call_user_func_array([$this, 'callRules'], $args);
 		if($name == 'rule')
 			return call_user_func_array([$this, 'callRule'], $args);
-		if($name == 'ruleEach')
-			return call_user_func_array([$this, 'callRuleEach'], $args);
 		return call_user_func_array([$this, 'callRule'], [$name, $args]);
 	}
 
@@ -55,8 +61,6 @@ class Validator {
 			return call_user_func_array([$v, 'callRules'], $args);
 		if($name == 'rule')
 			return call_user_func_array([$v, 'callRule'], $args);
-		if($name == 'ruleEach')
-			return call_user_func_array([$v, 'callRuleEach'], $args);
 		return call_user_func_array([$v, 'callRule'], [$name, $args]);
 	}
 

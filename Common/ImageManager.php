@@ -162,7 +162,7 @@ class ImageManager {
 	
 		switch($type) {
 			case IMAGETYPE_GIF:
-				if(imagegif($this->rsc, $dst, $quality!==null ? $quality:100))
+				if(imagegif($this->rsc, $dst))
 					return $dst;
 				else
 					return false;

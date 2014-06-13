@@ -1,8 +1,6 @@
 <?php
 namespace Asgard\Core\Console;
 
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
@@ -10,9 +8,9 @@ class InstallCommand extends \Asgard\Console\Command {
 	protected $name = 'install';
 	protected $description = 'Install a module into your application';
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
-		$sources = $input->getArgument('sources');
-		$migrate = $input->getOption('migrate');
+	protected function execute() {
+		$sources = $this->input->getArgument('sources');
+		$migrate = $this->input->getOption('migrate');
 		$updateComposer = $this->input->getOption('update-composer');
 		$root = $this->getAsgard()['kernel']['root'];
 		if(file_exists($root.'/modules.json'))
@@ -131,19 +129,6 @@ class InstallCommand extends \Asgard\Console\Command {
 		$this->output->writeln('<info>Module "'.$name.'" installed with success.</info>');
 	}
 
-	protected function getOptions() {
-		return [
-			['migrate', null, InputOption::VALUE_NONE, 'Automatically execute the migrations.', null],
-			['update-composer', null, InputOption::VALUE_NONE, 'Automatically updates composer.', null],
-		];
-	}
-
-	protected function getArguments() {
-		return [
-			['sources', InputArgument::IS_ARRAY, 'Source folder'],
-		];
-	}
-
 	protected function gitInstall($src, $tmp) {
 		$cmd = 'git clone '.$src.' '.$tmp;
 
@@ -172,5 +157,18 @@ class InstallCommand extends \Asgard\Console\Command {
 		);
 
 		return proc_close($process) === 0;
+	}
+
+	protected function getOptions() {
+		return [
+			['migrate', null, InputOption::VALUE_NONE, 'Automatically execute the migrations.', null],
+			['update-composer', null, InputOption::VALUE_NONE, 'Automatically updates composer.', null],
+		];
+	}
+
+	protected function getArguments() {
+		return [
+			['sources', InputArgument::IS_ARRAY, 'Source folder'],
+		];
 	}
 }

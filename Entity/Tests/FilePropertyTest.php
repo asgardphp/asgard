@@ -56,12 +56,13 @@ class FilePropertyTest extends \PHPUnit_Framework_TestCase {
 			],
 			'file' => __DIR__.'/Fixtures/file.txt',
 		]);
+		$definition = $ent::getDefinition();
 
-		$this->assertEquals(realpath(__DIR__.'/Fixtures/file.txt'), $ent->property('file')->serialize($ent->file));
+		$this->assertEquals(realpath(__DIR__.'/Fixtures/file.txt'), $definition->property('file')->serialize($ent->file));
 		$this->assertEquals(serialize([
 				realpath(__DIR__.'/Fixtures/file1.txt'),
 				realpath(__DIR__.'/Fixtures/file2.txt'),
-		]), $ent->property('files')->serialize($ent->files));
+		]), $definition->property('files')->serialize($ent->files));
 	}
 
 	public function testValidation() {

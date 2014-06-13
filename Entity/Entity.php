@@ -228,7 +228,7 @@ abstract class Entity {
 		
 		foreach($this->properties() as $name=>$property) {
 			if(isset($this->data['properties'][$name])) {
-				if($this->property($name)->get('multiple'))
+				if(static::getDefinition()->property($name)->get('multiple'))
 					$res[$name] = $this->get($name)->all();
 				else
 					$res[$name] = $this->get($name);
@@ -243,7 +243,7 @@ abstract class Entity {
 	public function toArray() {
 		$res = [];
 		
-		foreach($this->properties() as $name=>$property) {
+		foreach(static::getDefinition()->properties() as $name=>$property) {
 			$res[$name] = $this->get($name);
 			if($property->get('multiple')) {
 				foreach($res[$name] as $k=>$v)

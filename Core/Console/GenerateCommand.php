@@ -1,8 +1,6 @@
 <?php
 namespace Asgard\Core\Console;
 
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
@@ -10,24 +8,24 @@ class GenerateCommand extends \Asgard\Console\Command {
 	protected $name = 'generate';
 	protected $description = 'Generate bundles from a single YAML file';
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute() {
 		$asgard = $this->getAsgard();
-		$path = $input->getArgument('path');
+		$path = $this->input->getArgument('path');
 		$root = $asgard['kernel']['root'].'/';
 	
 		$yaml = new \Symfony\Component\Yaml\Parser();
 		$raw = $yaml->parse(file_get_contents($path));
 		$bundles = [];
 
-		$overrideFiles = $input->getOption('override-bundles');
+		$overrideFiles = $this->input->getOption('override-bundles');
 		$generator = new Generator($asgard);
 		$generator->setOverrideFiles($overrideFiles);
 		
 		foreach($raw as $bundle_name=>$raw_bundle) {
 			if(file_exists($root.'app/'.$bundle_name.'/')) {
-				if($input->getOption('override-bundles'))
+				if($this->input->getOption('override-bundles'))
 					\Asgard\Common\FileManager::rmdir($root.'app/'.$bundle_name.'/');
-				elseif($input->getOption('skip'))
+				elseif($this->input->getOption('skip'))
 					continue;
 			}
 			
@@ -190,12 +188,12 @@ class GenerateCommand extends \Asgard\Console\Command {
 
 			if($bundle['tests']) {
 				if(!$this->addToTests($bundle['generatedTests'], $root.'/Tests/'.ucfirst($bundle['name']).'.php'))
-					$output->writeln('<comment>'.$root.'/Tests/'.ucfirst($bundle['name']).'.php could not be generated.</comment>');
+					$this->output->writeln('<comment>'.$root.'/Tests/'.ucfirst($bundle['name']).'.php could not be generated.</comment>');
 			}
 		}
 			
 
-		$output->writeln('<info>Bundles created: '.implode(', ', array_keys($bundles)).'</info>');
+		$this->output->writeln('<info>Bundles created: '.implode(', ', array_keys($bundles)).'</info>');
 	}
 
 	protected function addToTests($tests, $dst) {

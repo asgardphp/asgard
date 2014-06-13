@@ -1,8 +1,6 @@
 <?php
 namespace Asgard\Core\Console;
 
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
@@ -10,7 +8,7 @@ class PublishCommand extends \Asgard\Console\Command {
 	protected $name = 'publish';
 	protected $description = 'Publish a bundle files';
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute() {
 		$bundle = $this->input->getArgument('bundle');
 
 		$publishAll = $this->input->getOption('all');
@@ -28,31 +26,31 @@ class PublishCommand extends \Asgard\Console\Command {
 		#copy app
 		if($publishApp && file_exists($bundle.'/app')) {
 			$publisher->publish($bundle.'/app', $root.'/app');
-			$output->writeln('<info>App files have been published.</info');
+			$this->output->writeln('<info>App files have been published.</info');
 		}
 
 		#copy config
 		if($publishConfig && file_exists($bundle.'/config')) {
 			$publisher->publish($bundle.'/config', $root.'/config');
-			$output->writeln('<info>App files have been published.</info');
+			$this->output->writeln('<info>App files have been published.</info');
 		}
 
 		#copy tests
 		if($publishTests && file_exists($bundle.'/Tests')) {
 			$publisher->publish($bundle.'/Tests', $root.'/Tests');
-			$output->writeln('<info>App files have been published.</info');
+			$this->output->writeln('<info>App files have been published.</info');
 		}
 
 		#copy web
 		if($publishWeb && file_exists($bundle.'/web')) {
 			$publisher->publish($bundle.'/web', $root.'/web');
-			$output->writeln('<info>App files have been published.</info');
+			$this->output->writeln('<info>App files have been published.</info');
 		}
 
 		#copy migrations
 		if($publishMigrations && file_exists($bundle.'/Migrations/migrations.json')) {
 			$publisher->publishMigrations($bundle.'/Migrations', $root.'/Migrations', $migrate);
-			$output->writeln('<info>App files have been published.</info');
+			$this->output->writeln('<info>App files have been published.</info');
 		}
 	}
 

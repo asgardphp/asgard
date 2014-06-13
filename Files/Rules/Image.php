@@ -6,7 +6,7 @@ class Image extends \Asgard\Validation\Rule {
 		if(!$input instanceof \Asgard\Files\File)
 			return;
 		$finfo = \finfo_open(FILEINFO_MIME);
-		$mime = \finfo_file($finfo, $input->get(null, true));
+		$mime = \finfo_file($finfo, $input->src());
 		\finfo_close($finfo);
 		list($mime) = explode(';', $mime);
 		return in_array($mime, ['image/jpeg', 'image/png', 'image/gif']);

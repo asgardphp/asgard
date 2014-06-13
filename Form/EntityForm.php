@@ -12,10 +12,13 @@ class EntityForm extends Form {
 	) {
 		$this->entity = $entity;
 
+		if(!$entity::getDefinition()->hasBehavior('Asgard\Orm\ORMBehavior'))
+			throw new \Exception('Entity must have behavior Asgard\Orm\ORMBehavior');
+
 		$this->locales = isset($params['locales']) ? $params['locales']:[];
 	
 		$fields = [];
-		foreach($entity->properties() as $name=>$property) {
+		foreach($entity::getDefinition()->properties() as $name=>$property) {
 			if(isset($params['only']) && !in_array($name, $params['only']))
 				continue;
 			if(isset($params['except']) && in_array($name, $params['except']))
@@ -34,7 +37,7 @@ class EntityForm extends Form {
 		}
 
 		parent::__construct(
-			isset($params['name']) ? $params['name']:$entity->getShortName(),
+			isset($params['name']) ? $params['name']:$entity::getDefinition()->getShortName(),
 			$params,
 			$fields,
 			$request
@@ -127,6 +130,7 @@ class EntityForm extends Form {
 		if(!$field)
 			$field = $this;
 
+		$errors = [];
 		if($field instanceof Group) {
 			if($field instanceof static)
 				$errors = $field->myErrors();
@@ -139,7 +143,7 @@ class EntityForm extends Form {
 				if($sub_field instanceof Group) {
 					$field_errors = $this->errors($sub_field);
 					if(count($field_errors) > 0)
-						$errors[$sub_field->name] = $field_errors;
+						$errors[$name] = $field_errors;
 				}
 			}
 		}

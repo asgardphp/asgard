@@ -1,16 +1,11 @@
 <?php
 namespace Asgard\Core\Console;
 
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputArgument;
-
 class ListCommand extends \Asgard\Console\Command {
 	protected $name = 'migrations:list';
 	protected $description = 'Displays the list of migrations';
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute() {
 		$table = $this->getHelperSet()->get('table');
 		$table->setHeaders(['Name', 'Status', 'Migrated', 'Added']);
 
@@ -18,6 +13,6 @@ class ListCommand extends \Asgard\Console\Command {
 		foreach($tracker->getList() as $migration=>$params)
 			$table->addRow([$migration, isset($params['migrated']) ? 'up':'down', isset($params['migrated']) ? date('d/m/Y H:i:s', $params['migrated']):'', date('d/m/Y H:i:s', $params['added'])]);
 
-		$table->render($output);
+		$table->render($this->output);
 	}
 }

@@ -86,6 +86,6 @@ class MultipleTest extends \PHPUnit_Framework_TestCase {
 		$e->names[] = 'Bob';
 		$e->names[] = 'Joe';
 
-		$this->assertEquals('a:2:{i:0;s:3:"Bob";i:1;s:3:"Joe";}', $e->property('names')->serialize($e->names));
+		$this->assertEquals('a:2:{i:0;s:3:"Bob";i:1;s:3:"Joe";}', $e::getDefinition()->property('names')->serialize($e->names));
 	}
 }

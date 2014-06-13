@@ -109,14 +109,15 @@ class DAL {
 	}
 	
 	public function reset() {
-		$this->columns = null;
-		$this->tables = null;
+		$this->tables = [];
+		$this->columns = [];
 		$this->where = [];
 		$this->offset = null;
 		$this->limit = null;
 		$this->orderBy = null;
 		$this->groupBy = null;
 		$this->joins = [];
+		$this->params = [];
 		
 		return $this;
 	}

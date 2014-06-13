@@ -1,22 +1,19 @@
 <?php
 namespace Asgard\Core\Console;
 
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputArgument;
 
 class ServicesCommand extends \Asgard\Console\Command {
 	protected $name = 'services';
 	protected $description = 'Show all the services loaded in the application';
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute() {
 		$table = $this->getHelperSet()->get('table');
 		$headers = ['Name', 'Type', 'Class'];
-		$optRegistered = $input->getOption('registered');
+		$optRegistered = $this->input->getOption('registered');
 		if($optRegistered)
 			$headers[] = 'Registered at';
-		$optDefined = $input->getOption('defined');
+		$optDefined = $this->input->getOption('defined');
 		if($optDefined)
 			$headers[] = 'Defined in';
 		$table->setHeaders($headers);
@@ -41,7 +38,7 @@ class ServicesCommand extends \Asgard\Console\Command {
 					$r = new \ReflectionClass($class);
 					$defined = \Asgard\Common\FileManager::relativeTo($root, $r->getFileName()).':'.$r->getStartLine();
 				}
-			} catch(\Exception $e) {}
+			} catch(\Exception $e) {} #defined = ??? / clas = ???
 
 			$res = [
 				'name' => $name,
@@ -87,7 +84,7 @@ class ServicesCommand extends \Asgard\Console\Command {
 		foreach($services as $row)
 			$table->addRow($row);
 
-		$table->render($output);
+		$table->render($this->output);
 	}
 
 	protected function getOptions() {

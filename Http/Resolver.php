@@ -53,16 +53,17 @@ class Resolver {
 	}
 	
 	public static function matchWith($route, $with, $requirements=null, $request=null, $method=null) {
-		if($method) {
+		if($method !== null) {
 			if(is_array($method)) {
 				$good = false;
-				foreach($method as $v)
-					if(strtolower($method) == $v)
+				foreach($method as $v) {
+					if(strtoupper($v) == $request->method())
 						$good = true;
+				}
 				if(!$good)
 					return false;
 			}
-			elseif($request && strtolower($method) != $request->method())
+			elseif($request && strtoupper($method) != $request->method())
 				return false;
 		}
 				

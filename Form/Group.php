@@ -395,7 +395,7 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 	}
 
 	public function trigger($name, array $args=[], $cb=null, &$chain=null) {
-		return parent::trigger($name, array_merge([$this], $args), $cb, $print, $chain);
+		return parent::trigger($name, array_merge([$this], $args), $cb, $chain);
 	}
 	
 	protected function updateChilds() {
@@ -408,14 +408,8 @@ class Group extends \Asgard\Hook\Hookable implements \ArrayAccess, \Iterator {
 			elseif($field instanceof \Asgard\Form\Field) {
 				if(isset($this->data[$name]))
 					$field->setValue($this->data[$name]);
-				else {
-					if($this->isSent()) {
-						if(isset($field->params['multiple']) && $field->params['multiple'])
-							$field->setValue([]);
-						else
-							$field->setValue('');
-					}
-				}
+				elseif($this->isSent())
+					$field->setValue(null);
 			}
 		}
 	}

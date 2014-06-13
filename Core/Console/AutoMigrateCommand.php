@@ -1,18 +1,15 @@
 <?php
 namespace Asgard\Core\Console;
 
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
 class AutoMigrateCommand extends \Asgard\Console\Command {
 	protected $name = 'orm:automigrate';
 	protected $description = 'Generate and run a migration from ORM entities';
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute() {
 		$asgard = $this->getAsgard();
-		$migration = $input->getArgument('migration') ? $input->getArgument('migration'):'Automigrate';
+		$migration = $this->input->getArgument('migration') ? $this->input->getArgument('migration'):'Automigrate';
 
 		$mm = new \Asgard\Migration\MigrationsManager($this->getAsgard()['kernel']['root'].'/migrations/', $asgard);
 		$om = new \Asgard\Orm\ORMMigrations($mm);
@@ -31,14 +28,14 @@ class AutoMigrateCommand extends \Asgard\Console\Command {
 
 		$migration = $om->generateMigration($entities, $migration, $this->getAsgard()['db']);
 		if($mm->has($migration))
-			$output->writeln('<info>The migration was successfully generated.</info>');
+			$this->output->writeln('<info>The migration was successfully generated.</info>');
 		else
-			$output->writeln('<error>The migration could not be generated.</error>');
+			$this->output->writeln('<error>The migration could not be generated.</error>');
 
 		if($mm->migrate($migration, true))
-			$output->writeln('<info>Migration succeded.</info>');
+			$this->output->writeln('<info>Migration succeded.</info>');
 		else
-			$output->writeln('<error>Migration failed.</error>');
+			$this->output->writeln('<error>Migration failed.</error>');
 	}
 
 	protected function getArguments() {

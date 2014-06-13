@@ -86,6 +86,6 @@ class Command extends \Symfony\Component\Console\Command\Command {
 		$helper = $this->getHelperSet()->get('question');
 		$question = new ConfirmationQuestion($questionStr, false);
 
-		return $helper->ask($input, $output, $question);
+		return $helper->ask($this->input, $this->output, $question);
 	}
 }

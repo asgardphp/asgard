@@ -469,11 +469,4 @@ class Schema {
 		if($type)
 			$col->type($type);
 	}
-	
-	public function getType($table, $column) {
-		$table = new Table($table);
-		$col = $table->col($column);
-		
-		return $col->getType();
-	}
 }

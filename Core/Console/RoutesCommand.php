@@ -1,16 +1,11 @@
 <?php
 namespace Asgard\Core\Console;
 
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Input\InputOption;
-use Symfony\Component\Console\Input\InputArgument;
-
 class RoutesCommand extends \Asgard\Console\Command {
 	protected $name = 'routes';
 	protected $description = 'List all registered routes';
 
-	protected function execute(InputInterface $input, OutputInterface $output) {
+	protected function execute() {
 		$table = $this->getHelperSet()->get('table');
 		$table->setHeaders(['Method', 'Host', 'URL', 'Controller', 'Action']);
 
@@ -36,6 +31,6 @@ class RoutesCommand extends \Asgard\Console\Command {
 			]);
 		}
 
-		$table->render($output);
+		$table->render($this->output);
 	}
 }

@@ -13,7 +13,7 @@ class DB {
 	*/
 	public function __construct(array $config, \PDO $db=null) {
 		$this->config = $config;
-		if(!$db)
+		if($db === null)
 			$this->db = $this->getPDO($config);
 		else
 			$this->db = $db;
@@ -26,9 +26,6 @@ class DB {
 		$password = isset($config['password']) ? $config['password']:'';
 
 		switch($driver) {
-			case 'mysql':
-				$parameters = 'mysql:host='.$config['host'].(isset($config['port']) ? ';port='.$config['port']:'').(isset($config['database']) ? ';dbname='.$config['database']:'');
-				return new \PDO($parameters, $user, $password, [\PDO::MYSQL_ATTR_FOUND_ROWS => true, \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8']);
 			case 'pgsql':
 				$parameters = 'pgsql:host='.$config['host'].(isset($config['port']) ? ' port='.$config['port']:'').(isset($config['database']) ? ' dbname='.$config['database']:'');
 				return new \PDO($parameters, $user, $password);
@@ -37,7 +34,9 @@ class DB {
 				return new \PDO($parameters, $user, $password);
 			case 'sqlite':
 				return new \PDO('sqlite:'.$config['database']);
-
+			default:
+				$parameters = 'mysql:host='.$config['host'].(isset($config['port']) ? ';port='.$config['port']:'').(isset($config['database']) ? ';dbname='.$config['database']:'');
+				return new \PDO($parameters, $user, $password, [\PDO::MYSQL_ATTR_FOUND_ROWS => true, \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8']);
 		}
 	}
 
