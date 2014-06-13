@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\Files\Rules;
+namespace Asgard\File\Rules;
 
 class Extension extends \Asgard\Validation\Rule {
 	public $extension;

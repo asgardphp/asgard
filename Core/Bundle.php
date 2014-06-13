@@ -76,7 +76,7 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		\Asgard\Entity\Entity::setApp($app);
 
 		#Files
-		$app['rulesregistry']->registerNamespace('Asgard\Files\Rules');
+		$app['rulesregistry']->registerNamespace('Asgard\File\Rules');
 
 		#ORM
 		$app['rulesregistry']->registerNamespace('Asgard\Orm\Rules');

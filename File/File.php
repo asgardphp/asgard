@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\Files;
+namespace Asgard\File;
 
 class File {
 	protected $src;

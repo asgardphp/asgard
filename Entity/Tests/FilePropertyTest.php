@@ -13,7 +13,7 @@ class FilePropertyTest extends \PHPUnit_Framework_TestCase {
 		$app['hooks'] = new \Asgard\Hook\HooksManager($app);
 		$app['cache'] = new \Asgard\Cache\NullCache;
 		$app['rulesregistry'] = \Asgard\Validation\RulesRegistry::getInstance();
-		$app['rulesregistry']->registerNamespace('Asgard\Files\Rules');
+		$app['rulesregistry']->registerNamespace('Asgard\File\Rules');
 		$app['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($app);
 		$app['db'] = new \Asgard\Db\DB([
 			'database' => 'asgard',
@@ -40,7 +40,7 @@ class FilePropertyTest extends \PHPUnit_Framework_TestCase {
 			'file' => __DIR__.'/Fixtures/file.txt',
 		]);
 
-		$this->assertInstanceOf('Asgard\Files\File', $ent->file);
+		$this->assertInstanceOf('Asgard\File\File', $ent->file);
 		$this->assertEquals('http://localhost/folder/file.txt', $ent->file->__toString());
 
 		$this->assertEquals(realpath(__DIR__.'/Fixtures/file1.txt'), $ent->files[0]->src());

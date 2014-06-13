@@ -1,7 +1,7 @@
 <?php
 namespace Asgard\Entity;
 
-class File extends \Asgard\Files\File {
+class File extends \Asgard\File\File {
 	protected $url;
 	protected $webDir;
 	protected $toDelete;

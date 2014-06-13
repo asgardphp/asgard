@@ -1,9 +1,9 @@
 <?php
-namespace Asgard\Files\Rules;
+namespace Asgard\File\Rules;
 
 class Image extends \Asgard\Validation\Rule {
 	public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\Validator $validator) {
-		if(!$input instanceof \Asgard\Files\File)
+		if(!$input instanceof \Asgard\File\File)
 			return;
 		$finfo = \finfo_open(FILEINFO_MIME);
 		$mime = \finfo_file($finfo, $input->src());

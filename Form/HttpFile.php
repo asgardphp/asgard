@@ -1,7 +1,7 @@
 <?php
 namespace Asgard\Form;
 
-class HttpFile extends \Asgard\Files\File {
+class HttpFile extends \Asgard\File\File {
 	protected $type;
 	protected $size;
 	protected $error;

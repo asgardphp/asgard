@@ -1,7 +1,7 @@
 <?php
-namespace Asgard\Files\Tests;
+namespace Asgard\File\Tests;
 
-use Asgard\Files\File;
+use Asgard\File\File;
 
 class FileTest extends \PHPUnit_Framework_TestCase {
 	public function testFile() {
