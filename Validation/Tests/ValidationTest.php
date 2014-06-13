@@ -158,15 +158,15 @@ class Test extends \PHPUnit_Framework_TestCase {
 		$this->assertTrue(v::attribute('title', v::greaterThan(5))->valid(['title'=>'4', 'min'=>4]));
 
 		$this->assertFalse(v::attribute('payment', ['required'=>true])->valid(['amount'=>500]));
-		$this->assertFalse(v::attribute('payment', ['required'=>function($input, $parent, $v) {
+		$this->assertFalse(v::attribute('payment', ['required'=>function($input, $parent) {
 			if($parent->attribute('amount')->input() >= 400)
 				return true;
 		}])->valid(['amount'=>500]));
-		$this->assertTrue(v::attribute('payment', ['required'=>function($input, $parent, $v) {
+		$this->assertTrue(v::attribute('payment', ['required'=>function($input, $parent) {
 			if($parent->attribute('amount')->input() >= 400)
 				return true;
 		}])->valid(['amount'=>300]));
-		$this->assertTrue(v::attribute('payment', ['required'=>function($input, $parent, $v) {
+		$this->assertTrue(v::attribute('payment', ['required'=>function($input, $parent) {
 			if($parent->attribute('amount')->input() >= 400)
 				return true;
 		}])->valid(['amount'=>500, 'payment'=>10]));
@@ -214,7 +214,7 @@ class Test extends \PHPUnit_Framework_TestCase {
 
 		#custom registry
 		$registry = new RulesRegistry;
-		$registry->register('bar', function($input){ return false; });
+		$registry->register('bar', function(){ return false; });
 		$v = new v;
 		$this->assertFalse($v->setRegistry($registry)->bar()->valid(1));
 

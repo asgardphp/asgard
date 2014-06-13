@@ -46,7 +46,7 @@ class ORMBehavior extends \Asgard\Entity\Behavior {
 		return $this->dataMapper;
 	}
 
-	public function hookGet(\Asgard\Hook\HookChain $chain, \Asgard\Entity\Entity $entity, $name, $lang) {
+	public function hookGet(\Asgard\Hook\HookChain $chain, \Asgard\Entity\Entity $entity, $name) {
 		if($entity::hasRelation($name)) {
 			$rel = $this->dataMapper->relation($entity, $name);
 			if($rel instanceof \Asgard\Entity\Collection)
@@ -61,7 +61,7 @@ class ORMBehavior extends \Asgard\Entity\Behavior {
 	}
 
 	public function hookValidation(\Asgard\Hook\HookChain $chain, \Asgard\Entity\Entity $entity, \Asgard\Validation\Validator $validator, array &$data) {
-		foreach($this->definition->relations() as $name=>$relation) {
+		foreach($this->definition->relations as $name=>$relation) {
 			$data[$name] = $this->dataMapper->relation($entity, $name);
 			$validator->attribute($name, $relation->getRules());
 		}

@@ -6,7 +6,7 @@ class Field {
     protected $choices = [];
     protected $type;
 
-    function __construct(\DOMNode $node) {
+    function __construct(\DOMElement $node) {
         $nodeName = $node->nodeName;
 
         switch($nodeName) {
@@ -61,7 +61,7 @@ class Field {
         }
     }
 
-    public function addChoice(\DOMNode $node) {
+    public function addChoice(\DOMElement $node) {
         if($node->nodeName != 'input')
             return;
         $inputValue = $node->getAttribute('value');
@@ -109,7 +109,7 @@ class FormParser {
        $this->fields[$name] = $value;
     }
 
-    public function add(\DOMNode $node) {
+    public function add(\DOMElement $node) {
         $name = $node->getAttribute('name');
         if($this->has($name))
             $this->get($name)->addChoice($node);

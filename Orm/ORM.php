@@ -7,6 +7,7 @@ namespace Asgard\Orm;
  * @author Michel Hognerud <michel@hognerud.net>
 */
 class ORM {
+	protected $dataMapper;
 	protected $entity;
 	protected $with;
 	protected $where = [];
@@ -28,12 +29,13 @@ class ORM {
 	 * 
 	 * @param \Asgard\Entity\Entity entity The entity class.
 	*/
-	public function __construct($entity, $db, $locale=null, $prefix=null, $app=null) {
+	public function __construct($entity, $db, $locale=null, $prefix=null, $app=null, $datamapper=null) {
 		$this->entity = $entity;
 		$this->db = $db;
 		$this->locale = $locale;
 		$this->prefix = $prefix;
 		$this->app = $app;
+		$this->dataMapper = $datamapper;
 
 		if($entity::getDefinition()->order_by)
 			$this->orderBy($entity::getDefinition()->order_by);
@@ -104,8 +106,8 @@ class ORM {
 		}
 
 		if($relation['polymorphic']) {
-			$this->where([$relation['link_type'] => $entity->getShortName()]);
-			$relation['real_entity'] = $entity->getShortName();
+			$this->where([$relation['link_type'] => $entity::getDefinition()->getShortName()]);
+			$relation['real_entity'] = $entity::getDefinition()->getShortName();
 		}
 		$this->join($relation);
 
@@ -172,7 +174,7 @@ class ORM {
 	protected static function unserializeSet(\Asgard\Entity\Entity $entity, array $data, $lang=null) {
 		foreach($data as $k=>$v) {
 			if($entity::hasProperty($k))
-				$data[$k] = $entity->property($k)->unserialize($v, $entity, $k);
+				$data[$k] = $entity::getDefinition()->property($k)->unserialize($v, $entity, $k);
 			else
 				unset($data[$k]);
 		}
@@ -670,7 +672,7 @@ class ORM {
 	public function delete() {
 		$count = 0;
 		while($entity = $this->next())
-			$count += $entity->destroy();
+			$count += $this->dataMapper->destroy($entity);
 
 		return $count;
 	}
@@ -684,7 +686,8 @@ class ORM {
 	*/
 	public function update(array $values) {
 		while($entity = $this->next())
-			$entity->save($values);
+			$this->dataMapper->save($entity);
+
 		return $this;
 	}
 	

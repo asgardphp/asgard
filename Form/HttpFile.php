@@ -6,7 +6,7 @@ class HttpFile extends \Asgard\Files\File {
 	protected $size;
 	protected $error;
 
-	public function __construct($src, $name, $type, $size, $error, $webDir=null, $url=null) {
+	public function __construct($src, $name, $type, $size, $error) {
 		$this->type = $type;
 		$this->size = $size;
 		$this->error = $error;

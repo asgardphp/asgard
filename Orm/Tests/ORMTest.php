@@ -228,7 +228,7 @@ class ORMTest extends PHPUnit_Framework_TestCase {
 	#all together
 	public function test() {
 		return;
-
+/*
 		#get all the authors in page 1 (10 per page), which belong to news that have score > 3 and belongs to category "general", and with their comments, and all in english only.
 		$authors = Asgard\Orm\Tests\Entities\Categoryi18n::loadByName('general') #from the category "general"
 		->news() #get the news
@@ -238,6 +238,6 @@ class ORMTest extends PHPUnit_Framework_TestCase {
 			'comments'
 		])
 		->paginate(1, 10) #paginate, 10 authors per page, page 1
-		->get();
+		->get();*/
 	}
 }

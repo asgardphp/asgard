@@ -55,7 +55,7 @@ class DataMapper {
 	}
 	
 	public function orm($entityClass) {
-		$orm = new ORM($entityClass, $this->db, $this->locale, $this->prefix, $this->app);
+		$orm = new ORM($entityClass, $this->db, $this->locale, $this->prefix, $this->app, $this);
 		return $orm;
 	}
 	
@@ -126,7 +126,7 @@ class DataMapper {
 				return $relEntity::where(['id' => $entity->get($link)]);
 			case 'hasMany':
 			case 'HMABT':
-				return new \Asgard\Orm\CollectionORM($entity, $name, $this->db, $this->locale, $this->prefix);
+				return new \Asgard\Orm\CollectionORM($entity, $name, $this->db, $this->locale, $this->prefix, $this->app, $this);
 			default:	
 				throw new \Exception('Relation '.$relation_type.' does not exist.');
 		}
@@ -134,8 +134,8 @@ class DataMapper {
 
 	protected static function unserialize(\Asgard\Entity\Entity $entity, array $data) {
 		foreach($data as $k=>$v) {
-			if($entity::hasProperty($k))
-				$data[$k] = $entity->property($k)->unserialize($v, $entity, $k);
+			if($entity::getDefinition()->hasProperty($k))
+				$data[$k] = $entity::getDefinition()->property($k)->unserialize($v, $entity, $k);
 			else
 				unset($data[$k]);
 		}
@@ -190,10 +190,10 @@ class DataMapper {
 		$data = $entity->toArrayRaw();
 		$validator = $entity->getValidator();
 		foreach($entity->getDefinition()->relations() as $name=>$relation) {
-			$data[$name] = $entity->relation($name);
+			$data[$name] = $entity::getDefinition()->relation($name);
 			$validator->attribute($name, $relation->getRules());
 		}
-		return $entity->trigger('validation', [$entity, $validator, &$data], function($chain, $entity, $validator, &$data) {
+		return $entity::getDefinition()->trigger('validation', [$entity, $validator, &$data], function($chain, $entity, $validator, &$data) {
 			return $validator->valid($data);
 		});
 	}
@@ -202,7 +202,7 @@ class DataMapper {
 		$data = $entity->toArrayRaw();
 		$validator = $entity->getValidator();
 		foreach($entity->getDefinition()->relations() as $name=>$relation) {
-			$data[$name] = $entity->relation($name);
+			$data[$name] = $entity::getDefinition()->relation($name);
 			$validator->attribute($name, $relation->getRules());
 		}
 		$errors = $entity::trigger('validation', [$entity, $validator, &$data], function($chain, $entity, $validator, &$data) {
@@ -255,7 +255,7 @@ class DataMapper {
 
 		$vars = [];
 		#apply filters before saving
-		foreach($entity->propertyNames() as $name) {
+		foreach($entity::getDefinition()->propertyNames() as $name) {
 			if(isset($entity->data['properties'][$name]))
 				$value = $entity->data['properties'][$name];
 			else

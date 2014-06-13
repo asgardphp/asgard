@@ -226,7 +226,7 @@ abstract class Entity {
 	public function toArrayRaw() {
 		$res = [];
 		
-		foreach($this->properties() as $name=>$property) {
+		foreach(static::getDefinition()->properties() as $name=>$property) {
 			if(isset($this->data['properties'][$name])) {
 				if(static::getDefinition()->property($name)->get('multiple'))
 					$res[$name] = $this->get($name)->all();

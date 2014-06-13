@@ -100,7 +100,7 @@ class '.$name.' extends '.$class.' {
 
 	public function reset() {
 		foreach($this->tracker->getUpList() as $migrationName=>$params) {
-			if($this->unmigrate($migrationName, true) === false)
+			if($this->unmigrate($migrationName) === false)
 				return false;
 		}
 		return true;

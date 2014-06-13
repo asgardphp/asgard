@@ -4,7 +4,7 @@ namespace Asgard\Entity\Properties;
 class ImageProperty extends FileProperty {
 	protected static $defaultExtensions = ['png', 'jpg', 'jpeg', 'gif'];
 
-	protected function doUnserialize($str, $entity=null) {
+	protected function doUnserialize($str) {
 		if(!$str || !file_exists($str))
 			return null;
 		$image = new \Asgard\Entity\Image($str);
@@ -16,7 +16,7 @@ class ImageProperty extends FileProperty {
 		return $image;
 	}
 
-	public function doSet($val, $entity=null) {
+	public function doSet($val) {
 		if(is_string($val) && $val !== null)
 			$val = new \Asgard\Entity\Image($val);
 		if(is_object($val)) {

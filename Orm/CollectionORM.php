@@ -5,12 +5,12 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 	protected $parent;
 	protected $relation;
 
-	public function __construct(\Asgard\Entity\Entity $entity, $relation_name, $db, $locale=null, $prefix=null, $app=null) {
+	public function __construct(\Asgard\Entity\Entity $entity, $relation_name, $db, $locale=null, $prefix=null, $app=null, $datamapper=null) {
 		$this->parent = $entity;
 
 		$this->relation = $entity->getDefinition()->relations[$relation_name];
 
-		parent::__construct($this->relation['entity'], $db, $locale, $prefix, $app);
+		parent::__construct($this->relation['entity'], $db, $locale, $prefix, $app, $datamapper);
 
 		$this->joinToEntity($this->relation->reverse(), $entity);
 	}

@@ -10,7 +10,7 @@ class FiltersTest extends \PHPUnit_Framework_TestCase {
 	public function testLayout() {
 		$app = new \Asgard\Container\Container;
 		$app['hooks'] = new \Asgard\Hook\HooksManager($app);
-		$controller = new \Asgard\Http\Tests\Fixtures\Controllers\FooController($app);
+		$controller = new \Asgard\Http\Tests\Fixtures\Controllers\FooController();
 		$controller->addFilter(new \Asgard\Http\Filters\PageLayout(function($content) { return '<h1>'.$content.'</h1>'; }));
 		$res = $controller->run('page', $app);
 
@@ -25,7 +25,7 @@ class FiltersTest extends \PHPUnit_Framework_TestCase {
 		$app['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($app);
 		\Asgard\Entity\Entity::setApp($app);
 
-		$controller = new \Asgard\Http\Tests\Fixtures\Controllers\FooController($app);
+		$controller = new \Asgard\Http\Tests\Fixtures\Controllers\FooController();
 		$controller->addFilter(new \Asgard\Http\Filters\JSONEntities());
 		$res = $controller->run('json', $app);
 

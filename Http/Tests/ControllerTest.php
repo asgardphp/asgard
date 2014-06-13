@@ -23,7 +23,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase {
 	public function testFilters() {
 		$app = new \Asgard\Container\Container;
 		$app['hooks'] = new \Asgard\Hook\HooksManager($app);
-		$controller = new \Asgard\Http\Tests\Fixtures\Controllers\FooController($app);
+		$controller = new \Asgard\Http\Tests\Fixtures\Controllers\FooController();
 		$controller->addFilter(new _Filter);
 		$controller->run('page', $app);
 
