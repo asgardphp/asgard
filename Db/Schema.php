@@ -32,6 +32,18 @@ class BuildCol {
 		return $this;
 	}
 	
+	public function primary() {
+		$this->table->addPrimary($this->name);
+	}
+	
+	public function unique() {
+		$this->table->addUnique($this->name);
+	}
+	
+	public function index() {
+		$this->table->addIndex($this->name);
+	}
+	
 	public function sql() {
 		$sql = '`'.$this->name.'` ';
 		
@@ -50,18 +62,6 @@ class BuildCol {
 			$sql .= ' AUTO_INCREMENT';
 			
 		return $sql;
-	}
-	
-	public function primary() {
-		$this->table->addPrimary($this->name);
-	}
-	
-	public function unique() {
-		$this->table->addUnique($this->name);
-	}
-	
-	public function index() {
-		$this->table->addIndex($this->name);
 	}
 }
 
@@ -235,12 +235,6 @@ class Column {
 		
 		return $this;
 	}
-	
-	#name
-	#type
-	#nullable
-	#default
-	#autoincrement
 	
 	protected function change(array $params) {
 		$table = $this->table;

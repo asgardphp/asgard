@@ -2,7 +2,7 @@
 namespace Asgard\Form\Fields;
 
 class DateField extends \Asgard\Form\Field {
-	protected $default_render = 'date';
+	protected $widget = 'date';
 	protected $data_type = 'date';
 
 	public function setValue($value) {
@@ -12,7 +12,7 @@ class DateField extends \Asgard\Form\Field {
 			$this->value = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $value);
 	}
 
-	public function getValue() {
+	public function value() {
 		if(isset($this->options['data_type'])) {
 			if($this->options['data_type'] == 'date')
 				return $this->value;

@@ -1,35 +1,32 @@
 <?php
 namespace Asgard\Email;
 
-require 'vendor/swiftmailer/swiftmailer/lib/swift_required.php';
-
 class SwiftEmail implements DriverInterface {
 	protected $transport;
 
 	public function transport($transport) {
+		if(isset($transport['transport']) && $transport['transport'] == 'smtp') {
+			$host = isset($transport['host']) ? $transport['host']:'localhost';
+			$port = isset($transport['port']) ? $transport['port']:25;
+			$security = isset($transport['security']) ? $transport['security']:null;
+
+			$transport = \Swift_SmtpTransport::newInstance($host, $port, $security);
+
+			if(isset($transport['username']))
+				$transport->setUsername($this->transport['username']);
+			if(isset($transport['password']))
+				$transport->setPassword($this->transport['password']);
+		}
+		elseif(isset($transport['transport']) && $transport['transport'] == 'sendmail')
+			$transport = \Swift_SendmailTransport::newInstance($transport['command']);
+		else
+			$transport = \Swift_MailTransport::newInstance();
+
 		$this->transport = $transport;
 	}
 
 	public function send($cb) {
-		if(isset($this->transport['transport']) && $this->transport['transport'] == 'smtp') {
-			$host = isset($this->transport['host']) ? $this->transport['host']:'localhost';
-			$port = isset($this->transport['port']) ? $this->transport['port']:25;
-			$security = isset($this->transport['security']) ? $this->transport['security']:null;
-
-
-			$transport = \Swift_SmtpTransport::newInstance($host, $port, $security);
-
-			if(isset($this->transport['username']))
-				$transport->setUsername($this->transport['username']);
-			if(isset($this->transport['password']))
-				$transport->setPassword($this->transport['password']);
-		}
-		elseif(isset($this->transport['transport']) && $this->transport['transport'] == 'sendmail')
-			$transport = \Swift_SendmailTransport::newInstance($this->transport['command']);
-		else
-			$transport = \Swift_MailTransport::newInstance();
-
-		$mailer = \Swift_Mailer::newInstance($transport);
+		$mailer = \Swift_Mailer::newInstance($this->transport);
 
 		$message = new SwiftMessage();
 

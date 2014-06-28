@@ -1,7 +1,7 @@
 <?php
 namespace Asgard\Orm;
 
-class ORMBehavior extends \Asgard\Entity\Behavior {
+class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\PersistenceBehavior, \Asgard\Entity\RelationsBehavior {
 	protected $dataMapper;
 	protected $entityClass;
 
@@ -56,8 +56,8 @@ class ORMBehavior extends \Asgard\Entity\Behavior {
 		}
 	}
 
-	public function hookgetI18N(\Asgard\Hook\HookChain $chain, \Asgard\Entity\Entity $entity, $name, $lang) {
-		return $this->getDataMapper()->getI18N($entity, $lang);
+	public function hookgetI18N(\Asgard\Hook\HookChain $chain, \Asgard\Entity\Entity $entity, $name, $locale) {
+		return $this->getDataMapper()->getI18N($entity, $locale);
 	}
 
 	public function hookValidation(\Asgard\Hook\HookChain $chain, \Asgard\Entity\Entity $entity, \Asgard\Validation\Validator $validator, array &$data) {

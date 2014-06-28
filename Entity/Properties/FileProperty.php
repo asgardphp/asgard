@@ -40,8 +40,11 @@ class FileProperty extends \Asgard\Entity\Property {
 		if(!$str || !file_exists($str))
 			return null;
 		$file = new \Asgard\Entity\File($str);
-		$file->setWebDir($this->definition->getApp()['kernel']['webdir']);
-		$file->setUrl($this->definition->getApp()['request']->url);
+		$app = $this->definition->getApp();
+		if($app->has('kernel') && isset($app['kernel']['webdir']))
+			$val->setWebDir($app['kernel']['webdir']);
+		if($app->has('request'))
+			$val->setUrl($app['request']->url);
 		$file->setDir($this->get('dir'));
 		return $file;
 	}
@@ -52,8 +55,11 @@ class FileProperty extends \Asgard\Entity\Property {
 		if(is_object($val)) {
 			if($val instanceof \Asgard\Form\HttpFile)
 				$val = new \Asgard\Entity\File($val->src(), $val->getName());
-			$val->setWebDir($this->definition->getApp()['kernel']['webdir']);
-			$val->setUrl($this->definition->getApp()['request']->url);
+			$app = $this->definition->getApp();
+			if($app->has('kernel') && isset($app['kernel']['webdir']))
+				$val->setWebDir($app['kernel']['webdir']);
+			if($app->has('request'))
+				$val->setUrl($app['request']->url);
 			$val->setDir($this->get('dir'));
 		}
 		return $val;

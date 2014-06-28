@@ -1,7 +1,9 @@
 <?php
 namespace Asgard\Entity;
 
-class EntityDefinition extends \Asgard\Hook\Hookable {
+class EntityDefinition {
+	use \Asgard\Hook\Hookable;
+	
 	protected $entityClass;
 
 	protected $app;
@@ -164,8 +166,9 @@ class EntityDefinition extends \Asgard\Hook\Hookable {
 			if(!isset($property['type']) || !$property['type'])
 				$property['type'] = 'text';
 
-			$property = $this->app->make('Asgard.Entity.PropertyType', [$property['type'], $property], function($type, $params) {
-				$class = '\Asgard\Entity\Properties\\'.ucfirst($type).'Property';
+			$type = $property['type'];
+			$property = $this->app->make('Asgard.Entity.PropertyType.'.$type, [$property], function($params) use($type) {
+				$class = '\Asgard\Entity\Properties\\'.ucfirst(strtolower($type)).'Property';
 				return new $class($params);
 			});
 		}
@@ -232,9 +235,9 @@ class EntityDefinition extends \Asgard\Hook\Hookable {
 		return basename(str_replace('\\', DIRECTORY_SEPARATOR, $ns));
 	}
 
-	public function processBeforeSet($entity, $name, &$value, $lang=null, $hook=true) {
+	public function processBeforeSet($entity, $name, &$value, $locale=null, $hook=true) {
 		if($hook)
-			$this->trigger('set', [$entity, $name, &$value, $lang]);
+			$this->trigger('set', [$entity, $name, &$value, $locale]);
 	
 		if($this->property($name)->setHook) {
 			$hook = $this->property($name)->setHook;
@@ -242,7 +245,7 @@ class EntityDefinition extends \Asgard\Hook\Hookable {
 		}
 
 		if($this->property($name)->i18n) {
-			if($lang == 'all') {
+			if($locale == 'all') {
 				$val = [];
 				foreach($value as $one => $v)
 					$val[$one] = $this->property($name)->set($v, $this, $name);
@@ -255,28 +258,15 @@ class EntityDefinition extends \Asgard\Hook\Hookable {
 			$value = $this->property($name)->set($value, $this, $name);
 	}
 
-	public function processBeforeAdd($entity, $name, &$value, $lang=null, $hook=true) {
+	public function processBeforeAdd($entity, $name, &$value, $locale=null, $hook=true) {
 		if($hook)
-			$this->trigger('set', [$entity, $name, &$value, $lang]);
+			$this->trigger('set', [$entity, $name, &$value, $locale]);
 	
 		if($this->property($name)->setHook) {
 			$hook = $this->property($name)->setHook;
 			$value = call_user_func_array($hook, [$value]);
 		}
 
-		if($this->property($name)->i18n) {
-			if(!$lang)
-				$lang = $entity->getLocale();
-			if($lang == 'all') {
-				$val = [];
-				foreach($value as $one => $v)
-					$val[$one] = $this->property($name)->doSet($v, $this, $name);
-				$value = $val;
-			}
-			else
-				$value = $this->property($name)->doSet($value, $this, $name);
-		}
-		else
-			$value = $this->property($name)->doSet($value, $this, $name);
+		$value = $this->property($name)->doSet($value, $this, $name);
 	}
 }

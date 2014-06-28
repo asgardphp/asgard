@@ -158,7 +158,7 @@ class ORM {
 	public function toEntity(array $raw, $entityClass=null) {
 		if(!$entityClass)
 			$entityClass = $this->entity;
-		$new = new $entityClass;
+		$new = new $entityClass([], $this->locale);
 		return static::unserializeSet($new, $raw);
 	}
 	
@@ -167,11 +167,11 @@ class ORM {
 	 * 
 	 * @param \Asgard\Entity\Entity entity
 	 * @param array data
-	 * @param NULL|string lang Only necessary if the data concerns a specific language.
+	 * @param NULL|string locale Only necessary if the data concerns a specific localeuage.
 	 * 
 	 * @return \Asgard\Entity\Entity
 	*/
-	protected static function unserializeSet(\Asgard\Entity\Entity $entity, array $data, $lang=null) {
+	protected static function unserializeSet(\Asgard\Entity\Entity $entity, array $data, $locale=null) {
 		foreach($data as $k=>$v) {
 			if($entity::hasProperty($k))
 				$data[$k] = $entity::getDefinition()->property($k)->unserialize($v, $entity, $k);
@@ -179,7 +179,7 @@ class ORM {
 				unset($data[$k]);
 		}
 
-		return $entity->_set($data, $lang);
+		return $entity->_set($data, $locale);
 	}
 	
 	/**

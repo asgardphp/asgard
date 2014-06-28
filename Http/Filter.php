@@ -20,4 +20,10 @@ class Filter {
 	public function getAfterPriority() {
 		return isset($this->params['afterPriority']) ? $this->params['afterPriority']:0;
 	}
+
+	public function before(Controller $controller, \Asgard\Http\Request $request) {
+	}
+
+	public function after(Controller $controller, \Asgard\Http\Request $request, &$result) {
+	}
 }

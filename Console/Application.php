@@ -40,7 +40,7 @@ class Application extends \Symfony\Component\Console\Application {
 	 * 
 	 * @return \Asgard\Container\Container The application container.
 	*/
-	public function getAsgard() {
+	public function getContainer() {
 		return $this->asgard;
 	}
 }

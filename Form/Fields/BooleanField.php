@@ -2,9 +2,9 @@
 namespace Asgard\Form\Fields;
 
 class BooleanField extends \Asgard\Form\Field {
-	protected $default_render = 'checkbox';
+	protected $widget = 'checkbox';
 
-	public function getValue() {
+	public function value() {
 		return !!$this->value;
 	}
 }

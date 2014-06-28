@@ -13,7 +13,7 @@ class HooksManager {
 	public $registry = [];
 	protected $app;
 	
-	public static function instance() {
+	public static function singleton() {
 		if(!static::$instance)
 			static::$instance = new static;
 		return static::$instance;

@@ -22,7 +22,7 @@ class Container implements \ArrayAccess {
 		return $this->instances;
 	}
 
-	public static function instance() {
+	public static function singleton() {
 		if(!isset(static::$instance))
 			static::$instance = new static;
 		return static::$instance;
@@ -40,7 +40,7 @@ class Container implements \ArrayAccess {
 		$name = strtolower($name);
 		if(!isset($this->instances[$name])) {
 			if(!isset($this->registry[$name]))
-				throw new \Exception($name.' has not been registered in app.');
+				throw new \Exception($name.' has not been registered in container.');
 			$this->instances[$name] = $this->make($name);
 			return $this->instances[$name];
 		}

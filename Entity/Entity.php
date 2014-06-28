@@ -5,16 +5,18 @@ abstract class Entity {
 	protected static $app;
 	#public for behaviors
 	public $data = [
-		'properties'	=>	[],
+		'properties'   => [],
+		'translations' => [],
 	];
 	protected $locale;
-	protected $locales;
 
-	public function __construct(array $params=null) {
+	public function __construct(array $params=null, $locale=null) {
 		#create the entity definition if does not exist yet
 		static::$app['entitiesmanager']->make(get_called_class());
-		$this->locale = static::$app['config']['locale'];
-		$this->locales = static::$app['config']['locales'];
+		if($locale === null)
+			$this->locale = isset(static::$app['config']['locale']) ? static::$app['config']['locale']:null;
+		else
+			$this->locale = $locale;
 
 		$this->loadDefault();
 		if(is_array($params))
@@ -33,7 +35,7 @@ abstract class Entity {
 		static::$app = $app;
 	}
 
-	public static function getapp() {
+	public static function getApp() {
 		return static::$app;
 	}
 	
@@ -77,23 +79,43 @@ abstract class Entity {
 	}
 	
 	/* VALIDATION */
-	public function getValidator() {
+	public function getValidator(array $locales=[]) {
 		$constrains = [];
 		$messages = [];
 		$validator = new \Asgard\Validation\Validator;
 
 		foreach($this->getDefinition()->properties() as $name=>$property) {
-			if($property->get('multiple')) {
-				$constrains[$name] = [];
-				foreach($this->get($name) as $k=>$v) {
-					$validator->attribute($name.'.'.$k, $property->getRules());
-					$validator->attribute($name.'.'.$k)->formatParameters(function(&$params) use($name) {
-						$params['attribute'] = $name;
-					});
+			if($locales && $property->i18n) {
+				foreach($locales as $locale) {
+					if($property->get('multiple')) {
+						foreach($this->get($name) as $k=>$v) {
+							$validator->attribute($name.'.'.$locale.'.'.$k, $property->getRules());
+							$validator->attribute($name.'.'.$locale.'.'.$k)->formatParameters(function(&$params) use($name) {
+								$params['attribute'] = $name;
+							});
+						}
+					}
+					else {
+						$validator->attribute($name.'.'.$locale, $property->getRules());
+						$validator->attribute($name.'.'.$locale)->formatParameters(function(&$params) use($name) {
+							$params['attribute'] = $name;
+						});
+					}
 				}
 			}
-			else
-				$validator->attribute($name, $property->getRules());
+			else {
+				if($property->get('multiple')) {
+					foreach($this->get($name) as $k=>$v) {
+						$validator->attribute($name.'.'.$k, $property->getRules());
+						$validator->attribute($name.'.'.$k)->formatParameters(function(&$params) use($name) {
+							$params['attribute'] = $name;
+						});
+					}
+				}
+				else
+					$validator->attribute($name, $property->getRules());
+			}
+
 			$messages[$name] = $property->getMessages();
 		}
 
@@ -101,7 +123,7 @@ abstract class Entity {
 		
 		$validator->set('entity', $this);
 		$validator->setRegistry(static::$app['rulesregistry']);
-		$validator->ruleMessages($messages);
+		$validator->attributesMessages($messages);
 
 		return $validator;
 	}
@@ -131,52 +153,60 @@ abstract class Entity {
 	}
 
 	/* ACCESSORS */
-	public function _set($name, $value=null, $lang=null) {
+	public function _set($name, $value=null, $locale=null) {
 		if(is_array($name)) {
-			$lang = $value;
+			$locale = $value;
 			$vars = $name;
 			foreach($vars as $name=>$value)
-				$this->_set($name, $value, $lang);
+				$this->_set($name, $value, $locale);
 			return $this;
 		}
 
 		if(static::getDefinition()->hasProperty($name)) {
-			if(static::getDefinition()->property($name)->i18n) {
-				if(!$lang)
-					$lang = $this->locale;
-				if($lang == 'all') {
-					foreach($value as $one => $v)
-						$this->data['properties'][$name][$one] = $v;
+			if(!$locale)
+				$locale = $this->locale;
+			if(static::getDefinition()->property($name)->i18n && $locale !== $this->getLocale()) {
+				if($locale == 'all') {
+					foreach($value as $locale => $v)
+						$this->data['translations'][$locale][$name] = $v;
 				}
 				else
-					$this->data['properties'][$name][$lang] = $value;
+					$this->data['translations'][$locale][$name] = $value;
 			}
 			else
 				$this->data['properties'][$name] = $value;
 		}
-		else
+		elseif($name !== 'translations' && $name !== 'properties')
 			$this->data[$name] = $value;
 				
 		return $this;
 	}
 
-	public function set($name, $value=null, $lang=null, $hook=true) {
+	public function set($name, $value=null, $locale=null, $hook=true) {
+		#setting multiple properties at once
 		if(is_array($name)) {
-			$lang = $value;
 			$vars = $name;
+			$locale = $value;
 			foreach($vars as $name=>$value)
-				$this->set($name, $value, $lang, false);
+				$this->set($name, $value, $locale, $hook);
+			return $this;
+		}
+
+		#setting a property multiple translations at once
+		if(is_array($locale)) {
+			foreach($locale as $one)
+				$this->set($name, $value[$one], $one, $hook);
 			return $this;
 		}
 
 		if(static::getDefinition()->hasProperty($name)) {
-			if(!$lang)
-				$lang = $this->getLocale();
+			if(!$locale)
+				$locale = $this->getLocale();
 
-			static::getDefinition()->processBeforeSet($this, $name, $value, $lang, $hook);
+			static::getDefinition()->processBeforeSet($this, $name, $value, $locale, $hook);
 
-			if(static::getDefinition()->property($name)->i18n && $lang != 'all')
-				$this->data['properties'][$name][$lang] = $value;
+			if(static::getDefinition()->property($name)->i18n && $locale !== $this->getLocale())
+				$this->data['translations'][$locale][$name] = $value;
 			else
 				$this->data['properties'][$name] = $value;
 		}
@@ -185,41 +215,48 @@ abstract class Entity {
 				
 		return $this;
 	}
-	
-	public function get($name, $lang=null) {
-		if(!$lang)
-			$lang = $this->locale;
-		$entity = $this;
 
-		if($res = $this->getDefinition()->trigger('get', [$this, $name, $lang]))
-			return $res;
-
+	public function _get($name, $locale=null) {
+		if(!$locale)
+			$locale = $this->getLocale();
+		
 		if($this->getDefinition()->hasProperty($name)) {
-			if($entity::property($name)->i18n) {
-				if($lang == 'all') {
-					$langs = $this->locales;
+			if($this::getDefinition()->property($name)->i18n && $locale !== $this->getLocale()) {
+				#multiple locales at once
+				if(is_array($locale)) {
 					$res = [];
-					foreach($langs as $lang)
-						$res[$lang] = $entity->get($name, $lang);
+					foreach($locale as $_locale)
+						$res[$_locale] = $this->get($name, $_locale);
 					return $res;
 				}
-				elseif(isset($entity->data['properties'][$name][$lang]))
-					return $entity->data['properties'][$name][$lang];
+				elseif(isset($this->data['translations'][$locale][$name]))
+					return $this->data['translations'][$locale][$name];
 				else {
-					$i18n = $this->getDefinition()->trigger('getI18N', [$this, $name, $lang]);
-					if($i18n === null) $i18n = [];
-					foreach ($i18n as $k=>$v)
-						$this->_set($k, $v, $lang);
-					if(!isset($entity->data['properties'][$name][$lang]))
+					$i18n = $this->getDefinition()->trigger('getI18N', [$this, $name, $locale]);
+					if($i18n === null)
+						$i18n = [];
+					foreach($i18n as $k=>$v)
+						$this->_set($k, $v, $locale);
+					if(!isset($this->data['translations'][$locale][$name]))
 						return null;
-					return $entity->data['properties'][$name][$lang];
+					return $this->data['translations'][$locale][$name];
 				}
 			}
-			elseif(isset($entity->data['properties'][$name]))
-				return $entity->data['properties'][$name];
+			elseif(isset($this->data['properties'][$name]))
+				return $this->data['properties'][$name];
 		}
-		elseif(isset($entity->data[$name]))
-			return $entity->data[$name];
+		elseif(isset($this->data[$name]))
+			return $this->data[$name];
+	}
+	
+	public function get($name, $locale=null) {
+		if(!$locale)
+			$locale = $this->getLocale();
+
+		if($res = $this->getDefinition()->trigger('get', [$this, $name, $locale]))
+			return $res;
+
+		return $this->_get($name, $locale);
 	}
 	
 	/* UTILS */
@@ -227,14 +264,10 @@ abstract class Entity {
 		$res = [];
 		
 		foreach(static::getDefinition()->properties() as $name=>$property) {
-			if(isset($this->data['properties'][$name])) {
-				if(static::getDefinition()->property($name)->get('multiple'))
-					$res[$name] = $this->get($name)->all();
-				else
-					$res[$name] = $this->get($name);
-			}
+			if(static::getDefinition()->property($name)->get('multiple'))
+				$res[$name] = $this->get($name)->all();
 			else
-				$res[$name] = null;
+				$res[$name] = $this->get($name);
 		}
 		
 		return $res;
@@ -256,6 +289,16 @@ abstract class Entity {
 		return $res;
 	}
 
+	public function toJSON() {
+		return json_encode($this->toArray());
+	}
+
+	public static function arrayToJSON(array $entities) {
+		foreach($entities as $k=>$entity)
+			$entities[$k] = $entity->toArray();
+		return json_encode($entities);
+	}
+
 	private function propertyToArray($v, $property) {
 		if(is_string($v) || is_array($v))
 			return $v;
@@ -272,13 +315,109 @@ abstract class Entity {
 		throw new \Exception('Cannot convert property '.$property.' to array or string.');
 	}
 
-	public function toJSON() {
-		return json_encode($this->toArray());
+	/* I18N */
+	public function translate($locale) {
+		$localeEntity = clone $this;
+		$localeEntity->setLocale($locale);
+		if(isset($this->data['translations'][$locale]))
+			$localeEntity->_set($this->data['translations'][$locale]);
+		unset($localeEntity->data['translations'][$locale]);
+		$localeEntity->data['translations'][$this->getLocale()] = $this->data['properties'];
+
+		return $localeEntity;
 	}
 
-	public static function arrayToJSON(array $entities) {
+	public function getLocales() {
+		return array_merge([$this->getLocale()], array_keys($this->data['translations']));
+	}
+
+	public function toArrayRawI18N(array $locales=[]) {
+		if(!$locales)
+			$locales = $this->getLocales();
+		$res = [];
+		
+		foreach(static::getDefinition()->properties() as $name=>$property) {
+			if($property->i18n) {
+				foreach($locales as $locale) {
+					if(static::getDefinition()->property($name)->get('multiple'))
+						$res[$name][$locale] = $this->get($name, $locale)->all();
+					else
+						$res[$name][$locale] = $this->get($name, $locale);
+				}
+			}
+			elseif(static::getDefinition()->property($name)->get('multiple'))
+				$res[$name] = $this->get($name)->all();
+			else
+				$res[$name] = $this->get($name);
+		}
+
+		return $res;
+	}
+
+	public function toArrayI18N(array $locales=[]) {
+		if(!$locales)
+			$locales = $this->getLocales();
+		$res = [];
+		
+		foreach(static::getDefinition()->properties() as $name=>$property) {
+			if($property->i18n) {
+				foreach($locales as $locale) {
+					if(static::getDefinition()->property($name)->get('multiple')) {
+						foreach($this->get($name, $locale)->all() as $k=>$v)
+							$res[$name][$locale][$k] = $this->propertyToArray($v, $property);
+					}
+					else
+						$res[$name][$locale] = $this->propertyToArray($this->get($name, $locale), $property);
+				}
+			}
+			elseif(static::getDefinition()->property($name)->get('multiple')) {
+				foreach($this->get($name)->all() as $k=>$v)
+					$res[$name][$locale][$k] = $this->propertyToArray($v, $property);
+			}
+			else
+				$res[$name] = $this->propertyToArray($this->get($name), $property);
+		}
+		
+		return $res;
+	}
+
+	public function toJSONI18N(array $locales=[]) {
+		if(!$locales)
+			$locales = $this->getLocales();
+		return json_encode($this->toArrayI18N($locales));
+	}
+
+	public static function arrayToJSONI18N(array $entities, array $locales=[]) {
 		foreach($entities as $k=>$entity)
-			$entities[$k] = $entity->toArray();
+			$entities[$k] = $entity->toArrayI18N($entity->getLocales());
 		return json_encode($entities);
+	}
+	
+	public function validI18N(array $locales=[]) {
+		if(!$locales)
+			$locales = $this->getLocales();
+		$data = $this->toArrayRawI18N($locales);
+		$validator = $this->getValidator($locales);
+		return $this->getDefinition()->trigger('validation', [$this, $validator, &$data], function($chain, $entity, $validator, &$data) {
+			return $validator->valid($data);
+		});
+	}
+	
+	public function errorsI18N(array $locales=[]) {
+		if(!$locales)
+			$locales = $this->getLocales();
+		$data = $this->toArrayRawI18N($locales);
+		$validator = $this->getValidator($locales);
+		$errors = $this->getDefinition()->trigger('validation', [$this, $validator, &$data], function($chain, $entity, $validator, &$data) {
+			return $validator->errors($data);
+		});
+
+		$e = [];
+		foreach($data as $property=>$value) {
+			if($propertyErrors = $errors->attribute($property)->errors())
+				$e[$property] = $propertyErrors;
+		}
+
+		return $e;
 	}
 }

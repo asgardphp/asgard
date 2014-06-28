@@ -11,10 +11,6 @@ class Resolver {
 		$this->cache = $cache;
 	}
 
-	public static function formatActionName($action) {
-		return preg_replace('/Action$/i', '', $action);
-	}
-
 	public function setRoutes(array $routes) {
 		$this->routes = $routes;
 	}
@@ -26,30 +22,6 @@ class Resolver {
 
 	public function addRoute($route) {
 		$this->routes[] = $route;
-	}
-
-	public function getCallback(\Asgard\Http\Request $request) {
-		$hash = sha1(serialize($request));
-		if(!array_key_exists($hash, $this->results))
-			$this->results[$hash] = $this->getRoute($request);
-		if(!$this->results[$hash])
-			return null;
-		else
-			return $this->results[$hash]->getCallback();
-	}
-
-	public function getArguments(\Asgard\Http\Request $request) {
-		$hash = sha1(serialize($request));
-		if(!array_key_exists($hash, $this->results))
-			$this->results[$hash] = $this->getRoute($request);
-		if(!$this->results[$hash])
-			return null;
-		else
-			return $this->results[$hash]->getArguments();
-	}
-
-	public static function formatRoute($route) {
-		return trim($route, '/');
 	}
 	
 	public static function matchWith($route, $with, $requirements=null, $request=null, $method=null) {
@@ -69,7 +41,7 @@ class Resolver {
 				
 		$regex = static::getRegexFromRoute($route, $requirements);
 		$matches = [];
-		$res = preg_match_all('/^'.$regex.'(?:\.[a-zA-Z0-9]{1,5})?\/?$/', $with, $matches);
+		$res = preg_match_all('/^'.$regex.'\/?$/', $with, $matches);
 		
 		if($res == 0)
 			return false;
@@ -85,7 +57,7 @@ class Resolver {
 	}
 	
 	public static function match(\Asgard\Http\Request $request, $route, $requirements=null, $method=null) {
-		$with = static::formatRoute($request->url->get());
+		$with = trim($request->url->get(), '/');
 		return static::matchWith($route, $with, $requirements, $request, $method);
 	}
 	
@@ -148,7 +120,7 @@ class Resolver {
 				else
 					return 1;
 			}
-			
+
 			while(true) {
 				if(!$route1)
 					return 1;
@@ -241,5 +213,15 @@ class Resolver {
 
 	public function getUrl() {
 		return $this->httpKernel->getLastRequest()->url;
+	}
+
+	public function getAction() {
+		$hash = sha1(serialize($request));
+		if(!array_key_exists($hash, $this->results))
+			$this->results[$hash] = $this->getRoute($request);
+		if(!$this->results[$hash])
+			return null;
+		else
+			return $this->results[$hash]->getAction();
 	}
 }

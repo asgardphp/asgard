@@ -2,7 +2,7 @@
 namespace Asgard\Form\Fields;
 
 class SelectField extends \Asgard\Form\Field {
-	protected $default_render = 'select';
+	protected $widget = 'select';
 
 	public function getChoices() {
 		if(isset($this->options['choices']))
@@ -45,6 +45,6 @@ class SelectField extends \Asgard\Form\Field {
 		if($value == $default)
 			$options['attrs']['checked'] = 'checked';
 		$options['label'] = $name;
-		return $this->getTopForm()->getWidget('radio', $this->getName(), $value, $options);
+		return $this->getTopForm()->getWidget('radio', $this->name(), $value, $options);
 	}
 }

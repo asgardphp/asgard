@@ -1,6 +1,0 @@
-<?php
-return [
-	'cache'	=>	true,
-	'debug' => false,
-	'error_display' => false,
-];

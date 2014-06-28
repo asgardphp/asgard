@@ -20,7 +20,7 @@ abstract class Widget {
 			$this->label = $options['label'];
 		if(isset($options['field'])) {
 			$this->field = $options['field'];
-			if($this->field->getError()) {
+			if($this->field->error()) {
 				if(isset($options['attrs']['class']))
 					$options['attrs']['class'] .= ' error';
 				else
@@ -34,7 +34,7 @@ abstract class Widget {
 		return $this->render();
 	}
 
-	public function getLabel() {
+	public function label() {
 		return $this->label;
 	}
 

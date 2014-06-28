@@ -4,7 +4,9 @@ namespace Asgard\Cache;
 class Cache implements \Doctrine\Common\Cache\Cache, \ArrayAccess {
 	protected $driver;
 
-	public function __construct(\Doctrine\Common\Cache\Cache $driver) {
+	public function __construct($driver=null) {
+		if($driver == null)
+			$driver = new NullCache;
 		$this->driver = $driver;
 	}
 

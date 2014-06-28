@@ -9,7 +9,7 @@ class FakeEmail implements DriverInterface {
 	}
 
 	public function send($cb) {
-		$message = new SwiftMessage();
+		$message = new SwiftMessage;
 
 		$cb($message);
 

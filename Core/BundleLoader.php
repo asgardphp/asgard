@@ -48,8 +48,15 @@ class BundleLoader {
 		if($app->has('resolver'))
 			$app['resolver']->addRoutes($routes);
 
-		if($app->has('console'))
+		if($app->has('console')) {
+			foreach(glob($this->getPath().'/Entities/*.php') as $file) {
+				$class = \Asgard\Common\Tools::loadClassFile($file);
+				if(is_subclass_of($class, 'Asgard\Entity\Entity'))
+					$app['entitiesManager']->addEntity($class);
+			}
+
 			$this->loadConsole($app);
+		}
 	}
 
 	protected function loadHooks() {
@@ -65,11 +72,14 @@ class BundleLoader {
 	}
 
 	protected function loadConsole($app) {
-		if(file_exists($this->getPath().'/Console/')) {
-			foreach(glob($this->getPath().'/Console/*.php') as $filename) {
+		if(file_exists($this->getPath().'/Commands/')) {
+			foreach(glob($this->getPath().'/Commands/*.php') as $filename) {
 				$class = \Asgard\Common\Tools::loadClassFile($filename);
-				if(is_subclass_of($class, 'Symfony\Component\Console\Command\Command'))
-					$app['console']->add(new $class);
+				if(is_subclass_of($class, 'Symfony\Component\Console\Command\Command')) {
+					try {
+						$app['console']->add(new $class);
+					} catch(\Exception $e) {} #ignore if it cannot be instantiated without arguments
+				}
 			}
 		}
 	}

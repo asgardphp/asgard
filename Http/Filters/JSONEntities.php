@@ -2,7 +2,7 @@
 namespace Asgard\Http\Filters;
 
 class JSONEntities extends \Asgard\Http\Filter {
-	public function after(\Asgard\Hook\HookChain $chain, \Asgard\Http\Controller $controller, &$result) {
+	public function after(\Asgard\Http\Controller $controller, \Asgard\Http\Request $request, &$result) {
 		if($result !== null) {
 			if($result instanceof \Asgard\Entity\Entity) {
 				$controller->response->setHeader('Content-Type', 'application/json');

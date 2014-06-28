@@ -1,0 +1,7 @@
+database:
+  driver: _DRIVER_
+  host: _HOST_
+  user: _USER_
+  password: _PASSWORD_
+  database: _NAME_
+  prefix: _PREFIX_

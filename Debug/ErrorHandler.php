@@ -8,7 +8,7 @@ class ErrorHandler {
 	protected $logPHPErrors = false;
 	protected $logger;
 
-	public static function initialize() {
+	public static function register() {
 		static::$reservedMemory = str_repeat('a', 10240);
 		static::$errorAtStart = error_get_last();
 
@@ -41,15 +41,15 @@ class ErrorHandler {
 			#Credit to Symfony
 			if(function_exists('xdebug_get_function_stack')) {
 				$trace = array_slice(array_reverse(xdebug_get_function_stack()), 4);
-				foreach ($trace as $i => $frame) {
-					if (!isset($frame['type']))
+				foreach($trace as $i => $frame) {
+					if(!isset($frame['type']))
 						$trace[$i]['type'] = '?';
-					elseif ($trace[$i]['type'] === 'dynamic')
+					elseif($trace[$i]['type'] === 'dynamic')
 						$trace[$i]['type'] = '->';
-					elseif ($trace[$i]['type'] === 'static')
+					elseif($trace[$i]['type'] === 'static')
 						$trace[$i]['type'] = '::';
 
-					if (isset($frame['params']) && !isset($frame['args'])) {
+					if(isset($frame['params']) && !isset($frame['args'])) {
 						$trace[$i]['args'] = $frame['params'];
 						unset($trace[$i]['params']);
 					}

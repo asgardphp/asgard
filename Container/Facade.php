@@ -10,6 +10,6 @@ abstract class Facade {
 	}
 
 	public static function inst() {
-		return Container::instance()->get(strtolower(get_called_class()));
+		return Container::singleton()->get(strtolower(get_called_class()));
 	}
 }

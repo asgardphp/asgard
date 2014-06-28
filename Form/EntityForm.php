@@ -4,24 +4,26 @@ namespace Asgard\Form;
 class EntityForm extends Form {
 	protected $entity;
 	protected $locales = [];
+	protected $entityFieldsSolver;
 
+	/* Constructor */
 	public function __construct(
 		\Asgard\Entity\Entity $entity, 
-		array $params=[],
-		\Asgard\Http\Request $request=null
+		array $options                   = [],
+		\Asgard\Http\Request $request   = null,
+		$entityFieldsSolver             = null
 	) {
+		$this->entityFieldsSolver = $entityFieldsSolver;
+
 		$this->entity = $entity;
 
-		if(!$entity::getDefinition()->hasBehavior('Asgard\Orm\ORMBehavior'))
-			throw new \Exception('Entity must have behavior Asgard\Orm\ORMBehavior');
-
-		$this->locales = isset($params['locales']) ? $params['locales']:[];
+		$this->locales = isset($options['locales']) ? $options['locales']:[];
 	
 		$fields = [];
 		foreach($entity::getDefinition()->properties() as $name=>$property) {
-			if(isset($params['only']) && !in_array($name, $params['only']))
+			if(isset($options['only']) && !in_array($name, $options['only']))
 				continue;
-			if(isset($params['except']) && in_array($name, $params['except']))
+			if(isset($options['except']) && in_array($name, $options['except']))
 				continue;
 			if($property->editable === false || $property->form_editable === false)
 				continue;
@@ -29,93 +31,56 @@ class EntityForm extends Form {
 			if($this->locales && $property->get('i18n')) {
 				$i18ngroup = [];
 				foreach($this->locales as $locale)
-					$i18ngroup[$locale] = $this->addAttributeField($entity, $name, $property, $locale);
+					$i18ngroup[$locale] = $this->getPropertyField($entity, $name, $property, $locale);
 				$fields[$name] = $i18ngroup;
 			}
 			else
-				$fields[$name] = $this->addAttributeField($entity, $name, $property);
+				$fields[$name] = $this->getPropertyField($entity, $name, $property);
 		}
 
 		parent::__construct(
-			isset($params['name']) ? $params['name']:$entity::getDefinition()->getShortName(),
-			$params,
-			$fields,
-			$request
+			isset($options['name']) ? $options['name']:$entity::getDefinition()->getShortName(),
+			$options,
+			$request,
+			$fields
 		);
 	}
 
-	protected function addAttributeField(\Asgard\Entity\Entity $entity, $name, \Asgard\Entity\Property $property, $locale=null) {
-		$field_params = [];
-
-		$field_params['form'] = $this;
-
-		return $this->getAttributeField($entity, $name, $locale, $property, $field_params);
+	/* General */
+	public function addEntityFieldsSolver($entityFieldsSolver) {
+		$this->entityFieldsSolver->add($entityFieldsSolver);
 	}
 
-	protected function getMultiple($fieldClass, $property, $field_params) {
-		return new DynamicGroup(function($data) use($fieldClass, $property, $field_params) {
-			return $this->doGetAttributeField($fieldClass, $property, $field_params);
-		});
+	public function getEntityFieldsSolver() {
+		if(!$this->entityFieldsSolver)
+			$this->entityFieldsSolver = new EntityFieldsSolver;
+
+		return $this->entityFieldsSolver;
 	}
 
-	protected function getAttributeField($entity, $name, $locale, $property, $field_params) {
-		if(method_exists($property, 'getFormField'))
-			$fieldClass = $property->getFormField();
-		else
-			$fieldClass = 'Asgard\Form\Fields\TextField';
-
-		if($property->get('multiple')) {
-			$group = $this->getMultiple($fieldClass, $property, $field_params);
-			foreach($entity->get($name, $locale) as $k=>$one) {
-				$params = $field_params;
-				if($property->get('form.hidden'))
-					$params['default'] = '';
-				elseif($entity->get($name, $locale) !== null)
-					$params['default'] = $entity->get($name, $locale)[$k];
-
-				$group[] = $this->doGetAttributeField($fieldClass, $property, $params);
-			}
-			return $group;
-		}
-		else {
-			if($property->get('form.hidden'))
-				$field_params['default'] = '';
-			elseif($entity->get($name, $locale) !== null)
-				$field_params['default'] = $entity->get($name, $locale);
-
-			return $this->doGetAttributeField($fieldClass, $property, $field_params);
-		}
+	public function getEntity() {
+		return $this->entity;
 	}
 
-	protected function doGetAttributeField($class, $property, $params) {
-		if(isset($property->get('form')['validation'])) {
-			$params['validation'] = $property->get('form')['validation'];
-			if(isset($property->get('form')['messages']))
-				$params['messages'] = $property->get('form')['messages'];
-		}
-
-		$field = new $class($params);
-
-		return $field;
-	}
-
+	/* Entity fields */
 	public function addRelation($name) {
 		$entity = $this->entity;
 		$relation = $entity::getDefinition()->relation($name);
 
 		$ids = [''=>$this->getTranslator()->trans('Choose')];
-		foreach($relation['entity']::all() as $v)
+		$orm = $relation['entity']::orm();
+		while($v = $orm->next())
 			$ids[$v->id] = (string)$v;
 				
 		if($relation['has'] == 'one') {
-			$this->addField(new Fields\SelectField([
+			$this->add(new Fields\SelectField([
 				'type'	=>	'integer',
 				'choices'		=>	$ids,
 				'default'	=>	($this->entity->isOld() && $this->entity->$name ? $this->entity->$name->id:null),
 			]), $name);
 		}
 		elseif($relation['has'] == 'many') {
-			$this->addField(new Fields\MultipleSelectField([
+			$this->add(new Fields\MultipleSelectField([
 				'type'	=>	'integer',
 				'choices'		=>	$ids,
 				'default'	=>	($this->entity->isOld() ? $this->entity->$name()->ids():[]),
@@ -123,8 +88,16 @@ class EntityForm extends Form {
 		}
 	}
 	
+	/* Save & Validation */
+	public function doSave() {
+		if($this->entity->hasBehavior('Asgard\Entity\PersistenceBehavior'))
+			$this->entity->save();
+		else
+			parent::doSave();
+	}
+
 	public function errors($field=null) {
-		if(!$this->isSent())
+		if(!$this->sent())
 			return [];
 
 		if(!$field)
@@ -153,52 +126,62 @@ class EntityForm extends Form {
 
 		return $errors;
 	}
-	
-	public function getEntity() {
-		return $this->entity;
+
+	/* Internal */
+	protected function getPropertyField(\Asgard\Entity\Entity $entity, $name, \Asgard\Entity\Property $property, $locale=null) {
+		$field = $this->getEntityFieldsSolver()->solve($property);
+
+		if($field instanceof \Asgard\Form\DynamicGroup) {
+			$field->setCallback(function() use($entity, $name, $property, $locale) {
+				$field = $this->getEntityFieldsSolver()->doSolve($property);
+				$options = $this->getEntityFieldoptions($entity, $name, $property, $locale);
+				// $options['default'] = $this->getDefaultValue($property, $pos);
+				$field->setoptions($options);
+				return $field;
+			});
+		}
+		else {
+			$options = $this->getEntityFieldoptions($entity, $name, $property, $locale);
+			$options['default'] = $this->getDefaultValue($entity, $name, $property, $locale);
+			$field->setoptions($options);
+		}
+
+		return $field;
+	}
+
+	protected function getEntityFieldoptions(\Asgard\Entity\Entity $entity, $name, \Asgard\Entity\Property $property, $locale=null) {
+		$options = [];
+
+		$options['form'] = $this;
+
+		if(isset($property->get('form')['validation'])) {
+			$options['validation'] = $property->get('form')['validation'];
+			if(isset($property->get('form')['messages']))
+				$options['messages'] = $property->get('form')['messages'];
+		}
+
+		return $options;
+	}
+
+	protected function getDefaultValue($entity, $name, $property, $locale) {
+		if($property->get('form.hidden'))
+			return '';
+		elseif($entity->get($name, $locale) !== null)
+			return $entity->get($name, $locale);
 	}
 	
 	protected function myErrors() {
-		$data = $this->getData();
+		$data = $this->data();
 		$data = array_filter($data, function($v) {
 			if($v instanceof \Asgard\Form\HttpFile && $v->error())
 				return false;
 			return $v !== null;
 		});
 		if($this->locales)
-			$this->entity->set($data, 'all');
+			$this->entity->set($data, $this->locales);
 		else
 			$this->entity->set($data);
 
 		return array_merge(parent::myErrors(), $this->entity->errors());
-	}
-	
-	public function save() {
-		if($errors = $this->errors()) {
-			$e = new FormException;
-			$e->errors = $errors;
-			throw $e;
-		}
-		if(!$this->isSent())
-			return;
-	
-		$this->trigger('pre_save');
-	
-		return $this->_save();
-	}
-	
-	protected function _save($group=null) {
-		if(!$group)
-			$group = $this;
-
-		if($group instanceof static)
-			$group->entity->save();
-
-		if($group instanceof Group) {
-			foreach($group->getFields() as $name=>$field) {
-				if($field instanceof Group)
-					$group->_save($field);
-			}
-		}
 	}
 }

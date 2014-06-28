@@ -1,0 +1,12 @@
+debug_url: code:%file%:%line%
+key: _KEY_
+locale: en
+locales: [fr, en]
+cache_driver:
+cache: false
+error_display: true
+debug: true
+email:
+  driver: Asgard\Email\SwiftEmail
+debug: true
+log: false

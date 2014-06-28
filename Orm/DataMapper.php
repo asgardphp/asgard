@@ -94,9 +94,9 @@ class DataMapper {
 		return false;
 	}
 	
-	public function getI18N(\Asgard\Entity\Entity $entity, $lang=null) {
+	public function getI18N(\Asgard\Entity\Entity $entity, $locale=null) {
 		$dal = new \Asgard\Db\DAL($this->db, $this->getTranslationTable($entity));
-		$res = $dal->where(['id' => $entity->id])->where(['locale'=>$lang])->first();
+		$res = $dal->where(['id' => $entity->id])->where(['locale'=>$locale])->first();
 		if(!$res)
 			return;
 		unset($res['id']);
@@ -162,7 +162,7 @@ class DataMapper {
 			else
 				$r = static::entityORM($entity)->getDAL()->delete();
 
-			//Files
+			#Files
 			foreach($entity::getDefinition()->properties() as $name=>$prop) {
 				if($prop instanceof \Asgard\Entity\Properties\FileProperty) {
 					if($prop->get('multiple')) {
@@ -230,7 +230,7 @@ class DataMapper {
 
 		$entity::trigger('save', [$entity]);
 
-		//Files
+		#Files
 		foreach($entity::getDefinition()->properties() as $name=>$prop) {
 			if($prop instanceof \Asgard\Entity\Properties\FileProperty) {
 				if($prop->get('multiple')) {
@@ -254,22 +254,21 @@ class DataMapper {
 		}
 
 		$vars = [];
-		#apply filters before saving
+		#process data
 		foreach($entity::getDefinition()->propertyNames() as $name) {
-			if(isset($entity->data['properties'][$name]))
-				$value = $entity->data['properties'][$name];
-			else
-				$value = null;
 			
 			if($entity::property($name)->i18n) {
+				$value = $entity->get($name, $entity->getLocales());
 				foreach($value as $k=>$v)
 					$vars[$name][$k] = $entity::property($name)->serialize($v);
 			}
-			else
+			else {
+				$value = $entity->get($name);
 				$vars[$name] = $entity::property($name)->serialize($value);
+			}
 		}
 
-		//Persist local id field
+		#persist entity ids
 		foreach($entity::getDefinition()->relations as $relation => $params) {
 			if(!isset($entity->data[$relation]))
 				continue;
@@ -284,45 +283,45 @@ class DataMapper {
 			}
 		}
 		
-		//Persist i18n
+		#persist i18n
 		$values = [];
 		$i18n = [];
 		foreach($vars as $p => $v) {
 			if($entity::property($p)->i18n) {
-				foreach($v as $lang=>$lang_value)
-					$i18n[$lang][$p] = $lang_value;
+				foreach($v as $locale=>$locale_value)
+					$i18n[$locale][$p] = $locale_value;
 			}
 			else
 				$values[$p] = $v;
 		}
 
-		//Persist
+		#Persist
 		$orm = $this->orm(get_class($entity));
-		//new
+		#new
 		if(!isset($entity->id) || !$entity->id)
 			$entity->id = $orm->getDAL()->insert($values);
-		//existing
+		#existing
 		elseif(count($vars) > 0) {
 			if(!$orm->reset()->where(['id'=>$entity->id])->getDAL()->update($values))
 				$entity->id = $orm->getDAL()->insert($values);
 		}		
 		
-		//Persist i18n
-		foreach($i18n as $lang=>$values) {
+		#Persist i18n
+		foreach($i18n as $locale=>$values) {
 			$dal = new \Asgard\Db\DAL($this->db, $this->getTranslationTable($entity));
-			if(!$dal->where(['id'=>$entity->id, 'locale'=>$lang])->update($values))
+			if(!$dal->where(['id'=>$entity->id, 'locale'=>$locale])->update($values))
 				$dal->insert(
 					array_merge(
 						$values, 
 						[
-							'locale'=>$lang,
+							'locale'=>$locale,
 							'id'=>$entity->id,
 						]
 					)
 				);
 		}
 	
-		//Persist relations
+		#Persist relations
 		foreach($entity::getDefinition()->relations as $relation => $params) {
 			if(!isset($entity->data[$relation]))
 				continue;

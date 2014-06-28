@@ -6,7 +6,7 @@ namespace Asgard\Hook;
  * 
  * @author Michel Hognerud <michel@hognerud.net>
 */
-class Hookable {
+trait Hookable {
 	protected $hooksManager;
 	
 	/**

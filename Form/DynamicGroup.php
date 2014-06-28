@@ -5,15 +5,17 @@ class DynamicGroup extends Group {
 	protected $cb;
 	protected $default_render;
 
-	public function __construct($cb, $default_render=null) {
+	#todo name?
+	public function __construct($cb=null, $default_render=null) {
 		$this->cb = $cb;
 		$this->default_render = $default_render;
 	}
 
-	public function setDefaultRender($default_render) {
-		$this->default_render = $default_render;
+	public function setCallback($cb) {
+		$this->cb = $cb;
 	}
 
+	/* Data */
 	public function setData(array $data) {
 		$this->data = array_values($data);
 
@@ -25,6 +27,11 @@ class DynamicGroup extends Group {
 		$this->updateChilds();
 
 		return $this;
+	}
+
+	/* Rendering */
+	public function setDefaultRender($default_render) {
+		$this->default_render = $default_render;
 	}
 
 	public function field($field=null) {
@@ -45,6 +52,7 @@ class DynamicGroup extends Group {
 		return $jq;
 	}
 
+	/* Internal */
 	protected function newField($name=null, $data=null) {
 		if($name !== null && isset($this[$name]))
 			return;
@@ -52,7 +60,7 @@ class DynamicGroup extends Group {
 		$newelement = $cb($data);
 		if(!$newelement)
 			return;
-		$this->addField($newelement, $name);
+		$this->add($newelement, $name);
 		return $newelement;
 	}
 

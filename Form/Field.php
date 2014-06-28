@@ -2,26 +2,32 @@
 namespace Asgard\Form;
 
 abstract class Field {
-	public $options;
+	public $options = [];
 	protected $data_type = 'string';
-	protected $dad;
+	protected $parent;
 	public $name;
 	protected $value;
-	protected $default_render = 'text';
-	protected $error;
+	protected $widget = 'text';
+	protected $errors = [];
 
 	public function __construct(array $options=[]) {
-		$this->options = $options;
-		if(isset($options['data_type']))
+		$this->setoptions($options);
+	}
+
+	public function setoptions($options) {
+		$this->options = array_merge_recursive($this->options, $options);
+		if(isset($this->options['data_type']))
 			$this->data_type = $options['data_type'];
-		if(isset($options['default']))
-			$this->value = $options['default'];
-		if(isset($options['default_render']))
-			$this->default_render = $options['default_render'];
+		if(isset($this->options['default']))
+			$this->value = $this->options['default'];
+		if(isset($this->options['widget']))
+			$this->widget = $this->options['widget'];
+
+		return $this;
 	}
 
 	public function getTopForm() {
-		return $this->dad->getTopForm();
+		return $this->parent->getTopForm();
 	}
 
 	public function getValidationRules() {
@@ -41,8 +47,8 @@ abstract class Field {
 		return $this->render($name, isset($args[0]) ? $args[0]:[]);
 	}
 
-	public function setDefaultRender($default_render) {
-		$this->default_render = $default_render;
+	public function setDefaultWidget($widget) {
+		$this->widget = $widget;
 	}
 
 	public function label() {
@@ -54,29 +60,29 @@ abstract class Field {
 	}
 
 	public function def(array $options=[]) {
-		if(!$this->default_render)
+		if(!$this->widget)
 			throw new \Exception('No default render function for this field');
-		return $this->render($this->default_render, $options);
+		return $this->render($this->widget, $options);
 	}
 
 	public function render($render_callback, array $options=[]) {
-		return $this->dad->render($render_callback, $this, $options);
+		return $this->parent->render($render_callback, $this, $options);
 	}
 	
 	public function __toString() {
 		return $this->def();
 	}
 	
-	public function getValue() {
+	public function value() {
 		return $this->value;
 	}
 	
-	public function setDad($dad) {
-		$this->dad = $dad;
+	public function setParent($parent) {
+		$this->parent = $parent;
 	}
 	
-	public function getDad() {
-		return $this->dad;
+	public function getParent() {
+		return $this->parent;
 	}
 	
 	public function setName($name) {
@@ -88,7 +94,7 @@ abstract class Field {
 	}
 	
 	public function getParents() {
-		return $this->dad->getParents();
+		return $this->parent->getParents();
 	}
 	
 	public function getID() {
@@ -105,7 +111,7 @@ abstract class Field {
 			return $this->name;
 	}
 	
-	public function getName() {
+	public function name() {
 		$parents = $this->getParents();
 	
 		if(count($parents) > 0) {
@@ -119,14 +125,16 @@ abstract class Field {
 			return $this->name;
 	}
 
-	public function setErrors($error) {
-		$this->error = $error;
+	public function setErrors($errors) {
+		$this->errors = $errors;
 	}
 
-	public function getError() {
-		if(is_array($this->error))
-			return \Asgard\Common\ArrayUtils::array_get(array_values($this->error), 0);
-		else
-			return $this->error;
+	public function error() {
+		if(isset(array_values($this->errors)[0]))
+			return array_values($this->errors)[0];
+	}
+
+	public function errors() {
+		return $this->errors;
 	}
 }

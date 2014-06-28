@@ -38,8 +38,4 @@ class Query {
 	public function all() {
 		return $this->rsc->fetchAll(\PDO::FETCH_ASSOC);
 	}
-
-	public function id() {
-		return $this->db->lastInsertId();
-	}
 }

@@ -56,6 +56,6 @@ class File extends \Asgard\File\File {
 
 	public function save() {
 		$dir = trim(trim($this->webDir, '/').'/'.trim($this->dir, '/'), '/');
-		$this->move($dir.'/'.$this->getName(), true);
+		$this->rename($dir.'/'.$this->getName(), true);
 	}
 }

@@ -580,7 +580,8 @@ class DAL {
 	public function insert(array $values) {
 		$sql = $this->buildInsertSQL($values);
 		$params = $this->getParameters();
-		return $this->db->query($sql, $params)->id();
+		$this->db->query($sql, $params);
+		return $this->db->id();
 	}
 	
 	public function delete(array $tables=[]) {

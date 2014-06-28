@@ -7,6 +7,11 @@ class HttpKernel {
 	protected $requests = [];
 	protected $start;
 	protected $end;
+	protected $viewPathSolvers = [];
+
+	protected $filters = [];
+	protected $beforeFilters = [];
+	protected $afterFilters = [];
 
 	public function __construct($app) {
 		$this->app = $app;
@@ -21,7 +26,7 @@ class HttpKernel {
 	}
 
 	public function run() {
-		$request = \Asgard\Http\Request::instance();
+		$request = \Asgard\Http\Request::singleton();
 		$request->isInitial = true;
 
 		$response = $this->process($request);
@@ -39,11 +44,16 @@ class HttpKernel {
 		$this->setRequest($request);
 		$this->requests[] = $request;
 
-		if(!$catch)
+		if(!$catch) {
 			$response = $this->processRaw($request);
+			if(!$response instanceof Response)
+				$response = (new Response())->setContent($response);
+		}
 		else {
 			try {
 				$response = $this->processRaw($request);
+				if(!$response instanceof Response)
+					$response = (new Response())->setContent($response);
 			} catch(\Exception $e) {
 				if($e instanceof ControllerException) {
 					$response = $e->getResponse();
@@ -71,9 +81,8 @@ class HttpKernel {
 		}
 
 		array_pop($this->requests);
-		if(isset($this->requests[count($this->requests)-1])) {
+		if(isset($this->requests[count($this->requests)-1]))
 			$this->setRequest($this->requests[count($this->requests)-1]);
-		}
 
 		return $response;
 	}
@@ -88,26 +97,44 @@ class HttpKernel {
 		$resolver = $this->app['resolver'];
 		$resolver->sortRoutes();
 
-		if($this->start !== null) {
-			$app = $this->app;
-			include $this->start;
-		}
 		if($response = $this->app['hooks']->trigger('Asgard.Http.Start', [$request]))
 			return $response;
+		if($this->start !== null) {
+			$app = $this->app;
+			if(($response = include $this->start) !== 1)
+				return $response;
+		}
 
-		$callback = $resolver->getCallback($request);
-		if($callback === null)
+		$route = $resolver->getRoute($request);
+		if($route === null)
 			throw new Exceptions\NotFoundException;
-		$arguments = $resolver->getArguments($request);
 
-		$response = call_user_func_array($callback, array_merge($arguments, [$this->app, $request]));
+		$controllerClass = $route->getController();
+		$action = $route->getAction();
 
-		return $response;
+		return $this->runController($controllerClass, $action, $request, $route);
+	}
+
+	public function runController($controllerClass, $action, $request, $route=null) {
+		$controller = new $controllerClass();
+		$controller->setApp($this->app);
+
+		$this->addFilters($controllerClass, $controller, $request, $route);
+		
+		foreach($this->viewPathSolvers as $cb)
+			$controller->addViewPathSolver($cb);
+
+		return $controller->run($action, $request);
+	}
+
+	public function addViewPathSolver($cb) {
+		$this->viewPathSolvers[] = $cb;
 	}
 
 	protected function getExceptionResponse($e) {
 		while(ob_get_length())
 			ob_end_clean();
+
 		$this->app['errorHandler']->exceptionHandler($e, false);
 
 		$trace = $this->app['errorHandler']->getBacktraceFromException($e);
@@ -128,5 +155,99 @@ class HttpKernel {
 			return $response->setHeader('Content-Type', 'text/html')->setContent($result);
 		else
 			return $response->setHeader('Content-Type', 'text/html')->setContent($this->app['translator']->trans('<h1>Error</h1>Oops, something went wrong.'));
+	}
+
+	public function filterAll($filter, $args=[]) {
+		$this->filters[] = ['filter'=>$filter, 'args'=>$args];
+		return $this;
+	}
+
+	public function filter($criteria, $filter, $args=[]) {
+		$this->filters[] = ['criteria'=>$criteria, 'filter'=>$filter, 'args'=>$args];
+		return $this;
+	}
+
+	public function filterBeforeAll($filter) {
+		$this->beforeFilters[] = ['filter'=>$filter];
+		return $this;
+	}
+
+	public function filterBefore($criteria, $filter) {
+		$this->beforeFilters[] = ['criteria'=>$criteria, 'filter'=>$filter];
+		return $this;
+	}
+
+	public function filterAfterAll($filter) {
+		$this->afterFilters[] = ['filter'=>$filter];
+		return $this;
+	}
+
+	public function filterAfter($criteria, $filter) {
+		$this->afterFilters[] = ['criteria'=>$criteria, 'filter'=>$filter];
+		return $this;
+	}
+
+	protected function addFilters($controllerClass, $controller, $request, $route=null) {
+		foreach($this->filters as $_filter) {
+			$args = $_filter['args'];
+			$filter = $_filter['filter'];
+
+			if(isset($criteria)) {
+				$criteria = $_filter['criteria'];
+				if(isset($criteria['actions'])) {
+					if($criteria['actions'] && strpos($controllerClass.':'.$action, $criteria['actions']) !== 0)
+						continue;
+				}
+				if($route !== null && isset($criteria['route'])) {
+					foreach($criteria['methods'] as $method) {
+						if($criteria['route'] && strpos($route->getRoute(), $criteria['route']) !== 0 || strtoupper($method) !== $request->method())
+							continue;
+					}
+				}
+			}
+
+			$reflector = new \ReflectionClass($filter);
+			$controller->addFilter($reflector->newInstanceArgs($args));
+		}
+
+		foreach($this->beforeFilters as $_filter) {
+			$filter = $_filter['filter'];
+
+			if(isset($criteria)) {
+				$criteria = $_filter['criteria'];
+				if(isset($criteria['actions'])) {
+					if($criteria['actions'] && strpos($controllerClass.':'.$action, $criteria['actions']) !== 0)
+						continue;
+				}
+				if($route !== null && isset($criteria['route'])) {
+					foreach($criteria['methods'] as $method) {
+						if($criteria['route'] && strpos($route->getRoute(), $criteria['route']) !== 0 || strtoupper($method) !== $request->method())
+							continue;
+					}
+				}
+			}
+
+			$controller->addBeforeFilter($filter);
+		}
+
+		foreach($this->afterFilters as $_filter) {
+			$filter = $_filter['filter'];
+
+			if(isset($criteria)) {
+				$criteria = $_filter['criteria'];
+				if(isset($criteria['actions'])) {
+					if($criteria['actions'] && strpos($controllerClass.':'.$action, $criteria['actions']) !== 0)
+						continue;
+				}
+				if($route !== null && isset($criteria['route'])) {
+					foreach($criteria['methods'] as $method) {
+						if($criteria['route'] && strpos($route->getRoute(), $criteria['route']) !== 0 || strtoupper($method) !== $request->method())
+							continue;
+					}
+				}
+			}
+
+			$controller->addAfterFilter($filter);
+		}
 	}
 }

@@ -2,29 +2,34 @@
 namespace Asgard\Http;
 
 class View {
-	protected $template;
+	protected $file;
 	protected $params = [];
+	protected $controller;
 
-	public function __construct($template, array $params=[]) {
-		$this->template = $template;
-		$this->params = $params;
+	public function __construct($file, array $params=[]) {
+		$this->setFile($file);
+		$this->setParams($params);
 	}
 
-	public function reset() {
-		$this->template = null;
-		$this->params = [];
+	public function fileExists() {
+		return file_exists($this->file);
 	}
 
-	public function template($template) {
-		$this->template = $template;
+	public function setController($controller) {
+		$this->controller = $controller;
 		return $this;
 	}
 
-	public function getTemplate() {
-		return $this->template;
+	public function setFile($file) {
+		$this->file = $file;
+		return $this;
 	}
 
-	public function params(array $params=[]) {
+	public function getFile() {
+		return $this->file;
+	}
+
+	public function setParams(array $params=[]) {
 		$this->params = array_merge($this->params, $params);
 		return $this;
 	}
@@ -33,20 +38,19 @@ class View {
 		return $this->params;
 	}
 
-	public function render($_template=null, array $_params=[]) {
-		if($_template === null)
-			$_template = $this->template;
-		$_params = array_merge($this->params, $_params);
+	public function render($file=null, array $params=[]) {
+		if($file === null)
+			$file = $this->file;
+		$params = array_merge($this->params, $params);
 
-		return static::renderTemplate($_template, $_params);
+		return static::renderFile($file, $params);
 	}
 
-	public static function renderTemplate($_template, array $_params=array()) {
-		foreach($_params as $_key=>$_value)
-			$$_key = $_value;
+	public static function renderFile($file, array $params=[]) {
+		extract($params);
 
 		ob_start();
-		include($_template);
+		include($file);
 		return ob_get_clean();
 	}
 }

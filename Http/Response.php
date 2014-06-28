@@ -79,7 +79,7 @@ class Response {
 	
 	public function redirect($url='') {
 		if(!preg_match('/^http:\/\//', $url))
-			$url = \Asgard\Container\Container::instance()['request']->url->to($url);
+			$url = \Asgard\Container\Container::singleton()['request']->url->to($url);
 		$this->headers['Location'] = $url;
 		return $this;
 	}

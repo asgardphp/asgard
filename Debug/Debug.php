@@ -28,7 +28,7 @@ class Debug {
 	}
 
 	public static function getReport(array $backtrace) {
-		$request = \Asgard\Http\Request::instance();
+		$request = \Asgard\Http\Request::singleton();
 
 		$r = '';
 		if(php_sapi_name() === 'cli')
@@ -44,7 +44,7 @@ class Debug {
 		if(!$backtrace)
 			$backtrace = debug_backtrace();
 
-		$r = '<b>Backtrace</b><br>'."\n";
+		$r = '<p><b>Backtrace</b></p>'."\n";
 
 		#Javascript
 		$jquery = $request->url->to('js/jquery.js');

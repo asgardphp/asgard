@@ -14,7 +14,7 @@ class Tools {
 			list($tag, $tagPosition) = $match[0];
 
 			$str = substr($html, $position, $tagPosition - $position);
-			if ($printedLength + strlen($str) > $maxLength) {
+			if($printedLength + strlen($str) > $maxLength) {
 				$res .= (substr($str, 0, $maxLength - $printedLength));
 				$printedLength = $maxLength;
 				break;
@@ -23,7 +23,7 @@ class Tools {
 			$res .= ($str);
 			$printedLength += strlen($str);
 
-			if ($tag[0] == '&') {
+			if($tag[0] == '&') {
 				$res .= ($tag);
 				$printedLength++;
 			}
@@ -31,7 +31,7 @@ class Tools {
 				$tagName = $match[1][0];
 				if($tag[1] == '/')
 					$res .= ($tag);
-				else if ($tag[strlen($tag) - 2] == '/' || $tagName == 'br' || $tagName == 'hr')
+				elseif($tag[strlen($tag) - 2] == '/' || $tagName == 'br' || $tagName == 'hr')
 					$res .= ($tag);
 				else {
 					$res .= ($tag);
@@ -42,13 +42,13 @@ class Tools {
 			$position = $tagPosition + strlen($tag);
 		}
 
-		if ($printedLength < $maxLength && $position < strlen($html))
+		if($printedLength < $maxLength && $position < strlen($html))
 			$res .= (substr($html, $position, $maxLength - $printedLength));
 			
 		if($position < strlen($html))
 			$res .= $trailing;
 			
-		while (!empty($tags))
+		while(!empty($tags))
 			$res .= sprintf('</%s>', array_pop($tags));
 			
 		return $res;
@@ -69,7 +69,7 @@ class Tools {
 		return implode(' ', $cutwords).(count($words) > count($cutwords) ? $trailing:'');
 	}
 	
-	public static function remove_accents($str, $charset='utf-8') {
+	public static function removeAccents($str, $charset='utf-8') {
 		$str = htmlentities($str, ENT_NOQUOTES, $charset);
 		
 		$str = preg_replace('#&([A-za-z])(?:acute|cedil|circ|grave|orn|ring|slash|th|tilde|uml);#', '\1', $str);

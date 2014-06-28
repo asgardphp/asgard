@@ -19,10 +19,10 @@ class MigrationsManager {
 	public function add($file) {
 		$code = file_get_contents($file);
 		$dst = $this->directory.'/'.basename($file);
-		$dst = \Asgard\Common\FileManager::getNewFilename($dst);
+		$dst = \Asgard\File\FileSystem::getNewFilename($dst);
 		$migrationName = explode('.', basename($dst))[0];
 		$code = preg_replace('/{{migrationMame}}/', $migrationName, $code);
-		if($r = \Asgard\Common\FileManager::put($dst, $code))
+		if($r = \Asgard\File\FileSystem::write($dst, $code))
 			$this->tracker->add($migrationName);
 		if(!$r)
 			return false;
@@ -35,7 +35,7 @@ class MigrationsManager {
 		$name = ucfirst(strtolower($name));
 
 		$dst = $this->directory.'/'.$name.'.php';
-		$dst = \Asgard\Common\FileManager::getNewFilename($dst);
+		$dst = \Asgard\File\FileSystem::getNewFilename($dst);
 		$name = str_replace('.php', '', basename($dst));
 			
 		$migration = '<?php
@@ -48,7 +48,7 @@ class '.$name.' extends '.$class.' {
 		'.$down."
 	}
 }";
-		$dst = \Asgard\Common\FileManager::put($dst, $migration, true);
+		$dst = \Asgard\File\FileSystem::write($dst, $migration, true);
 
 		$this->tracker->add($name);
 
@@ -62,7 +62,7 @@ class '.$name.' extends '.$class.' {
 	public function remove($migrationName) {
 		if($this->tracker->isUp($migrationName))
 			return;
-		if(\Asgard\Common\FileManager::unlink($this->directory.'/'.$migrationName.'.php'))
+		if(\Asgard\File\FileSystem::delete($this->directory.'/'.$migrationName.'.php'))
 			$this->tracker->remove($migrationName);
 	}
 

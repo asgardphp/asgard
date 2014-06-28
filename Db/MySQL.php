@@ -42,7 +42,7 @@ class MySQL {
 		$pwd = $this->config['password'];
 		$db = $this->config['database'];
 
-		\Asgard\Common\FileManager::mkdir(dirname($dst));
+		\Asgard\File\FileSystem::mkdir(dirname($dst));
 		$cmd = 'mysqldump --user='.$user.' --password='.$pwd.' --host='.$host.' '.$db.' > '.$dst;
 		$process = proc_open($cmd,
 			[

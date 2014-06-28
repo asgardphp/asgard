@@ -4,14 +4,13 @@ namespace Asgard\Http;
 class Route {
 	protected $route;
 	protected $controller;
-	protected $callback;
-	protected $arguments;
+	protected $action;
 	protected $options;
 
-	public function __construct($route, $callback, $arguments=[], $options=[]) {
+	public function __construct($route, $controller, $action, $options=[]) {
 		$this->route = $route;
-		$this->callback = $callback;
-		$this->arguments = $arguments;
+		$this->controller = $controller;
+		$this->action = $action;
 		$this->options = $options;
 	}
 
@@ -29,12 +28,12 @@ class Route {
 		return $this->route;
 	}
 
-	public function getCallback() {
-		return $this->callback;
+	public function getController() {
+		return $this->controller;
 	}
 
-	public function getArguments() {
-		return $this->arguments;
+	public function getAction() {
+		return $this->action;
 	}
 
 	public function setRoute($route) {

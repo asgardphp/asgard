@@ -53,7 +53,7 @@ class File {
 	}
 
 	public function relativeTo($path) {
-		return \Asgard\Common\FileManager::relativeTo($this->src, $path);
+		return \Asgard\File\FileSystem::relativeTo($this->src, $path);
 	}
 
 	protected function formatPath($path) {
@@ -63,7 +63,7 @@ class File {
 	public function moveToDir($dir, $rename=true) {
 		if($this->isIn($dir))
 			return;
-		return $this->move($dir.'/'.$this->getName(), $rename);
+		return $this->rename($dir.'/'.$this->getName(), $rename);
 	}
 
 	public function isIn($dir) {
@@ -76,9 +76,9 @@ class File {
 		return $this->formatPath($at) === $this->src;
 	}
 
-	public function move($dst, $rename=true) {
+	public function rename($dst, $rename=true) {
 		if(!$this->src || $this->isAt($dst)) return;
-		$filename = \Asgard\Common\FileManager::move($this->src, $dst, $rename);
+		$filename = \Asgard\File\FileSystem::rename($this->src, $dst, $rename);
 		if(!$filename)
 			return false;
 		$this->src = realpath(dirname($dst).'/'.$filename);
@@ -86,13 +86,13 @@ class File {
 	}
 
 	public function delete() {
-		if($r = \Asgard\Common\FileManager::unlink($this->src))
+		if($r = \Asgard\File\FileSystem::delete($this->src))
 			$this->src = null;
 		return $r;
 	}
 
 	public function copy($dst, $rename=true) {
-		$dst = \Asgard\Common\FileManager::copy($this->src, $dst, $rename);
+		$dst = \Asgard\File\FileSystem::copy($this->src, $dst, $rename);
 		if($dst) {
 			$copy = clone $this;
 			$copy->setSrc($dst);

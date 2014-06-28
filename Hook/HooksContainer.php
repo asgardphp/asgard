@@ -23,11 +23,11 @@ class HooksContainer {
 
 		$reader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
 		$reader->addNamespace('Asgard\Hook\Annotations');
-		if(\Asgard\Container\Container::instance()['cache']) {
+		if(\Asgard\Container\Container::singleton()['cache']) {
 			$reader = new \Doctrine\Common\Annotations\CachedReader(
 				$reader,
-				\Asgard\Container\Container::instance()['cache'],
-				\Asgard\Container\Container::instance()['config']['debug']
+				\Asgard\Container\Container::singleton()['cache'],
+				\Asgard\Container\Container::singleton()['config']['debug']
 			);
 		}
 

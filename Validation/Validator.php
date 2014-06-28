@@ -172,8 +172,10 @@ class Validator {
 	}
 
 	public function attributesMessages(array $messages) {
-		foreach($messages as $attribute=>$attrMessages)
-			$this->attribute($attribute)->ruleMessages($attrMessages);
+		foreach($messages as $attribute=>$attrMessages) {
+			if($attrMessages)
+				$this->attribute($attribute)->ruleMessages($attrMessages);
+		}
 		return $this;
 	}
 

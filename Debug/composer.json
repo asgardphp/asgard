@@ -9,6 +9,7 @@
         "psr-4": {"Asgard\\Debug\\": "."}
     },
     "require": {
+        "php": ">=5.4.0",
         "asgard/http": "dev-master",
         "asgard/common": "dev-master"
     }

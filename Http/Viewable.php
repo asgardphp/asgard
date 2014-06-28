@@ -4,7 +4,7 @@ namespace Asgard\Http;
 abstract class Viewable {
 	protected $_view;
 
-	public static function widget($class, $method, array $params=[]) {
+	public static function fragment($class, $method, array $params=[]) {
 		$viewable = new $class;
 		return $viewable->doRun($method, $params);
 	}

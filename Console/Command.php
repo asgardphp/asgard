@@ -24,12 +24,12 @@ class Command extends \Symfony\Component\Console\Command\Command {
 	}
 	
 	/**
-	 * Returns the asgard application.
+	 * Returns the services container.
 	 * 
 	 * @return \Asgard\Container\Container
 	*/
-	protected function getAsgard() {
-		return $this->getApplication()->getAsgard();
+	protected function getContainer() {
+		return $this->getApplication()->getContainer();
 	}
 	
 	/**
@@ -87,5 +87,21 @@ class Command extends \Symfony\Component\Console\Command\Command {
 		$question = new ConfirmationQuestion($questionStr, false);
 
 		return $helper->ask($this->input, $this->output, $question);
+	}
+
+	public function info($msg) {
+		$this->output->writeln('<info>'.$msg.'</info>');
+	}
+
+	public function error($msg) {
+		$this->output->writeln('<error>'.$msg.'</error>');
+	}
+
+	public function comment($msg) {
+		$this->output->writeln('<comment>'.$msg.'</comment>');
+	}
+
+	public function question($msg) {
+		$this->output->writeln('<question>'.$msg.'</question>');
 	}
 }

@@ -14,7 +14,7 @@ class Kernel implements \ArrayAccess {
 		$this['root'] = $root;
 	}
 
-	public function getApp() {
+	public function getContainer() {
 		if(!$this->app) {
 			$this->app = $this->buildApp($this->getConfig()['cache']);
 			$this->app['kernel'] = $this;
@@ -45,7 +45,7 @@ class Kernel implements \ArrayAccess {
 			include_once $this['root'].'/storage/compiled.php';
 
 		$this->bundles = $this->doGetBundles($this->getConfig()['cache']);
-		$app = $this->getApp();
+		$app = $this->getContainer();
 
 		$app['config'] = $this->getConfig();
 
@@ -79,12 +79,10 @@ class Kernel implements \ArrayAccess {
 			}
 			$this['env'] = 'dev';
 		}
-		else {
-			if(isset($_SERVER['HTTP_HOST']) && ($_SERVER['HTTP_HOST'] == '127.0.0.1' || $_SERVER['HTTP_HOST'] == 'localhost'))
-				$this['env'] = 'dev';
-			else
-				$this['env'] = 'prod';
-		}
+		elseif(isset($_SERVER['HTTP_HOST']) && ($_SERVER['HTTP_HOST'] == '127.0.0.1' || $_SERVER['HTTP_HOST'] == 'localhost'))
+			$this['env'] = 'dev';
+		else
+			$this['env'] = 'prod';
 	}
 
 	protected function getCache($cache) {
@@ -95,12 +93,14 @@ class Kernel implements \ArrayAccess {
 	protected function buildApp($cache=false) {
 		if($cache) {
 			$c = $this->getCache($cache);
-			if(($res = $c->fetch('app')) !== false)
-				return $this->app = $res;
+			if(($this->app = $c->fetch('app')) !== false) {
+				\Asgard\Container\Container::setInstance($this->app);
+				return $this->app;
+			}
 		}
 
 		$bundles = $this->getAllBundles();
-		$app = $this->app = \Asgard\Container\Container::instance();
+		$app = $this->app = \Asgard\Container\Container::singleton();
 
 		foreach($bundles as $bundle)
 			$bundle->buildApp($app);

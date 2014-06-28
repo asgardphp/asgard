@@ -19,7 +19,7 @@ class Request implements \ArrayAccess {
 		'format'	=>	'html',
 	];
 
-	public static function instance() {
+	public static function singleton() {
 		if(!static::$instance)
 			static::$instance = static::createFromGlobals();
 		return static::$instance;
@@ -126,6 +126,13 @@ class Request implements \ArrayAccess {
 	
 	public function offsetGet($offset) {
 		return isset($this->params[$offset]) ? $this->params[$offset] : null;
+	}
+
+	public function format() {
+		preg_match('/\.([^\.]+)$/', $this->url->get(), $matches);
+		if(isset($matches[1]))
+			return $matches[1];
+		return 'html';
 	}
 
 	public function method() {

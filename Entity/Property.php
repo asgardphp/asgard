@@ -100,7 +100,8 @@ class Property {
 	}
 
 	public function getMessages() {
-		return [];
+		if(isset($this->params['messages']))
+			return $this->params['messages'];
 	}
 
 	public function serialize($val) {

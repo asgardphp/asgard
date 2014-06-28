@@ -5,11 +5,17 @@ namespace Asgard\Http;
 require_once __DIR__.'/Annotations/Prefix.php';
 require_once __DIR__.'/Annotations/Route.php';
 
-abstract class Controller extends \Asgard\Hook\Hookable {
-	protected $_view;
+abstract class Controller {
+	use \Asgard\Hook\Hookable;
+	
+	protected $view;
 	public $request;
 	public $response;
 	protected $app;
+	protected $viewPathSolvers = [];
+	protected $action;
+	protected $beforeFilters = [];
+	protected $afterFilters = [];
 
 	/* ANNOTATIONS */
 	public static function fetchRoutes() {
@@ -20,8 +26,8 @@ abstract class Controller extends \Asgard\Hook\Hookable {
 		$reader->addNamespace('Asgard\Http\Annotations');
 		$reader = new \Doctrine\Common\Annotations\CachedReader(
 			$reader,
-			\Asgard\Container\Container::instance()['cache'],
-			\Asgard\Container\Container::instance()['config']['debug']
+			\Asgard\Container\Container::singleton()['cache'],
+			\Asgard\Container\Container::singleton()->has('config') ? \Asgard\Container\Container::singleton()['config']['debug']:false
 		);
 
 		$reflection = new \ReflectionClass($class);
@@ -33,12 +39,11 @@ abstract class Controller extends \Asgard\Hook\Hookable {
 				continue;
 			$routeAnnot = $reader->getMethodAnnotation($method, 'Asgard\Http\Annotations\Route');
 			if($routeAnnot !== null) {
-				$route = Resolver::formatRoute($prefix.'/'.$routeAnnot->value);
-
-				$routes[] = new ControllerRoute(
+				$route = trim($prefix.'/'.$routeAnnot->value, '/');
+				$routes[] = new Route(
 					$route,
 					$class,
-					Resolver::formatActionName($method->getName()),
+					preg_replace('/Action$/i', '', $method->getName()),
 					[
 						'host' => $routeAnnot->host,
 						'requirements' => $routeAnnot->requirements,
@@ -67,8 +72,8 @@ abstract class Controller extends \Asgard\Hook\Hookable {
 		$reader->addNamespace('Asgard\Http\Annotations');
 		$reader = new \Doctrine\Common\Annotations\CachedReader(
 			$reader,
-			\Asgard\Container\Container::instance()['cache'],
-			\Asgard\Container\Container::instance()['config']['debug']
+			\Asgard\Container\Container::singleton()['cache'],
+			\Asgard\Container\Container::singleton()->has('config') ? \Asgard\Container\Container::singleton()['config']['debug']:false
 		);
 
 		$reflection = new \ReflectionClass($class);
@@ -80,12 +85,11 @@ abstract class Controller extends \Asgard\Hook\Hookable {
 				continue;
 			$routeAnnot = $reader->getMethodAnnotation($method, 'Asgard\Http\Annotations\Route');
 			if($routeAnnot !== null) {
-				$route = Resolver::formatRoute($prefix.'/'.$routeAnnot->value);
-
-				$routes[] = new ControllerRoute(
+				$route = trim($prefix.'/'.$routeAnnot->value, '/');
+				$routes[] = new Route(
 					$route,
 					$class,
-					Resolver::formatActionName($method->getName()),
+					preg_replace('/Action$/i', '', $method->getName()),
 					[
 						'host' => $routeAnnot->host,
 						'requirements' => $routeAnnot->requirements,
@@ -111,115 +115,130 @@ abstract class Controller extends \Asgard\Hook\Hookable {
 	/* FILTERS */
 	public function addFilter($filter) {
 		$filter->setController($this);
-		if(method_exists($filter, 'before')) 
-			$this->hook('before', [$filter, 'before']);
-		if(method_exists($filter, 'after'))
-			$this->hook('after', [$filter, 'after']);
+		$this->addBeforeFilter([$filter, 'before']);
+		$this->addAfterFilter([$filter, 'after']);
 	}
 
-	/* EXECUTION */
-	public static function staticRun($controllerClassName, $actionShortName, \Asgard\Container\Container $app, $request=null, $response=null) {
-		$controller = new $controllerClassName();
-		$controller->setApp($app);
-		return $controller->run($actionShortName, $app, $request, $response);
+	public function addBeforeFilter($filter) {
+		$this->beforeFilters[] = $filter;
 	}
 
-	public function run($actionShortname, $app, $request=null, $response=null) {
+	public function addAfterFilter($filter) {
+		$this->afterFilters[] = $filter;
+	}
+
+	public function run($action, $request=null) {
+		$this->action = $action;
+		$this->view = $action;
+
 		if($request === null)
 			$request = new Request;
-		if($response === null)
-			$response = new Response;
-		$this->app = $app;
-
-		$actionName = $actionShortname.'Action';
-
 		$this->request = $request;
-		$this->response = $response;
+		$this->response = new Response;
 
-		$app['hooks']->trigger('Asgard.Http.Controller', [$this]);
-
-		if(method_exists($this, 'before')) {
-			$this->hook('before', function($chain, $this, $request) {
-				return call_user_func_array([$this, 'before'], [$request]);
-			});
-		}
-		if(method_exists($this, 'after')) {
-			$this->hook('after', function($chain, $this, &$result) {
-				return call_user_func_array([$this, 'after'], [&$result]);
-			});
+		#before filters
+		$result = null;
+		foreach($this->beforeFilters as $filter) {
+			if(($result = $filter($this, $request)) !== null)
+				break;
 		}
 
-		if(!$result = $this->trigger('before', [$this, $request])) {
-			$result = $this->doRun($actionName, [$request]);
-			$this->trigger('after', [$this, &$result]);
+		if($result === null) {
+			if(($result = $this->before($request)) === null)
+				$result = $this->doRun($action, [$request]);
 		}
 
-		if($result !== null) {
-			if(is_string($result))
-				return $this->response->setContent($result);
-			elseif($result instanceof Response)
-				return $result;
-			else
-				throw new \Exception('Controller response is invalid.');
-		}
-		else
-			return $this->response;
+		$this->after($request, $result);
+
+		#after filters
+		foreach($this->afterFilters as $filter)
+			$filter($this, $request, $result);
+
+		if($result instanceof Response)
+			return $result;
+		elseif(is_string($result))
+			return $this->response->setContent($result);
+
+		return $this->response;
 	}
 
 	protected function doRun($method, array $params=[]) {
-		$this->_view = null;
+		$method .= 'Action';
+		return $this->runView($method, $params);
+	}
 
+	protected function runView($method, array $params=[]) {
 		ob_start();
-		$result = call_user_func_array([$this, $method], $params);
-		$controllerBuffer =  ob_get_clean();
+		$result = call_user_func_array([$this, $method], [$this->request]);
+		$controllerBuffer = ob_get_clean();
 
-		if($result !== null)
-			return $result;
-		if($controllerBuffer)
-			return $controllerBuffer;
-		elseif($this->_view !== false) {
-			if($this->_view instanceof View)
-				return $this->_view->render();
-			else {
-				$method = preg_replace('/Action$/', '', $method);
-				if($this->_view === null && !$this->setRelativeView($method.'.php'))
-					return null;
-				return $this->renderView($this->_view, (array)$this);
-			}
+		if($result !== null) {
+			if($result instanceof View)
+				return $this->renderView($result);
+			else
+				return $result;
 		}
-		return null;
+		elseif($controllerBuffer)
+			return $controllerBuffer;
+		elseif($this->view !== false) {
+			if($result instanceof View)
+				return $this->renderView($result);
+			else
+				return $this->renderDefaultView($this->view);
+		}
 	}
 
-	/* VIEW */
-	public static function widget($class, $method, array $params=[]) {
-		$controller = new $class;
-		return $controller->doRun($method, $params);
+	public function addViewPathSolver($cb) {
+		$this->viewPathSolvers[] = $cb;
 	}
-	
-	protected function renderView($_view, array $_args=[]) {
-		foreach($_args as $_key=>$_value)
-			$$_key = $_value;
+
+	protected function solveViewPath($file, $view=null) {
+		foreach($this->viewPathSolvers as $s) {
+			if(($r = $s($this, $file, $view)) && file_exists($r))
+				return $r;
+		}
+	}
+
+	protected function renderDefaultView($file) {
+		if(!file_exists($file))
+			$file = $this->solveViewPath($orig = $file);
+		if(!file_exists($file))
+			throw new \Exception('The view file "'.$orig.'" could not be found.');
+		$args = (array)$this;
+
+		extract($args);
 
 		ob_start();
-		include($_view);
+		include($file);
 		return ob_get_clean();
 	}
 
-	public function noView() {
-		$this->_view = false;
+	protected function renderView($view) {
+		if(!$view->fileExists()) {
+			$file = $this->solveViewPath($orig = $view->getFile());
+			$view->setFile($file);
+			if(!$view->fileExists())
+				throw new \Exception('The view file '.$orig.' could not be found.');
+		}
+		$view->setController($this);
+		return $view->render();
 	}
-	
-	public function setView($view) {
-		$this->_view = $view;
+
+	/* VIEW */
+	public static function fragment($class, $method, array $params=[]) {
+		$controller = new $class();
+		$controller->view = $method;
+		return $controller->runView($method, $params);
 	}
-	
-	public function setRelativeView($view) {
-		$reflection = new \ReflectionObject($this);
-		$dir = dirname($reflection->getFileName());
-		if(!file_exists($dir.'/../views/'.strtolower(preg_replace('/Controller$/i', '', self::basename(get_class($this)))).'/'.$view))
-			return false;
-		$this->setView($dir.'/../views/'.strtolower(preg_replace('/Controller$/i', '', self::basename(get_class($this)))).'/'.$view);
-		return true;
+
+	public function before(\Asgard\Http\Request $request) {
+	}
+
+	public function after(\Asgard\Http\Request $request, &$result) {
+	}
+
+	public function getAction() {
+		return $this->action;
 	}
 
 	/* UTILS */
@@ -237,9 +256,5 @@ abstract class Controller extends \Asgard\Hook\Hookable {
 	
 	public function url_for($action, $params=[]) {
 		return $this->app['resolver']->url_for([get_called_class(), $action], $params);
-	}
-
-	private static function basename($ns) {
-		return basename(str_replace('\\', DIRECTORY_SEPARATOR, $ns));
 	}
 }
