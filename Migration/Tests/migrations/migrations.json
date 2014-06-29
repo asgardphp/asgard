@@ -1,11 +1,5 @@
 {
-	"Migration3": {
-		"added": 1
-	},
-	"MigrationUntil": {
-		"added": 2
-	},
-	"Migration4": {
-		"added": 3
-	}
+    "Migration": {
+        "added": 1404023089.4865
+    }
 }

@@ -22,7 +22,8 @@
         "nesbot/carbon": "1.*"
     },
     "require-dev": {
-        "phpunit/phpunit": "4.*"
+        "phpunit/phpunit": "4.*",
+        "swiftmailer/swiftmailer": "5.0.*"
     },
     "suggest": {
         "classpreloader/classpreloader": "1.*",
