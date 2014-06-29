@@ -38,9 +38,7 @@ class BrowserTest extends \PHPUnit_Framework_TestCase {
 '\}/', file_get_contents(__DIR__.'/migrations/migrations.json'));
 
 		$mm->remove('Amigration');
-		$this->assertRegExp('/\['."\n".
-"\n".
-'\]/', file_get_contents(__DIR__.'/migrations/migrations.json'));
+		$this->assertRegExp('/\[\s*\]/', file_get_contents(__DIR__.'/migrations/migrations.json'));
 	}
 
 	public function testMigrate() {
