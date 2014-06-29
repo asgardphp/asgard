@@ -7,7 +7,7 @@ require_once __DIR__.'/Annotations/Route.php';
 
 abstract class Controller {
 	use \Asgard\Hook\Hookable;
-	use Viewable;
+	use \Asgard\Templating\Viewable;
 	
 	public $request;
 	public $response;

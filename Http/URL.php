@@ -41,7 +41,7 @@ class URL {
 	
 	public function full(array $params=[]) {
 		$r = $this->current();
-		$r .= $this->getParams();
+		$r .= $this->getParams($params);
 		return $r;
 	}
 	

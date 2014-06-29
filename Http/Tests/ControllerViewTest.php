@@ -8,7 +8,7 @@ use \Asgard\Http\Resolver;
 use \Asgard\Http\Route;
 use \Asgard\Http\Request;
 
-class TemplateTest extends \PHPUnit_Framework_TestCase {
+class ControllerViewTest extends \PHPUnit_Framework_TestCase {
 	public function testReturnTemplate() {
 		$app = new \Asgard\Container\Container([
 			'hooks' => new \Asgard\Hook\HooksManager,

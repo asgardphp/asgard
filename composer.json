@@ -46,6 +46,7 @@
         "asgard/http": "self.version",
         "asgard/migration": "self.version",
         "asgard/orm": "self.version",
+        "asgard/templating": "self.version",
         "asgard/validation": "self.version"
     }
 }

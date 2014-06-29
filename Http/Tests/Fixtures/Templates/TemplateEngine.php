@@ -1,7 +1,7 @@
 <?php
 namespace Asgard\Http\Tests\Fixtures\Templates;
 
-class TemplateEngine {
+class TemplateEngine implements \Asgard\Templating\TemplateEngineInterface {
 	protected $controller;
 
 	public function templateExists($template) {

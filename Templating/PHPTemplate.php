@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\Http;
+namespace Asgard\Templating;
 
 class PHPTemplate implements TemplateInterface {
 	protected $template;
@@ -16,7 +16,7 @@ class PHPTemplate implements TemplateInterface {
 		return template_exists($this->template);
 	}
 
-	public function setEngine($engine) {
+	public function setEngine(TemplateEngineInterface $engine) {
 		$this->engine = $engine;
 		return $this;
 	}

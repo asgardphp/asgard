@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\Http;
+namespace Asgard\Templating;
 
 trait Viewable {
 	protected $view;
@@ -53,9 +53,9 @@ trait Viewable {
 		$this->templatePathSolvers[] = $cb;
 	}
 
-	protected function solveTemplatePath($file, $template=null) {
+	protected function solveTemplatePath($template) {
 		foreach(array_reverse($this->templatePathSolvers) as $s) {
-			if(($r = $s($this, $file, $template)) && file_exists($r))
+			if(($r = $s($this, $template)) && file_exists($r))
 				return $r;
 		}
 	}
@@ -65,9 +65,8 @@ trait Viewable {
 			$file = $this->solveTemplatePath($orig = $file);
 		if(!file_exists($file))
 			throw new \Exception('The template file "'.$orig.'" could not be found.');
-		$args = (array)$this;
 
-		extract($args);
+		extract((array)$this);
 
 		ob_start();
 		include($file);

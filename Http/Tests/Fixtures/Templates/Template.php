@@ -1,7 +1,7 @@
 <?php
 namespace Asgard\Http\Tests\Fixtures\Templates;
 
-class Template implements \Asgard\Http\TemplateInterface {
+class Template implements \Asgard\Templating\TemplateInterface {
 	protected $template;
 	protected $params = [];
 	protected $controller;
@@ -12,7 +12,7 @@ class Template implements \Asgard\Http\TemplateInterface {
 		$this->setParams($params);
 	}
 
-	public function setEngine($engine) {
+	public function setEngine(\Asgard\Templating\TemplateEngineInterface $engine) {
 		$this->engine = $engine;
 		return $this;
 	}
