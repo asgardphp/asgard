@@ -86,8 +86,8 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		#ORM
 		$app['rulesregistry']->registerNamespace('Asgard\Orm\Rules');
 
-		#Controllers Views
-		$app['httpKernel']->addViewPathSolver(function($controller, $view, $file) {
+		#Controllers Templates
+		$app['httpKernel']->addTemplatePathSolver(function($controller, $template, $file) {
 			if(!$controller instanceof LambdaController) {
 				$r = new \ReflectionClass($controller);
 				$controllerName = basename(str_replace('\\', DIRECTORY_SEPARATOR, get_class($controller)));
@@ -95,9 +95,9 @@ class Bundle extends \Asgard\Core\BundleLoader {
 
 				$format = $controller->request->format();
 
-				$file = realpath(dirname($r->getFileName()).'/../'.$format.'/'.$controllerName.'/'.$view.'.php');
+				$file = realpath(dirname($r->getFileName()).'/../'.$format.'/'.$controllerName.'/'.$template.'.php');
 				if(!file_exists($file))
-					return realpath(dirname($r->getFileName()).'/../html/'.$controllerName.'/'.$view.'.php');
+					return realpath(dirname($r->getFileName()).'/../html/'.$controllerName.'/'.$template.'.php');
 				else
 					return $file;
 			}

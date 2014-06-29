@@ -30,23 +30,22 @@ class SwiftMessage extends \Swift_Message {
 		return parent::addPart($text, 'text/plain');
 	}
 
-	public function htmlView($view, $data=[]) {
+	public function htmlTemplate($template, $data=[]) {
 		$data['message'] = $this;
-		$res = $this->buildView($view, $data);
+		$res = $this->buildTemplate($template, $data);
 		return $this->html($res);
 	}
 
-	public function textView($view, $data=[]) {
+	public function textTemplate($template, $data=[]) {
 		$data['message'] = $this;
-		$res = $this->buildView($view, $data);
+		$res = $this->buildTemplate($template, $data);
 		return $this->text($res);
 	}
 
-	protected function buildView($_file, $_data) {
-		foreach($_data as $_k=>$_v)
-			$$_k = $_v;
+	protected function buildTemplate($file, $data) {
+		extract($data);
 		ob_start();
-		include $_file;
+		include $file;
 		return ob_get_clean();
 	}
 

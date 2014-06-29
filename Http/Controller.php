@@ -8,11 +8,12 @@ require_once __DIR__.'/Annotations/Route.php';
 abstract class Controller {
 	use \Asgard\Hook\Hookable;
 	
-	protected $view;
 	public $request;
 	public $response;
+	protected $templateEngine;
+	protected $view;
 	protected $app;
-	protected $viewPathSolvers = [];
+	protected $templatePathSolvers = [];
 	protected $action;
 	protected $beforeFilters = [];
 	protected $afterFilters = [];
@@ -164,46 +165,58 @@ abstract class Controller {
 
 	protected function doRun($method, array $params=[]) {
 		$method .= 'Action';
-		return $this->runView($method, $params);
+		return $this->runTemplate($method, $params);
 	}
 
-	protected function runView($method, array $params=[]) {
+	protected function runTemplate($method, array $params=[]) {
 		ob_start();
 		$result = call_user_func_array([$this, $method], [$this->request]);
 		$controllerBuffer = ob_get_clean();
 
 		if($result !== null) {
-			if($result instanceof View)
-				return $this->renderView($result);
+			if($result instanceof TemplateInterface) {
+				if($this->templateEngine)
+					$result->setEngine($this->templateEngine);
+				return $result->render();
+			}
 			else
 				return $result;
 		}
 		elseif($controllerBuffer)
 			return $controllerBuffer;
 		elseif($this->view !== false) {
-			if($result instanceof View)
-				return $this->renderView($result);
+			if($this->templateEngine)
+				return $this->templateEngine->createTemplate()->setParams((array)$this)->render($this->view);
 			else
-				return $this->renderDefaultView($this->view);
+				return $this->renderDefaultTemplate($this->view);
 		}
 	}
 
-	public function addViewPathSolver($cb) {
-		$this->viewPathSolvers[] = $cb;
+	public function setTemplateEngine($templateEngine) {
+		$this->templateEngine = $templateEngine;
+		return $this;
 	}
 
-	protected function solveViewPath($file, $view=null) {
-		foreach($this->viewPathSolvers as $s) {
-			if(($r = $s($this, $file, $view)) && file_exists($r))
+	public function getTemplateEngine() {
+		return $this->templateEngine;
+	}
+
+	public function addTemplatePathSolver($cb) {
+		$this->templatePathSolvers[] = $cb;
+	}
+
+	protected function solveTemplatePath($file, $template=null) {
+		foreach(array_reverse($this->templatePathSolvers) as $s) {
+			if(($r = $s($this, $file, $template)) && file_exists($r))
 				return $r;
 		}
 	}
 
-	protected function renderDefaultView($file) {
+	protected function renderDefaultTemplate($file) {
 		if(!file_exists($file))
-			$file = $this->solveViewPath($orig = $file);
+			$file = $this->solveTemplatePath($orig = $file);
 		if(!file_exists($file))
-			throw new \Exception('The view file "'.$orig.'" could not be found.');
+			throw new \Exception('The template file "'.$orig.'" could not be found.');
 		$args = (array)$this;
 
 		extract($args);
@@ -213,22 +226,11 @@ abstract class Controller {
 		return ob_get_clean();
 	}
 
-	protected function renderView($view) {
-		if(!$view->fileExists()) {
-			$file = $this->solveViewPath($orig = $view->getFile());
-			$view->setFile($file);
-			if(!$view->fileExists())
-				throw new \Exception('The view file '.$orig.' could not be found.');
-		}
-		$view->setController($this);
-		return $view->render();
-	}
-
 	/* VIEW */
 	public static function fragment($class, $method, array $params=[]) {
 		$controller = new $class();
 		$controller->view = $method;
-		return $controller->runView($method, $params);
+		return $controller->runTemplate($method, $params);
 	}
 
 	public function before(\Asgard\Http\Request $request) {

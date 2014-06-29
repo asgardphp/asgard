@@ -7,7 +7,7 @@ class HttpKernel {
 	protected $requests = [];
 	protected $start;
 	protected $end;
-	protected $viewPathSolvers = [];
+	protected $templatePathSolvers = [];
 
 	protected $filters = [];
 	protected $beforeFilters = [];
@@ -121,14 +121,18 @@ class HttpKernel {
 
 		$this->addFilters($controllerClass, $controller, $request, $route);
 		
-		foreach($this->viewPathSolvers as $cb)
-			$controller->addViewPathSolver($cb);
+		if($this->app instanceof \Asgard\Container\Container && $this->app->has('templateEngine'))
+			$controller->setTemplateEngine($this->app->make('templateEngine', [$controller]));
+		else {
+			foreach($this->templatePathSolvers as $cb)
+				$controller->addTemplatePathSolver($cb);
+		}
 
 		return $controller->run($action, $request);
 	}
 
-	public function addViewPathSolver($cb) {
-		$this->viewPathSolvers[] = $cb;
+	public function addTemplatePathSolver($cb) {
+		$this->templatePathSolvers[] = $cb;
 	}
 
 	protected function getExceptionResponse($e) {

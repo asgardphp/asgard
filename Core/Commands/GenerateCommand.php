@@ -130,9 +130,9 @@ class GenerateCommand extends \Asgard\Console\Command {
 
 					if(in_array('index', $entity['front']) || isset($entity['front']['index'])) {
 						if(isset($entity['front']['index']))
-							\Asgard\File\FileSystem::copy($entity['front']['index'], $dst.'views/'.$bundle['entities'][$name]['meta']['name'].'/index.php', false);
+							\Asgard\File\FileSystem::copy($entity['front']['index'], $dst.'html/'.$bundle['entities'][$name]['meta']['name'].'/index.php', false);
 						else
-							$generator->processFile(__DIR__.'/bundle_template/html/_entity/index.php', $dst.'views/'.$bundle['entities'][$name]['meta']['name'].'/index.php', ['bundle'=>$bundle, 'entity'=>$entity]);
+							$generator->processFile(__DIR__.'/bundle_template/html/_entity/index.php', $dst.'html/'.$bundle['entities'][$name]['meta']['name'].'/index.php', ['bundle'=>$bundle, 'entity'=>$entity]);
 						if($bundle['tests']) {
 							$indexRoute = $class::routeFor('index')->getRoute();
 							$tests[$indexRoute] = '
@@ -142,9 +142,9 @@ class GenerateCommand extends \Asgard\Console\Command {
 					}
 					if(in_array('show', $entity['front']) || isset($entity['front']['show'])) {
 						if(isset($entity['front']['show']))
-							\Asgard\File\FileSystem::copy($entity['front']['show'], $dst.'views/'.$bundle['entities'][$name]['meta']['name'].'/show.php', false);
+							\Asgard\File\FileSystem::copy($entity['front']['show'], $dst.'html/'.$bundle['entities'][$name]['meta']['name'].'/show.php', false);
 						else
-							$generator->processFile(__DIR__.'/bundle_template/html/_entity/show.php', $dst.'views/'.$bundle['entities'][$name]['meta']['name'].'/show.php', ['bundle'=>$bundle, 'entity'=>$entity]);
+							$generator->processFile(__DIR__.'/bundle_template/html/_entity/show.php', $dst.'html/'.$bundle['entities'][$name]['meta']['name'].'/show.php', ['bundle'=>$bundle, 'entity'=>$entity]);
 						if($bundle['tests']) {
 							$showRoute = $class::routeFor('show')->getRoute();
 							$tests[$showRoute] = '
@@ -178,7 +178,7 @@ class GenerateCommand extends \Asgard\Console\Command {
 						$content = '';
 						if($params['viewFile'])
 							$content = file_get_contents($params['viewFile']);
-						\Asgard\File\FileSystem::write($dst.'views/'.strtolower(preg_replace('/Controller$/', '', $controller['name'])).'/'.$params['template'], $content);
+						\Asgard\File\FileSystem::write($dst.'html/'.strtolower(preg_replace('/Controller$/', '', $controller['name'])).'/'.$params['template'], $content);
 					}
 				}
 			}

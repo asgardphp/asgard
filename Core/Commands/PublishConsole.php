@@ -38,8 +38,8 @@ class PublishCommand extends \Asgard\Console\Command {
 		}
 
 		#copy tests
-		if($publishTests && file_exists($bundle.'/Tests')) {
-			$publisher->publish($bundle.'/Tests', $root.'/Tests');
+		if($publishTests && file_exists($bundle.'/tests')) {
+			$publisher->publish($bundle.'/tests', $root.'/tests');
 			$this->info('Test files have been published.');
 		}
 
@@ -50,8 +50,8 @@ class PublishCommand extends \Asgard\Console\Command {
 		}
 
 		#copy migrations
-		if($publishMigrations && file_exists($bundle.'/Migrations/migrations.json')) {
-			$publisher->publishMigrations($bundle.'/Migrations', $root.'/Migrations', $migrate);
+		if($publishMigrations && file_exists($bundle.'/migrations/migrations.json')) {
+			$publisher->publishMigrations($bundle.'/migrations', $root.'/migrations', $migrate);
 			$this->info('Migration files have been published.');
 		}
 	}
