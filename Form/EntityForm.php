@@ -90,8 +90,9 @@ class EntityForm extends Form {
 	
 	/* Save & Validation */
 	public function doSave() {
-		if($this->entity->hasBehavior('Asgard\Entity\PersistenceBehavior'))
-			$this->entity->save();
+		$entity = $this->entity;
+		if($entity::getDefinition()->hasBehavior('Asgard\Entity\PersistenceBehavior'))
+			$entity->save();
 		else
 			parent::doSave();
 	}
@@ -134,14 +135,13 @@ class EntityForm extends Form {
 		if($field instanceof \Asgard\Form\DynamicGroup) {
 			$field->setCallback(function() use($entity, $name, $property, $locale) {
 				$field = $this->getEntityFieldsSolver()->doSolve($property);
-				$options = $this->getEntityFieldoptions($entity, $name, $property, $locale);
-				// $options['default'] = $this->getDefaultValue($property, $pos);
+				$options = $this->getEntityFieldOptions($property);
 				$field->setoptions($options);
 				return $field;
 			});
 		}
 		else {
-			$options = $this->getEntityFieldoptions($entity, $name, $property, $locale);
+			$options = $this->getEntityFieldOptions($property);
 			$options['default'] = $this->getDefaultValue($entity, $name, $property, $locale);
 			$field->setoptions($options);
 		}
@@ -149,7 +149,7 @@ class EntityForm extends Form {
 		return $field;
 	}
 
-	protected function getEntityFieldoptions(\Asgard\Entity\Entity $entity, $name, \Asgard\Entity\Property $property, $locale=null) {
+	protected function getEntityFieldOptions(\Asgard\Entity\Property $property) {
 		$options = [];
 
 		$options['form'] = $this;

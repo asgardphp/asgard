@@ -7,13 +7,11 @@ require_once __DIR__.'/Annotations/Route.php';
 
 abstract class Controller {
 	use \Asgard\Hook\Hookable;
+	use Viewable;
 	
 	public $request;
 	public $response;
-	protected $templateEngine;
-	protected $view;
 	protected $app;
-	protected $templatePathSolvers = [];
 	protected $action;
 	protected $beforeFilters = [];
 	protected $afterFilters = [];
@@ -163,74 +161,9 @@ abstract class Controller {
 		return $this->response;
 	}
 
-	protected function doRun($method, array $params=[]) {
+	protected function doRun($method, array $args=[]) {
 		$method .= 'Action';
-		return $this->runTemplate($method, $params);
-	}
-
-	protected function runTemplate($method, array $params=[]) {
-		ob_start();
-		$result = call_user_func_array([$this, $method], [$this->request]);
-		$controllerBuffer = ob_get_clean();
-
-		if($result !== null) {
-			if($result instanceof TemplateInterface) {
-				if($this->templateEngine)
-					$result->setEngine($this->templateEngine);
-				return $result->render();
-			}
-			else
-				return $result;
-		}
-		elseif($controllerBuffer)
-			return $controllerBuffer;
-		elseif($this->view !== false) {
-			if($this->templateEngine)
-				return $this->templateEngine->createTemplate()->setParams((array)$this)->render($this->view);
-			else
-				return $this->renderDefaultTemplate($this->view);
-		}
-	}
-
-	public function setTemplateEngine($templateEngine) {
-		$this->templateEngine = $templateEngine;
-		return $this;
-	}
-
-	public function getTemplateEngine() {
-		return $this->templateEngine;
-	}
-
-	public function addTemplatePathSolver($cb) {
-		$this->templatePathSolvers[] = $cb;
-	}
-
-	protected function solveTemplatePath($file, $template=null) {
-		foreach(array_reverse($this->templatePathSolvers) as $s) {
-			if(($r = $s($this, $file, $template)) && file_exists($r))
-				return $r;
-		}
-	}
-
-	protected function renderDefaultTemplate($file) {
-		if(!file_exists($file))
-			$file = $this->solveTemplatePath($orig = $file);
-		if(!file_exists($file))
-			throw new \Exception('The template file "'.$orig.'" could not be found.');
-		$args = (array)$this;
-
-		extract($args);
-
-		ob_start();
-		include($file);
-		return ob_get_clean();
-	}
-
-	/* VIEW */
-	public static function fragment($class, $method, array $params=[]) {
-		$controller = new $class();
-		$controller->view = $method;
-		return $controller->runTemplate($method, $params);
+		return $this->runTemplate($method, $args);
 	}
 
 	public function before(\Asgard\Http\Request $request) {

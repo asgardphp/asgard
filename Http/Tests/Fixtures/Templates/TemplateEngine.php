@@ -4,7 +4,7 @@ namespace Asgard\Http\Tests\Fixtures\Templates;
 class TemplateEngine {
 	protected $controller;
 
-	public function templateExists() {
+	public function templateExists($template) {
 		return file_exists(__DIR__.'/'.$template.'.php');
 	}
 

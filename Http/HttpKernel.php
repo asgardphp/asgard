@@ -119,7 +119,7 @@ class HttpKernel {
 		$controller = new $controllerClass();
 		$controller->setApp($this->app);
 
-		$this->addFilters($controllerClass, $controller, $request, $route);
+		$this->addFilters($controller, $action, $request, $route);
 		
 		if($this->app instanceof \Asgard\Container\Container && $this->app->has('templateEngine'))
 			$controller->setTemplateEngine($this->app->make('templateEngine', [$controller]));
@@ -191,7 +191,9 @@ class HttpKernel {
 		return $this;
 	}
 
-	protected function addFilters($controllerClass, $controller, $request, $route=null) {
+	protected function addFilters($controller, $action, $request, $route=null) {
+		$controllerClass = get_class($controller);
+
 		foreach($this->filters as $_filter) {
 			$args = $_filter['args'];
 			$filter = $_filter['filter'];

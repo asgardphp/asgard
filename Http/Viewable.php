@@ -1,51 +1,76 @@
 <?php
 namespace Asgard\Http;
 
-abstract class Viewable {
-	protected $_view;
+trait Viewable {
+	protected $view;
+	protected $templateEngine;
+	protected $templatePathSolvers = [];
 
-	public static function fragment($class, $method, array $params=[]) {
+	public static function fragment($method, array $args=[]) {
+		$class = get_called_class();
 		$viewable = new $class;
-		return $viewable->doRun($method, $params);
+		return $viewable->run($method, $args);
 	}
 
-	protected function doRun($method, array $params=[]) {
-		$this->_view = null;
+	public function run($method, array $args=[]) {
+		return $this->runTemplate($method, $args);
+	}
 
+	protected function runTemplate($method, array $args=[]) {
 		ob_start();
-		$result = call_user_func_array([$this, $method], $params);
-		$viewableBuffer =  ob_get_clean();
+		$result = call_user_func_array([$this, $method], $args);
+		$viewableBuffer = ob_get_clean();
 
-		if($result !== null)
-			return $result;
-		if($viewableBuffer)
-			return $viewableBuffer;
-		elseif($this->_view !== false) {
-			if($this->_view instanceof View)
-				return $this->_view->render();
-			else {
-				if($this->_view === null)
-					return null;
-				return $this->renderView($this->_view, (array)$this);
+		if($result !== null) {
+			if($result instanceof TemplateInterface) {
+				if($this->templateEngine)
+					$result->setEngine($this->templateEngine);
+				return $result->render();
 			}
+			else
+				return $result;
 		}
-		return null;
+		elseif($viewableBuffer)
+			return $viewableBuffer;
+		elseif(isset($this->view) && $this->view) {
+			if($this->templateEngine)
+				return $this->templateEngine->createTemplate()->setParams((array)$this)->render($this->view);
+			else
+				return $this->renderDefaultTemplate($this->view);
+		}
 	}
-	
-	protected function renderView($_view, array $_args=[]) {
-		foreach($_args as $_key=>$_value)
-			$$_key = $_value;
+
+	public function setTemplateEngine($templateEngine) {
+		$this->templateEngine = $templateEngine;
+		return $this;
+	}
+
+	public function getTemplateEngine() {
+		return $this->templateEngine;
+	}
+
+	public function addTemplatePathSolver($cb) {
+		$this->templatePathSolvers[] = $cb;
+	}
+
+	protected function solveTemplatePath($file, $template=null) {
+		foreach(array_reverse($this->templatePathSolvers) as $s) {
+			if(($r = $s($this, $file, $template)) && file_exists($r))
+				return $r;
+		}
+	}
+
+	protected function renderDefaultTemplate($file) {
+		if(!file_exists($file))
+			$file = $this->solveTemplatePath($orig = $file);
+		if(!file_exists($file))
+			throw new \Exception('The template file "'.$orig.'" could not be found.');
+		$args = (array)$this;
+
+		extract($args);
 
 		ob_start();
-		include($_view);
+		include($file);
 		return ob_get_clean();
-	}
-
-	public function noView() {
-		$this->_view = false;
-	}
-	
-	public function setView($view) {
-		$this->_view = $view;
 	}
 }

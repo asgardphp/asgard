@@ -28,23 +28,15 @@ class Route {
 		return $this->route;
 	}
 
+	public function setRoute($route) {
+		$this->route = $route;
+	}
+
 	public function getController() {
 		return $this->controller;
 	}
 
 	public function getAction() {
 		return $this->action;
-	}
-
-	public function setRoute($route) {
-		$this->route = $route;
-	}
-
-	public function setCallback($callback) {
-		$this->callback = $callback;
-	}
-
-	public function setArguments($arguments) {
-		$this->arguments = $arguments;
 	}
 }

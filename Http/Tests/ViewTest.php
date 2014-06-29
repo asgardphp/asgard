@@ -12,13 +12,15 @@ class ViewTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testViewable() {
-		$this->assertEquals('<h1>hello world!</h1>', Viewable::fragment('Asgard\Http\Tests\_Viewable', 'test'));
+		$this->assertEquals('<h1>hello world!</h1>', \Asgard\Http\Tests\_Viewable::fragment('test'));
 	}
 }
 
-class _Viewable extends Viewable {
+class _Viewable {
+	use Viewable;
+
 	public function test() {
 		$this->test = 'hello world!';
-		$this->setView(__DIR__.'/Fixtures/template.php');
+		$this->view = __DIR__.'/Fixtures/template.php';
 	}
 }

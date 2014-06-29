@@ -42,9 +42,9 @@ class FileProperty extends \Asgard\Entity\Property {
 		$file = new \Asgard\Entity\File($str);
 		$app = $this->definition->getApp();
 		if($app->has('kernel') && isset($app['kernel']['webdir']))
-			$val->setWebDir($app['kernel']['webdir']);
+			$file->setWebDir($app['kernel']['webdir']);
 		if($app->has('request'))
-			$val->setUrl($app['request']->url);
+			$file->setUrl($app['request']->url);
 		$file->setDir($this->get('dir'));
 		return $file;
 	}

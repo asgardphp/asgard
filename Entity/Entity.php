@@ -80,7 +80,6 @@ abstract class Entity {
 	
 	/* VALIDATION */
 	public function getValidator(array $locales=[]) {
-		$constrains = [];
 		$messages = [];
 		$validator = new \Asgard\Validation\Validator;
 
@@ -371,8 +370,9 @@ abstract class Entity {
 				}
 			}
 			elseif(static::getDefinition()->property($name)->get('multiple')) {
+				$res[$name] = [];
 				foreach($this->get($name)->all() as $k=>$v)
-					$res[$name][$locale][$k] = $this->propertyToArray($v, $property);
+					$res[$name][$k] = $this->propertyToArray($v, $property);
 			}
 			else
 				$res[$name] = $this->propertyToArray($this->get($name), $property);
@@ -389,7 +389,7 @@ abstract class Entity {
 
 	public static function arrayToJSONI18N(array $entities, array $locales=[]) {
 		foreach($entities as $k=>$entity)
-			$entities[$k] = $entity->toArrayI18N($entity->getLocales());
+			$entities[$k] = $entity->toArrayI18N($locales);
 		return json_encode($entities);
 	}
 	

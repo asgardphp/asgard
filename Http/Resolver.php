@@ -180,11 +180,11 @@ class Resolver {
 		if(is_array($what)) {
 			$controller = strtolower($what[0]);
 			$action = strtolower($what[1]);
-			foreach($this->getRoutes() as $route_params) {
-				$route = $route_params->getRoute();
-				if(strtolower($route_params->getController()) == $controller && strtolower($route_params->getAction()) == $action) {
+			foreach($this->getRoutes() as $routeObj) {
+				$route = $routeObj->getRoute();
+				if(strtolower($routeObj->getController()) == $controller && strtolower($routeObj->getAction()) == $action) {
 					if($route_params->get('host'))
-						return 'http://'.$route_params->get('host').'/'.static::buildRoute($route, $params);
+						return 'http://'.$routeObj->get('host').'/'.static::buildRoute($route, $params);
 					else
 						return $this->getUrl()->to(static::buildRoute($route, $params));
 				}
@@ -213,15 +213,5 @@ class Resolver {
 
 	public function getUrl() {
 		return $this->httpKernel->getLastRequest()->url;
-	}
-
-	public function getAction() {
-		$hash = sha1(serialize($request));
-		if(!array_key_exists($hash, $this->results))
-			$this->results[$hash] = $this->getRoute($request);
-		if(!$this->results[$hash])
-			return null;
-		else
-			return $this->results[$hash]->getAction();
 	}
 }

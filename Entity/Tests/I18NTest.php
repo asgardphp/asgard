@@ -18,7 +18,6 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function test() {
-		return;
 		$post = new Fixtures\Post([], 'en');
 
 		$post->title = 'Hello';
@@ -90,7 +89,6 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals(['Bonjour'], $post->get('titles', 'fr')->all());
 
 		#translate
-		$postFR = $post->translate('fr');
 		$this->assertEquals(['Hello'], $post->titles->all());
 		$this->assertEquals(['Hello'], $post->get('titles', 'en')->all());
 		$this->assertEquals(['Bonjour'], $post->get('titles', 'fr')->all());

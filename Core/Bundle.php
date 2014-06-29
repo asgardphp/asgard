@@ -40,9 +40,6 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			return $form;
 		});
 
-		#Filesystem
-		$app->register('files', function($app) { return new \Asgard\File\FileSystem($app['kernel']['root']); } );
-
 		#Hook
 		$app->register('hooks', function($app) { return new \Asgard\Hook\HooksManager($app); } );
 
@@ -87,8 +84,8 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		$app['rulesregistry']->registerNamespace('Asgard\Orm\Rules');
 
 		#Controllers Templates
-		$app['httpKernel']->addTemplatePathSolver(function($controller, $template, $file) {
-			if(!$controller instanceof LambdaController) {
+		$app['httpKernel']->addTemplatePathSolver(function($controller, $template) {
+			if(!$controller instanceof \Asgard\Http\LambdaController) {
 				$r = new \ReflectionClass($controller);
 				$controllerName = basename(str_replace('\\', DIRECTORY_SEPARATOR, get_class($controller)));
 				$controllerName = strtolower(preg_replace('/Controller$/i', '', $controllerName));

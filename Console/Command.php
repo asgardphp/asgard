@@ -29,7 +29,8 @@ class Command extends \Symfony\Component\Console\Command\Command {
 	 * @return \Asgard\Container\Container
 	*/
 	protected function getContainer() {
-		return $this->getApplication()->getContainer();
+		if($this->getApplication() instanceof \Asgard\Console\Application)
+			return $this->getApplication()->getContainer();
 	}
 	
 	/**

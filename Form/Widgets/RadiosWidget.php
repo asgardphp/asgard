@@ -8,7 +8,7 @@ class RadiosWidget extends \Asgard\Form\Widget {
 		$str = '';
 		foreach($this->field->getChoices() as $k=>$v) {
 			$options = [];
-			if($k == $this->field->getValue())
+			if($k == $this->field->value())
 				$options['attrs']['checked'] = 'checked';
 			$str .= $this->field->getTopForm()->getWidget('radio', $this->field->name(), $k, $options)->render().' '.ucfirst($v).' ';
 		}
