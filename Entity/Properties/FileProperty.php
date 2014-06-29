@@ -21,7 +21,7 @@ class FileProperty extends \Asgard\Entity\Property {
 	}
 
 	public function getSQLType() {
-		if($this->multiple)
+		if($this->get('multiple'))
 			return 'text';
 		else
 			return 'varchar(255)';

@@ -33,16 +33,20 @@ class URL {
 	public function current() {
 		return $this->base().$this->get();
 	}
+
+	public function getParams(array $params=[]) {
+		if($params = array_merge($this->request->get->all(), $params))
+			return '?'.http_build_query($params);
+	}
 	
 	public function full(array $params=[]) {
 		$r = $this->current();
-		if($params = array_merge($this->request->get->all(), $params))
-			$r .= '?'.http_build_query($params);
+		$r .= $this->getParams();
 		return $r;
 	}
 	
 	public function base() {
-		$res = $this->host().'/';
+		$res = $this->protocol().$this->host().'/';
 		if($this->root())
 			$res .= $this->root().'/';
 		return $res;
@@ -72,9 +76,13 @@ class URL {
 	
 	public function host() {
 		if($this->host !== null)
-			return 'http://'.$this->host;
+			return $this->host;
 		else
 			return '';
+	}
+
+	public function protocol() {
+		return 'http://';
 	}
 
 	public function startsWith($what) {

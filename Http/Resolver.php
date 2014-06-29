@@ -183,7 +183,7 @@ class Resolver {
 			foreach($this->getRoutes() as $routeObj) {
 				$route = $routeObj->getRoute();
 				if(strtolower($routeObj->getController()) == $controller && strtolower($routeObj->getAction()) == $action) {
-					if($route_params->get('host'))
+					if($routeObj->get('host'))
 						return 'http://'.$routeObj->get('host').'/'.static::buildRoute($route, $params);
 					else
 						return $this->getUrl()->to(static::buildRoute($route, $params));
@@ -193,11 +193,11 @@ class Resolver {
 		#route
 		else {
 			$what = strtolower($what);
-			foreach($this->getRoutes() as $route_params) {
-				$route = $route_params->getRoute();
-				if($route_params->get('name') !== null && strtolower($route_params->get('name')) == $what) {
-					if($route_params->get('host'))
-						return 'http://'.$route_params->get('host').'/'.static::buildRoute($route, $params);
+			foreach($this->getRoutes() as $routeObj) {
+				$route = $routeObj->getRoute();
+				if($routeObj->get('name') !== null && strtolower($routeObj->get('name')) == $what) {
+					if($routeObj->get('host'))
+						return 'http://'.$routeObj->get('host').'/'.static::buildRoute($route, $params);
 					else
 						return $this->getUrl()->to(static::buildRoute($route, $params));
 				}

@@ -241,7 +241,7 @@ class DAL {
 		if(count($params) == 0)
 			return ['', []];
 		
-		$string_conditions = '';
+		$string_conditions = [];
 		
 		if(!is_array($params)) {
 			if($condition == 'and')

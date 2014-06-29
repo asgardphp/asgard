@@ -68,7 +68,7 @@ class Request implements \ArrayAccess {
 		else
 			$url = '';
 		$url = preg_replace('/^'.preg_quote($root, '/').'/', '', $url);
-		$url = trim($url, '/');
+		$url = ltrim($url, '/');
 		$root = trim($root, '/');
 
 		$request->setURL($server, $root, $url);

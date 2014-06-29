@@ -15,7 +15,7 @@ class Query {
 			else
 				$this->rsc = $db->query($sql);
 		} catch(\PDOException $e) {
-			throw new DBException($e->getMessage().'<br/>'."\n".'SQL: '.$sql.' ('.implode($args, ', ').')');
+			throw new DBException($e->getMessage().'<br/>'."\n".'SQL: '.$sql.' ('.implode(', ', $args).')');
 		}
 	}
 	
