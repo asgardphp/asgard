@@ -12,6 +12,7 @@ class InstallCommand extends \Asgard\Console\Command {
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$sources = $this->input->getArgument('sources');
+		$suggest = $this->input->getOption('suggest');
 		$migrate = $this->input->getOption('migrate');
 		$updateComposer = $this->input->getOption('update-composer');
 		$root = $this->getContainer()['kernel']['root'];
@@ -25,7 +26,7 @@ class InstallCommand extends \Asgard\Console\Command {
 			$appComposer = null;
 
 		foreach($sources as $src)
-			$this->install($src, $migrate, $updateComposer, $root, $modules, $appComposer);
+			$this->install($src, $suggest, $migrate, $updateComposer, $root, $modules, $appComposer);
 
 		if($updateComposer && $appComposer) {
 			file_put_contents($root.'/composer.json', json_encode($appComposer, JSON_PRETTY_PRINT));
@@ -33,7 +34,7 @@ class InstallCommand extends \Asgard\Console\Command {
 		}
 	}
 
-	protected function install($src, $migrate, $updateComposer, $root, $modules, $appComposer) {
+	protected function install($src, $suggest, $migrate, $updateComposer, $root, $modules, $appComposer) {
 		$tmp = sys_get_temp_dir().'/'.\Asgard\Common\Tools::randStr(10);
 
 		if(!$this->gitInstall($src, $tmp)) {
@@ -82,7 +83,13 @@ class InstallCommand extends \Asgard\Console\Command {
 		if(isset($asgard['require'])) {
 			foreach($asgard['require'] as $requireName=>$requireSrc) {
 				if(!in_array($requireName, $modules))
-					$this->install($requireSrc, $migrate, $updateComposer, $root, $modules, $appComposer);
+					$this->install($requireSrc, $suggest, $migrate, $updateComposer, $root, $modules, $appComposer);
+			}
+		}
+		if($suggest && isset($asgard['suggest'])) {
+			foreach($asgard['suggest'] as $requireName=>$requireSrc) {
+				if(!in_array($requireName, $modules))
+					$this->install($requireSrc, $suggest, $migrate, $updateComposer, $root, $modules, $appComposer);
 			}
 		}
 
@@ -156,6 +163,7 @@ class InstallCommand extends \Asgard\Console\Command {
 
 	protected function getOptions() {
 		return [
+			['suggest', null, InputOption::VALUE_NONE, 'Install suggested dependencies.', null],
 			['migrate', null, InputOption::VALUE_NONE, 'Automatically execute the migrations.', null],
 			['update-composer', null, InputOption::VALUE_NONE, 'Automatically updates composer.', null],
 		];
