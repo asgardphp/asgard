@@ -133,7 +133,7 @@ class InstallCommand extends \Asgard\Console\Command {
 		}
 
 		$modules[] = $name;
-		file_put_contents($root.'/modules.json', json_encode($modules, JSON_PRETTY_PRINT));
+		file_put_contents($root.'/modules.json', json_encode(array_unique($modules), JSON_PRETTY_PRINT));
 
 		$this->info('Module "'.$name.'" installed with success.');
 	}
