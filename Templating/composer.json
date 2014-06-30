@@ -5,17 +5,10 @@
 		"name": "Michel Hognerud",
 		"email": "michel@hognerud.net"
 	}],
+    "require": {
+        "php": ">=5.4.0"
+    },
     "autoload": {
         "psr-4": {"Asgard\\Http\\": "."}
-    },
-    "require": {
-        "php": ">=5.4.0",
-        "doctrine/annotations": "1.*",
-        "doctrine/cache": "1.*",
-        "asgard/common": "dev-master",
-        "asgard/hook": "dev-master",
-        "asgard/container": "dev-master",
-        "asgard/debug": "dev-master",
-        "asgard/templating": "dev-master"
     }
 }
