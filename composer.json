@@ -40,6 +40,7 @@
         "asgard/debug": "self.version",
         "asgard/email": "self.version",
         "asgard/entity": "self.version",
+        "asgard/entityform": "self.version",
         "asgard/files": "self.version",
         "asgard/form": "self.version",
         "asgard/hook": "self.version",

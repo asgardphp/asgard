@@ -1,10 +1,10 @@
 <?php
-namespace Asgard\Form\Tests\Entities;
+namespace Asgard\Entityform\Tests\Entities;
 
-class User extends \Asgard\Entity\Entity {
+class Comment extends \Asgard\Entity\Entity {
 	public static function definition(\Asgard\Entity\EntityDefinition $definition) {
 		$definition->properties = [
-			'name' => [
+			'content' => [
 				'required'
 			]
 		];
@@ -14,14 +14,14 @@ class User extends \Asgard\Entity\Entity {
 		];
 
 		$definition->relations = [
-			'comments' => [
-				'entity' => 'Asgard\Form\Tests\Entities\Comment',
-				'has' => 'many'
+			'user' => [
+				'entity' => 'Asgard\Entityform\Tests\Entities\User',
+				'has' => 'one'
 			]
 		];
 	}
 
 	public function __toString() {
-		return $this->name;
+		return $this->content;
 	}
 }

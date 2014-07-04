@@ -19,11 +19,11 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		$app->register('entitiesmanager', function($app) { return new \Asgard\Entity\EntitiesManager($app); } );
 		
 		#Form
-		$app->register('entityFieldsSolver', function() { return new \Asgard\Form\EntityFieldsSolver; });
 		$app->register('widgetsManager', function() { return new \Asgard\Form\WidgetsManager; });
+		$app->register('entityFieldsSolver', function() { return new \Asgard\Entityform\EntityFieldsSolver; });
 		$app->register('entityForm', function($app, $entity, $params=[], $request=null) {
 			$entityFieldsSolver = clone $app['entityFieldsSolver'];
-			$form = new \Asgard\Form\EntityForm($entity, $params, $request, $entityFieldsSolver);
+			$form = new \Asgard\Entityform\EntityForm($entity, $params, $request, $entityFieldsSolver);
 			$form->setWidgetsManager(clone $app['widgetsManager']);
 			$form->setTranslator($app['translator']);
 			$form->setHooks($app['hooks']);

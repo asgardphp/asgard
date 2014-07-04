@@ -2,21 +2,10 @@
 namespace Asgard\Form\Tests;
 
 class FormTest extends \PHPUnit_Framework_TestCase {
-	protected static $app;
+	protected static $translator;
 
-	#for entities
 	public static function setUpBeforeClass() {
-		if(!defined('_ENV_'))
-			define('_ENV_', 'test');
-
-		$app = new \Asgard\Container\Container;
-		$app['config'] = new \Asgard\Config\Config;
-		$app['hooks'] = new \Asgard\Hook\HooksManager($app);
-		$app['cache'] = new \Asgard\Cache\NullCache;
-		$app['translator'] = new \Symfony\Component\Translation\Translator('en');
-		$app['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($app);
-		\Asgard\Entity\Entity::setApp($app);
-		static::$app = $app;
+		static::$translator = new \Symfony\Component\Translation\Translator('en');
 	}
 
 	public function testFormAndGroup() {
@@ -34,8 +23,7 @@ class FormTest extends \PHPUnit_Framework_TestCase {
 		});
 		$form = new \Asgard\Form\Form;
 		$form->setRequest($request);
-		// $form->setHooks(static::$app['hooks']);
-		$form->setTranslator(static::$app['translator']);
+		$form->setTranslator(static::$translator);
 		$form['group'] = $group;
 
 		#pré-rempli le groupe avec des données/entities existants
@@ -66,7 +54,7 @@ class FormTest extends \PHPUnit_Framework_TestCase {
 		#Form
 		$form = new \Asgard\Form\Form('test', [], $request);
 		$form['title'] = new \Asgard\Form\Fields\TextField;
-		$form->setTranslator(static::$app['translator']);
+		$form->setTranslator(static::$translator);
 		$childForm = new \Asgard\Form\Form('test', []);
 		$childForm['content'] = new \Asgard\Form\Fields\TextField(['validation' => 'required']);
 		$form['childForm'] = $childForm;
@@ -186,38 +174,6 @@ class FormTest extends \PHPUnit_Framework_TestCase {
 	public function testHTMLHelper() {
 		$this->assertEquals('<test a="b" c="d">bla</test>', \Asgard\Form\HTMLHelper::tag('test', ['a'=>'b', 'c'=>'d'], 'bla'));
 		$this->assertEquals('<test a="b" c="d">', \Asgard\Form\HTMLHelper::tag('test', ['a'=>'b', 'c'=>'d']));
-	}
-
-	public function testEntityForm() {
-		$user = new Entities\User;
-		$form = new \Asgard\Form\EntityForm($user, [], null);
-		$form->setTranslator(static::$app['translator']);
-		$request = new \Asgard\Http\Request;
-		$request->setMethod('post')->post->set('user', ['name' => 'Bob']);
-		$form->setRequest($request);
-
-		$this->assertEquals($user, $form->getEntity());
-
-		$form->addRelation('comments');
-		return;
-/*
-		$this->assertEquals([], $form->errors());
-		$form->save();
-		$this->assertEquals($user->name, 'Bob');
-		
-		$request->post->set('user', []);
-		$form->fetch();
-		$this->assertEquals([
-			'name' => '..'
-		], $this->errors());
-		$this->setExpectedException('Asgard\Form\FormException');
-		$form->save();*/
-
-		#__construct
-		#addRelation
-		#getEntity
-		#errors
-		#save
 	}
 
 	#EntityForm

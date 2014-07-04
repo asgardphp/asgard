@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\Form;
+namespace Asgard\Entityform;
 
 class EntityFieldsSolver {
 	protected $solvers = [];
@@ -15,14 +15,14 @@ class EntityFieldsSolver {
 				case 'Asgard\Entity\Properties\DoubleProperty':
 				case 'Asgard\Entity\Properties\IntegerProperty':
 				case 'Asgard\Entity\Properties\EmailProperty':
-					return new Fields\TextField;
+					return new \Asgard\Form\Fields\TextField;
 				case 'Asgard\Entity\Properties\BooleanProperty':
-					return new Fields\BooleanField;
+					return new \Asgard\Form\Fields\BooleanField;
 				case 'Asgard\Entity\Properties\DateProperty':
 				case 'Asgard\Entity\Properties\DatetimeProperty':
-					return new Fields\DateField;
+					return new \Asgard\Form\Fields\DateField;
 				case 'Asgard\Entity\Properties\FileProperty':
-					return new Fields\FileField;
+					return new \Asgard\Form\Fields\FileField;
 			}
 		});
 		foreach($solvers as $solver)
@@ -61,7 +61,7 @@ class EntityFieldsSolver {
 				return $res;
 		}
 
-		return new Fields\TextField;
+		return new \Asgard\Form\Fields\TextField;
 	}
 
 	public function doSolveMultiple($property) {

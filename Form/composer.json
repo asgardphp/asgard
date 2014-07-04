@@ -12,12 +12,8 @@
         "php": ">=5.4.0",
         "asgard/common": "dev-master",
         "asgard/http": "dev-master",
-        "asgard/hook": "dev-master",
         "asgard/validation": "dev-master",
         "asgard/files": "dev-master",
         "asgard/container": "dev-master"
-    },
-    "suggest": {
-        "asgard/entity": "dev-master"
     }
 }

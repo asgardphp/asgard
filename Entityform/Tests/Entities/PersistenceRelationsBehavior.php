@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\Form\Tests\Entities;
+namespace Asgard\Entityform\Tests\Entities;
 
 class FakeEntity {
 	public $id;
@@ -46,7 +46,7 @@ class PersistenceRelationsBehavior extends \Asgard\Entity\Behavior implements \A
 
 	#Article::relation('parent')
 	public function static_relation($name) {
-		return ['entity'=>'Asgard\Form\Tests\Entities\Comment', 'has'=>'many'];
+		return ['entity'=>'Asgard\Entityform\Tests\Entities\Comment', 'has'=>'many'];
 	}
 
 	#Article::hasRelation('parent')

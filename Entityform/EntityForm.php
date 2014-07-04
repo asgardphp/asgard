@@ -1,7 +1,7 @@
 <?php
-namespace Asgard\Form;
+namespace Asgard\Entityform;
 
-class EntityForm extends Form {
+class EntityForm extends \Asgard\Form\Form {
 	protected $entity;
 	protected $locales = [];
 	protected $entityFieldsSolver;
@@ -73,14 +73,14 @@ class EntityForm extends Form {
 			$ids[$v->id] = (string)$v;
 				
 		if($relation['has'] == 'one') {
-			$this->add(new Fields\SelectField([
+			$this->add(new \Asgard\Form\Fields\SelectField([
 				'type'	=>	'integer',
 				'choices'		=>	$ids,
 				'default'	=>	($this->entity->isOld() && $this->entity->$name ? $this->entity->$name->id:null),
 			]), $name);
 		}
 		elseif($relation['has'] == 'many') {
-			$this->add(new Fields\MultipleSelectField([
+			$this->add(new \Asgard\Form\Fields\MultipleSelectField([
 				'type'	=>	'integer',
 				'choices'		=>	$ids,
 				'default'	=>	($this->entity->isOld() ? $this->entity->$name()->ids():[]),

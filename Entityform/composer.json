@@ -1,0 +1,16 @@
+{
+	"name": "asgard/entityform",
+	"license": "MIT",
+	"authors": [{
+		"name": "Michel Hognerud",
+		"email": "michel@hognerud.net"
+	}],
+    "autoload": {
+        "psr-4": {"Asgard\\Entityform\\": "."}
+    },
+    "require": {
+        "php": ">=5.4.0",
+        "asgard/form": "dev-master",
+        "asgard/entity": "dev-master"
+    }
+}
