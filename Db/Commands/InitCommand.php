@@ -66,7 +66,7 @@ class InitCommand extends \Asgard\Console\Command {
 					'user' => $user,
 					'password' => $password,
 				]);
-				$db->query('CREATE DATABASE `'.$name.'`');
+				$db->query('CREATE DATABASE `'.$name.'` CHARACTER SET utf8 COLLATE utf8_general_ci');
 			} catch(\PDOException $e) {
 				$this->error('The database could not be created.');
 			}
