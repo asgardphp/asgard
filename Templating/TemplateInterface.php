@@ -2,6 +2,8 @@
 namespace Asgard\Templating;
 
 interface TemplateInterface {
+	public function getEngine();
+
 	public function setEngine(TemplateEngineInterface $engine);
 
 	public function setTemplate($template);

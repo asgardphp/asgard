@@ -16,6 +16,10 @@ class PHPTemplate implements TemplateInterface {
 		return template_exists($this->template);
 	}
 
+	public function getEngine() {
+		return $this->engine;
+	}
+
 	public function setEngine(TemplateEngineInterface $engine) {
 		$this->engine = $engine;
 		return $this;

@@ -23,7 +23,7 @@ trait Viewable {
 
 		if($result !== null) {
 			if($result instanceof TemplateInterface) {
-				if($this->templateEngine)
+				if(!$result->getEngine() && $this->templateEngine)
 					$result->setEngine($this->templateEngine);
 				return $result->render();
 			}

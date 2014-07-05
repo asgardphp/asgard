@@ -12,6 +12,10 @@ class Template implements \Asgard\Templating\TemplateInterface {
 		$this->setParams($params);
 	}
 
+	public function getEngine() {
+		return $this->engine;
+	}
+
 	public function setEngine(\Asgard\Templating\TemplateEngineInterface $engine) {
 		$this->engine = $engine;
 		return $this;
