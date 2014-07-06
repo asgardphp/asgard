@@ -20,23 +20,22 @@ class RoutesCommand extends \Asgard\Console\Command {
 
 		$routes = $this->resolver->sortRoutes()->getRoutes();
 		foreach($routes as $route) {
-			$cb = $route->getCallback();
+			$controller = $route->getController();
+			$action = $route->getAction();
 			$table->addRow([
 				$route->get('method'),
 				$route->get('host'),
 				'/'.$route->getRoute(),
-				$route instanceof \Asgard\Http\ControllerRoute ?
-					$route->getController():
-					($cb instanceof \Closure ?
+				$route->getController(),
+				($action instanceof \Closure ?
 							'Closure':
-							is_array($cb) ?
-								is_object($cb[0]) ? 
-									'array('.get_class($cb[0]).', '.$cb[1].')':
-									'array('.$cb[0].', '.$cb[1].')'
+							is_array($action) ?
+								is_object($action[0]) ? 
+									'array('.get_class($action[0]).', '.$action[1].')':
+									'array('.$action[0].', '.$action[1].')'
 								:
-								$cb
-				),
-				$route instanceof \Asgard\Http\ControllerRoute ? $route->getAction():'',
+								$action
+				)
 			]);
 		}
 
