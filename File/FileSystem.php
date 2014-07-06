@@ -140,6 +140,6 @@ class FileSystem {
 		$r = file_put_contents($dst, $content);
 		if($r && $rename)
 			return $dst;
-		return $r;
+		return $r !== false;
 	}
 }
