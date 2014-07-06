@@ -58,6 +58,7 @@ class InitCommand extends \Asgard\Console\Command {
 				'password' => $password,
 				'database' => $name,
 			]);
+			$this->comment('Database already exist.');
 		} catch(\PDOException $e) {
 			try {
 				$db = new \Asgard\Db\DB([
@@ -76,11 +77,5 @@ class InitCommand extends \Asgard\Console\Command {
 			$this->info('Database configuration created with success.');
 		else
 			$this->error('Database configuration creation failed.');
-	}
-
-	protected function getOptions() {
-		return [
-			['env', null, InputOption::VALUE_NONE, 'Configuration environment.', null],
-		];
 	}
 }

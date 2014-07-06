@@ -113,14 +113,24 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			$em = $app['entitiesManager'];
 			$mm = $app['migrationsManager'];
 
-			$ormAutomigrate = new \Asgard\Orm\Commands\AutoMigrateCommand($em, $mm, $app['db']);
-			$app['console']->add($ormAutomigrate);
+			try {
+				$db = $app['db'];
 
-			$ormGenerateMigration = new \Asgard\Orm\Commands\GenerateMigrationCommand($em, $mm, $app['db']);
-			$app['console']->add($ormGenerateMigration);
+				$ormAutomigrate = new \Asgard\Orm\Commands\AutoMigrateCommand($em, $mm, $db);
+				$app['console']->add($ormAutomigrate);
 
-			$dbRestore = new \Asgard\Db\Commands\RestoreCommand($app['db']);
-			$app['console']->add($dbRestore);
+				$ormGenerateMigration = new \Asgard\Orm\Commands\GenerateMigrationCommand($em, $mm, $db);
+				$app['console']->add($ormGenerateMigration);
+
+				$dbRestore = new \Asgard\Db\Commands\RestoreCommand($db);
+				$app['console']->add($dbRestore);
+
+				$dbEmpty = new \Asgard\Db\Commands\EmptyCommand($db);
+				$app['console']->add($dbEmpty);
+
+				$dbDump = new \Asgard\Db\Commands\DumpCommand($db, $app['kernel']['root'].'/storage/dumps/sql');
+				$app['console']->add($dbDump);
+			} catch(\Exception $e) {}
 
 			$httpRoutes = new \Asgard\Http\Commands\RoutesCommand($app['resolver']);
 			$app['console']->add($httpRoutes);
@@ -131,11 +141,6 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			$cacheClear = new \Asgard\Cache\Commands\ClearCommand($app['cache']);
 			$app['console']->add($cacheClear);
 
-			$dbEmpty = new \Asgard\Db\Commands\EmptyCommand($app['db']);
-			$app['console']->add($dbEmpty);
-
-			$dbDump = new \Asgard\Db\Commands\DumpCommand($app['db'], $app['kernel']['root'].'/storage/dumps/sql');
-			$app['console']->add($dbDump);
 
 			$configInit = new \Asgard\Config\Commands\InitCommand($app['kernel']['root'].'/config');
 			$app['console']->add($configInit);
@@ -167,7 +172,7 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			$migrationAdd = new \Asgard\Migration\Commands\AddCommand($root.'/migrations');
 			$app['console']->add($migrationAdd);
 
-			$httpTests = new \Asgard\Http\Commands\GenerateTestsCommand($app['kernel']['root'].'/Tests');
+			$httpTests = new \Asgard\Http\Commands\GenerateTestsCommand($app['kernel']['root'].'/tests');
 			$app['console']->add($httpTests);
 
 			$httpBrowser = new \Asgard\Http\Commands\BrowserCommand();

@@ -1,20 +1,28 @@
 <?php
-namespace Asgard\Core\Commands;
+namespace Asgard\Core;
 
 class Publisher {
+	protected $app;
+
+	public function __construct($app) {
+		$this->app = $app;
+	}
+
 	public function publish($src, $dst) {
-		\Asgard\File\FileSystem::copy($src, $dst);
+		return \Asgard\File\FileSystem::copy($src, $dst);
 	}
 
 	public function publishMigrations($src, $dst, $migrate) {
-			\Asgard\File\FileSystem::copy($src, $dst);
-			$mm = new \Asgard\Migration\MigrationsManager($dst);
+			if(!\Asgard\File\FileSystem::copy($src, $dst))
+				return false;
+			$mm = new \Asgard\Migration\MigrationsManager($dst, $this->app);
 			$tracking = new \Asgard\Migration\Tracker($src);
-			foreach($tracking->getList() as $migration=>$params) {
+			foreach(array_keys($tracking->getList()) as $migration) {
 				if($migrate)
-					$mm->migrate($migration);
+					$mm->migrate($migration, true);
 				else
 					$mm->add($migration);
 			}
+			return true;
 	}
 }

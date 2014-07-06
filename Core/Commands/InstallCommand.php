@@ -35,7 +35,7 @@ class InstallCommand extends \Asgard\Console\Command {
 	}
 
 	protected function install($src, $suggest, $migrate, $updateComposer, $root, $modules, $appComposer) {
-		$tmp = sys_get_temp_dir().'/'.\Asgard\Common\Tools::randStr(10);
+		$tmp = sys_get_temp_dir().'/'.\Asgard\Common\Tools::randstr(10);
 
 		if(!$this->gitInstall($src, $tmp)) {
 			$this->error('The files could not be downloaded.');
@@ -44,22 +44,22 @@ class InstallCommand extends \Asgard\Console\Command {
 
 		if(!file_exists($tmp.'/asgard.json')) {
 			$this->error('asgard.json is missing for '.$src.'.');
-			continue;
+			return;
 		}
 
 		foreach(glob($tmp.'/app/*') as $dir) {
 			$dir = basename($dir);
 			if(file_exists($root.'/app/'.$dir)) {
 				$this->error('Some of the app files already exists for '.$src.'.');
-				continue 2;
+				return;
 			}
 		}
 
-		foreach(glob($tmp.'/Migrations/*') as $dir) {
+		foreach(glob($tmp.'/migrations/*') as $dir) {
 			$dir = basename($dir);
-			if(file_exists($root.'/Migrations/'.$dir)) {
+			if(file_exists($root.'/migrations/'.$dir)) {
 				$this->error('Some of the migration files already exists for '.$src.'.');
-				continue 2;
+				return;
 			}
 		}
 
@@ -69,14 +69,14 @@ class InstallCommand extends \Asgard\Console\Command {
 			$asgard = [];
 		if(!isset($asgard['name'])) {
 			$this->error('Name missing for '.$src.'.');
-			continue;
+			return;
 		}
 		else
 			$name = $asgard['name'];
 
 		if(in_array($name, $modules)) {
 			$this->comment($name.' has already been installed.');
-			continue;
+			return;
 		}
 
 		#asgard deps
@@ -93,27 +93,37 @@ class InstallCommand extends \Asgard\Console\Command {
 			}
 		}
 
-		$publisher = new Publisher();
+		$publisher = new Publisher($this->getContainer());
 
 		#copy app
-		if(file_exists($tmp.'/app'))
-			$publisher->publish($tmp.'/app', $root.'/app');
+		if(file_exists($tmp.'/app')) {
+			if(!$publisher->publish($tmp.'/app', $root.'/app'))
+				$this->warning('app/ could not be published.');
+		}
 
 		#copy config
-		if(file_exists($tmp.'/config'))
-			$publisher->publish($tmp.'/config', $root.'/config');
+		if(file_exists($tmp.'/config')) {
+			if(!$publisher->publish($tmp.'/config', $root.'/config'))
+				$this->warning('config/ could not be published.');
+		}
 
 		#copy tests
-		if(file_exists($tmp.'/Tests'))
-			$publisher->publish($tmp.'/Tests', $root.'/Tests');
+		if(file_exists($tmp.'/tests')) {
+			if(!$publisher->publish($tmp.'/tests', $root.'/tests'))
+				$this->warning('tests/ could not be published.');
+		}
 
 		#copy web
-		if(file_exists($tmp.'/web'))
-			$publisher->publish($tmp.'/web', $root.'/web');
+		if(file_exists($tmp.'/web')) {
+			if(!$publisher->publish($tmp.'/web', $root.'/web'))
+				$this->warning('web/ could not be published.');
+		}
 
 		#copy migrations
-		if(file_exists($tmp.'/Migrations/migrations.json'))
-			$publisher->publishMigrations($tmp.'/Migrations', $root.'/Migrations', $migrate);
+		if(file_exists($tmp.'/migrations/migrations.json')) {
+			if(!$publisher->publishMigrations($tmp.'/migrations', $root.'/migrations', $migrate))
+				$this->warning('migrations/ could not be published.');
+		}
 
 		#composer
 		if($updateComposer && $appComposer && file_exists($tmp.'/composer.json')) {
@@ -149,11 +159,13 @@ class InstallCommand extends \Asgard\Console\Command {
 	}
 
 	protected function runCommand($cmd) {
+		$this->comment($cmd);
+
 		$process = proc_open($cmd,
 			[
-			   0 => ["pipe", "r"],
-			   1 => ["pipe", "w"],
-			   2 => ["pipe", "w"],
+			   0 => ['pipe', 'r'],
+			   1 => ['pipe', 'w'],
+			   2 => ['pipe', 'w'],
 			],
 			$pipes
 		);
