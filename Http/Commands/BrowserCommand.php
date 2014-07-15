@@ -32,19 +32,28 @@ class BrowserCommand extends \Asgard\Console\Command {
 		$browser->getSession()->setAll($session);
 		$response = $browser->req($url, $method, $post, $files, $body, $headers, $server);
 
-		if($this->input->getOption('showAll') || $this->input->getOption('showCode'))
+		$showContent = $this->input->getOption('showContent');
+		$showCode = $this->input->getOption('showCode');
+		$showAll = $this->input->getOption('showAll');
+		$showSession = $this->input->getOption('showSession');
+		$showCookies = $this->input->getOption('showCookies');
+		$showHeaders = $this->input->getOption('showHeaders');
+		if(!$showCode && !$showAll && !$showSession && !$showCookies && !$showHeaders)
+			$showContent = true;
+
+		if($showAll || $showCode)
 			$this->output->writeln('Code: '.($response->isOK() ? '<info>':'<error>').$response->getCode().($response->isOK() ? '</info>':'</error>'));
-		if($this->input->getOption('showAll') || $this->input->getOption('showContent'))
+		if($showAll || $showContent)
 			$this->output->writeln($response->getContent());
-		if($this->input->getOption('showAll') || $this->input->getOption('showSession')) {
+		if($showAll || $showSession) {
 			$this->output->writeln('Session:');
 			$this->output->writeln(json_encode($browser->getSession()->all(), JSON_PRETTY_PRINT));
 		}
-		if($this->input->getOption('showAll') || $this->input->getOption('showCookies')) {
+		if($showAll || $showCookies) {
 			$this->output->writeln('Cookies');
 			$this->output->writeln(json_encode($browser->getCookies()->all(), JSON_PRETTY_PRINT));
 		}
-		if($this->input->getOption('showAll') || $this->input->getOption('showHeaders')) {
+		if($showAll || $showHeaders) {
 			$this->output->writeln('Headers');
 			$this->output->writeln(json_encode($response->getHeaders(), JSON_PRETTY_PRINT));
 		}

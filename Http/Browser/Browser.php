@@ -56,6 +56,7 @@ class Browser {
 
 		#build request
 		$get = [];
+		$url = ltrim($url, '/');
 		$infos = parse_url($url);
 		if(isset($infos['query'])) {
 			parse_str($infos['query'], $get);
