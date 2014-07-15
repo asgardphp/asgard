@@ -152,19 +152,19 @@ class InstallCommand extends \Asgard\Console\Command {
 
 	protected function gitInstall($src, $tmp) {
 		$cmd = 'git clone "'.$src.'" "'.$tmp.'"';
-		return $this->runCommand($cmd);
+		return $this->runCommand($cmd, true);
 	}
 
 	protected function updateComposer($dir) {
 		$cmd = 'composer update --working-dir "'.$dir.'"';
-		return $this->runCommand($cmd);
+		return $this->runCommand($cmd, true);
 	}
 
-	protected function runCommand($cmd) {
+	protected function runCommand($cmd, $verbose=false) {
 		$this->comment($cmd);
 
 		$process = proc_open($cmd,
-			[
+			$pipes = [
 			   0 => ['pipe', 'r'],
 			   1 => ['pipe', 'w'],
 			   2 => ['pipe', 'w'],
@@ -172,14 +172,22 @@ class InstallCommand extends \Asgard\Console\Command {
 			$pipes
 		);
 
-		return proc_close($process) === 0;
+		if($verbose) {
+			echo stream_get_contents($pipes[1]);
+			fclose($pipes[1]);
+		}
+
+		while(($status=proc_get_status($process)) && $status['running']) {}
+		$exitCode = $status['exitcode'];
+		proc_close($process);
+		return $exitCode === 0;
 	}
 
 	protected function getOptions() {
 		return [
 			['suggest', null, InputOption::VALUE_NONE, 'Install suggested dependencies.', null],
 			['migrate', null, InputOption::VALUE_NONE, 'Automatically execute the migrations.', null],
-			['update-composer', null, InputOption::VALUE_NONE, 'Automatically updates composer.', null],
+			['update-composer', null, InputOption::VALUE_NONE, 'Automatically updates composer.', null]
 		];
 	}
 
