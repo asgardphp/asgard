@@ -151,7 +151,7 @@ class InstallCommand extends \Asgard\Console\Command {
 	}
 
 	protected function gitInstall($src, $tmp) {
-		$cmd = 'git clone "'.$src.'" "'.$tmp.'"';
+		$cmd = 'git clone --recursive "'.$src.'" "'.$tmp.'"';
 		return $this->runCommand($cmd, true);
 	}
 
