@@ -29,13 +29,15 @@ class InstallCommand extends \Asgard\Console\Command {
 		foreach($sources as $src)
 			$this->install($src, $suggest, $migrate, $updateComposer, $root, $modules, $appComposer);
 
+		file_put_contents($root.'/modules.json', json_encode(array_unique($modules), JSON_PRETTY_PRINT));
+
 		if($updateComposer && $appComposer) {
 			file_put_contents($root.'/composer.json', json_encode($appComposer, JSON_PRETTY_PRINT));
 			$this->updateComposer($root);
 		}
 	}
 
-	protected function install($src, $suggest, $migrate, $updateComposer, $root, $modules, $appComposer) {
+	protected function install($src, $suggest, $migrate, $updateComposer, $root, &$modules, &$appComposer) {
 		$tmp = sys_get_temp_dir().'/'.\Asgard\Common\Tools::randstr(10);
 
 		if(!$this->gitInstall($src, $tmp)) {
@@ -144,7 +146,6 @@ class InstallCommand extends \Asgard\Console\Command {
 		}
 
 		$modules[] = $name;
-		file_put_contents($root.'/modules.json', json_encode(array_unique($modules), JSON_PRETTY_PRINT));
 
 		$this->info('Module "'.$name.'" installed with success.');
 	}
