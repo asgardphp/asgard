@@ -15,8 +15,6 @@ class FiltersTest extends \PHPUnit_Framework_TestCase {
 		$app = new \Asgard\Container\Container([
 			'errorHandler' => new \Asgard\Debug\ErrorHandler,
 			'hooks' => new \Asgard\Hook\HooksManager,
-			'config' => new \Asgard\Config\Config,
-			'translator' => new \Symfony\Component\Translation\Translator('en'),
 			'resolver' => $resolver,
 		]);
 
@@ -34,8 +32,6 @@ class FiltersTest extends \PHPUnit_Framework_TestCase {
 		$app = new \Asgard\Container\Container([
 			'errorHandler' => new \Asgard\Debug\ErrorHandler,
 			'hooks' => new \Asgard\Hook\HooksManager,
-			'config' => new \Asgard\Config\Config,
-			'translator' => new \Symfony\Component\Translation\Translator('en'),
 			'resolver' => $resolver,
 		]);
 
@@ -53,8 +49,6 @@ class FiltersTest extends \PHPUnit_Framework_TestCase {
 		$app = new \Asgard\Container\Container([
 			'errorHandler' => new \Asgard\Debug\ErrorHandler,
 			'hooks' => new \Asgard\Hook\HooksManager,
-			'config' => new \Asgard\Config\Config,
-			'translator' => new \Symfony\Component\Translation\Translator('en'),
 			'resolver' => $resolver,
 		]);
 
@@ -72,8 +66,6 @@ class FiltersTest extends \PHPUnit_Framework_TestCase {
 		$app = new \Asgard\Container\Container([
 			'errorHandler' => new \Asgard\Debug\ErrorHandler,
 			'hooks' => new \Asgard\Hook\HooksManager,
-			'config' => new \Asgard\Config\Config,
-			'translator' => new \Symfony\Component\Translation\Translator('en'),
 			'resolver' => $resolver,
 		]);
 
@@ -91,8 +83,6 @@ class FiltersTest extends \PHPUnit_Framework_TestCase {
 		$app = new \Asgard\Container\Container([
 			'errorHandler' => new \Asgard\Debug\ErrorHandler,
 			'hooks' => new \Asgard\Hook\HooksManager,
-			'config' => new \Asgard\Config\Config,
-			'translator' => new \Symfony\Component\Translation\Translator('en'),
 			'resolver' => $resolver,
 		]);
 
@@ -110,8 +100,6 @@ class FiltersTest extends \PHPUnit_Framework_TestCase {
 		$app = new \Asgard\Container\Container([
 			'errorHandler' => new \Asgard\Debug\ErrorHandler,
 			'hooks' => new \Asgard\Hook\HooksManager,
-			'config' => new \Asgard\Config\Config,
-			'translator' => new \Symfony\Component\Translation\Translator('en'),
 			'resolver' => $resolver,
 		]);
 
@@ -131,20 +119,5 @@ class FiltersTest extends \PHPUnit_Framework_TestCase {
 		$res = $controller->run('page', new Request);
 
 		$this->assertEquals('<h1>hello!</h1>', $res->content);
-	}
-
-	public function testJson() {
-		$app = new \Asgard\Container\Container;
-		$app['hooks'] = new \Asgard\Hook\HooksManager($app);
-		$app['cache'] = new \Asgard\Cache\NullCache();
-		$app['config'] = new \Asgard\Config\Config();
-		$app['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($app);
-		\Asgard\Entity\Entity::setApp($app);
-
-		$controller = new \Asgard\Http\Tests\Fixtures\Controllers\FooController();
-		$controller->addFilter(new \Asgard\Http\Filters\JSONEntities());
-		$res = $controller->run('json', new Request);
-
-		$this->assertEquals('[{"title":"hello","content":"world"},{"title":"welcome","content":"home"}]', $res->content);
 	}
 }

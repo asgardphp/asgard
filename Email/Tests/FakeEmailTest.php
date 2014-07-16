@@ -3,7 +3,8 @@ namespace Asgard\Email\Tests;
 
 class FakeEmailTest extends \PHPUnit_Framework_TestCase {
 	public function test() {
-		\Asgard\File\FileSystem::delete(__DIR__.'/res.txt');
+		if(file_exists(__DIR__.'/res.txt'))
+			unlink(__DIR__.'/res.txt');
 
 		$email = new \Asgard\Email\FakeEmail;
 		$email->transport(__DIR__.'/res.txt');

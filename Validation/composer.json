@@ -6,7 +6,14 @@
 		"email": "michel@hognerud.net"
 	}],
     "require": {
-        "php": ">=5.4.0"
+        "php": ">=5.4.0",
+        "asgard/common": "dev-master"
+    },
+    "suggest": {
+        "symfony/translation": "2.*"
+    },
+    "require-dev": {
+        "symfony/translation": "2.*"
     },
     "autoload": {
         "psr-4": {"Asgard\\Validation\\": "."}

@@ -7,19 +7,14 @@ class FilePropertyTest extends \PHPUnit_Framework_TestCase {
 	public static function setUpBeforeClass() {
 		$app = new \Asgard\Container\Container;
 		$app['config'] = new \Asgard\Config\Config;
+		$app['config']['webdir'] = __DIR__.'/Fixtures/';
 		$app['hooks'] = new \Asgard\Hook\HooksManager($app);
 		$app['cache'] = new \Asgard\Cache\NullCache;
 		$app['rulesregistry'] = \Asgard\Validation\RulesRegistry::getInstance();
 		$app['rulesregistry']->registerNamespace('Asgard\File\Rules');
 		$app['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($app);
-		$app['db'] = new \Asgard\Db\DB([
-			'database' => 'asgard',
-			'user' => 'root',
-			'password' => '',
-			'host' => 'localhost'
-		]);
-		$app['kernel'] = new \Asgard\Core\Kernel();
-		$app['kernel']['webdir'] = __DIR__.'/Fixtures/';
+		// $app['kernel'] = new \Asgard\Core\Kernel();
+		// $app['kernel']['webdir'] = __DIR__.'/Fixtures/';
 		$app['request'] = new \Asgard\Http\Request;
 		$app['request']->url->setHost('localhost');
 		$app['request']->url->setRoot('folder');

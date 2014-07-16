@@ -59,7 +59,6 @@ class HttpKernelTest extends \PHPUnit_Framework_TestCase {
 			'config' => [
 				'debug' => false
 			],
-			'translator' => new \Symfony\Component\Translation\Translator('en'),
 		]);
 		$response = $kernel->process(new Request, true);
 		$this->assertEquals(500, $response->getCode());
@@ -81,7 +80,6 @@ class HttpKernelTest extends \PHPUnit_Framework_TestCase {
 			'config' => [
 				'debug' => false
 			],
-			'translator' => new \Symfony\Component\Translation\Translator('en'),
 		]);
 		$response = $kernel->process(new Request, true);
 		$this->assertEquals('plplpl', $response);

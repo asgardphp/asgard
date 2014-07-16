@@ -157,8 +157,10 @@ class HttpKernel {
 		$response = new \Asgard\Http\Response(500);
 		if($this->app['config']['debug'])
 			return $response->setHeader('Content-Type', 'text/html')->setContent($result);
-		else
-			return $response->setHeader('Content-Type', 'text/html')->setContent($this->app['translator']->trans('<h1>Error</h1>Oops, something went wrong.'));
+		else {
+			$msg = isset($this->app['translator']) ? $this->app['translator']->trans('<h1>Error</h1>Oops, something went wrong.'):'<h1>Error</h1>Oops, something went wrong.';
+			return $response->setHeader('Content-Type', 'text/html')->setContent($msg);
+		}
 	}
 
 	public function filterAll($filter, $args=[]) {

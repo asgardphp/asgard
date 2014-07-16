@@ -15,7 +15,15 @@
         "asgard/hook": "dev-master",
         "asgard/config": "dev-master",
         "asgard/common": "dev-master",
-        "asgard/files": "dev-master",
+        "asgard/file": "dev-master",
         "asgard/validation": "dev-master"
+    },
+    "require-dev": {
+        "asgard/http": "dev-master",
+        "nesbot/carbon": "1.*"
+    },
+    "suggest": {
+        "asgard/http": "dev-master",
+        "nesbot/carbon": "1.*"
     }
 }

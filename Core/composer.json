@@ -6,7 +6,10 @@
 		"email": "michel@hognerud.net"
 	}],
     "require": {
-        "php": ">=5.4.0"
+        "php": ">=5.4.0",
+        "asgard/config": "dev-master",
+        "asgard/container": "dev-master",
+		"asgard/common": "dev-master"
     },
     "autoload": {
         "psr-4": {"Asgard\\Core\\": "."}

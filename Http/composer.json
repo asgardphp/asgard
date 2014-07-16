@@ -11,7 +11,7 @@
     "require": {
         "php": ">=5.4.0",
         "doctrine/annotations": "1.*",
-        "doctrine/cache": "1.*",
+        "asgard/cache": "dev-master",
         "asgard/common": "dev-master",
         "asgard/hook": "dev-master",
         "asgard/container": "dev-master",
