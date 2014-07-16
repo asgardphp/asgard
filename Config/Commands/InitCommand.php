@@ -5,7 +5,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class InitCommand extends \Asgard\Console\Command {
-	protected $name = 'init-config';
+	protected $name = 'config:init';
 	protected $description = 'Initialize the configuration file';
 	protected $dir;
 
