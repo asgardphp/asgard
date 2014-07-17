@@ -10,10 +10,10 @@
     },
     "require": {
         "php": ">=5.4.0",
-        "asgard/db": "dev-master",
-        "asgard/common": "dev-master",
-        "asgard/entity": "dev-master",
-        "asgard/migration": "dev-master",
-        "asgard/validation": "dev-master"
+        "asgard/db": "@dev",
+        "asgard/common": "@dev",
+        "asgard/entity": "@dev",
+        "asgard/migration": "@dev",
+        "asgard/validation": "@dev"
     }
 }

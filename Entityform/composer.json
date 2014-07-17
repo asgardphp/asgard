@@ -10,7 +10,7 @@
     },
     "require": {
         "php": ">=5.4.0",
-        "asgard/form": "dev-master",
-        "asgard/entity": "dev-master"
+        "asgard/form": "@dev",
+        "asgard/entity": "@dev"
     }
 }

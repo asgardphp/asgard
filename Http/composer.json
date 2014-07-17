@@ -11,11 +11,11 @@
     "require": {
         "php": ">=5.4.0",
         "doctrine/annotations": "1.*",
-        "asgard/cache": "dev-master",
-        "asgard/common": "dev-master",
-        "asgard/hook": "dev-master",
-        "asgard/container": "dev-master",
-        "asgard/debug": "dev-master",
-        "asgard/templating": "dev-master"
+        "asgard/cache": "@dev",
+        "asgard/common": "@dev",
+        "asgard/hook": "@dev",
+        "asgard/container": "@dev",
+        "asgard/debug": "@dev",
+        "asgard/templating": "@dev"
     }
 }
