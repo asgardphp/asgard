@@ -11,7 +11,11 @@
     "require": {
         "php": ">=5.4.0"
     },
+    "require-dev": {
+        "swiftmailer/swiftmailer": "5.0.*"
+    },
     "suggest": {
         "swiftmailer/swiftmailer": "5.0.*"
-    }
+    },
+    "minimum-stability": "dev"
 }

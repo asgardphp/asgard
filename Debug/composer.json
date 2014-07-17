@@ -10,6 +10,8 @@
     },
     "require": {
         "php": ">=5.4.0",
-        "asgard/http": "@dev"
-    }
+        "asgard/http": "@dev",
+        "psr/log": "1.*"
+    },
+    "minimum-stability": "dev"
 }

@@ -12,5 +12,6 @@
         "php": ">=5.4.0",
         "symfony/yaml": "2.*",
         "asgard/common": "@dev"
-    }
+    },
+    "minimum-stability": "dev"
 }

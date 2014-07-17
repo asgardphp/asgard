@@ -5,17 +5,12 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 	protected static $app;
 
 	public static function setUpBeforeClass() {
-		if(!defined('_ENV_'))
-			define('_ENV_', 'test');
-
 		$app = new \Asgard\Container\Container();
 		$app['hooks'] = new \Asgard\Hook\HooksManager($app);
-		$app['kernel'] = new \Asgard\Core\Kernel();
 		$app['config'] = new \Asgard\Config\Config();
 		$app['config']->set('locale', 'en');
 		$app['config']->set('locales', ['en', 'fr']);
 		$app['cache'] = new \Asgard\Cache\NullCache;
-		$app['translator'] = new \Symfony\Component\Translation\Translator('en');
 		$app['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($app);
 		$config = [
 			'database' => 'asgard',
@@ -63,7 +58,6 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
     
 	#save english version
 	public function test5() {
-		static::$app['translator']->setLocale('en');
 		$news = \Asgard\Orm\Tests\I18nentities\News::load(2);
 		$news->test = 'Hi';
 		$news->save(null, true);

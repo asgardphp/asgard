@@ -14,5 +14,6 @@
     },
     "require-dev": {
         "asgard/file": "@dev"
-    }
+    },
+    "minimum-stability": "dev"
 }

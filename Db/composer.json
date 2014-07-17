@@ -11,5 +11,6 @@
     "require": {
         "php": ">=5.4.0",
         "asgard/common": "@dev"
-    }
+    },
+    "minimum-stability": "dev"
 }

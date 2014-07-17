@@ -2,12 +2,6 @@
 namespace Asgard\Form\Tests;
 
 class FormTest extends \PHPUnit_Framework_TestCase {
-	protected static $translator;
-
-	public static function setUpBeforeClass() {
-		static::$translator = new \Symfony\Component\Translation\Translator('en');
-	}
-
 	public function testFormAndGroup() {
 		#DynamicGroup
 		#data sent to dynamic group "group"
@@ -23,7 +17,6 @@ class FormTest extends \PHPUnit_Framework_TestCase {
 		});
 		$form = new \Asgard\Form\Form;
 		$form->setRequest($request);
-		$form->setTranslator(static::$translator);
 		$form['group'] = $group;
 
 		#pré-rempli le groupe avec des données/entities existants
@@ -54,7 +47,6 @@ class FormTest extends \PHPUnit_Framework_TestCase {
 		#Form
 		$form = new \Asgard\Form\Form('test', [], $request);
 		$form['title'] = new \Asgard\Form\Fields\TextField;
-		$form->setTranslator(static::$translator);
 		$childForm = new \Asgard\Form\Form('test', []);
 		$childForm['content'] = new \Asgard\Form\Fields\TextField(['validation' => 'required']);
 		$form['childForm'] = $childForm;

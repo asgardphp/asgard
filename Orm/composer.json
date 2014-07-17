@@ -15,5 +15,6 @@
         "asgard/entity": "@dev",
         "asgard/migration": "@dev",
         "asgard/validation": "@dev"
-    }
+    },
+    "minimum-stability": "dev"
 }

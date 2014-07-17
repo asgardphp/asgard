@@ -17,5 +17,6 @@
         "asgard/container": "@dev",
         "asgard/debug": "@dev",
         "asgard/templating": "@dev"
-    }
+    },
+    "minimum-stability": "dev"
 }

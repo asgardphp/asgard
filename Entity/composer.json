@@ -25,5 +25,6 @@
     "suggest": {
         "asgard/http": "@dev",
         "nesbot/carbon": "1.*"
-    }
+    },
+    "minimum-stability": "dev"
 }

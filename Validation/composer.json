@@ -17,5 +17,6 @@
     },
     "autoload": {
         "psr-4": {"Asgard\\Validation\\": "."}
-    }
+    },
+    "minimum-stability": "dev"
 }

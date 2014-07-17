@@ -10,5 +10,6 @@
     },
     "autoload": {
         "psr-4": {"Asgard\\Common\\": "."}
-    }
+    },
+    "minimum-stability": "dev"
 }
