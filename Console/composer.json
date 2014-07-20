@@ -10,7 +10,8 @@
     },
     "require": {
         "php": ">=5.4.0",
-        "asgard/container": "@dev"
+        "asgard/container": "@dev",
+        "symfony/console": "2.*"
     },
     "minimum-stability": "dev"
 }
