@@ -265,22 +265,17 @@ class DAL {
 				}
 			}
 			else {
-				if(is_int($key)) {
-					$r = $this->processConditions($value, 'and', false, $table);
-					$string_conditions[] = $r[0];
-					$pdoparams[] = $r[1];
-				}
-				else {
-					$r = $this->processConditions($value, $key, count($value) > 1, $table);
-					$string_conditions[] = $r[0];
-					$pdoparams[] = $r[1];
-				}
+				if(is_int($key))
+					$key = 'and';
+				$r = $this->processConditions($value, $key, $brackets || count($params) > 1, $table);
+				$string_conditions[] = $r[0];
+				$pdoparams[] = $r[1];
 			}
 		}
 
 		$result = implode(' '.strtoupper($condition).' ', $string_conditions);
 		
-		if($brackets)
+		if($brackets && count($params) > 1)
 			$result = '('.$result.')';
 		
 		return [$result, \Asgard\Common\ArrayUtils::flateArray($pdoparams)];

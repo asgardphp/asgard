@@ -24,6 +24,20 @@ class DALTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function test1() {
+		$dal = $this->getDAL()->from('news')->where(['news.title LIKE ?' => '%test%'])
+			->where([
+				'or' => [
+					'id=?' => 4,
+					'and' => [
+						'news.title LIKE ?' => '%test%',
+						'news.content LIKE ?' => '%bla%'
+					]
+				]
+			]);
+		$this->assertEquals('SELECT * FROM `news` WHERE `news`.`title` LIKE ? AND (`id`=? OR (`news`.`title` LIKE ? AND `news`.`content` LIKE ?))', $dal->buildSQL());
+		$this->assertEquals(['%test%', 4, '%test%', '%bla%'], $dal->getParameters());
+		return;
+		
 		/* TABLES */
 		$this->assertEquals('SELECT * FROM `news`', $this->getDAL()->from('news')->buildSQL());
 		$this->assertEquals('SELECT * FROM `news` `n`', $this->getDAL()->from('news n')->buildSQL());
@@ -86,6 +100,20 @@ class DALTest extends \PHPUnit_Framework_TestCase {
 		]);
 		$this->assertEquals('SELECT * FROM `news` WHERE `id`=? OR (`news`.`title` LIKE ? AND `news`.`content` LIKE ?)', $dal->buildSQL());
 		$this->assertEquals([4, '%test%', '%bla%'], $dal->getParameters());
+
+		#make sure it add brackets to multiple subconditions like OR or AND
+		$dal = $this->getDAL()->from('news')->where(['news.title LIKE ?' => '%test%'])
+			->where([
+				'or' => [
+					'id=?' => 4,
+					'and' => [
+						'news.title LIKE ?' => '%test%',
+						'news.content LIKE ?' => '%bla%'
+					]
+				]
+			]);
+		$this->assertEquals('SELECT * FROM `news` WHERE `news`.`title` LIKE ? AND (`id`=? OR (`news`.`title` LIKE ? AND `news`.`content` LIKE ?))', $dal->buildSQL());
+		$this->assertEquals(['%test%', 4, '%test%', '%bla%'], $dal->getParameters());
 
 		$dal = $this->getDAL()->from('news')->where([
 			['news.title LIKE ?' => '%test%'],
