@@ -271,7 +271,7 @@ class DAL {
 					$pdoparams[] = $r[1];
 				}
 				else {
-					$r = $this->processConditions($value, $key, count($params) > 1, $table);
+					$r = $this->processConditions($value, $key, count($value) > 1, $table);
 					$string_conditions[] = $r[0];
 					$pdoparams[] = $r[1];
 				}
