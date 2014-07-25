@@ -60,10 +60,10 @@ class File {
 		return preg_replace('/\/|\\\/', DIRECTORY_SEPARATOR, realpath($path));
 	}
 
-	public function moveToDir($dir, $rename=true) {
+	public function moveToDir($dir, $mode=null) {
 		if($this->isIn($dir))
 			return;
-		return $this->rename($dir.'/'.$this->getName(), $rename);
+		return $this->rename($dir.'/'.$this->getName(), $mode);
 	}
 
 	public function isIn($dir) {
@@ -76,12 +76,12 @@ class File {
 		return $this->formatPath($at) === $this->src;
 	}
 
-	public function rename($dst, $rename=true) {
+	public function rename($dst, $mode=null) {
 		if(!$this->src || $this->isAt($dst)) return;
-		$filename = \Asgard\File\FileSystem::rename($this->src, $dst, $rename);
+		$filename = \Asgard\File\FileSystem::rename($this->src, $dst, $mode);
 		if(!$filename)
 			return false;
-		$this->src = realpath(dirname($dst).'/'.$filename);
+		$this->src = realpath($filename);
 		return $dst;
 	}
 
@@ -91,8 +91,8 @@ class File {
 		return $r;
 	}
 
-	public function copy($dst, $rename=true) {
-		$dst = \Asgard\File\FileSystem::copy($this->src, $dst, $rename);
+	public function copy($dst, $mode=null) {
+		$dst = \Asgard\File\FileSystem::copy($this->src, $dst, $mode);
 		if($dst) {
 			$copy = clone $this;
 			$copy->setSrc($dst);

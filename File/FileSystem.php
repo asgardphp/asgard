@@ -2,6 +2,11 @@
 namespace Asgard\File;
 
 class FileSystem {
+	const OVERRIDE = 1;
+	const RENAME = 2;
+	const IGNORE = 4;
+	const MERGEDIR = 8;
+
 	public static function relativeTo($from, $to) {
 		$from = is_dir($from) ? rtrim($from, '\/') . '/' : $from;
 		$to   = is_dir($to)   ? rtrim($to, '\/') . '/'   : $to;
@@ -44,52 +49,64 @@ class FileSystem {
 		return $dst;
 	}
 
-	public static function rename($src, $dst, $rename=false) {
-		if($rename)
-			$dst = static::getNewFilename($dst);
+	public static function rename($src, $dst, $mode=null) {
+		if($mode === null)
+			$mode = static::OVERRIDE;
 			
-		static::mkdir(dirname($dst));
-			
-		if(!copy($src, $dst))
+		if(!($finalDst = static::copy($src, $dst, $mode)))
 			return false;
 		else {
-			unlink($src);
-			return basename($dst);
+			static::delete($src);
+			return $finalDst;
 		}
 	}
 
-	public static function copy($src, $dst, $rename=false) {
+	public static function copy($src, $dst, $mode=null) {
+		if($mode === null)
+			$mode = static::OVERRIDE;
+
 		if(is_dir($src))
-			return static::copyDir($src, $dst, $rename);
+			return static::copyDir($src, $dst, $mode);
 		else {
-			if($rename)
+			if($mode & static::RENAME)
 				$dst = static::getNewFilename($dst);
+			elseif($mode & static::OVERRIDE)
+				static::delete($dst);
+			elseif(file_exists($dst))
+				return false;
+
 			static::mkdir(dirname($dst));
 			$r = copy($src, $dst);
-			if($rename && $r)
+
+			if($r !== false)
 				return $dst;
-			return $r;
+			return false;
 		}
 	}
 
-	protected static function copyDir($src, $dst, $rename=false) { 
+	protected static function copyDir($src, $dst, $mode=null) {
+		if($mode === null)
+			$mode = static::OVERRIDE;
+
+		if($mode & static::RENAME)
+			$dst = static::getNewFilename($dst);
+		elseif($mode & static::OVERRIDE)
+			static::delete($dst);
+		elseif(!($mode & static::MERGEDIR) && file_exists($dst))
+			return false;
+
 		$r = true;
 		$dir = opendir($src);
-		if($rename)
-			$dst = static::getNewFilename($dst);
 		static::mkdir($dst);
 		while(false !== ($file = readdir($dir))) { 
-			if(($file != '.') && ($file != '..')) { 
-				if(is_dir($src.'/'.$file))
-					$r = $r && static::copyDir($src.'/'.$file,$dst.'/'.$file); 
-				else
-					$r = $r && copy($src.'/'.$file,$dst.'/'.$file); 
-			} 
+			if(($file != '.') && ($file != '..'))
+				$r = $r && static::copy($src.'/'.$file, $dst.'/'.$file, $mode);
 		} 
 		closedir($dir);
-		if($rename)
+
+		if($r !== false)
 			return $dst;
-		return $r;
+		return false;
 	}
 
 	public static function delete($file) {
@@ -133,13 +150,22 @@ class FileSystem {
 		return true;
 	}
 
-	public static function write($dst, $content, $rename=false) {
-		if($rename)
+	public static function write($dst, $content, $mode=null) {
+		if($mode === null)
+			$mode = static::OVERRIDE;
+
+		if($mode & static::RENAME)
 			$dst = static::getNewFilename($dst);
+		elseif($mode & static::OVERRIDE)
+			static::delete($dst);
+		elseif(file_exists($dst))
+			return false;
+
 		static::mkdir(dirname($dst));
 		$r = file_put_contents($dst, $content);
-		if($r && $rename)
+
+		if($r !== false)
 			return $dst;
-		return $r !== false;
+		return false;
 	}
 }
