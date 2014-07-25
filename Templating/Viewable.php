@@ -16,6 +16,19 @@ trait Viewable {
 		return $this->runTemplate($method, $args);
 	}
 
+	public function setTemplateEngine($templateEngine) {
+		$this->templateEngine = $templateEngine;
+		return $this;
+	}
+
+	public function getTemplateEngine() {
+		return $this->templateEngine;
+	}
+
+	public function addTemplatePathSolver($cb) {
+		$this->templatePathSolvers[] = $cb;
+	}
+
 	protected function runTemplate($method, array $args=[]) {
 		ob_start();
 		$result = call_user_func_array([$this, $method], $args);
@@ -38,19 +51,6 @@ trait Viewable {
 			else
 				return $this->renderDefaultTemplate($this->view);
 		}
-	}
-
-	public function setTemplateEngine($templateEngine) {
-		$this->templateEngine = $templateEngine;
-		return $this;
-	}
-
-	public function getTemplateEngine() {
-		return $this->templateEngine;
-	}
-
-	public function addTemplatePathSolver($cb) {
-		$this->templatePathSolvers[] = $cb;
 	}
 
 	protected function solveTemplatePath($template) {

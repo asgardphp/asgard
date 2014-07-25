@@ -12,10 +12,6 @@ class PHPTemplate implements TemplateInterface {
 		$this->setParams($params);
 	}
 
-	public function templateExists() {
-		return template_exists($this->template);
-	}
-
 	public function getEngine() {
 		return $this->engine;
 	}
