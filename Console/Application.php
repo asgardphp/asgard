@@ -9,15 +9,15 @@ use Symfony\Component\Console\Input\InputOption;
  * @author Michel Hognerud <michel@hognerud.net>
 */
 class Application extends \Symfony\Component\Console\Application {
-	protected $asgard;
+	protected $container;
 	
 	/**
 	 * Constructor.
 	 * 
-	 * @param \Asgard\Container\Container asgard The application container
+	 * @param \Asgard\Container\Container container The application container
 	*/
-	public function __construct($name, $version=null, $asgard=null) {
-		$this->asgard = $asgard;
+	public function __construct($name, $version=null, $container=null) {
+		$this->container = $container;
 		parent::__construct($name, $version);
 		$this->setCatchExceptions(false);
 
@@ -41,6 +41,6 @@ class Application extends \Symfony\Component\Console\Application {
 	 * @return \Asgard\Container\Container The application container.
 	*/
 	public function getContainer() {
-		return $this->asgard;
+		return $this->container;
 	}
 }

@@ -141,7 +141,6 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			$cacheClear = new \Asgard\Cache\Commands\ClearCommand($app['cache']);
 			$app['console']->add($cacheClear);
 
-
 			$configInit = new \Asgard\Config\Commands\InitCommand($app['kernel']['root'].'/config');
 			$app['console']->add($configInit);
 
