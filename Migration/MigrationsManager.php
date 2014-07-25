@@ -2,13 +2,14 @@
 namespace Asgard\Migration;
 
 class MigrationsManager {
+	use \Asgard\Container\ContainerAware;
+
 	protected $directory;
-	protected $app;
 	protected $tracker;
 
-	public function __construct($directory, $app=[]) {
+	public function __construct($directory, $container=[]) {
 		$this->directory = $directory;
-		$this->app = $app;
+		$this->container = $container;
 		$this->tracker = new Tracker($directory);
 	}
 
@@ -81,7 +82,7 @@ class '.$name.' extends '.$class.' {
 		if(!file_exists($file))
 			throw new \Exception($file.' does not exists.');
 		$class = \Asgard\Common\Tools::loadClassFile($file);
-		$migration = new $class($this->app);
+		$migration = new $class($this->container);
 
 		$migration->_up();
 	}
@@ -112,7 +113,7 @@ class '.$name.' extends '.$class.' {
 		if(!file_exists($this->directory.'/'.$migrationName.'.php'))
 			return;
 		require_once $this->directory.'/'.$migrationName.'.php';
-		$migration = new $migrationName($this->app);
+		$migration = new $migrationName($this->container);
 
 		$migration->_down();
 		$this->tracker->unmigrate($migrationName);

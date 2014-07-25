@@ -2,7 +2,8 @@
 namespace Asgard\Http;
 
 class HttpKernel {
-	protected $app;
+	use \Asgard\Container\ContainerAware;
+
 	protected $loaded = false;
 	protected $requests = [];
 	protected $start;
@@ -13,8 +14,8 @@ class HttpKernel {
 	protected $beforeFilters = [];
 	protected $afterFilters = [];
 
-	public function __construct($app) {
-		$this->app = $app;
+	public function __construct($container) {
+		$this->container = $container;
 	}
 
 	public function start($start) {
@@ -31,12 +32,12 @@ class HttpKernel {
 
 		$response = $this->process($request);
 
-		$this->app['hooks']->trigger('Asgard.Http.Output', [$response, $request]);
+		$this->container['hooks']->trigger('Asgard.Http.Output', [$response, $request]);
 		return $response;
 	}
 
 	private function setRequest($request) {
-		$this->app['request'] = $request;
+		$this->container['request'] = $request;
 		\Asgard\Http\Request::setInstance($request);
 	}
 
@@ -58,15 +59,15 @@ class HttpKernel {
 				if($e instanceof ControllerException) {
 					$response = $e->getResponse();
 					$severity = $e->getSeverity();
-					$trace = $this->app['errorHandler']->getBacktraceFromException($e);
-					$this->app['errorHandler']->log($severity, $e->getMessage(), $e->getFile(), $e->getLine(), $trace);
+					$trace = $this->container['errorHandler']->getBacktraceFromException($e);
+					$this->container['errorHandler']->log($severity, $e->getMessage(), $e->getFile(), $e->getLine(), $trace);
 				}
 				else {
 					$response = null;
-					$this->app['errorHandler']->logException($e);
+					$this->container['errorHandler']->logException($e);
 				}
 
-				$this->app['hooks']->trigger('Asgard.Http.Exception.'.get_class($e), [$e, &$response, $request]);
+				$this->container['hooks']->trigger('Asgard.Http.Exception.'.get_class($e), [$e, &$response, $request]);
 				if($response === null)
 					$response = $this->getExceptionResponse($e);
 			}
@@ -75,9 +76,9 @@ class HttpKernel {
 		try {
 			if($this->end !== null)
 				include $this->end;
-			$this->app['hooks']->trigger('Asgard.Http.End', [$response]);
+			$this->container['hooks']->trigger('Asgard.Http.End', [$response]);
 		} catch(\Exception $e) {
-			$this->app['errorHandler']->logException($e);
+			$this->container['errorHandler']->logException($e);
 		}
 
 		array_pop($this->requests);
@@ -94,13 +95,13 @@ class HttpKernel {
 	}
 
 	protected function processRaw(Request $request, $catch=true) {
-		$resolver = $this->app['resolver'];
+		$resolver = $this->container['resolver'];
 		$resolver->sortRoutes();
 
-		if($response = $this->app['hooks']->trigger('Asgard.Http.Start', [$request]))
+		if($response = $this->container['hooks']->trigger('Asgard.Http.Start', [$request]))
 			return $response;
 		if($this->start !== null) {
-			$app = $this->app;
+			$container = $this->container;
 			if(($response = include $this->start) !== 1)
 				return $response;
 		}
@@ -117,12 +118,12 @@ class HttpKernel {
 
 	public function runController($controllerClass, $action, $request, $route=null) {
 		$controller = new $controllerClass();
-		$controller->setApp($this->app);
+		$controller->setContainer($this->container);
 
 		$this->addFilters($controller, $action, $request, $route);
 		
-		if($this->app instanceof \Asgard\Container\Container && $this->app->has('templateEngine'))
-			$controller->setTemplateEngine($this->app->make('templateEngine', [$controller]));
+		if($this->container instanceof \Asgard\Container\Container && $this->container->has('templateEngine'))
+			$controller->setTemplateEngine($this->container->make('templateEngine', [$controller]));
 		else {
 			foreach($this->templatePathSolvers as $cb)
 				$controller->addTemplatePathSolver($cb);
@@ -139,14 +140,14 @@ class HttpKernel {
 		while(ob_get_length())
 			ob_end_clean();
 
-		$this->app['errorHandler']->exceptionHandler($e, false);
+		$this->container['errorHandler']->exceptionHandler($e, false);
 
-		$trace = $this->app['errorHandler']->getBacktraceFromException($e);
+		$trace = $this->container['errorHandler']->getBacktraceFromException($e);
 		
 		if($e instanceof \Asgard\Debug\PSRException)
 			$msg = $e->getMessage();
 		elseif($e instanceof \ErrorException)
-			$msg = 'PHP ('.$this->app['errorHandler']->getPHPError($e->getCode()).'): '.$e->getMessage();
+			$msg = 'PHP ('.$this->container['errorHandler']->getPHPError($e->getCode()).'): '.$e->getMessage();
 		else
 			$msg = get_class($e).': '.$e->getMessage();
 
@@ -155,10 +156,10 @@ class HttpKernel {
 			. \Asgard\Debug\Debug::getReport($trace);
 	
 		$response = new \Asgard\Http\Response(500);
-		if($this->app['config']['debug'])
+		if($this->container['config']['debug'])
 			return $response->setHeader('Content-Type', 'text/html')->setContent($result);
 		else {
-			$msg = isset($this->app['translator']) ? $this->app['translator']->trans('<h1>Error</h1>Oops, something went wrong.'):'<h1>Error</h1>Oops, something went wrong.';
+			$msg = isset($this->container['translator']) ? $this->container['translator']->trans('<h1>Error</h1>Oops, something went wrong.'):'<h1>Error</h1>Oops, something went wrong.';
 			return $response->setHeader('Content-Type', 'text/html')->setContent($msg);
 		}
 	}

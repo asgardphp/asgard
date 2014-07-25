@@ -6,27 +6,27 @@ use \Asgard\Http\Request;
 
 class HttpKernelTest extends \PHPUnit_Framework_TestCase {
 	public function testRunAndLastRequest() {
-		$app = new \Asgard\Container\Container([
+		$container = new \Asgard\Container\Container([
 			'hooks' => new \Asgard\Hook\HooksManager,
 		]);
-		$kernel = new HttpKernel($app);
+		$kernel = new HttpKernel($container);
 
 		$resolver = $this->getMock('Asgard\Http\Resolver', ['getRoute'], [new \Asgard\Cache\NullCache]);
 		$resolver->expects($this->once())->method('getRoute')->will($this->returnValue(new \Asgard\Http\Route('', 'Asgard\Http\Tests\Fixtures\HomeController', 'home')));
-		$app['resolver'] = $resolver;
+		$container['resolver'] = $resolver;
 		
 		$this->assertEquals('<h1>Asgard</h1><p>Hello!</p>', $kernel->run()->getContent());
 	}
 
 	public function testLambdaController() {
-		$app = new \Asgard\Container\Container([
+		$container = new \Asgard\Container\Container([
 			'hooks' => new \Asgard\Hook\HooksManager,
 		]);
-		$kernel = new HttpKernel($app);
+		$kernel = new HttpKernel($container);
 
 		$resolver = $this->getMock('Asgard\Http\Resolver', ['getRoute'], [new \Asgard\Cache\NullCache]);
 		$resolver->expects($this->once())->method('getRoute')->will($this->returnValue(new \Asgard\Http\Route('', 'Asgard\Http\LambdaController', function($request) { return '<h1>Asgard</h1><p>Hello!</p>'; })));
-		$app['resolver'] = $resolver;
+		$container['resolver'] = $resolver;
 		
 		$this->assertEquals('<h1>Asgard</h1><p>Hello!</p>', $kernel->process(new \Asgard\Http\Request, false)->getContent());
 	}

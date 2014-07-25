@@ -2,24 +2,24 @@
 namespace Asgard\Entity\Tests;
 
 class FilePropertyTest extends \PHPUnit_Framework_TestCase {
-	protected static $app;
+	protected static $container;
 
 	public static function setUpBeforeClass() {
-		$app = new \Asgard\Container\Container;
-		$app['config'] = new \Asgard\Config\Config;
-		$app['config']['webdir'] = __DIR__.'/Fixtures/';
-		$app['hooks'] = new \Asgard\Hook\HooksManager($app);
-		$app['cache'] = new \Asgard\Cache\NullCache;
-		$app['rulesregistry'] = \Asgard\Validation\RulesRegistry::getInstance();
-		$app['rulesregistry']->registerNamespace('Asgard\File\Rules');
-		$app['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($app);
-		// $app['kernel'] = new \Asgard\Core\Kernel();
-		// $app['kernel']['webdir'] = __DIR__.'/Fixtures/';
-		$app['request'] = new \Asgard\Http\Request;
-		$app['request']->url->setHost('localhost');
-		$app['request']->url->setRoot('folder');
-		\Asgard\Entity\Entity::setApp($app);
-		static::$app = $app;
+		$container = new \Asgard\Container\Container;
+		$container['config'] = new \Asgard\Config\Config;
+		$container['config']['webdir'] = __DIR__.'/Fixtures/';
+		$container['hooks'] = new \Asgard\Hook\HooksManager($container);
+		$container['cache'] = new \Asgard\Cache\NullCache;
+		$container['rulesregistry'] = \Asgard\Validation\RulesRegistry::getInstance();
+		$container['rulesregistry']->registerNamespace('Asgard\File\Rules');
+		$container['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($container);
+		// $container['kernel'] = new \Asgard\Core\Kernel();
+		// $container['kernel']['webdir'] = __DIR__.'/Fixtures/';
+		$container['request'] = new \Asgard\Http\Request;
+		$container['request']->url->setHost('localhost');
+		$container['request']->url->setRoot('folder');
+		\Asgard\Entity\Entity::setContainer($container);
+		static::$container = $container;
 	}
 
 	public function testSet() {

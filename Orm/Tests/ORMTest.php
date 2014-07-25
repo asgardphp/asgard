@@ -1,32 +1,32 @@
 <?php
 class ORMTest extends PHPUnit_Framework_TestCase {
-	protected static $app;
+	protected static $container;
 
 	public static function setUpBeforeClass() {
 		if(!defined('_ENV_'))
 			define('_ENV_', 'test');
 
-		$app = new \Asgard\Container\Container;
-		$app['hooks'] = new \Asgard\Hook\HooksManager($app);
-		$app['config'] = new \Asgard\Config\Config;
-		$app['cache'] = new \Asgard\Cache\NullCache;
-		$app->register('paginator', function($app, $page, $per_page, $total) {
+		$container = new \Asgard\Container\Container;
+		$container['hooks'] = new \Asgard\Hook\HooksManager($container);
+		$container['config'] = new \Asgard\Config\Config;
+		$container['cache'] = new \Asgard\Cache\NullCache;
+		$container->register('paginator', function($container, $page, $per_page, $total) {
 			return new \Asgard\Common\Paginator($page, $per_page, $total);
 		});
-		$app['rulesregistry'] = new \Asgard\Validation\RulesRegistry;
-		$app['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($app);
-		$app['db'] = new \Asgard\Db\DB([
+		$container['rulesregistry'] = new \Asgard\Validation\RulesRegistry;
+		$container['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($container);
+		$container['db'] = new \Asgard\Db\DB([
 			'database' => 'asgard',
 			'user' => 'root',
 			'password' => '',
 			'host' => 'localhost'
 		]);
-		\Asgard\Entity\Entity::setApp($app);
-		static::$app = $app;
+		\Asgard\Entity\Entity::setContainer($container);
+		static::$container = $container;
 	}
 	
 	public function test1() {
-		$db = static::$app['db'];
+		$db = static::$container['db'];
 		$db->query('DROP TABLE IF EXISTS `category`;');
 		$db->query('CREATE TABLE `category` (
 		  `id` tinyint NOT NULL PRIMARY KEY,
@@ -169,7 +169,7 @@ class ORMTest extends PHPUnit_Framework_TestCase {
 		$this->assertCount(2, $r);
 
 		#validation
-		static::$app['rulesregistry']->registerNamespace('Asgard\Orm\Rules');
+		static::$container['rulesregistry']->registerNamespace('Asgard\Orm\Rules');
 		$cat = Asgard\Orm\Tests\Entities\Category::load(1);
 		$this->assertEquals([
 			'news' => [

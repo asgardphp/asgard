@@ -22,22 +22,22 @@ class InstallCommand extends \Asgard\Console\Command {
 		else
 			$modules = [];
 		if(file_exists($root.'/composer.json'))
-			$appComposer = json_decode(file_get_contents($root.'/composer.json'), true);
+			$containerComposer = json_decode(file_get_contents($root.'/composer.json'), true);
 		else
-			$appComposer = null;
+			$containerComposer = null;
 
 		foreach($sources as $src)
-			$this->install($src, $suggest, $migrate, $updateComposer, $root, $modules, $appComposer);
+			$this->install($src, $suggest, $migrate, $updateComposer, $root, $modules, $containerComposer);
 
 		file_put_contents($root.'/modules.json', json_encode(array_unique($modules), JSON_PRETTY_PRINT));
 
-		if($updateComposer && $appComposer) {
-			file_put_contents($root.'/composer.json', json_encode($appComposer, JSON_PRETTY_PRINT));
+		if($updateComposer && $containerComposer) {
+			file_put_contents($root.'/composer.json', json_encode($containerComposer, JSON_PRETTY_PRINT));
 			$this->updateComposer($root);
 		}
 	}
 
-	protected function install($src, $suggest, $migrate, $updateComposer, $root, &$modules, &$appComposer) {
+	protected function install($src, $suggest, $migrate, $updateComposer, $root, &$modules, &$containerComposer) {
 		$tmp = sys_get_temp_dir().'/'.\Asgard\Common\Tools::randstr(10);
 
 		if(!$this->gitInstall($src, $tmp)) {
@@ -86,13 +86,13 @@ class InstallCommand extends \Asgard\Console\Command {
 		if(isset($asgard['require'])) {
 			foreach($asgard['require'] as $requireName=>$requireSrc) {
 				if(!in_array($requireName, $modules))
-					$this->install($requireSrc, $suggest, $migrate, $updateComposer, $root, $modules, $appComposer);
+					$this->install($requireSrc, $suggest, $migrate, $updateComposer, $root, $modules, $containerComposer);
 			}
 		}
 		if($suggest && isset($asgard['suggest'])) {
 			foreach($asgard['suggest'] as $requireName=>$requireSrc) {
 				if(!in_array($requireName, $modules))
-					$this->install($requireSrc, $suggest, $migrate, $updateComposer, $root, $modules, $appComposer);
+					$this->install($requireSrc, $suggest, $migrate, $updateComposer, $root, $modules, $containerComposer);
 			}
 		}
 
@@ -105,14 +105,14 @@ class InstallCommand extends \Asgard\Console\Command {
 		$publisher->publishMigrations($tmp.'/migrations', $root.'/migrations', $migrate);
 
 		#composer
-		if($updateComposer && $appComposer && file_exists($tmp.'/composer.json')) {
+		if($updateComposer && $containerComposer && file_exists($tmp.'/composer.json')) {
 			$modComposer = json_decode(file_get_contents($tmp.'/composer.json'), true);
 			if(isset($modComposer['require']))
-				$appComposer['require'] = array_merge($modComposer['require'], $appComposer['require']);
+				$containerComposer['require'] = array_merge($modComposer['require'], $containerComposer['require']);
 			if(isset($modComposer['autoload']))
-				$appComposer['autoload'] = array_merge_recursive($modComposer['autoload'], $appComposer['autoload']);
+				$containerComposer['autoload'] = array_merge_recursive($modComposer['autoload'], $containerComposer['autoload']);
 			$version = isset($asgard['version']) ? $asgard['version']:'@dev';
-			$appComposer['replace'][$name] = $version;
+			$containerComposer['replace'][$name] = $version;
 		}
 		
 		#scripts

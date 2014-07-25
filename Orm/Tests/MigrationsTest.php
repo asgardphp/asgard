@@ -3,29 +3,29 @@ namespace Asgard\Orm\Tests;
 
 class MigrationsTest extends \PHPUnit_Framework_TestCase {
 	public function testAutoMigrate() {
-		$app = new \Asgard\Container\Container;
-		$app['db'] = new \Asgard\Db\DB([
+		$container = new \Asgard\Container\Container;
+		$container['db'] = new \Asgard\Db\DB([
 			'host' => 'localhost',
 			'user' => 'root',
 			'password' => '',
 			'database' => 'asgard'
 		]);
-		$app['config'] = new \Asgard\Config\Config;
-		$app['hooks'] = new \Asgard\Hook\HooksManager;
-		$app['cache'] = new \Asgard\Cache\NullCache;
-		$app['entitiesManager'] = new \Asgard\Entity\EntitiesManager($app);
-		\Asgard\Entity\Entity::setApp($app);
+		$container['config'] = new \Asgard\Config\Config;
+		$container['hooks'] = new \Asgard\Hook\HooksManager;
+		$container['cache'] = new \Asgard\Cache\NullCache;
+		$container['entitiesManager'] = new \Asgard\Entity\EntitiesManager($container);
+		\Asgard\Entity\Entity::setContainer($container);
 
 		$ormm = new \Asgard\Orm\ORMMigrations();
-		$schema = new \Asgard\Db\Schema($app['db']);
+		$schema = new \Asgard\Db\Schema($container['db']);
 		$schema->dropAll();
 
 		$ormm->autoMigrate(['Asgard\Orm\Tests\Fixtures\Post', 'Asgard\Orm\Tests\Fixtures\Category', 'Asgard\Orm\Tests\Fixtures\Author'], $schema);
 
 		$tables = [];
-		foreach($app['db']->query('SHOW TABLES')->all() as $v) {
+		foreach($container['db']->query('SHOW TABLES')->all() as $v) {
 			$table = array_values($v)[0];
-			$tables[$table] = $app['db']->query('Describe `'.$table.'`')->all();
+			$tables[$table] = $container['db']->query('Describe `'.$table.'`')->all();
 		}
 
 		$this->assertEquals(

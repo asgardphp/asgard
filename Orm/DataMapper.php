@@ -15,21 +15,17 @@ class EntityException extends \Exception implements \Asgard\Entity\EntityExcepti
 }
 
 class DataMapper {
+	use \Asgard\Container\ContainerAware;
+
 	protected $db;
 	protected $locale;
 	protected $prefix;
-	protected $app;
 
-	public function __construct(\Asgard\Db\DB $db, $locale=null, $prefix=null, $app=null) {
+	public function __construct(\Asgard\Db\DB $db, $locale=null, $prefix=null, $container=null) {
 		$this->db = $db;
 		$this->locale = $locale;
 		$this->prefix = $prefix;
-		$this->app = $app;
-	}
-
-	public function setApp($app) {
-		$this->app = $app;
-		return $this;
+		$this->container = $container;
 	}
 
 	public function isNew(\Asgard\Entity\Entity $entity) {
@@ -55,7 +51,7 @@ class DataMapper {
 	}
 	
 	public function orm($entityClass) {
-		$orm = new ORM($entityClass, $this->db, $this->locale, $this->prefix, $this->app, $this);
+		$orm = new ORM($entityClass, $this->db, $this->locale, $this->prefix, $this->container, $this);
 		return $orm;
 	}
 	
@@ -126,7 +122,7 @@ class DataMapper {
 				return $relEntity::where(['id' => $entity->get($link)]);
 			case 'hasMany':
 			case 'HMABT':
-				return new \Asgard\Orm\CollectionORM($entity, $name, $this->db, $this->locale, $this->prefix, $this->app, $this);
+				return new \Asgard\Orm\CollectionORM($entity, $name, $this->db, $this->locale, $this->prefix, $this->container, $this);
 			default:	
 				throw new \Exception('Relation '.$relation_type.' does not exist.');
 		}

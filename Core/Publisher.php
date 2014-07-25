@@ -2,11 +2,12 @@
 namespace Asgard\Core;
 
 class Publisher {
-	protected $app;
+	use \Asgard\Container\ContainerAware;
+	
 	protected $output;
 
-	public function __construct($app, $output) {
-		$this->app = $app;
+	public function __construct($container, $output) {
+		$this->container = $container;
 		$this->output = $output;
 	}
 
@@ -27,7 +28,7 @@ class Publisher {
 				$this->output->warning('The migrations could not be migrated because some files had to be renamed.');
 				$migrate = false;
 			}
-			$mm = new \Asgard\Migration\MigrationsManager($dst, $this->app);
+			$mm = new \Asgard\Migration\MigrationsManager($dst, $this->container);
 			$tracking = new \Asgard\Migration\Tracker($src);
 			foreach(array_keys($tracking->getList()) as $migration) {
 				if($migrate)

@@ -3,29 +3,29 @@ namespace Asgard\Core\Tests;
 
 class BundleTest {
 	// public function testAddBundlesDirs() {
-	// 	$app = new \Asgard\Container\Container;
-	// 	$bm = new \Asgard\Core\BundlesManager($app);
+	// 	$container = new \Asgard\Container\Container;
+	// 	$bm = new \Asgard\Core\BundlesManager($container);
 	// 	$bm->addBundlesDirs(__DIR__.'/Fixtures/bundles/');
 	// 	$this->assertInstanceOf('Asgard\Core\Tests\Fixtures\Bundles\Bundle\Bundle', $bm->getBundles()[0]);
 	// }
 
 	// public function testAddBundles() {
-	// 	$app = new \Asgard\Container\Container;
-	// 	$bm = new \Asgard\Core\BundlesManager($app);
+	// 	$container = new \Asgard\Container\Container;
+	// 	$bm = new \Asgard\Core\BundlesManager($container);
 	// 	$bm->addBundles(new \Asgard\Core\Tests\Fixtures\Bundles\Bundle\Bundle);
 	// 	$this->assertInstanceOf('Asgard\Core\Tests\Fixtures\Bundles\Bundle\Bundle', $bm->getBundles()[0]);
 	// }
 
 	// public function testAddBundlesWithoutClass() {
-	// 	$app = new \Asgard\Container\Container;
-	// 	$bm = new \Asgard\Core\BundlesManager($app);
+	// 	$container = new \Asgard\Container\Container;
+	// 	$bm = new \Asgard\Core\BundlesManager($container);
 	// 	$bm->addBundles(__DIR__.'/Fixtures/bundles');
 	// 	$this->assertInstanceOf('Asgard\Core\BundleLoader', $bm->getBundles()[0]);
 	// }
 
 	// public function testGetBundlesPaths() {
-	// 	$app = new \Asgard\Container\Container;
-	// 	$bm = new \Asgard\Core\BundlesManager($app);
+	// 	$container = new \Asgard\Container\Container;
+	// 	$bm = new \Asgard\Core\BundlesManager($container);
 	// 	$bm->addBundles(new \Asgard\Core\Tests\Fixtures\Bundles\Bundle\Bundle);
 	// 	$this->assertEquals(
 	// 		array(
@@ -47,12 +47,12 @@ class BundleTest {
 	// public function testBundleLoad() {
 	// 	$autoloader = $this->getMock('Asgard\Autoloader\Autoloader', array('preloadDir'));
 	// 	$autoloader->expects($this->once())->method('preloadDir')->with(realpath(__DIR__.'/Fixtures/bundles/bundle'));
-	// 	$app = new \Asgard\Container\Container(array(
+	// 	$container = new \Asgard\Container\Container(array(
 	// 		'autoloader' => $autoloader
 	// 	));
-	// 	$bm = new \Asgard\Core\BundlesManager($app);
+	// 	$bm = new \Asgard\Core\BundlesManager($container);
 	// 	$bundle = new \Asgard\Core\Tests\Fixtures\Bundles\Bundle\Bundle;
-	// 	$bundle->setApp($app);
+	// 	$bundle->setContainer($container);
 	// 	$bundle->load($bm);
 	// }
 
@@ -66,16 +66,16 @@ class BundleTest {
 	// 	$resolver->expects($this->once())->method('addRoutes')->with([]);
 	// 	$clirouter = $this->getMock('StdClass', array('addRoutes'));
 	// 	$clirouter->expects($this->once())->method('addRoutes')->with([]);
-	// 	$app = new \Asgard\Container\Container(array(
+	// 	$container = new \Asgard\Container\Container(array(
 	// 		'translator' => $translator,
 	// 		'hook' => $hook,
 	// 		'resolver' => $resolver,
 	// 		'clirouter' => $clirouter,
 	// 		'cache' => new \Asgard\Cache\NullCache,
 	// 	));
-	// 	$bm = new \Asgard\Core\BundlesManager($app);
+	// 	$bm = new \Asgard\Core\BundlesManager($container);
 	// 	$bundle = new \Asgard\Core\Tests\Fixtures\Bundles\Bundle\Bundle;
-	// 	$bundle->setApp($app);
+	// 	$bundle->setContainer($container);
 	// 	$bundle->setConsole(true);
 	// 	$bundle->run();
 	// }

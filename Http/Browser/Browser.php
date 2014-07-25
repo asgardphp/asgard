@@ -2,14 +2,15 @@
 namespace Asgard\Http\Browser;
 
 class Browser {
+	use \Asgard\Container\ContainerAware;
+
 	protected $cookies;
 	protected $session;
 	protected $last;
-	protected $app;
 	protected $catchException = false;
 
-	public function __construct(\Asgard\Container\Container $app) {
-		$this->app = $app;
+	public function __construct(\Asgard\Container\Container $container) {
+		$this->container = $container;
 		$this->cookies = new CookieManager;
 		$this->session = new SessionManager;
 	}
@@ -80,7 +81,7 @@ class Browser {
 		$request->url->setHost('localhost');
 		$request->url->setRoot('');
 
-		$httpKernel = $this->app['httpKernel'];
+		$httpKernel = $this->container['httpKernel'];
 		$res = $httpKernel->process($request, $this->catchException);
 
 		$this->last = $res;

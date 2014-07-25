@@ -9,9 +9,10 @@ use Jeremeamia\SuperClosure\SerializableClosure;
  * @author Michel Hognerud <michel@hognerud.net>
 */
 class HooksManager {
+	use \Asgard\Container\ContainerAware;
+
 	protected static $instance;
 	public $registry = [];
-	protected $app;
 	
 	public static function singleton() {
 		if(!static::$instance)
@@ -24,8 +25,8 @@ class HooksManager {
 	 * 
 	 * @param \Asgard\Container\Container app Application container.
 	*/
-	public function __construct($app=null) {
-		$this->app = $app;
+	public function __construct($container=null) {
+		$this->container = $container;
 	}
 
 	/**
@@ -39,7 +40,7 @@ class HooksManager {
 	 * @api 
 	*/
 	public function trigger($name, array $args=[], $cb=null, &$chain=null) {
-		$chain = new HookChain($this->app);
+		$chain = new HookChain($this->container);
 		if(is_string($name))
 			$name = explode('.', $name);
 

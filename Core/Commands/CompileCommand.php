@@ -11,8 +11,8 @@ class CompileCommand extends \Asgard\Console\Command {
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$this->getApplication()->add(new \ClassPreloader\Command\PreCompileCommand);
 
-		$app = $this->getContainer();
-		$outputPath = $app['kernel']['root'].'/storage/compiled.php';
+		$container = $this->getContainer();
+		$outputPath = $container['kernel']['root'].'/storage/compiled.php';
 
 		$classes = require __DIR__.'/compile/classes.php';
 

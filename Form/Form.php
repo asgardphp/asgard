@@ -3,6 +3,7 @@ namespace Asgard\Form;
 
 class Form extends Group {
 	use \Asgard\Hook\Hookable;
+	use \Asgard\Container\ContainerAware;
 
 	protected $options = [
 		'method'	=>	'post',
@@ -11,7 +12,6 @@ class Form extends Group {
 	protected $method = 'post';
 	protected $request;
 	protected $translator;
-	protected $app;
 	protected $saveCallback;
 	protected $preSaveCallback;
 
@@ -46,15 +46,11 @@ class Form extends Group {
 			return new \Symfony\Component\Translation\Translator('en');
 	}
 
-	public function setApp($app) {
-		$this->app = $app;
-	}
-
-	public function getApp() {
-		if($this->app)
-			return $this->app;
+	public function getContainer() {
+		if($this->container)
+			return $this->container;
 		if($this->parent)
-			return $this->parent->getApp();
+			return $this->parent->getContainer();
 	}
 
 	public function setRequest(\Asgard\Http\Request $request) {

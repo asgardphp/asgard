@@ -7,6 +7,8 @@ namespace Asgard\Orm;
  * @author Michel Hognerud <michel@hognerud.net>
 */
 class ORM {
+	use \Asgard\Container\ContainerAware;
+
 	protected $dataMapper;
 	protected $entity;
 	protected $with;
@@ -20,7 +22,6 @@ class ORM {
 	protected $db;
 	protected $locale;
 	protected $prefix;
-	protected $app;
 
 	protected $tmp_dal = null;
 	
@@ -29,12 +30,12 @@ class ORM {
 	 * 
 	 * @param \Asgard\Entity\Entity entity The entity class.
 	*/
-	public function __construct($entity, $db, $locale=null, $prefix=null, $app=null, $datamapper=null) {
+	public function __construct($entity, $db, $locale=null, $prefix=null, $container=null, $datamapper=null) {
 		$this->entity = $entity;
 		$this->db = $db;
 		$this->locale = $locale;
 		$this->prefix = $prefix;
-		$this->app = $app;
+		$this->container = $container;
 		$this->dataMapper = $datamapper;
 
 		if($entity::getDefinition()->order_by)
@@ -550,7 +551,7 @@ class ORM {
 	public function getPaginator() {
 		$page = $this->page !== null ? $this->page : 1;
 		$per_page = $this->per_page !== null ? $this->per_page : 10;
-		return $this->app->make('paginator', [$this->count(), $page, $per_page]);
+		return $this->container->make('paginator', [$this->count(), $page, $per_page]);
 	}
 	
 	/**

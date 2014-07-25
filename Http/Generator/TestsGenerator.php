@@ -2,10 +2,10 @@
 namespace Asgard\Core\Generator;
 
 class TestsGenerator {
-	protected $app;
+	use \Asgard\Container\ContainerAware;
 
-	public function __construct($app) {
-		$this->app = $app;
+	public function __construct($container) {
+		$this->container = $container;
 	}
 
 	public function generateTests($dst) {
@@ -27,7 +27,7 @@ class TestsGenerator {
 	}
 
 	protected function doGenerateTests(&$count) {
-		$root = $this->app['kernel']['root'];
+		$root = $this->container['kernel']['root'];
 
 		exec('phpunit', $res);
 
@@ -46,12 +46,12 @@ class TestsGenerator {
 			$tested = array_merge(array_filter(explode("\n", file_get_contents($root.'/Tests/ignore.txt'))));
 		\Asgard\File\FileSystem::delete($root.'/Tests/tested.txt');
 
-		$routes = $this->app['resolver']->getRoutes();
+		$routes = $this->container['resolver']->getRoutes();
 
 		$res = [];
 		foreach($routes as $route) {
 			foreach($tested as $url) {
-				if($this->app['resolver']->matchWith($route->getRoute(), $url) !== false)
+				if($this->container['resolver']->matchWith($route->getRoute(), $url) !== false)
 					continue 2;
 			}
 

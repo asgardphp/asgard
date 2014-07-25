@@ -2,10 +2,10 @@
 namespace Asgard\Migration;
 
 class Migration {
-	protected $app;
+	use \Asgard\Container\ContainerAware;
 
-	public function __construct($app) {
-		$this->app = $app;
+	public function __construct($container) {
+		$this->container = $container;
 	}
 
 	public function up() {}

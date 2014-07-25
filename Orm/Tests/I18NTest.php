@@ -2,25 +2,25 @@
 namespace Asgard\Orm\Tests;
 
 class I18NTest extends \PHPUnit_Framework_TestCase {
-	protected static $app;
+	protected static $container;
 
 	public static function setUpBeforeClass() {
-		$app = new \Asgard\Container\Container();
-		$app['hooks'] = new \Asgard\Hook\HooksManager($app);
-		$app['config'] = new \Asgard\Config\Config();
-		$app['config']->set('locale', 'en');
-		$app['config']->set('locales', ['en', 'fr']);
-		$app['cache'] = new \Asgard\Cache\NullCache;
-		$app['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($app);
+		$container = new \Asgard\Container\Container();
+		$container['hooks'] = new \Asgard\Hook\HooksManager($container);
+		$container['config'] = new \Asgard\Config\Config();
+		$container['config']->set('locale', 'en');
+		$container['config']->set('locales', ['en', 'fr']);
+		$container['cache'] = new \Asgard\Cache\NullCache;
+		$container['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($container);
 		$config = [
 			'database' => 'asgard',
 			'user' => 'root',
 			'password' => '',
 			'host' => 'localhost'
 		];
-		$app['db'] = new \Asgard\Db\DB($config);
-		\Asgard\Entity\Entity::setApp($app);
-		static::$app = $app;
+		$container['db'] = new \Asgard\Db\DB($config);
+		\Asgard\Entity\Entity::setContainer($container);
+		static::$container = $container;
 
 		$mysql = new \Asgard\Db\MySQL($config);
 		$mysql->import(realpath(__DIR__.'/sql/i18ntest.sql'));
@@ -61,7 +61,7 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 		$news = \Asgard\Orm\Tests\I18nentities\News::load(2);
 		$news->test = 'Hi';
 		$news->save(null, true);
-		$dal = new \Asgard\Db\DAL(static::$app['db'], 'news_translation');
+		$dal = new \Asgard\Db\DAL(static::$container['db'], 'news_translation');
 		$r = $dal->where(['locale'=>'en', 'id'=>2])->first();
 		$this->assertEquals('Hi', $r['test']);
 	}

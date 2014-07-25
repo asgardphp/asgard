@@ -2,12 +2,13 @@
 namespace Asgard\Entity;
 
 class EntitiesManager {
+	use \Asgard\Container\ContainerAware;
+
 	protected $entities = [];
 	protected $definitions = [];
-	protected $app;
 
-	public function __construct($app) {
-		$this->app = $app;
+	public function __construct($container) {
+		$this->container = $container;
 	}
 
 	public function addEntity($entityClass) {
@@ -35,12 +36,12 @@ class EntitiesManager {
 		if($this->has($entityClass))
 			return $this->definitions[$entityClass];
 		
-		$app = $this->app;
-		$definition = $this->app['cache']->fetch('entitiesmanager/'.$entityClass.'/definition', function() use($entityClass, $app) {
-			$definition = new EntityDefinition($entityClass, $app);
+		$container = $this->container;
+		$definition = $this->container['cache']->fetch('entitiesmanager/'.$entityClass.'/definition', function() use($entityClass, $container) {
+			$definition = new EntityDefinition($entityClass, $container);
 			return $definition;
 		});
-		$definition->setApp($this->app);
+		$definition->setContainer($this->container);
 		$this->definitions[$entityClass] = $definition;
 		return $definition;
 	}

@@ -7,67 +7,67 @@ class ContainerTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testAutofacade() {
-		$app = \Asgard\Container\Container::singleton();
-		$app->setAutofacade(true);
+		$container = \Asgard\Container\Container::singleton();
+		$container->setAutofacade(true);
 
 		$this->assertFalse(class_exists('Test'));
-		$app['test'] = new Fixtures\Foo;
+		$container['test'] = new Fixtures\Foo;
 		$this->assertTrue(class_exists('Test'));
 		$this->assertEquals('bar', \Test::test());
 
 		$this->assertFalse(class_exists('Test2'));
-		$app->register('test2', function() { return new Fixtures\Foo; });
+		$container->register('test2', function() { return new Fixtures\Foo; });
 		$this->assertTrue(class_exists('Test2'));
 	}
 
 	public function testSetGet() {
-		$app = new \Asgard\Container\Container;
-		$app['test'] = '1245';
-		$this->assertEquals('1245', $app['test']);
+		$container = new \Asgard\Container\Container;
+		$container['test'] = '1245';
+		$this->assertEquals('1245', $container['test']);
 	}
 
 	public function testRegisterAndMake() {
-		$app = new \Asgard\Container\Container;
-		$app->register('test', function() {
+		$container = new \Asgard\Container\Container;
+		$container->register('test', function() {
 			return new \StdClass;
 		});
-		$first = $app->make('test');
-		$second = $app->make('test');
+		$first = $container->make('test');
+		$second = $container->make('test');
 		$this->assertInstanceOf('StdClass', $first);
 		$this->assertInstanceOf('StdClass', $second);
 		$this->assertFalse($first === $second);
 
-		$app->register('test2', function() {
+		$container->register('test2', function() {
 			return new \StdClass;
 		});
-		$this->assertInstanceOf('StdClass', $app['test2']);
+		$this->assertInstanceOf('StdClass', $container['test2']);
 	}
 
 	public function testMakeDefault() {
-		$app = new \Asgard\Container\Container;
-		$this->assertInstanceOf('StdClass', $app->make('test', [], function() { return new \StdClass; }));
+		$container = new \Asgard\Container\Container;
+		$this->assertInstanceOf('StdClass', $container->make('test', [], function() { return new \StdClass; }));
 	}
 
 	public function testHas() {
-		$app = new \Asgard\Container\Container;
-		$app['test1'] = 123;
-		$app->register('test3', function() { return 123; });
-		$this->assertTrue($app->has('test1'));
-		$this->assertFalse($app->has('test2'));
-		$this->assertTrue($app->has('test3'));
+		$container = new \Asgard\Container\Container;
+		$container['test1'] = 123;
+		$container->register('test3', function() { return 123; });
+		$this->assertTrue($container->has('test1'));
+		$this->assertFalse($container->has('test2'));
+		$this->assertTrue($container->has('test3'));
 	}
 
 	public function testRemove() {
-		$app = new \Asgard\Container\Container;
+		$container = new \Asgard\Container\Container;
 		
-		$app['test'] = 123;
-		$this->assertTrue($app->has('test'));
-		$app->remove('test');
-		$this->assertFalse($app->has('test'));
+		$container['test'] = 123;
+		$this->assertTrue($container->has('test'));
+		$container->remove('test');
+		$this->assertFalse($container->has('test'));
 
-		$app['test'] = 123;
-		$this->assertTrue($app->has('test'));
-		unset($app['test']);
-		$this->assertFalse(isset($app['test']));
+		$container['test'] = 123;
+		$this->assertTrue($container->has('test'));
+		unset($container['test']);
+		$this->assertFalse(isset($container['test']));
 	}
 }

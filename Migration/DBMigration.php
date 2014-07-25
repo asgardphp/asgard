@@ -3,7 +3,7 @@ namespace Asgard\Migration;
 
 abstract class DBMigration extends Migration {
 	public function _up() {
-		$db = $this->app['db'];
+		$db = $this->container['db'];
 
 		$db->beginTransaction();
 		try {
@@ -16,7 +16,7 @@ abstract class DBMigration extends Migration {
 	}
 
 	public function _down() {
-		$db = $this->app['db'];
+		$db = $this->container['db'];
 		
 		$db->beginTransaction();
 		try {

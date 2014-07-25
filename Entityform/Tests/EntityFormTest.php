@@ -2,24 +2,24 @@
 namespace Asgard\Entityform\Tests;
 
 class EntityFormTest extends \PHPUnit_Framework_TestCase {
-	protected static $app;
+	protected static $container;
 
 	#for entities
 	public static function setUpBeforeClass() {
-		$app = new \Asgard\Container\Container;
-		$app['config'] = new \Asgard\Config\Config;
-		$app['hooks'] = new \Asgard\Hook\HooksManager($app);
-		$app['cache'] = new \Asgard\Cache\NullCache;
-		$app['translator'] = new \Symfony\Component\Translation\Translator('en');
-		$app['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($app);
-		\Asgard\Entity\Entity::setApp($app);
-		static::$app = $app;
+		$container = new \Asgard\Container\Container;
+		$container['config'] = new \Asgard\Config\Config;
+		$container['hooks'] = new \Asgard\Hook\HooksManager($container);
+		$container['cache'] = new \Asgard\Cache\NullCache;
+		$container['translator'] = new \Symfony\Component\Translation\Translator('en');
+		$container['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($container);
+		\Asgard\Entity\Entity::setContainer($container);
+		static::$container = $container;
 	}
 
 	public function testEntityForm() {
 		$user = new Entities\User;
 		$form = new \Asgard\Entityform\EntityForm($user, [], null);
-		$form->setTranslator(static::$app['translator']);
+		$form->setTranslator(static::$container['translator']);
 		$request = new \Asgard\Http\Request;
 		$request->setMethod('post')->post->set('user', ['name' => 'Bob']);
 		$form->setRequest($request);

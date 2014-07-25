@@ -8,10 +8,10 @@ require_once __DIR__.'/Annotations/Route.php';
 abstract class Controller {
 	use \Asgard\Hook\Hookable;
 	use \Asgard\Templating\Viewable;
+	use \Asgard\Container\ContainerAware;
 	
 	public $request;
 	public $response;
-	protected $app;
 	protected $action;
 	protected $beforeFilters = [];
 	protected $afterFilters = [];
@@ -102,15 +102,6 @@ abstract class Controller {
 		return $routes;
 	}
 
-	/* APP */
-	public function setApp($app) {
-		$this->app = $app;
-	}
-
-	public function getApp() {
-		return $this->app;
-	}
-
 	/* FILTERS */
 	public function addFilter($filter) {
 		$filter->setController($this);
@@ -190,6 +181,6 @@ abstract class Controller {
 	}
 	
 	public function url_for($action, $params=[]) {
-		return $this->app['resolver']->url_for([get_called_class(), $action], $params);
+		return $this->container['resolver']->url_for([get_called_class(), $action], $params);
 	}
 }

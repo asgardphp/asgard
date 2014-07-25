@@ -2,7 +2,7 @@
 namespace Asgard\Entity;
 
 abstract class Entity {
-	protected static $app;
+	protected static $container;
 	#public for behaviors
 	public $data = [
 		'properties'   => [],
@@ -12,9 +12,9 @@ abstract class Entity {
 
 	public function __construct(array $params=null, $locale=null) {
 		#create the entity definition if does not exist yet
-		static::$app['entitiesmanager']->make(get_called_class());
+		static::$container['entitiesmanager']->make(get_called_class());
 		if($locale === null)
-			$this->locale = isset(static::$app['config']['locale']) ? static::$app['config']['locale']:null;
+			$this->locale = isset(static::$container['config']['locale']) ? static::$container['config']['locale']:null;
 		else
 			$this->locale = $locale;
 
@@ -31,12 +31,12 @@ abstract class Entity {
 		return $this->locale;
 	}
 
-	public static function setApp($app) {
-		static::$app = $app;
+	public static function setContainer($container) {
+		static::$container = $container;
 	}
 
-	public static function getApp() {
-		return static::$app;
+	public static function getContainer() {
+		return static::$container;
 	}
 	
 	/* MAGIC METHODS */
@@ -68,7 +68,7 @@ abstract class Entity {
 	public static function definition(EntityDefinition $entityDefinition) {}
 
 	public static function getDefinition() {
-		return static::$app['entitiesmanager']->get(get_called_class());
+		return static::$container['entitiesmanager']->get(get_called_class());
 	}
 
 	public function loadDefault() {
@@ -121,7 +121,7 @@ abstract class Entity {
 		$messages = array_merge($messages, static::getDefinition()->messages());
 		
 		$validator->set('entity', $this);
-		$validator->setRegistry(static::$app['rulesregistry']);
+		$validator->setRegistry(static::$container['rulesregistry']);
 		$validator->attributesMessages($messages);
 
 		return $validator;

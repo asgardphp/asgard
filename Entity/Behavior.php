@@ -18,8 +18,8 @@ class Behavior {
 		return $properties;
 	}
 
-	public function getApp() {
-		return $this->definition->getApp();
+	public function getContainer() {
+		return $this->definition->getContainer();
 	}
 
 	public function setDefinition(EntityDefinition $definition) {

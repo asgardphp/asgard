@@ -9,7 +9,7 @@ use Symfony\Component\Console\Input\InputOption;
  * @author Michel Hognerud <michel@hognerud.net>
 */
 class Application extends \Symfony\Component\Console\Application {
-	protected $container;
+	use \Asgard\Container\ContainerAware;
 	
 	/**
 	 * Constructor.
@@ -33,14 +33,5 @@ class Application extends \Symfony\Component\Console\Application {
 		$definition->addOption(new InputOption('--env', null, InputOption::VALUE_OPTIONAL, 'The environment the console should run under.'));
 
 		return $definition;
-	}
-	
-	/**
-	 * Returns the asgard application container.
-	 * 
-	 * @return \Asgard\Container\Container The application container.
-	*/
-	public function getContainer() {
-		return $this->container;
 	}
 }

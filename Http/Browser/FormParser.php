@@ -38,8 +38,8 @@ class Field {
 
                 $document = new \DOMDocument('1.0', 'UTF-8');
                 $node = $document->importNode($node, true);
-                $root = $document->appendChild($document->createElement('_root'));
-                $root->appendChild($node);
+                $root = $document->containerendChild($document->createElement('_root'));
+                $root->containerendChild($node);
                 $xpath = new \DOMXPath($document);
                 
                 foreach($xpath->query('descendant::option', $root) as $option_node) {
@@ -164,8 +164,8 @@ class FormParser {
 
         $document = new \DOMDocument('1.0', 'UTF-8');
         $node = $document->importNode($node, true);
-        $root = $document->appendChild($document->createElement('_root'));
-        $root->appendChild($node);
+        $root = $document->containerendChild($document->createElement('_root'));
+        $root->containerendChild($node);
         $xpath = new \DOMXPath($document);
 
         foreach ($xpath->query('descendant::input | descendant::textarea | descendant::select', $root) as $node) {

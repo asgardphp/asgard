@@ -9,7 +9,7 @@ abstract class Widget {
 	protected $value;
 	protected $options;
 	protected $form;
-	protected static $app;
+	protected static $container;
 
 	public function __construct($name, $value=null, array $options=[], $form=null) {
 		$this->name = $name;

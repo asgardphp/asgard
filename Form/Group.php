@@ -36,8 +36,8 @@ class Group implements \ArrayAccess, \Iterator {
 			return $this->request;
 	}
 
-	public function getApp() {
-		return $this->parent->getApp();
+	public function getContainer() {
+		return $this->parent->getContainer();
 	}
 
 	/* General */
@@ -277,9 +277,9 @@ class Group implements \ArrayAccess, \Iterator {
 		}
 
 		$validator->set('group', $this);
-		if($app = $this->getApp()) {
-			$validator->setRegistry($app['rulesregistry']);
-			$validator->setTranslator($app['translator']);
+		if($container = $this->getContainer()) {
+			$validator->setRegistry($container['rulesregistry']);
+			$validator->setTranslator($container['translator']);
 		}
 		$validator->attributes($constrains);
 		$validator->attributesMessages($messages);

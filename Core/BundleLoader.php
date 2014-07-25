@@ -2,8 +2,8 @@
 namespace Asgard\Core;
 
 class BundleLoader {
+	use \Asgard\Container\ContainerAware;
 	protected $path;
-	protected $app;
 
 	public function __construct() {
 		$reflector = new \ReflectionClass(get_called_class());
@@ -18,37 +18,37 @@ class BundleLoader {
 		return $this->path;
 	}
 
-	public function buildApp($app) {
+	public function buildApp($container) {
 	}
 
-	public function run($app) {
-		$bundleData = $app['cache']->fetch('bundles/'.$this->getID());
+	public function run($container) {
+		$bundleData = $container['cache']->fetch('bundles/'.$this->getID());
 		if($bundleData !== false) {
 			$hooks = $bundleData['hooks'];
 			$routes = $bundleData['routes'];
 		}
 		else {
-			$hooks = $app->has('hooks') ? $this->loadHooks():[];
-			$routes = $app->has('resolver') ? $this->loadControllers():[];
+			$hooks = $container->has('hooks') ? $this->loadHooks():[];
+			$routes = $container->has('resolver') ? $this->loadControllers():[];
 			
-			$app['cache']->save('bundles/'.$this->getID(), [
+			$container['cache']->save('bundles/'.$this->getID(), [
 				'hooks' => $hooks,
 				'routes' => $routes,
 			]);
 		}
 
-		if($app->has('hooks'))
-			$app['hooks']->hooks($hooks);
+		if($container->has('hooks'))
+			$container['hooks']->hooks($hooks);
 
-		if($app->has('resolver'))
-			$app['resolver']->addRoutes($routes);
+		if($container->has('resolver'))
+			$container['resolver']->addRoutes($routes);
 
-		if($app->has('translator'))
-			$this->loadTranslations($app['translator']);
+		if($container->has('translator'))
+			$this->loadTranslations($container['translator']);
 
-		if($app->has('console')) {
-			$this->loadCommands($app['console']);
-			$this->loadEntities($app['entitiesManager']);
+		if($container->has('console')) {
+			$this->loadCommands($container['console']);
+			$this->loadEntities($container['entitiesManager']);
 		}
 	}
 

@@ -76,6 +76,6 @@ class Log {
 }
 
 class Debugger {
-	public function report($app, $msg, $backtrace=null) {
+	public function report($container, $msg, $backtrace=null) {
 	}
 }

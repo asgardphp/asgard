@@ -2,9 +2,9 @@
 namespace <?=$bundle['namespace'] ?>;
 
 class Bundle extends \Asgard\Core\BundleLoader {
-	public function run($app) {
-		parent::run($app);
+	public function run($container) {
+		parent::run($container);
 
-		<?php $app['hooks']->trigger('Asgard.Core.Generate.bundlephp', [$bundle]) ?>
+		<?php $container['hooks']->trigger('Asgard.Core.Generate.bundlephp', [$bundle]) ?>
 	}
 }

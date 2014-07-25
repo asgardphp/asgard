@@ -35,12 +35,12 @@ class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\Pers
 
 	protected function getDataMapper() {
 		if(!$this->dataMapper) {
-			$app = $this->definition->getApp();
+			$container = $this->definition->getContainer();
 			$this->dataMapper = new DataMapper(
-				$app['db'],
-				$app['config']->get('locale'),
-				$app['config']->get('database/prefix'),
-				$app
+				$container['db'],
+				$container['config']->get('locale'),
+				$container['config']->get('database/prefix'),
+				$container
 			);
 		}
 		return $this->dataMapper;

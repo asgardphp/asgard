@@ -2,18 +2,18 @@
 namespace Asgard\Entity\Tests;
 
 class EntityTest extends \PHPUnit_Framework_TestCase {
-	protected static $app;
+	protected static $container;
 
 	public static function setUpBeforeClass() {
-		$app = new \Asgard\Container\Container;
-		$app['config'] = new \Asgard\Config\Config;
-		$app['config']->set('locale', 'en');
-		$app['hooks'] = new \Asgard\Hook\HooksManager($app);
-		$app['cache'] = new \Asgard\Cache\NullCache;
-		$app['rulesregistry'] = new \Asgard\Validation\RulesRegistry;
-		$app['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($app);
-		\Asgard\Entity\Entity::setApp($app);
-		static::$app = $app;
+		$container = new \Asgard\Container\Container;
+		$container['config'] = new \Asgard\Config\Config;
+		$container['config']->set('locale', 'en');
+		$container['hooks'] = new \Asgard\Hook\HooksManager($container);
+		$container['cache'] = new \Asgard\Cache\NullCache;
+		$container['rulesregistry'] = new \Asgard\Validation\RulesRegistry;
+		$container['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($container);
+		\Asgard\Entity\Entity::setContainer($container);
+		static::$container = $container;
 	}
 
 	public function test() {

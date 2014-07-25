@@ -3,10 +3,10 @@ namespace Asgard\Entity;
 
 class EntityDefinition {
 	use \Asgard\Hook\Hookable;
+	use \Asgard\Container\ContainerAware;
 	
 	protected $entityClass;
 
-	protected $app;
 	protected $metas = [];
 	protected $properties = [];
 	public $behaviors = [];
@@ -17,12 +17,12 @@ class EntityDefinition {
 	protected $staticsCatchAll = [];
 	protected $callsCatchAll = [];
 
-	public function __construct($entityClass, $app) {
+	public function __construct($entityClass, $container) {
 		$reflectionClass = new \ReflectionClass($entityClass);
 		if(!$reflectionClass->IsInstantiable())
 			return;
 
-		$this->app = $app;
+		$this->container = $container;
 		$this->entityClass = $entityClass;
 
 		$entityClass::definition($this);
@@ -30,14 +30,6 @@ class EntityDefinition {
 		$behaviors = $this->behaviors;
 		$this->behaviors = [];
 		$this->loadBehaviors($behaviors);
-	}
-
-	public function setApp($app) {
-		$this->app = $app;
-	}
-
-	public function getApp() {
-		return $this->app;
 	}
 
 	public function __sleep() {
@@ -119,7 +111,7 @@ class EntityDefinition {
 	}
 
 	public function loadBehaviors($behaviors) {
-		$this->app['hooks']->trigger('Asgard.Entity.LoadBehaviors', [&$behaviors]);
+		$this->container['hooks']->trigger('Asgard.Entity.LoadBehaviors', [&$behaviors]);
 
 		foreach($behaviors as $behavior)
 			$this->loadBehavior($behavior);
@@ -167,7 +159,7 @@ class EntityDefinition {
 				$property['type'] = 'text';
 
 			$type = $property['type'];
-			$property = $this->app->make('Asgard.Entity.PropertyType.'.$type, [$property], function($params) use($type) {
+			$property = $this->container->make('Asgard.Entity.PropertyType.'.$type, [$property], function($params) use($type) {
 				$class = '\Asgard\Entity\Properties\\'.ucfirst(strtolower($type)).'Property';
 				return new $class($params);
 			});

@@ -2,14 +2,14 @@
 namespace Asgard\Orm\Tests;
 
 class DataMapperTest extends \PHPUnit_Framework_TestCase {
-	protected static $app;
+	protected static $container;
 
 	public static function setUpBeforeClass() {
 		if(!defined('_ENV_'))
 			define('_ENV_', 'test');
 
-		$app = new \Asgard\Container\Container;
-		static::$app = $app;
+		$container = new \Asgard\Container\Container;
+		static::$container = $container;
 	}
 
 	public function test1() {

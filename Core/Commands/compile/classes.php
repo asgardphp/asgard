@@ -1,5 +1,5 @@
 <?php
-$root = $app['kernel']['root'];
+$root = $container['kernel']['root'];
 
 return array_map('realpath', [
 	$root.'/vendor/asgard/asgard/Common/Bag.php',

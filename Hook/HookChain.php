@@ -10,15 +10,15 @@ class HookChain {
 	public $calls;
 	protected $continue = true;
 	public $executed = 0;
-	public $app;
+	public $container;
 	
 	/**
 	 * Constructor.
 	 * 
 	 * @param \Asgard\Container\Container app Application container.
 	*/
-	public function __construct($app=null) {
-		$this->app = $app;
+	public function __construct($container=null) {
+		$this->container = $container;
 	}
 	
 	/**

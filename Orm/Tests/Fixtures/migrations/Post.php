@@ -1,19 +1,19 @@
 <?php
 class Post extends \Asgard\Migration\DBMigration {
 	public function up() {
-		$this->app['schema']->create('post_translation', function($table) {	
+		$this->container['schema']->create('post_translation', function($table) {	
 			$table->add('id', 'int(11)');	
 			$table->add('locale', 'varchar(50)');	
 			$table->add('content', 'text')
 				->nullable();
 		});
 		
-		$this->app['schema']->create('category_post', function($table) {	
+		$this->container['schema']->create('category_post', function($table) {	
 			$table->add('post_id', 'int(11)');	
 			$table->add('category_id', 'int(11)');
 		});
 		
-		$this->app['schema']->create('post', function($table) {	
+		$this->container['schema']->create('post', function($table) {	
 			$table->add('id', 'int(11)')
 				->autoincrement()
 				->primary();	
@@ -26,7 +26,7 @@ class Post extends \Asgard\Migration\DBMigration {
 				->nullable();
 		});
 		
-		$this->app['schema']->create('author', function($table) {	
+		$this->container['schema']->create('author', function($table) {	
 			$table->add('id', 'int(11)')
 				->autoincrement()
 				->primary();	
@@ -34,7 +34,7 @@ class Post extends \Asgard\Migration\DBMigration {
 				->nullable();
 		});
 		
-		$this->app['schema']->create('category', function($table) {	
+		$this->container['schema']->create('category', function($table) {	
 			$table->add('id', 'int(11)')
 				->autoincrement()
 				->primary();	
@@ -44,14 +44,14 @@ class Post extends \Asgard\Migration\DBMigration {
 	}
 	
 	public function down() {
-		$this->app['schema']->drop('post_translation');
+		$this->container['schema']->drop('post_translation');
 		
-		$this->app['schema']->drop('category_post');
+		$this->container['schema']->drop('category_post');
 		
-		$this->app['schema']->drop('post');
+		$this->container['schema']->drop('post');
 		
-		$this->app['schema']->drop('author');
+		$this->container['schema']->drop('author');
 		
-		$this->app['schema']->drop('category');
+		$this->container['schema']->drop('category');
 	}
 }

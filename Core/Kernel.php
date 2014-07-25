@@ -2,9 +2,10 @@
 namespace Asgard\Core;
 
 class Kernel implements \ArrayAccess {
+	use \Asgard\Container\ContainerAware;
+
 	const VERSION = 0.1;
 	protected $params = [];
-	protected $app;
 	protected $config;
 	protected $addedBundles = [];
 	protected $bundles;
@@ -15,12 +16,12 @@ class Kernel implements \ArrayAccess {
 	}
 
 	public function getContainer() {
-		if(!$this->app) {
-			$this->app = $this->buildApp($this->getConfig()['cache']);
-			$this->app['kernel'] = $this;
-			\Asgard\Container\Container::setInstance($this->app);
+		if(!$this->container) {
+			$this->container = $this->buildApp($this->getConfig()['cache']);
+			$this->container['kernel'] = $this;
+			\Asgard\Container\Container::setInstance($this->container);
 		}
-		return $this->app;
+		return $this->container;
 	}
 
 	public function getConfig() {
@@ -45,9 +46,9 @@ class Kernel implements \ArrayAccess {
 			include_once $this['root'].'/storage/compiled.php';
 
 		$this->bundles = $this->doGetBundles($this->getConfig()['cache']);
-		$app = $this->getContainer();
+		$container = $this->getContainer();
 
-		$app['config'] = $this->getConfig();
+		$container['config'] = $this->getConfig();
 
 		if($this['env']) {
 			if(file_exists($this['root'].'/app/bootstrap_'.strtolower($this['env']).'.php'))
@@ -93,29 +94,29 @@ class Kernel implements \ArrayAccess {
 	protected function buildApp($cache=false) {
 		if($cache) {
 			$c = $this->getCache($cache);
-			if(($this->app = $c->fetch('app')) !== false) {
-				\Asgard\Container\Container::setInstance($this->app);
-				return $this->app;
+			if(($this->container = $c->fetch('app')) !== false) {
+				\Asgard\Container\Container::setInstance($this->container);
+				return $this->container;
 			}
 		}
 
 		$bundles = $this->getAllBundles();
-		$app = $this->app = \Asgard\Container\Container::singleton();
+		$container = $this->container = \Asgard\Container\Container::singleton();
 
 		foreach($bundles as $bundle)
-			$bundle->buildApp($app);
+			$bundle->buildApp($container);
 
 		if($cache)
-			$c->save('app', $app);
+			$c->save('app', $container);
 
-		return $app;
+		return $container;
 	}
 
 	protected function runBundles() {
 		$bundles = $this->getAllBundles();
 
 		foreach($bundles as $bundle)
-			$bundle->run($this->app);
+			$bundle->run($this->container);
 	}
 
 	public function getAllBundles() {

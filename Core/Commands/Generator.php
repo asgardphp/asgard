@@ -2,11 +2,12 @@
 namespace Asgard\Core\Commands;
 
 class Generator {
-	protected $app;
+	use \Asgard\Container\ContainerAware;
+	
 	protected $overrideFiles = false;
 
-	public function __construct($app) {
-		$this->app = $app;
+	public function __construct($container) {
+		$this->container = $container;
 	}
 
 	public function setOverrideFiles($overrideFiles) {
@@ -16,7 +17,7 @@ class Generator {
 	public function processFile($_src, $_dst, $vars) {
 		if(!$this->overrideFiles && file_exists($_dst))
 			return;
-		$app = $this->app;
+		$container = $this->container;
 
 		foreach($vars as $k=>$v)
 			$$k = $v;

@@ -22,8 +22,8 @@ class ControllerTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testFilters() {
-		$app = new \Asgard\Container\Container;
-		$app['hooks'] = new \Asgard\Hook\HooksManager($app);
+		$container = new \Asgard\Container\Container;
+		$container['hooks'] = new \Asgard\Hook\HooksManager($container);
 		$controller = new \Asgard\Http\Tests\Fixtures\Controllers\FooController();
 		$controller->addFilter(new _Filter);
 		$controller->run('page', new Request);
@@ -41,11 +41,11 @@ class ControllerTest extends \PHPUnit_Framework_TestCase {
 		$controller = $route->getController();
 		$action = $route->getAction();
 
-		$app = new \Asgard\Container\Container;
-		$app['hooks'] = new \Asgard\Hook\HooksManager($app);
+		$container = new \Asgard\Container\Container;
+		$container['hooks'] = new \Asgard\Hook\HooksManager($container);
 
 		$controller = new $controller();
-		$controller->setApp($app);
+		$controller->setContainer($container);
 
 		$response = $controller->run($action, $request);
 
