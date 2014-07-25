@@ -96,37 +96,13 @@ class InstallCommand extends \Asgard\Console\Command {
 			}
 		}
 
-		$publisher = new Publisher($this->getContainer());
+		$publisher = new Publisher($this->getContainer(), $this->output);
 
-		#copy app
-		if(file_exists($tmp.'/app')) {
-			if(!$publisher->publish($tmp.'/app', $root.'/app'))
-				$this->warning('app/ could not be published.');
-		}
-
-		#copy config
-		if(file_exists($tmp.'/config')) {
-			if(!$publisher->publish($tmp.'/config', $root.'/config'))
-				$this->warning('config/ could not be published.');
-		}
-
-		#copy tests
-		if(file_exists($tmp.'/tests')) {
-			if(!$publisher->publish($tmp.'/tests', $root.'/tests'))
-				$this->warning('tests/ could not be published.');
-		}
-
-		#copy web
-		if(file_exists($tmp.'/web')) {
-			if(!$publisher->publish($tmp.'/web', $root.'/web'))
-				$this->warning('web/ could not be published.');
-		}
-
-		#copy migrations
-		if(file_exists($tmp.'/migrations/migrations.json')) {
-			if(!$publisher->publishMigrations($tmp.'/migrations', $root.'/migrations', $migrate))
-				$this->warning('migrations/ could not be published.');
-		}
+		$publisher->publish($tmp.'/app', $root.'/app');
+		$publisher->publish($tmp.'/config', $root.'/config');
+		$publisher->publish($tmp.'/tests', $root.'/tests');
+		$publisher->publish($tmp.'/web', $root.'/web');
+		$publisher->publishMigrations($tmp.'/migrations', $root.'/migrations', $migrate);
 
 		#composer
 		if($updateComposer && $appComposer && file_exists($tmp.'/composer.json')) {
@@ -135,7 +111,7 @@ class InstallCommand extends \Asgard\Console\Command {
 				$appComposer['require'] = array_merge($modComposer['require'], $appComposer['require']);
 			if(isset($modComposer['autoload']))
 				$appComposer['autoload'] = array_merge_recursive($modComposer['autoload'], $appComposer['autoload']);
-			$version = isset($asgard['version']) ? $asgard['version']:'dev-master';
+			$version = isset($asgard['version']) ? $asgard['version']:'@dev';
 			$appComposer['replace'][$name] = $version;
 		}
 		
@@ -147,7 +123,7 @@ class InstallCommand extends \Asgard\Console\Command {
 
 		$modules[] = $name;
 
-		$this->info('Module "'.$name.'" installed with success.');
+		$this->info('Module "'.$name.'" added with success.');
 	}
 
 	protected function gitInstall($src, $tmp) {

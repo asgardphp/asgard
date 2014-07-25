@@ -3,18 +3,30 @@ namespace Asgard\Core;
 
 class Publisher {
 	protected $app;
+	protected $output;
 
-	public function __construct($app) {
+	public function __construct($app, $output) {
 		$this->app = $app;
+		$this->output = $output;
 	}
 
 	public function publish($src, $dst) {
-		return \Asgard\File\FileSystem::copy($src, $dst);
+		$r = true;
+		foreach(glob($src.'/*') as $file) {
+			$finalDst = \Asgard\File\FileSystem::copy($file, $dst, \Asgard\File\FileSystem::RENAME);
+			if($finalDst !== $dst) {
+				$this->output->warning('The file '.$dst.' had to be renamed into '.$finalDst.'.');
+				$r = false;
+			}
+		}
+		return $r;
 	}
 
 	public function publishMigrations($src, $dst, $migrate) {
-			if(!\Asgard\File\FileSystem::copy($src, $dst))
-				return false;
+			if(!$this->publish($src, $dst) && $migrate) {
+				$this->output->warning('The migrations could not be migrated because some files had to be renamed.');
+				$migrate = false;
+			}
 			$mm = new \Asgard\Migration\MigrationsManager($dst, $this->app);
 			$tracking = new \Asgard\Migration\Tracker($src);
 			foreach(array_keys($tracking->getList()) as $migration) {
