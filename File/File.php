@@ -82,12 +82,15 @@ class File {
 		if(!$filename)
 			return false;
 		$this->src = realpath($filename);
+		$this->name = null;
 		return $dst;
 	}
 
 	public function delete() {
-		if($r = \Asgard\File\FileSystem::delete($this->src))
+		if($r = \Asgard\File\FileSystem::delete($this->src)) {
 			$this->src = null;
+			$this->name = null;
+		}
 		return $r;
 	}
 
