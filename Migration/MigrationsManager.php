@@ -19,7 +19,7 @@ class MigrationsManager {
 
 	public function add($file) {
 		$dst = $this->directory.'/'.basename($file);
-		if($path = (\Asgard\File\FileSystem::copy($file, $dst, \Asgard\File\FileSystem::RENAME)) === false)
+		if(($path = \Asgard\File\FileSystem::copy($file, $dst, \Asgard\File\FileSystem::RENAME)) === false)
 			return false;
 		$migrationName = explode('.', basename($path))[0];
 		$this->tracker->add($migrationName);
