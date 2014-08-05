@@ -27,7 +27,7 @@ class UnmigrateCommand extends \Asgard\Console\Command {
 
 	protected function getArguments() {
 		return [
-			['migration', InputArgument::REQUIRED, 'The migration'],
+			['migration', InputArgument::REQUIRED, 'The migration name'],
 		];
 	}
 }

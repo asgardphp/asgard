@@ -3,8 +3,8 @@ namespace Asgard\File;
 
 class FileSystem {
 	const OVERRIDE = 1;
-	const RENAME = 2;
-	const IGNORE = 4;
+	const RENAME   = 2;
+	const IGNORE   = 4;
 	const MERGEDIR = 8;
 
 	public static function relativeTo($from, $to) {

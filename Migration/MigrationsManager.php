@@ -18,15 +18,11 @@ class MigrationsManager {
 	}
 
 	public function add($file) {
-		$code = file_get_contents($file);
 		$dst = $this->directory.'/'.basename($file);
-		$dst = \Asgard\File\FileSystem::getNewFilename($dst);
-		$migrationName = explode('.', basename($dst))[0];
-		$code = preg_replace('/{{migrationMame}}/', $migrationName, $code);
-		if($r = \Asgard\File\FileSystem::write($dst, $code))
-			$this->tracker->add($migrationName);
-		if(!$r)
+		if($path = (\Asgard\File\FileSystem::copy($file, $dst, \Asgard\File\FileSystem::RENAME)) === false)
 			return false;
+		$migrationName = explode('.', basename($path))[0];
+		$this->tracker->add($migrationName);
 		return $migrationName;
 	}
 
@@ -49,7 +45,7 @@ class '.$name.' extends '.$class.' {
 		'.$down."
 	}
 }";
-		$dst = \Asgard\File\FileSystem::write($dst, $migration, true);
+		$dst = \Asgard\File\FileSystem::write($dst, $migration, \Asgard\File\FileSystem::RENAME);
 
 		$this->tracker->add($name);
 

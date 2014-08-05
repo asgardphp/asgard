@@ -9,15 +9,13 @@ class EntityForm extends \Asgard\Form\Form {
 	/* Constructor */
 	public function __construct(
 		\Asgard\Entity\Entity $entity, 
-		array $options                   = [],
+		array $options                  = [],
 		\Asgard\Http\Request $request   = null,
 		$entityFieldsSolver             = null
 	) {
 		$this->entityFieldsSolver = $entityFieldsSolver;
-
-		$this->entity = $entity;
-
-		$this->locales = isset($options['locales']) ? $options['locales']:[];
+		$this->entity             = $entity;
+		$this->locales            = isset($options['locales']) ? $options['locales']:[];
 	
 		$fields = [];
 		foreach($entity::getDefinition()->properties() as $name=>$property) {
@@ -74,16 +72,16 @@ class EntityForm extends \Asgard\Form\Form {
 				
 		if($relation['has'] == 'one') {
 			$this->add(new \Asgard\Form\Fields\SelectField([
-				'type'	=>	'integer',
-				'choices'		=>	$ids,
-				'default'	=>	($this->entity->isOld() && $this->entity->$name ? $this->entity->$name->id:null),
+				'type'      =>	'integer',
+				'choices'   =>	$ids,
+				'default'   =>	($this->entity->isOld() && $this->entity->$name ? $this->entity->$name->id:null),
 			]), $name);
 		}
 		elseif($relation['has'] == 'many') {
 			$this->add(new \Asgard\Form\Fields\MultipleSelectField([
-				'type'	=>	'integer',
-				'choices'		=>	$ids,
-				'default'	=>	($this->entity->isOld() ? $this->entity->$name()->ids():[]),
+				'type'      =>	'integer',
+				'choices'   =>	$ids,
+				'default'   =>	($this->entity->isOld() ? $this->entity->$name()->ids():[]),
 			]), $name);
 		}
 	}
