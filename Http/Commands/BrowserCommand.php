@@ -14,15 +14,14 @@ class BrowserCommand extends \Asgard\Console\Command {
 		$method = $this->input->getArgument('method');
 		$url = $this->input->getArgument('url');
 		
-		$headers = $this->input->getOption('h') ? json_decode($this->input->getOption('h')):[];
-		$post = $this->input->getOption('p') ? json_decode($this->input->getOption('p')):[];
-		$session = $this->input->getOption('ss') ? json_decode($this->input->getOption('ss')):[];
-		$server = $this->input->getOption('sr') ? json_decode($this->input->getOption('sr')):[];
-		$cookies = $this->input->getOption('c') ? json_decode($this->input->getOption('c')):[];
+		$headers = $this->input->getOption('h') ? json_decode($this->input->getOption('h'), true):[];
+		$post = $this->input->getOption('p') ? json_decode($this->input->getOption('p'), true):[];
+		$session = $this->input->getOption('ss') ? json_decode($this->input->getOption('ss'), true):[];
+		$server = $this->input->getOption('sr') ? json_decode($this->input->getOption('sr'), true):[];
+		$cookies = $this->input->getOption('c') ? json_decode($this->input->getOption('c'), true):[];
 		$body = $this->input->getOption('b');
-		$files = $this->input->getOption('f') ? json_decode($this->input->getOption('f')):[];
+		$files = $this->input->getOption('f') ? json_decode($this->input->getOption('f'), true):[];
 		if($files) {
-			$files = json_decode($files);
 			foreach($files as $k=>$v)
 				$files[$k] = new \Asgard\Http\HttpFile($v['path'], $v['name'], $v['size'], $v['error']);
 		}
