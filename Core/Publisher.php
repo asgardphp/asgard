@@ -21,29 +21,29 @@ class Publisher {
 	}
 
 	public function publishMigrations($src, $dstDir, $migrate) {
-			$r = true;
-			foreach(glob($src.'/*') as $file) {
-				if(basename($file) === 'migrations.json')
-					continue;
-				$dst = $dstDir.'/'.basename($file);
-				static::copy($file, $dst);
-			}
+		$r = true;
+		foreach(glob($src.'/*') as $file) {
+			if(basename($file) === 'migrations.json')
+				continue;
+			$dst = $dstDir.'/'.basename($file);
+			static::copy($file, $dst);
+		}
 
-			if(!$r) {
-				$this->output->writeln('<warning>The migrations could not be added because some files had to be renamed. Please add them manually.</warning>');
-				return false;
+		if(!$r) {
+			$this->output->writeln('<warning>The migrations could not be added because some files had to be renamed. Please add them manually.</warning>');
+			return false;
+		}
+		else {
+			$mm = new \Asgard\Migration\MigrationsManager($dstDir, $this->container);
+			$tracking = new \Asgard\Migration\Tracker($src);
+			foreach(array_keys($tracking->getList()) as $migration) {
+				if($migrate)
+					$mm->migrate($migration, true);
+				else
+					$mm->add($migration);
 			}
-			else {
-				$mm = new \Asgard\Migration\MigrationsManager($dstDir, $this->container);
-				$tracking = new \Asgard\Migration\Tracker($src);
-				foreach(array_keys($tracking->getList()) as $migration) {
-					if($migrate)
-						$mm->migrate($migration, true);
-					else
-						$mm->add($migration);
-				}
-				return true;
-			}
+			return true;
+		}
 	}
 
 	public static function copy($src, $dst) {
