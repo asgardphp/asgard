@@ -25,7 +25,7 @@ class <?=ucfirst($entity['meta']['name']) ?> extends \Asgard\Entity\Entity {
 
 		$definition->behaviors = [
 	<?php foreach($entity['behaviors'] as $behaviorname => $behavior): ?>
-			new \<?=$behaviorname ?>,
+			new <?=$behaviorname ?>,
 	<?php endforeach ?>
 		];
 		

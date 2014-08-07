@@ -19,11 +19,10 @@ class GenerateTestsCommand extends \Asgard\Console\Command {
 		$asgard = $this->getContainer();
 		$dst = $this->input->getArgument('dst') ? $this->dir.'/'.$this->input->getArgument('dst'):$this->dir.'/AutoTest.php';
 
-		$tg = new \Asgard\Core\Generator\TestsGenerator($asgard);
+		$tg = new \Asgard\Http\Generator\TestsGenerator($asgard);
 		$count = $tg->generateTests($dst);
-		if($count === false) {
+		if($count === false)
 			$this->error('Tests generation failed. Tests should pass first. Check with the command: phpunit');
-		}
 		else
 			$this->info($count.' tests have been generated in: '.realpath($dst).'.');
 	}

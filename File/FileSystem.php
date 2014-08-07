@@ -88,12 +88,13 @@ class FileSystem {
 		if($mode === null)
 			$mode = static::OVERRIDE;
 
-		if($mode & static::RENAME)
-			$dst = static::getNewFilename($dst);
-		elseif($mode & static::OVERRIDE)
-			static::delete($dst);
-		elseif(!($mode & static::MERGEDIR) && file_exists($dst))
-			return false;
+		if(file_exists($dst)) {
+			if($mode & static::MERGEDIR) {}
+			elseif($mode & static::RENAME)
+				$dst = static::getNewFilename($dst);
+			elseif($mode & static::OVERRIDE)
+				static::delete($dst);
+		}
 
 		$r = true;
 		$dir = opendir($src);

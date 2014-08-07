@@ -12,7 +12,7 @@ class <?=ucfirst($entity['meta']['name']) ?>Controller extends \Asgard\Http\Cont
 	public function indexAction(\Asgard\Http\Request $request) {
 		$page = $request->get['page'] ? $request->get['page']:1;
 		$orm = \<?=$entity['meta']['entityClass'] ?>::paginate($page, 10);
-		$this-><?=$entity['meta']['plural'] ?> = \<?=$entity['meta']['entityClass'] ?>::get();
+		$this-><?=$entity['meta']['plural'] ?> = $orm->get();
 		$this->paginator = $orm->getPaginator();
 	}
 <?php endif ?><?php if(in_array('show', $entity['front']) || isset($entity['front']['show'])): ?>

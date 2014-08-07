@@ -103,16 +103,16 @@ class EntityForm extends \Asgard\Form\Form {
 			$field = $this;
 
 		$errors = [];
-		if($field instanceof Group) {
+		if($field instanceof \Asgard\Form\Group) {
 			if($field instanceof static)
 				$errors = $field->myErrors();
-			elseif($field instanceof Group)
+			elseif($field instanceof \Asgard\Form\Group)
 				$errors = $field->errors();
 			else
 				throw new \Exception('The field should not be a: '.get_class($field));
 				
 			foreach($field as $name=>$sub_field) {
-				if($sub_field instanceof Group) {
+				if($sub_field instanceof \Asgard\Form\Group) {
 					$field_errors = $this->errors($sub_field);
 					if(count($field_errors) > 0)
 						$errors[$name] = $field_errors;

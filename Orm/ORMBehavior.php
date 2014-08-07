@@ -28,6 +28,7 @@ class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\Pers
 		foreach($definition->relations as $name=>$params)
 			$definition->relations[$name] = new EntityRelation($definition, $name, $params);
 		
+		$definition->hook('set', [$this, 'hookSet']);
 		$definition->hook('get', [$this, 'hookGet']);
 		$definition->hook('getI18N', [$this, 'hookgetI18N']);
 		$definition->hook('validation', [$this, 'hookValidation']);
@@ -46,6 +47,14 @@ class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\Pers
 		return $this->dataMapper;
 	}
 
+	public function hookSet(\Asgard\Hook\HookChain $chain, \Asgard\Entity\Entity $entity, $name, $value) {
+		if($entity::hasRelation($name)) {
+			$rel = $this->static_getRelationProperty($name);
+			if($rel->type() == 'belongsTo')
+				$entity->{$rel->getLink()} = $value;
+		}
+	}
+
 	public function hookGet(\Asgard\Hook\HookChain $chain, \Asgard\Entity\Entity $entity, $name) {
 		if($entity::hasRelation($name)) {
 			$rel = $this->dataMapper->relation($entity, $name);
@@ -62,7 +71,7 @@ class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\Pers
 
 	public function hookValidation(\Asgard\Hook\HookChain $chain, \Asgard\Entity\Entity $entity, \Asgard\Validation\Validator $validator, array &$data) {
 		foreach($this->definition->relations as $name=>$relation) {
-			$data[$name] = $this->dataMapper->relation($entity, $name);
+			$data[$name] = $this->getDataMapper()->relation($entity, $name);
 			$validator->attribute($name, $relation->getRules());
 		}
 	}
@@ -89,7 +98,7 @@ class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\Pers
 
 	#Article::getRelationProperty('category')
 	public function static_getRelationProperty($relation) {
-		return $this->getDataMapper()->getRelationProperty($this->entityClass, $relation);
+		return $this->getDataMapper()->getRelation($this->definition, $relation);
 	}
 
 	#Static methods

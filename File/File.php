@@ -4,6 +4,7 @@ namespace Asgard\File;
 class File {
 	protected $src;
 	protected $name;
+	protected $uploaded;
 
 	public function __construct($src=null, $name=null) {
 		$this->setSrc($src);
@@ -25,8 +26,13 @@ class File {
 			return basename($this->src);
 	}
 
+	public function setUploaded($uploaded) {
+		$this->uploaded = $uploaded;
+		return $this;
+	}
+
 	public function isUploaded() {
-		return is_uploaded_file($this->src);
+		return is_uploaded_file($this->src) || $this->uploaded;
 	}
 
 	public function size() {

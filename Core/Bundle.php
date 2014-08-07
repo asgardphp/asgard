@@ -2,7 +2,7 @@
 namespace Asgard\Core;
 
 class Bundle extends \Asgard\Core\BundleLoader {
-	public function buildApp($container) {
+	public function buildContainer($container) {
 		#Db
 		$container->register('schema', function($container) { return new \Asgard\Db\Schema($container['db']); } );
 		$container->register('db', function($container) { return new \Asgard\Db\DB($container['config']['database']); } );
@@ -22,11 +22,12 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		$container->register('widgetsManager', function() { return new \Asgard\Form\WidgetsManager; });
 		$container->register('entityFieldsSolver', function() { return new \Asgard\Entityform\EntityFieldsSolver; });
 		$container->register('entityForm', function($container, $entity, $params=[], $request=null) {
+			if($request === null)
+				$request = $container['request'];
 			$entityFieldsSolver = clone $container['entityFieldsSolver'];
 			$form = new \Asgard\Entityform\EntityForm($entity, $params, $request, $entityFieldsSolver);
 			$form->setWidgetsManager(clone $container['widgetsManager']);
 			$form->setTranslator($container['translator']);
-			$form->setHooks($container['hooks']);
 			$form->setContainer($container);
 			return $form;
 		});

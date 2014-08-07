@@ -13,8 +13,6 @@ class FilePropertyTest extends \PHPUnit_Framework_TestCase {
 		$container['rulesregistry'] = \Asgard\Validation\RulesRegistry::getInstance();
 		$container['rulesregistry']->registerNamespace('Asgard\File\Rules');
 		$container['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($container);
-		// $container['kernel'] = new \Asgard\Core\Kernel();
-		// $container['kernel']['webdir'] = __DIR__.'/Fixtures/';
 		$container['request'] = new \Asgard\Http\Request;
 		$container['request']->url->setHost('localhost');
 		$container['request']->url->setRoot('folder');

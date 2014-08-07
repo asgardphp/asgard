@@ -284,8 +284,10 @@ class ORM {
 				])
 			]);
 		}
-		else
+		else {
+			$dal->select([$table.'.*']);
 			$dal->from($table);
+		}
 
 		$table = $current_entity::getTable();
 		$this->recursiveJointures($dal, $this->join, $current_entity, $table);

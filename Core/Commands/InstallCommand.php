@@ -50,22 +50,6 @@ class InstallCommand extends \Asgard\Console\Command {
 			return;
 		}
 
-		foreach(glob($tmp.'/app/*') as $dir) {
-			$dir = basename($dir);
-			if(file_exists($root.'/app/'.$dir)) {
-				$this->error('Some of the app files already exists for '.$src.'.');
-				return;
-			}
-		}
-
-		foreach(glob($tmp.'/migrations/*') as $dir) {
-			$dir = basename($dir);
-			if(file_exists($root.'/migrations/'.$dir)) {
-				$this->error('Some of the migration files already exists for '.$src.'.');
-				return;
-			}
-		}
-
 		if(file_exists($tmp.'/asgard.json'))
 			$asgard = json_decode(file_get_contents($tmp.'/asgard.json'), true);
 		else

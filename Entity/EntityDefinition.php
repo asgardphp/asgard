@@ -231,23 +231,25 @@ class EntityDefinition {
 		if($hook)
 			$this->trigger('set', [$entity, $name, &$value, $locale]);
 	
-		if($this->property($name)->setHook) {
-			$hook = $this->property($name)->setHook;
-			$value = call_user_func_array($hook, [$value]);
-		}
+		if($this->hasProperty($name)) {
+			if($this->property($name)->setHook) {
+				$hook = $this->property($name)->setHook;
+				$value = call_user_func_array($hook, [$value]);
+			}
 
-		if($this->property($name)->i18n) {
-			if($locale == 'all') {
-				$val = [];
-				foreach($value as $one => $v)
-					$val[$one] = $this->property($name)->set($v, $this, $name);
-				$value = $val;
+			if($this->property($name)->i18n) {
+				if($locale == 'all') {
+					$val = [];
+					foreach($value as $one => $v)
+						$val[$one] = $this->property($name)->set($v, $this, $name);
+					$value = $val;
+				}
+				else
+					$value = $this->property($name)->set($value, $this, $name);
 			}
 			else
 				$value = $this->property($name)->set($value, $this, $name);
 		}
-		else
-			$value = $this->property($name)->set($value, $this, $name);
 	}
 
 	public function processBeforeAdd($entity, $name, &$value, $locale=null, $hook=true) {

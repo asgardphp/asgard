@@ -44,7 +44,7 @@ class Request implements \ArrayAccess {
 		$request = new static;
 		$request->get->setAll($_GET);
 		$request->post->setAll($_POST);
-		$request->file->setAll($_FILES);
+		$request->setFiles($_FILES);
 		$request->header->setAll(static::getAllHeaders());
 		$request->server->setAll($_SERVER);
 		$request->cookie = new CookieManager;
@@ -74,6 +74,11 @@ class Request implements \ArrayAccess {
 		$request->setURL($server, $root, $url);
 
 		return $request;
+	}
+
+	public function setFiles($files) {
+		$files = $this->parseFiles($files);
+		$this->file->setAll($files);
 	}
 
 	public function getJSON() {
@@ -178,5 +183,57 @@ class Request implements \ArrayAccess {
 				$headers[str_replace(' ', '-', strtolower(str_replace('_', ' ', substr($name, 5))))] = $value;
 		}
 		return $headers; 
+	}
+
+	protected function parseFiles(array $raw) {
+		if(isset($raw['name']) && isset($raw['type']) && isset($raw['tmp_name']) && isset($raw['error']) && isset($raw['size'])) {
+			if(is_array($raw['name'])) {
+				$name = $this->convertTo('name', $raw['name']);
+				$type = $this->convertTo('type', $raw['type']);
+				$tmp_name = $this->convertTo('tmp_name', $raw['tmp_name']);
+				$error = $this->convertTo('error', $raw['error']);
+				$size = $this->convertTo('size', $raw['size']);
+				
+				$files = $this->merge_all($name, $type, $tmp_name, $error, $size);
+			}
+			else
+				$files = $raw;
+
+			foreach($files as $k=>$v)
+				$files[$k] = \Asgard\Http\HttpFile::createFromArray($v);
+		}
+		else {
+			foreach($raw as $k=>$v) {
+				if(!is_array($v))
+					d($raw);
+				$raw[$k] = $this->parseFiles($v);
+			}
+			$files = $raw;
+		}
+
+		return $files;
+	}
+	
+	protected function convertTo($type, array $files) {
+		$res = [];
+		foreach($files as $name=>$file) {
+			if(is_array($file))
+				$res[$name] = $this->convertTo($type, $file);
+			else
+				$res[$name][$type] = $file;
+		}
+				
+		return $res;
+	}
+	
+	protected function merge_all(array $name, array $type, array $tmp_name, array $error, array $size) {
+		foreach($name as $k=>$v) {
+			if(isset($v['name']) && !is_array($v['name']))
+				$name[$k] = array_merge($v, $type[$k], $tmp_name[$k], $error[$k], $size[$k]);
+			else 
+				$name[$k] = $this->merge_all($name[$k], $type[$k], $tmp_name[$k], $error[$k], $size[$k]);
+		}
+		
+		return $name;
 	}
 }

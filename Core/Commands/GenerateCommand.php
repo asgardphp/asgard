@@ -23,7 +23,7 @@ class GenerateCommand extends \Asgard\Console\Command {
 		$generator = new Generator($asgard);
 		$generator->setOverrideFiles($overrideFiles);
 		
-		foreach($raw as $bundle_name=>$raw_bundle) {
+		foreach($raw as $bundle_name=>$bundle) {
 			if(file_exists($root.'app/'.$bundle_name.'/')) {
 				if($this->input->getOption('override-bundles'))
 					\Asgard\File\FileSystem::delete($root.'app/'.$bundle_name.'/');
@@ -31,9 +31,8 @@ class GenerateCommand extends \Asgard\Console\Command {
 					continue;
 			}
 			
-			$bundle = $raw_bundle;
 			$bundle['name'] = strtolower($bundle_name);
-			$bundle['namespace'] = 'App\\'.ucfirst($bundle['name']);
+			$bundle['namespace'] = ucfirst($bundle['name']);
 			
 			if(!isset($bundle['entities']))
 				$bundle['entities'] = [];
@@ -46,7 +45,7 @@ class GenerateCommand extends \Asgard\Console\Command {
 				if(isset($bundle['entities'][$name]['meta']['name']))
 					$bundle['entities'][$name]['meta']['name'] = strtolower($bundle['entities'][$name]['meta']['name']);
 				else
-					$bundle['entities'][$name]['meta']['name'] = $name;
+					$bundle['entities'][$name]['meta']['name'] = strtolower($name);
 
 				$bundle['entities'][$name]['meta']['entityClass'] = $bundle['namespace'].'\Entities\\'.ucfirst($name);
 
@@ -85,7 +84,7 @@ class GenerateCommand extends \Asgard\Console\Command {
 
 				if(!isset($bundle['entities'][$name]['front']))
 					$bundle['entities'][$name]['front'] = false;
-				if(!is_array($bundle['entities'][$name]['front'])) 
+				if($bundle['entities'][$name]['front'] && !is_array($bundle['entities'][$name]['front'])) 
 					$bundle['entities'][$name]['front'] = ['index', 'show'];
 			}
 
@@ -130,9 +129,9 @@ class GenerateCommand extends \Asgard\Console\Command {
 
 					if(in_array('index', $entity['front']) || isset($entity['front']['index'])) {
 						if(isset($entity['front']['index']))
-							\Asgard\File\FileSystem::copy($entity['front']['index'], $dst.'html/'.$bundle['entities'][$name]['meta']['name'].'/index.php', false);
+							\Asgard\File\FileSystem::copy($entity['front']['index'], $dst.'html/'.strtolower($bundle['entities'][$name]['meta']['name'].'/index.php'), false);
 						else
-							$generator->processFile(__DIR__.'/bundle_template/html/_entity/index.php', $dst.'html/'.$bundle['entities'][$name]['meta']['name'].'/index.php', ['bundle'=>$bundle, 'entity'=>$entity]);
+							$generator->processFile(__DIR__.'/bundle_template/html/_entity/index.php', $dst.'html/'.strtolower($bundle['entities'][$name]['meta']['name'].'/index.php'), ['bundle'=>$bundle, 'entity'=>$entity]);
 						if($bundle['tests']) {
 							$indexRoute = $class::routeFor('index')->getRoute();
 							$tests[$indexRoute] = '
@@ -142,9 +141,9 @@ class GenerateCommand extends \Asgard\Console\Command {
 					}
 					if(in_array('show', $entity['front']) || isset($entity['front']['show'])) {
 						if(isset($entity['front']['show']))
-							\Asgard\File\FileSystem::copy($entity['front']['show'], $dst.'html/'.$bundle['entities'][$name]['meta']['name'].'/show.php', false);
+							\Asgard\File\FileSystem::copy($entity['front']['show'], $dst.'html/'.strtolower($bundle['entities'][$name]['meta']['name'].'/show.php'), false);
 						else
-							$generator->processFile(__DIR__.'/bundle_template/html/_entity/show.php', $dst.'html/'.$bundle['entities'][$name]['meta']['name'].'/show.php', ['bundle'=>$bundle, 'entity'=>$entity]);
+							$generator->processFile(__DIR__.'/bundle_template/html/_entity/show.php', $dst.'html/'.strtolower($bundle['entities'][$name]['meta']['name'].'/show.php'), ['bundle'=>$bundle, 'entity'=>$entity]);
 						if($bundle['tests']) {
 							$showRoute = $class::routeFor('show')->getRoute();
 							$tests[$showRoute] = '
@@ -189,8 +188,8 @@ class GenerateCommand extends \Asgard\Console\Command {
 			$asgard['hooks']->trigger('Asgard.Core.Generate.bundleBuild', [&$bundle, $root.'app/'.strtolower($bundle['name']).'/', $generator]);
 
 			if($bundle['tests']) {
-				if(!$this->addToTests($bundle['generatedTests'], $root.'/Tests/'.ucfirst($bundle['name']).'.php'))
-					$this->comment($root.'/Tests/'.ucfirst($bundle['name']).'.php could not be generated.');
+				if(!$this->addToTests($bundle['generatedTests'], $root.'tests/'.ucfirst($bundle['name']).'Test.php'))
+					$this->comment($root.'tests/'.ucfirst($bundle['name']).'Test.php could not be generated.');
 			}
 		}
 			
@@ -199,6 +198,9 @@ class GenerateCommand extends \Asgard\Console\Command {
 	}
 
 	protected function addToTests($tests, $dst) {
+		if(!$tests)
+			return true;
+
 		$res = '';
 		foreach($tests as $route=>$test) {
 			$test = trim($test);
@@ -211,9 +213,7 @@ class GenerateCommand extends \Asgard\Console\Command {
 			return false;
 
 		file_put_contents($dst, '<?php
-namespace App\Tests;
-
-class '.$dst.' extends \Asgard\Core\Test {
+class '.basename($dst, '.php').' extends \Asgard\Http\Test {
 	public function test1() {
 		'.trim($res).'
 	}

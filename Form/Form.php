@@ -217,15 +217,17 @@ class Form extends Group {
 	public function fetch() {
 		if($this->name) {
 			if($this->getRequest()->file->get($this->name) !== null)
-				$raw = $this->getRequest()->file->get($this->name);
+				$files = $this->getRequest()->file->get($this->name);
 			else
-				$raw = [];
+				$files = [];
 		}
 		else
-			$raw = $this->getRequest()->file->all();
+			$files = $this->getRequest()->file->all();
 
-
-		$files = $this->parseFiles($raw);
+		foreach($files as $k=>$file) {
+			if($file->error() === 4)
+				unset($files[$k]);
+		}
 
 		$this->data = [];
 		if($this->name) {
@@ -237,58 +239,5 @@ class Form extends Group {
 			$this->setData($this->getRequest()->post->all() + $files);
 
 		return $this;
-	}
-
-	protected function parseFiles(array $raw) {
-		if(isset($raw['name']) && isset($raw['type']) && isset($raw['tmp_name']) && isset($raw['error']) && isset($raw['size'])) {
-			if(is_array($raw['name'])) {
-				$name = $this->convertTo('name', $raw['name']);
-				$type = $this->convertTo('type', $raw['type']);
-				$tmp_name = $this->convertTo('tmp_name', $raw['tmp_name']);
-				$error = $this->convertTo('error', $raw['error']);
-				$size = $this->convertTo('size', $raw['size']);
-				
-				$files = $this->merge_all($name, $type, $tmp_name, $error, $size);
-			}
-			else
-				$files = $raw;
-		}
-		else {
-			foreach($raw as $k=>$v) {
-				if($v['error'] == 4)
-					continue;
-				else
-					$raw[$k] = $this->parseFiles($v);
-			}
-			$files = $raw;
-		}
-
-		foreach($files as $k=>$v)
-			$files[$k] = \Asgard\Form\HttpFile::createFromArray($v);
-
-		return $files;
-	}
-	
-	protected function convertTo($type, array $files) {
-		$res = [];
-		foreach($files as $name=>$file) {
-			if(is_array($file))
-				$res[$name] = $this->convertTo($type, $file);
-			else
-				$res[$name][$type] = $file;
-		}
-				
-		return $res;
-	}
-	
-	protected function merge_all(array $name, array $type, array $tmp_name, array $error, array $size) {
-		foreach($name as $k=>$v) {
-			if(isset($v['name']) && !is_array($v['name']))
-				$name[$k] = array_merge($v, $type[$k], $tmp_name[$k], $error[$k], $size[$k]);
-			else 
-				$name[$k] = $this->merge_all($name[$k], $type[$k], $tmp_name[$k], $error[$k], $size[$k]);
-		}
-		
-		return $name;
 	}
 }

@@ -18,7 +18,7 @@ class BundleLoader {
 		return $this->path;
 	}
 
-	public function buildApp($container) {
+	public function buildContainer($container) {
 	}
 
 	public function run($container) {

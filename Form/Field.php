@@ -33,7 +33,7 @@ abstract class Field {
 	public function getValidationRules() {
 		$validation = isset($this->options['validation']) ? $this->options['validation']:[];
 		if(isset($this->options['choices']))
-			$validation['in'] = array_keys($this->options['choices']);
+			$validation['in'] = [array_keys($this->options['choices'])];
 
 		return $validation;
 	}

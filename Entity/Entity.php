@@ -198,11 +198,11 @@ abstract class Entity {
 			return $this;
 		}
 
+		static::getDefinition()->processBeforeSet($this, $name, $value, $locale, $hook);
+
 		if(static::getDefinition()->hasProperty($name)) {
 			if(!$locale)
 				$locale = $this->getLocale();
-
-			static::getDefinition()->processBeforeSet($this, $name, $value, $locale, $hook);
 
 			if(static::getDefinition()->property($name)->i18n && $locale !== $this->getLocale())
 				$this->data['translations'][$locale][$name] = $value;
@@ -252,7 +252,7 @@ abstract class Entity {
 		if(!$locale)
 			$locale = $this->getLocale();
 
-		if($res = $this->getDefinition()->trigger('get', [$this, $name, $locale]))
+		if(($res = $this->getDefinition()->trigger('get', [$this, $name, $locale])) !== null)
 			return $res;
 
 		return $this->_get($name, $locale);

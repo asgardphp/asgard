@@ -53,7 +53,7 @@ class FileProperty extends \Asgard\Entity\Property {
 		if(is_string($val) && $val !== null)
 			$val = new \Asgard\Entity\File($val);
 		if(is_object($val)) {
-			if($val instanceof \Asgard\Form\HttpFile)
+			if($val instanceof \Asgard\Http\HttpFile)
 				$val = new \Asgard\Entity\File($val->src(), $val->getName());
 			$container = $this->definition->getContainer();
 			if($container->has('config') && isset($container['config']['webdir']))

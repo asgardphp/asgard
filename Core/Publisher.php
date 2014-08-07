@@ -11,31 +11,71 @@ class Publisher {
 		$this->output = $output;
 	}
 
-	public function publish($src, $dst) {
+	public function publish($src, $dstDir) {
 		$r = true;
 		foreach(glob($src.'/*') as $file) {
-			$finalDst = \Asgard\File\FileSystem::copy($file, $dst, \Asgard\File\FileSystem::RENAME);
-			if($finalDst !== $dst) {
-				$this->output->warning('The file '.$dst.' had to be renamed into '.$finalDst.'.');
-				$r = false;
-			}
+			$dst = $dstDir.'/'.basename($file);
+			static::copy($file, $dst);
 		}
 		return $r;
 	}
 
-	public function publishMigrations($src, $dst, $migrate) {
-			if(!$this->publish($src, $dst) && $migrate) {
-				$this->output->warning('The migrations could not be migrated because some files had to be renamed.');
-				$migrate = false;
+	public function publishMigrations($src, $dstDir, $migrate) {
+			$r = true;
+			foreach(glob($src.'/*') as $file) {
+				if(basename($file) === 'migrations.json')
+					continue;
+				$dst = $dstDir.'/'.basename($file);
+				static::copy($file, $dst);
 			}
-			$mm = new \Asgard\Migration\MigrationsManager($dst, $this->container);
-			$tracking = new \Asgard\Migration\Tracker($src);
-			foreach(array_keys($tracking->getList()) as $migration) {
-				if($migrate)
-					$mm->migrate($migration, true);
-				else
-					$mm->add($migration);
+
+			if(!$r) {
+				$this->output->writeln('<warning>The migrations could not be added because some files had to be renamed. Please add them manually.</warning>');
+				return false;
 			}
-			return true;
+			else {
+				$mm = new \Asgard\Migration\MigrationsManager($dstDir, $this->container);
+				$tracking = new \Asgard\Migration\Tracker($src);
+				foreach(array_keys($tracking->getList()) as $migration) {
+					if($migrate)
+						$mm->migrate($migration, true);
+					else
+						$mm->add($migration);
+				}
+				return true;
+			}
+	}
+
+	public static function copy($src, $dst) {
+		if(is_dir($src))
+			return static::copyDir($src, $dst);
+		else {
+			if(file_exists($dst)) {
+				$dst = static::getNewFilename($odst = $dst);
+				$this->output->writeln('<warning>The file '.$odst.' had to be renamed into '.$dst.'.</warning>');
+			}
+
+			\Asgard\File\FileSystem::mkdir(dirname($dst));
+			$r = copy($src, $dst);
+
+			if($r !== false)
+				return $dst;
+			return false;
+		}
+	}
+
+	protected static function copyDir($src, $dst) {
+		$r = true;
+		$dir = opendir($src);
+		\Asgard\File\FileSystem::mkdir($dst);
+		while(false !== ($file = readdir($dir))) { 
+			if(($file != '.') && ($file != '..'))
+				$r = $r && static::copy($src.'/'.$file, $dst.'/'.$file);
+		} 
+		closedir($dir);
+
+		if($r !== false)
+			return $dst;
+		return false;
 	}
 }

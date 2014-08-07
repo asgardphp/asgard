@@ -64,12 +64,13 @@ class Browser {
 			$url = preg_replace('/(\?.*)$/', '', $url);
 		}
 		$request = new \Asgard\Http\Request;
-		$request->setMethod($method);
 		$request->get->setAll($get);
 		$request->post->setAll($post);
-		$request->file->setAll($file);
+		$request->setFiles($file);
+		$this->createTemporaryFiles($request->file->all());
 		$request->header->setAll($headers);
 		$request->server->setAll($server);
+		$request->setMethod($method);
 		$request->cookie = $this->cookies;
 		$request->session = $this->session;
 		if(count($post))
@@ -114,6 +115,22 @@ class Browser {
 				$this->merge($arr1[$k], $arr2[$k]);
 			elseif($arr1[$k] !== $arr2[$k])
 				$arr1[$k] = $arr2[$k];
+		}
+	}
+
+	protected function createTemporaryFiles($files) {
+		foreach($files as $file) {
+			if(is_array($file))
+				$this->createTemporaryFiles($file);
+			else {
+				while(true) {
+					$dst = sys_get_temp_dir().uniqid().'.tmp';
+					if(!file_exists($dst))
+						break;
+				}
+				copy($file->src(), $dst);
+				$file->setSrc($dst);
+			}
 		}
 	}
 }

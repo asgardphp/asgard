@@ -101,12 +101,12 @@ class DataMapper {
 		return static::unserialize($entity, $res);
 	}
 
-	protected function getRelation(\Asgard\Entity\Entity $entity, $name) {
-		return $entity::getDefinition()->relation($name);
+	public function getRelation(\Asgard\Entity\EntityDefinition $definition, $name) {
+		return $definition->relation($name);
 	}
 
 	public function relation(\Asgard\Entity\Entity $entity, $name) {
-		$rel = $this->getRelation($entity, $name);
+		$rel = $this->getRelation($entity::getDefinition(), $name);
 		$relation_type = $rel->type();
 		$relEntity = $rel['entity'];
 		
@@ -165,8 +165,8 @@ class DataMapper {
 						foreach($entity->get($name) as $file)
 							$file->delete();
 					}
-					else
-						$entity->get($name)->delete();
+					elseif($file = $entity->get($name))
+						$file->delete();
 				}
 			}
 
@@ -321,7 +321,7 @@ class DataMapper {
 		foreach($entity::getDefinition()->relations as $relation => $params) {
 			if(!isset($entity->data[$relation]))
 				continue;
-			$rel = static::getRelation($entity, $relation);
+			$rel = static::getRelation($entity::getDefinition(), $relation);
 			$reverse_rel = $rel->reverse();
 			$type = $rel['type'];
 

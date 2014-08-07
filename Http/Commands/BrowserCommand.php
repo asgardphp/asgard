@@ -21,10 +21,6 @@ class BrowserCommand extends \Asgard\Console\Command {
 		$cookies = $this->input->getOption('c') ? json_decode($this->input->getOption('c'), true):[];
 		$body = $this->input->getOption('b');
 		$files = $this->input->getOption('f') ? json_decode($this->input->getOption('f'), true):[];
-		if($files) {
-			foreach($files as $k=>$v)
-				$files[$k] = new \Asgard\Http\HttpFile($v['path'], $v['name'], $v['size'], $v['error']);
-		}
 
 		$browser = new \Asgard\Http\Browser\Browser($this->getContainer());
 		$browser->getCookies()->setAll($cookies);

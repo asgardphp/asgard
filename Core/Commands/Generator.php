@@ -27,8 +27,8 @@ class Generator {
 		$content = ob_get_contents();
 		ob_end_clean();
 
-		$content = str_replace('<%', '<?php', $content);
 		$content = str_replace('<%=', '<?=', $content);
+		$content = str_replace('<%', '<?php', $content);
 		$content = str_replace('%>', '?>', $content);
 
 		\Asgard\File\FileSystem::write($_dst, $content);

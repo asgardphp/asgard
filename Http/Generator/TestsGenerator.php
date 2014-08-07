@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\Core\Generator;
+namespace Asgard\Http\Generator;
 
 class TestsGenerator {
 	use \Asgard\Container\ContainerAware;
@@ -98,9 +98,7 @@ class TestsGenerator {
 
 	protected function createTestFile($dst) {
 		\Asgard\File\FileSystem::write($dst, '<?php
-namespace Tests;
-
-class '.explode('.', basename($dst))[0].' extends \Asgard\Core\Test {
+class '.explode('.', basename($dst))[0].' extends \Asgard\Http\Test {
 	public function test() {
 	}
 }');

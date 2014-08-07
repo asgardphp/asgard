@@ -24,7 +24,7 @@ class PublishCommand extends \Asgard\Console\Command {
 		$migrate = $this->input->getOption('migrate');
 		$root = $this->getContainer()['kernel']['root'];
 
-		$publisher = new Publisher($this->getContainer());
+		$publisher = new Publisher($this->getContainer(), $this->output);
 
 		#copy app
 		if($publishApp && file_exists($bundle.'/app')) {
@@ -65,6 +65,8 @@ class PublishCommand extends \Asgard\Console\Command {
 			else
 				$this->warning('Migration files could not be published.');
 		}
+
+		$this->info('Files published with success.');
 	}
 
 	protected function getOptions() {

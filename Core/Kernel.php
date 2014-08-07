@@ -17,7 +17,7 @@ class Kernel implements \ArrayAccess {
 
 	public function getContainer() {
 		if(!$this->container) {
-			$this->container = $this->buildApp($this->getConfig()['cache']);
+			$this->container = $this->buildContainer($this->getConfig()['cache']);
 			$this->container['kernel'] = $this;
 			\Asgard\Container\Container::setInstance($this->container);
 		}
@@ -91,7 +91,7 @@ class Kernel implements \ArrayAccess {
 		return $reflector->newInstanceArgs([$this['root'].'/storage/cache/']);
 	}
 
-	protected function buildApp($cache=false) {
+	protected function buildContainer($cache=false) {
 		if($cache) {
 			$c = $this->getCache($cache);
 			if(($this->container = $c->fetch('app')) !== false) {
@@ -104,7 +104,7 @@ class Kernel implements \ArrayAccess {
 		$container = $this->container = \Asgard\Container\Container::singleton();
 
 		foreach($bundles as $bundle)
-			$bundle->buildApp($container);
+			$bundle->buildContainer($container);
 
 		if($cache)
 			$c->save('app', $container);

@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\Form;
+namespace Asgard\Http;
 
 class HttpFile extends \Asgard\File\File {
 	protected $type;
@@ -11,6 +11,7 @@ class HttpFile extends \Asgard\File\File {
 		$this->size = $size;
 		$this->error = $error;
 		parent::__construct($src, $name);
+		$this->setUploaded(true);
 	}
 
 	public static function createFromArray(array $arr) {
