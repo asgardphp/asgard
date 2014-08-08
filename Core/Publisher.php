@@ -37,7 +37,7 @@ class Publisher {
 			$mm = new \Asgard\Migration\MigrationsManager($dstDir, $this->container);
 			$tracking = new \Asgard\Migration\Tracker($src);
 			foreach(array_keys($tracking->getList()) as $migration) {
-				$mm->add($migration);
+				$mm->getTracker()->add($migration);
 				if($migrate)
 					$mm->migrate($migration, true);
 			}
