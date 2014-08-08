@@ -76,12 +76,12 @@ class Form extends Group {
 		return strtoupper($this->method);
 	}
 
-	public function setoption($option, $value) {
+	public function setOption($option, $value) {
 		$this->options[$option] = $value;
 		return $this;
 	}
 
-	public function getoption($option) {
+	public function getOption($option) {
 		if(!isset($this->options[$option]))
 			return;
 		return $this->options[$option];

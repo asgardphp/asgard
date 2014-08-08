@@ -33,7 +33,7 @@ class File extends \Asgard\File\File {
 	}
 
 	public function setWebDir($webDir) {
-		$this->webDir = realpath($webDir);
+		$this->webDir = $webDir;
 	}
 
 	public function srcFromWebDir() {
