@@ -299,6 +299,8 @@ abstract class Entity {
 	}
 
 	private function propertyToArray($v, $property) {
+		if(is_null($v))
+			return null;
 		if(is_string($v) || is_array($v))
 			return $v;
 		if(method_exists($property, 'toArray'))
@@ -311,7 +313,7 @@ abstract class Entity {
 			elseif(method_exists($v, '__toString'))
 				return $v->__toString();
 		}
-		throw new \Exception('Cannot convert property '.$property.' to array or string.');
+		throw new \Exception('Cannot convert property '.get_class($property).' to array or string.');
 	}
 
 	/* I18N */
