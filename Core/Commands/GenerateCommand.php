@@ -118,9 +118,9 @@ class GenerateCommand extends \Asgard\Console\Command {
 			$dst = $root.'app/'.ucfirst(strtolower($name)).'/';
 			$generator->processFile(__DIR__.'/bundle_template/Bundle.php', $dst.'Bundle.php', ['bundle'=>$bundle]);
 			foreach($bundle['entities'] as $name=>$entity) {
-				$generator->processFile(__DIR__.'/bundle_template/entities/_Entity.php', $dst.'Entities/'.ucfirst($bundle['entities'][$name]['meta']['name']).'.php', ['bundle'=>$bundle, 'entity'=>$entity]);
+				$generator->processFile(__DIR__.'/bundle_template/Entities/_Entity.php', $dst.'Entities/'.ucfirst($bundle['entities'][$name]['meta']['name']).'.php', ['bundle'=>$bundle, 'entity'=>$entity]);
 				if($entity['front']) {
-					$generator->processFile(__DIR__.'/bundle_template/controllers/_EntityController.php', $dst.'Controllers/'.ucfirst($bundle['entities'][$name]['meta']['name']).'Controller.php', ['bundle'=>$bundle, 'entity'=>$entity]);
+					$generator->processFile(__DIR__.'/bundle_template/Controllers/_EntityController.php', $dst.'Controllers/'.ucfirst($bundle['entities'][$name]['meta']['name']).'Controller.php', ['bundle'=>$bundle, 'entity'=>$entity]);
 
 					if($bundle['tests']) {
 						include_once $dst.'controllers/'.ucfirst($bundle['entities'][$name]['meta']['name']).'Controller.php';
@@ -155,7 +155,7 @@ class GenerateCommand extends \Asgard\Console\Command {
 			}
 
 			foreach($bundle['controllers'] as $name=>$controller) {
-				$generator->processFile(__DIR__.'/bundle_template/controllers/_Controller.php', $dst.'Controllers/'.$controller['name'].'.php', ['bundle'=>$bundle, 'controller'=>$controller]);
+				$generator->processFile(__DIR__.'/bundle_template/Controllers/_Controller.php', $dst.'Controllers/'.$controller['name'].'.php', ['bundle'=>$bundle, 'controller'=>$controller]);
 
 				if($bundle['tests']) {
 					include_once $dst.'controllers/'.$controller['name'].'.php';
