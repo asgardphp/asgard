@@ -248,7 +248,7 @@ class EntityDefinition {
 					$value = $this->property($name)->set($value, $this, $name);
 			}
 			else
-				$value = $this->property($name)->set($value, $this, $name);
+				$value = $this->property($name)->set($value, $entity, $name);
 		}
 	}
 
@@ -261,6 +261,6 @@ class EntityDefinition {
 			$value = call_user_func_array($hook, [$value]);
 		}
 
-		$value = $this->property($name)->doSet($value, $this, $name);
+		$value = $this->property($name)->doSet($value, $entity, $name);
 	}
 }

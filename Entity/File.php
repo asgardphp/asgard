@@ -2,6 +2,7 @@
 namespace Asgard\Entity;
 
 class File extends \Asgard\File\File {
+	protected $web = false;
 	protected $url;
 	protected $webDir;
 	protected $toDelete;
@@ -15,15 +16,36 @@ class File extends \Asgard\File\File {
 		return $this->toDelete;
 	}
 
+	public function save() {
+		if($this->web)
+			$dir = rtrim(rtrim($this->webDir, '/').'/'.rtrim($this->dir, '/'), '/');
+		else
+			$dir = rtrim($this->dir, '/');
+		$this->rename($dir.'/'.$this->getName(), \Asgard\File\FileSystem::RENAME);
+	}
+
+	public function __toString() {
+		if($this->web)
+			return $this->url();
+		else
+			return $this->src();
+	}
+
+	/**** WEB ***/
+	public function isWeb() {
+		return $this->web;
+	}
+
+	public function setWeb($web) {
+		$this->web = $web;
+	}
+
 	public function setUrl($url) {
 		$this->url = $url;
 	}
 
 	public function url($default=null) {
-		$webDir = $this->formatPath($this->webDir);
-		if($this->exists() && strpos($this->src, $webDir) === 0)
-			$src = str_replace($webDir.DIRECTORY_SEPARATOR, '', $this->formatPath($this->src));
-		else
+		if(!($src = $this->srcFromWebDir()))
 			$src = $default;
 
 		if($this->url)
@@ -46,16 +68,8 @@ class File extends \Asgard\File\File {
 		return $this->relativeTo($this->webDir);
 	}
 
-	public function __toString() {
-		return $this->url();
-	}
-
 	public function setDir($dir) {
 		$this->dir = $dir;
 	}
-
-	public function save() {
-		$dir = rtrim(rtrim($this->webDir, '/').'/'.rtrim($this->dir, '/'), '/');
-		$this->rename($dir.'/'.$this->getName(), \Asgard\File\FileSystem::RENAME);
-	}
+	/**** /WEB ***/
 }

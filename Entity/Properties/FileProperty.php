@@ -46,6 +46,7 @@ class FileProperty extends \Asgard\Entity\Property {
 		if($container->has('request'))
 			$file->setUrl($container['request']->url);
 		$file->setDir($this->get('dir'));
+		$file->setWeb($this->get('web'));
 		return $file;
 	}
 
@@ -61,6 +62,7 @@ class FileProperty extends \Asgard\Entity\Property {
 			if($container->has('request'))
 				$val->setUrl($container['request']->url);
 			$val->setDir($this->get('dir'));
+			$val->setWeb($this->get('web'));
 		}
 		return $val;
 	}

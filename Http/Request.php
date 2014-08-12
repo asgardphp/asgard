@@ -195,19 +195,16 @@ class Request implements \ArrayAccess {
 				$size = $this->convertTo('size', $raw['size']);
 				
 				$files = $this->merge_all($name, $type, $tmp_name, $error, $size);
+
+				foreach($files as $k=>$v)
+					$files[$k] = \Asgard\Http\HttpFile::createFromArray($v);
 			}
 			else
-				$files = $raw;
-
-			foreach($files as $k=>$v)
-				$files[$k] = \Asgard\Http\HttpFile::createFromArray($v);
+				$files = \Asgard\Http\HttpFile::createFromArray($raw);
 		}
 		else {
-			foreach($raw as $k=>$v) {
-				if(!is_array($v))
-					d($raw);
+			foreach($raw as $k=>$v)
 				$raw[$k] = $this->parseFiles($v);
-			}
 			$files = $raw;
 		}
 

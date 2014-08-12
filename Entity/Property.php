@@ -86,7 +86,7 @@ class Property {
 	}
 
 	protected function _getDefault() {
-		return '';
+		return null;
 	}
 
 	public function getRules() {
@@ -129,10 +129,10 @@ class Property {
 
 	public function unserialize($str, $entity, $name) {
 		if($this->get('multiple')) {
+			$r = new Multiple($this->definition, $entity, $name);
 			$arr = unserialize($str);
 			if(!is_array($arr))
-				return [];
-			$r = new Multiple($this->definition, $entity, $name);
+				return $r;
 			foreach($arr as $v)
 				$r[] = $this->doUnserialize($v, $entity);
 			return $r;
