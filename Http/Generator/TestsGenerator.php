@@ -38,13 +38,13 @@ class TestsGenerator {
 				return false;
 		}
 
-		if(file_exists($root.'/Tests/tested.txt'))
-			$tested = array_filter(explode("\n", file_get_contents($root.'/Tests/tested.txt')));
+		if(file_exists($root.'/tests/tested.txt'))
+			$tested = array_filter(explode("\n", file_get_contents($root.'/tests/tested.txt')));
 		else
 			$tested = [];
-		if(file_exists($root.'/Tests/ignore.txt'))
-			$tested = array_merge(array_filter(explode("\n", file_get_contents($root.'/Tests/ignore.txt'))));
-		\Asgard\File\FileSystem::delete($root.'/Tests/tested.txt');
+		if(file_exists($root.'/tests/ignore.txt'))
+			$tested = array_merge(array_filter(explode("\n", file_get_contents($root.'/tests/ignore.txt'))));
+		\Asgard\File\FileSystem::delete($root.'/tests/tested.txt');
 
 		$routes = $this->container['resolver']->getRoutes();
 
