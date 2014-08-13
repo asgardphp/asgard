@@ -123,7 +123,7 @@ class GenerateCommand extends \Asgard\Console\Command {
 					$generator->processFile(__DIR__.'/bundle_template/Controllers/_EntityController.php', $dst.'Controllers/'.ucfirst($bundle['entities'][$name]['meta']['name']).'Controller.php', ['bundle'=>$bundle, 'entity'=>$entity]);
 
 					if($bundle['tests']) {
-						include_once $dst.'controllers/'.ucfirst($bundle['entities'][$name]['meta']['name']).'Controller.php';
+						include_once $dst.'Controllers/'.ucfirst($bundle['entities'][$name]['meta']['name']).'Controller.php';
 						$class = $bundle['namespace'].'\\Controllers\\'.ucfirst($entity['meta']['name']).'Controller';
 					}
 
@@ -158,7 +158,7 @@ class GenerateCommand extends \Asgard\Console\Command {
 				$generator->processFile(__DIR__.'/bundle_template/Controllers/_Controller.php', $dst.'Controllers/'.$controller['name'].'.php', ['bundle'=>$bundle, 'controller'=>$controller]);
 
 				if($bundle['tests']) {
-					include_once $dst.'controllers/'.$controller['name'].'.php';
+					include_once $dst.'Controllers/'.$controller['name'].'.php';
 					$class = $bundle['namespace'].'\\Controllers\\'.ucfirst($controller['name']);
 				}
 
