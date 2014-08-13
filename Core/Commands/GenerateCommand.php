@@ -185,7 +185,7 @@ class GenerateCommand extends \Asgard\Console\Command {
 			if($bundle['tests'])
 				$bundle['generatedTests'] = $tests;
 
-			$asgard['hooks']->trigger('Asgard.Core.Generate.bundleBuild', [&$bundle, $root.'app/'.strtolower($bundle['name']).'/', $generator]);
+			$asgard['hooks']->trigger('Asgard.Core.Generate.bundleBuild', [&$bundle, $root.'app/'.ucfirst($bundle['name']).'/', $generator]);
 
 			if($bundle['tests']) {
 				if(!$this->addToTests($bundle['generatedTests'], $root.'tests/'.ucfirst($bundle['name']).'Test.php'))
