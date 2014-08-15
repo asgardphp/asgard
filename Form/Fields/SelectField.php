@@ -10,6 +10,30 @@ class SelectField extends \Asgard\Form\Field {
 		return [];
 	}
 
+	public function getRadio($name, array $options=[]) {
+		$choices = $this->getChoices();
+		$default = $this->value;
+
+		$value = isset($options['value']) ? $options['value']:null;
+		if($value === null) {
+			foreach($choices as $k=>$v) {
+				if($v == $name) {
+					$value = $k;
+					break;
+				}
+			}
+		}
+		if($value === null)
+			throw new \Exception('No value for radio '.$name);
+
+		if($value == $default)
+			$options['attrs']['checked'] = 'checked';
+		$options['label'] = $name;
+
+		$class = $this->getParent()->getWidgetsManager()->getWidget('radio');
+		return $this->getParent()->getWidget($class, $this->name(), $value, $options);
+	}
+
 	public function getRadios(array $options=[]) {
 		if(isset($options['choices']))
 			$choices = $options['choices'];
@@ -24,27 +48,5 @@ class SelectField extends \Asgard\Form\Field {
 			$radios[$k] = $this->getRadio($v, $radio_options);
 		}
 		return $radios;
-	}
-
-	public function getRadio($name, array $options=[]) {
-		$choices = $this->getChoices();
-		$default = $this->value;
-
-		$value = isset($options['value']) ? $options['value']:null;
-		if($value === null) {
-			foreach($choices as $k=>$v) {
-				if($v == $name) {
-					$value = $k;
-					break;
-				}
-			}
-			if($value === null)
-				throw new \Exception('The choice "'.$name.'" does not exist.');
-		}
-
-		if($value == $default)
-			$options['attrs']['checked'] = 'checked';
-		$options['label'] = $name;
-		return $this->getTopForm()->getWidget('radio', $this->name(), $value, $options);
 	}
 }

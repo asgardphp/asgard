@@ -6,10 +6,10 @@ class DateField extends \Asgard\Form\Field {
 	protected $data_type = 'date';
 
 	public function setValue($value) {
-		if(is_array($value))
+		if(is_array($value) && isset($value['year']) && isset($value['month']) && isset($value['day']))
 			$this->value = \Carbon\Carbon::createFromDate($value['year'], $value['month'], $value['day']);
-		else
-			$this->value = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $value);
+		elseif(is_string($value))
+			$this->value = \Carbon\Carbon::createFromFormat('Y-m-d', $value);
 	}
 
 	public function value() {
@@ -17,7 +17,7 @@ class DateField extends \Asgard\Form\Field {
 			if($this->options['data_type'] == 'date')
 				return $this->value;
 			elseif($this->options['data_type'] == 'string')
-				return $this->value->format('d/m/Y');
+				return $this->value->format('Y-m-d');
 		}
 		return $this->value;
 	}

@@ -9,8 +9,10 @@ class DateWidget extends \Asgard\Form\Widget {
 		$month = $this->field->getMonth();
 		$year = $this->field->getYear();
 
-		return $this->field->getTopForm()->getWidget('select', $this->field->name().'[day]', $day, ['choices'=>array_combine(range(1, 31), range(1, 31))])->render().
-			$this->field->getTopForm()->getWidget('select', $this->field->name().'[month]', $month, ['choices'=>array_combine(range(1, 12), range(1, 12))])->render().
-			$this->field->getTopForm()->getWidget('select', $this->field->name().'[year]', $year, ['choices'=>array_combine(range(date('Y'), date('Y')-50), range(date('Y'), date('Y')-50))])->render();
+		$class = $this->field->getParent()->getWidgetsManager()->getWidget('select');
+
+		return $this->field->getParent()->getWidget($class, $this->field->name().'[day]', $day, ['id'=>$this->field->getID().'-day', 'choices'=>array_combine(range(1, 31), range(1, 31))])->render().
+			$this->field->getParent()->getWidget($class, $this->field->name().'[month]', $month, ['id'=>$this->field->getID().'-month', 'choices'=>array_combine(range(1, 12), range(1, 12))])->render().
+			$this->field->getParent()->getWidget($class, $this->field->name().'[year]', $year, ['id'=>$this->field->getID().'-year', 'choices'=>array_combine(range(date('Y'), date('Y')-50), range(date('Y'), date('Y')-50))])->render();
 	}
 }

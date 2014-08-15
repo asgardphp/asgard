@@ -5,13 +5,13 @@ class CSRFField extends \Asgard\Form\Fields\HiddenField {
 	public function __construct(array $options=[]) {
 		parent::__construct($options);
 		$this->options['validation']['required'] = true;
-		$this->options['validation']['callback'] = [$this, 'valid'];
+		$this->options['validation']['callback'] = [[$this, 'valid']];
 		$this->options['messages']['required'] = 'CSRF token is invalid.';
 		$this->options['messages']['callback'] = 'CSRF token is invalid.';
 
 		$this->widget = function($field, $options) {
 			$token = $this->generateToken();
-			return $field->getTopForm()->getWidget('Asgard\Form\Widgets\HiddenWidget', $field->name(), $token, $options)->render();
+			return $field->getParent()->getWidget('Asgard\Form\Widgets\HiddenWidget', $field->name(), $token, $options)->render();
 		};
 	}
 

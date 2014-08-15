@@ -2,19 +2,19 @@
 namespace Asgard\Form;
 
 abstract class Field {
-	public $options = [];
+	public    $options   = [];
 	protected $data_type = 'string';
 	protected $parent;
-	public $name;
+	public    $name;
 	protected $value;
-	protected $widget = 'text';
-	protected $errors = [];
+	protected $widget    = 'text';
+	protected $errors    = [];
 
 	public function __construct(array $options=[]) {
 		$this->setoptions($options);
 	}
 
-	public function setoptions($options) {
+	public function setOptions($options) {
 		$this->options = array_merge_recursive($this->options, $options);
 		if(isset($this->options['data_type']))
 			$this->data_type = $options['data_type'];

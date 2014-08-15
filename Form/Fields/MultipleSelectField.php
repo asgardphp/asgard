@@ -10,44 +10,6 @@ class MultipleSelectField extends \Asgard\Form\Field {
 		return [];
 	}
 
-	public function getRadio($name, array $options=[]) {
-		$choices = $this->getChoices();
-		$default = $this->value;
-
-		$value = isset($options['value']) ? $options['value']:null;
-		if($value === null) {
-			foreach($choices as $k=>$v) {
-				if($v == $name) {
-					$value = $k;
-					break;
-				}
-			}
-		}
-		if($value === null)
-			throw new \Exception('No value for radio '.$name);
-
-		if($value == $default)
-			$options['attrs']['checked'] = 'checked';
-		$options['label'] = $name;
-		return $this->getTopForm()->getWidget('radio', $this->name(), $value, $options);
-	}
-
-	public function getRadios(array $options=[]) {
-		if(isset($options['choices']))
-			$choices = $options['choices'];
-		else
-			$choices = $this->getChoices();
-
-		$radios = [];
-		foreach($choices as $k=>$v) {
-			$radio_options = $options;
-			$radio_options['value'] = $k;
-			$radio_options['widget_name'] = $v;
-			$radios[$k] = $this->getRadio($v, $radio_options);
-		}
-		return $radios;
-	}
-
 	public function getCheckboxes(array $options=[]) {
 		if(isset($options['choices']))
 			$choices = $options['choices'];
@@ -80,10 +42,12 @@ class MultipleSelectField extends \Asgard\Form\Field {
 		if($value === null)
 			throw new \Exception('No value for checkbox '.$name);
 
-		if($value == $default)
+		if(in_array($value, $default))
 			$options['attrs']['checked'] = 'checked';
 		$options['label'] = $name;
-		return $this->getTopForm()->getWidget('checkbox', $this->name, $value, $options);
+
+		$class = $this->getParent()->getWidgetsManager()->getWidget('checkbox');
+		return $this->getTopForm()->getWidget($class, $this->name.'[]', $value, $options);
 	}
 	
 	public function getValue() {
