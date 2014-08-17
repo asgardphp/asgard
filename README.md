@@ -1,13 +1,19 @@
 ### Asgard PHP Framework
 
-Asgard is a web application framework trying to make development pleasant and easy for developers.
+Asgard is a web application framework trying to make development efficient and easy for developers.
 
 ### Installation
 
-With Composer, simply add this line to your project dependencies:
-"asgard/asgard": "dev-master"
+composer create-project asgard/starter [folder] --stability dev
 
-### Starter
+### Official Documentation
 
-To create new Asgard project:
-composer create-project asgard/starter newproject/ --stability dev
+Documentation for the entire framework can be found on the [Asgard website](http://asgard.com/docs).
+
+### Contributing To Asgard
+
+Please submit all issues and pull requests to the [asgardphp/asgard](http://github.com/asgardphp/asgard) repository.
+
+### License
+
+The Asgard framework is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT)
