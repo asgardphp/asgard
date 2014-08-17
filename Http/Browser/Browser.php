@@ -11,8 +11,8 @@ class Browser {
 
 	public function __construct(\Asgard\Container\Container $container) {
 		$this->container = $container;
-		$this->cookies = new CookieManager;
-		$this->session = new SessionManager;
+		$this->cookies = new \Asgard\Common\Bag;
+		$this->session = new \Asgard\Common\Bag;
 	}
 
 	public function getCookies() {

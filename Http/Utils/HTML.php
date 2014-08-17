@@ -137,32 +137,6 @@ class HTML {
 		$this->printCSSCode();
 		$this->printCode();
 	}
-
-	public function minifyJS() {
-		$files = '';
-		foreach($this->include_js as $js) {
-			if(preg_match('/^http:/', $js))
-				echo '<script type="text/javascript" src="'.$js.'"></script>';
-			else
-				$files .= ($files ? ',':'').$js;
-		}
-		if($files)
-			echo '<script type="text/javascript" src="'.$this->request->url->to('min/index.php?f='.$files).'"></script>';
-		return;
-	}
-
-	public function minifyCSS() {
-		$files = '';
-		foreach($this->include_css as $css) {
-			if(preg_match('/^http:/', $css))
-				echo '<link rel="stylesheet" href="'.$css.'"/>';
-			else
-				$files .= ($files ? ',':'').$css;
-		}
-		if($files)
-			echo '<link rel="stylesheet" href="'.$this->request->url->to('min/index.php?f='.$files).'"/>';
-		return;
-	}
 	
 	static public function sanitize($html) {
 		return htmlentities($html, ENT_NOQUOTES, 'UTF-8');
