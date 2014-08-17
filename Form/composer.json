@@ -13,7 +13,8 @@
         "asgard/common": "@dev",
         "asgard/http": "@dev",
         "asgard/validation": "@dev",
-        "asgard/container": "@dev"
+        "asgard/container": "@dev",
+        "symfony/translation": "2.*"
     },
     "minimum-stability": "dev"
 }
