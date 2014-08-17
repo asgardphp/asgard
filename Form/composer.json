@@ -14,6 +14,7 @@
         "asgard/http": "@dev",
         "asgard/validation": "@dev",
         "asgard/container": "@dev",
+        "nesbot/carbon": "1.*",
         "symfony/translation": "2.*"
     },
     "minimum-stability": "dev"
