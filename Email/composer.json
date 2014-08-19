@@ -9,13 +9,8 @@
         "psr-4": {"Asgard\\Email\\": "."}
     },
     "require": {
-        "php": ">=5.4.0"
-    },
-    "require-dev": {
-        "swiftmailer/swiftmailer": "5.0.*"
-    },
-    "suggest": {
-        "swiftmailer/swiftmailer": "5.0.*"
+        "php": ">=5.4.0",
+        "swiftmailer/swiftmailer": "~5.1"
     },
     "minimum-stability": "dev"
 }

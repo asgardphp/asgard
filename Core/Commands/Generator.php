@@ -19,8 +19,7 @@ class Generator {
 			return;
 		$container = $this->container;
 
-		foreach($vars as $k=>$v)
-			$$k = $v;
+		extract($vars);
 
 		ob_start();
 		include $_src;

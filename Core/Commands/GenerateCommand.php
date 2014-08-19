@@ -96,7 +96,7 @@ class GenerateCommand extends \Asgard\Console\Command {
 					$bundle['controllers'][$name]['actions'] = [];
 				foreach($bundle['controllers'][$name]['actions'] as $aname=>$action) {
 					if(!isset($bundle['controllers'][$name]['actions'][$aname]['template']))
-						$bundle['controllers'][$name]['actions'][$aname]['template'] = strtolower($aname).'.php';
+						$bundle['controllers'][$name]['actions'][$aname]['template'] = null;
 					if(!isset($bundle['controllers'][$name]['actions'][$aname]['route']))
 						$bundle['controllers'][$name]['actions'][$aname]['route'] = null;
 					if(!isset($bundle['controllers'][$name]['actions'][$aname]['viewFile']))
@@ -173,12 +173,15 @@ class GenerateCommand extends \Asgard\Console\Command {
 		$browser = $this->getBrowser();
 		$this->assertTrue($browser->get(\''.$actionRoute.'\')->isOK(), \'GET '.$actionRoute.'\');';
 					}
-					if($params['template']) {
-						$content = '';
-						if($params['viewFile'])
-							$content = file_get_contents($params['viewFile']);
-						\Asgard\File\FileSystem::write($dst.'html/'.strtolower(preg_replace('/Controller$/', '', $controller['name'])).'/'.$params['template'], $content);
-					}
+					if($params['template'])
+						$templateFile = $dst.'html/'.strtolower(preg_replace('/Controller$/', '', $controller['name'])).'/'.$params['template'];
+					else
+						$templateFile = $dst.'html/'.strtolower(preg_replace('/Controller$/', '', $controller['name'])).'/'.strtolower($action).'.php';
+
+					$content = '';
+					if($params['viewFile'])
+						$content = file_get_contents($params['viewFile']);
+					\Asgard\File\FileSystem::write($templateFile, $content);
 				}
 			}
 

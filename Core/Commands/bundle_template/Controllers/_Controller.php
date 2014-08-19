@@ -14,6 +14,9 @@ class <?=ucfirst($controller['name']) ?> extends \Asgard\Http\Controller {
 	*/
 <?php endif ?>
 	public function <?=$name ?>Action($request) {
+		<?php if($action['template']): ?>
+		$this->view = '<?=$action['template']?>';
+		<?php endif ?>
 	}
 
 <?php endforeach ?>
