@@ -52,7 +52,7 @@ Set a template
 
 	$template->setTemplate('template2.php');
 
-Get the remplate:
+Get the template:
 
 	$template->getTemplate(); #template2.php
 
