@@ -193,46 +193,46 @@ class Group implements \ArrayAccess, \Iterator {
 	}
 	
 	/* Array */
-    public function offsetSet($offset, $value) {
+	public function offsetSet($offset, $value) {
 		if(is_null($offset))
 			$this->fields[] = $this->parseFields($value, count($this->fields));
 		else
 			$this->fields[$offset] = $this->parseFields($value, $offset);
-    }
+	}
 	
-    public function offsetExists($offset) {
+	public function offsetExists($offset) {
 		return isset($this->fields[$offset]);
-    }
+	}
 	
-    public function offsetUnset($offset) {
+	public function offsetUnset($offset) {
 		unset($this->fields[$offset]);
-    }
+	}
 	
-    public function offsetGet($offset) {
+	public function offsetGet($offset) {
 		return isset($this->fields[$offset]) ? $this->fields[$offset] : null;
-    }
+	}
 	
 	/* Iterator */
-    public function valid() {
+	public function valid() {
 		$key = key($this->fields);
 		return $key !== NULL && $key !== FALSE;
-    }
+	}
 
-    public function rewind() {
+	public function rewind() {
 		reset($this->fields);
-    }
-  
-    public function current() {
+	}
+
+	public function current() {
 		return current($this->fields);
-    }
-  
-    public function key()  {
+	}
+
+	public function key()  {
 		return key($this->fields);
-    }
-  
-    public function next()  {
+	}
+
+	public function next()  {
 		return next($this->fields);
-    }
+	}
 
 	/* Internal */
 	public function setParent(Group $parent) {

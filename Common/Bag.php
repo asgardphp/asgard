@@ -55,22 +55,22 @@ class Bag implements \ArrayAccess {
 		return \Asgard\Common\ArrayUtils::string_array_unset($this->data, $path);
 	}
 
-    public function offsetSet($offset, $value) {
-        if(is_null($offset))
-            throw new \LogicException('Offset must not be null.');
-        else
-       		$this->set($offset, $value);
-    }
+	public function offsetSet($offset, $value) {
+		if(is_null($offset))
+			throw new \LogicException('Offset must not be null.');
+		else
+			$this->set($offset, $value);
+	}
 
-    public function offsetExists($offset) {
-        return $this->has($offset);
-    }
+	public function offsetExists($offset) {
+		return $this->has($offset);
+	}
 
-    public function offsetUnset($offset) {
-        return $this->delete($offset);
-    }
+	public function offsetUnset($offset) {
+		return $this->delete($offset);
+	}
 
-    public function offsetGet($offset) {
-        return $this->get($offset);
-    }
+	public function offsetGet($offset) {
+		return $this->get($offset);
+	}
 }

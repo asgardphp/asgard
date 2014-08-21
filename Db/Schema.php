@@ -342,48 +342,48 @@ class Column {
 	
 	protected function getType() {
 		$r = $this->db->query("SELECT * 
-                 FROM INFORMATION_SCHEMA.COLUMNS 
-                 WHERE TABLE_SCHEMA = '".$this->db->getConfig()['database']."' 
-                 AND  TABLE_NAME = '$this->table'
-		 AND COLUMN_NAME = '$this->name'")->first();
-		 
+			FROM INFORMATION_SCHEMA.COLUMNS 
+			WHERE TABLE_SCHEMA = '".$this->db->getConfig()['database']."' 
+			AND  TABLE_NAME = '$this->table'
+			AND COLUMN_NAME = '$this->name'")->first();
+		
 		return $r['COLUMN_TYPE'];
 	}
 	
 	protected function getNullable() {
 		$r = $this->db->query("SELECT * 
-                 FROM INFORMATION_SCHEMA.COLUMNS 
-                 WHERE TABLE_SCHEMA = '".$this->db->getConfig()['database']."' 
-                 AND  TABLE_NAME = '$this->table'
-		 AND COLUMN_NAME = '$this->name'")->first();
-		 
+			FROM INFORMATION_SCHEMA.COLUMNS 
+			WHERE TABLE_SCHEMA = '".$this->db->getConfig()['database']."' 
+			AND  TABLE_NAME = '$this->table'
+			AND COLUMN_NAME = '$this->name'")->first();
+		
 		return $r['IS_NULLABLE'] === 'YES';
 	}
 	
 	protected function getDefault() {
 		$r = $this->db->query("SELECT * 
-                 FROM INFORMATION_SCHEMA.COLUMNS 
-                 WHERE TABLE_SCHEMA = '".$this->db->getConfig()['database']."' 
-                 AND  TABLE_NAME = '$this->table'
-		 AND COLUMN_NAME = '$this->name'")->first();
-		 
+			FROM INFORMATION_SCHEMA.COLUMNS 
+			WHERE TABLE_SCHEMA = '".$this->db->getConfig()['database']."' 
+			AND  TABLE_NAME = '$this->table'
+			AND COLUMN_NAME = '$this->name'")->first();
+		
 		return $r['COLUMN_DEFAULT'];
 	}
 	
 	protected function getAutoincrement() {
 		$r = $this->db->query("SELECT * 
-                 FROM INFORMATION_SCHEMA.COLUMNS 
-                 WHERE TABLE_SCHEMA = '".$this->db->getConfig()['database']."' 
-                 AND  TABLE_NAME = '$this->table'
-		 AND COLUMN_NAME = '$this->name'")->first();
-		 
+			FROM INFORMATION_SCHEMA.COLUMNS 
+			WHERE TABLE_SCHEMA = '".$this->db->getConfig()['database']."' 
+			AND  TABLE_NAME = '$this->table'
+			AND COLUMN_NAME = '$this->name'")->first();
+		
 		return strpos($r['EXTRA'], 'auto_increment') !== false;
 	}
 	
 	public function dropIndex() {
 		$sql = 'alter table `'.$this->table.'` drop index `'.$this->name.'`';
 		try {
-		$this->db->query($sql);
+			$this->db->query($sql);
 		} catch(\Asgard\Db\DBException $e) {}
 		
 		return $this;

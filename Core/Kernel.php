@@ -194,24 +194,24 @@ class Kernel implements \ArrayAccess {
 		return static::VERSION;
 	}
 
-    public function offsetSet($offset, $value) {
-        if(is_null($offset))
-            throw new \LogicException('Offset must not be null.');
-        else
-       		$this->params[$offset] = $value;
-    }
+	public function offsetSet($offset, $value) {
+		if(is_null($offset))
+			throw new \LogicException('Offset must not be null.');
+		else
+			$this->params[$offset] = $value;
+	}
 
-    public function offsetExists($offset) {
-       	return isset($this->params[$offset]);
-    }
+	public function offsetExists($offset) {
+		return isset($this->params[$offset]);
+	}
 
-    public function offsetUnset($offset) {
-       	unset($this->params[$offset]);
-    }
+	public function offsetUnset($offset) {
+		unset($this->params[$offset]);
+	}
 
-    public function offsetGet($offset) {
-    	if(!isset($this->params[$offset]))
-    		return;
-       	return $this->params[$offset];
-    }
+	public function offsetGet($offset) {
+		if(!isset($this->params[$offset]))
+			return;
+	return $this->params[$offset];
+	}
 }

@@ -99,24 +99,24 @@ class Container implements \ArrayAccess {
 		return isset($this->registry[$name]);
 	}
 
-    public function offsetSet($offset, $value) {
-        if(is_null($offset))
-            throw new \LogicException('Offset must not be null.');
-        else
-       		$this->set($offset, $value);
-    }
+	public function offsetSet($offset, $value) {
+		if(is_null($offset))
+			throw new \LogicException('Offset must not be null.');
+		else
+			$this->set($offset, $value);
+	}
 
-    public function offsetExists($offset) {
-        return $this->has($offset);
-    }
+	public function offsetExists($offset) {
+		return $this->has($offset);
+	}
 
-    public function offsetUnset($offset) {
-        return $this->remove($offset);
-    }
+	public function offsetUnset($offset) {
+		return $this->remove($offset);
+	}
 
-    public function offsetGet($offset) {
-        return $this->get($offset);
-    }
+	public function offsetGet($offset) {
+		return $this->get($offset);
+	}
 
 	public function __wakeup() {
 		if($this->autofacade) {

@@ -61,7 +61,7 @@ class ErrorHandler {
 				array_unshift($trace, $lastStep);
 			}
 			else
-                $trace = array_slice(array_reverse($trace), 1);
+				$trace = array_slice(array_reverse($trace), 1);
 		}
 
 		return $trace;

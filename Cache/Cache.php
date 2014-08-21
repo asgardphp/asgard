@@ -75,30 +75,30 @@ class Cache implements \Doctrine\Common\Cache\Cache, \ArrayAccess {
 	 * @param  mixed   $value
 	 * @return boolean          success
 	 */
-    public function offsetSet($offset, $value) {
+	public function offsetSet($offset, $value) {
 		if(is_null($offset))
 			throw new \LogicException('Offset cannot be empty.');
 		else
 			$this->save($offset, $value);
-    }
+	}
 	
 	/**
 	 * Array exists method
 	 * @param  integer $offset
 	 * @return boolean         if offset exists
 	 */
-    public function offsetExists($offset) {
+	public function offsetExists($offset) {
 		return $this->contains($offset);
-    }
+	}
 	
 	/**
 	 * Array unset method
 	 * @param  integer $offset
 	 * @return boolean         success
 	 */
-    public function offsetUnset($offset) {
+	public function offsetUnset($offset) {
 		return $this->delete($offset);
-    }
+	}
 	
 	
 	/**
@@ -106,7 +106,7 @@ class Cache implements \Doctrine\Common\Cache\Cache, \ArrayAccess {
 	 * @param  integer $offset
 	 * @return boolean         value
 	 */
-    public function offsetGet($offset) {
+	public function offsetGet($offset) {
 		return $this->fetch($offset);
-    }
+	}
 }

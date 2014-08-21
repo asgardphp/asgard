@@ -58,98 +58,98 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 		
 	protected function tableExists($table) {
 		return $this->getDB()->query("SELECT * 
-                 FROM INFORMATION_SCHEMA.TABLES 
-                 WHERE TABLE_SCHEMA = '' 
-                 AND  TABLE_NAME = '$table'")->count() > 0;
+			FROM INFORMATION_SCHEMA.TABLES 
+			WHERE TABLE_SCHEMA = '' 
+			AND  TABLE_NAME = '$table'")->count() > 0;
 	}
 		
 	protected function columnExists($table, $column) {
 		return $this->getDB()->query("SELECT * 
-                 FROM INFORMATION_SCHEMA.COLUMNS 
-                 WHERE TABLE_SCHEMA = 'asgard' 
-                 AND  TABLE_NAME = '$table'
-		 AND COLUMN_NAME = '$column'")->count() > 0;
+			FROM INFORMATION_SCHEMA.COLUMNS 
+			WHERE TABLE_SCHEMA = 'asgard' 
+			AND  TABLE_NAME = '$table'
+			AND COLUMN_NAME = '$column'")->count() > 0;
 	}
 	
 	protected function isAutoincrement($table, $column) {
 		return $this->getDB()->query("SELECT * 
-                 FROM INFORMATION_SCHEMA.COLUMNS 
-                 WHERE TABLE_SCHEMA = 'asgard' 
-                 AND  TABLE_NAME = '$table'
-		 AND COLUMN_NAME = '$column'
-		 AND EXTRA LIKE '%auto_increment%'")->count() > 0;
+			FROM INFORMATION_SCHEMA.COLUMNS 
+			WHERE TABLE_SCHEMA = 'asgard' 
+			AND  TABLE_NAME = '$table'
+			AND COLUMN_NAME = '$column'
+			AND EXTRA LIKE '%auto_increment%'")->count() > 0;
 	}
 	
 	protected function isNullable($table, $column) {
 		return $this->getDB()->query("SELECT * 
-                 FROM INFORMATION_SCHEMA.COLUMNS 
-                 WHERE TABLE_SCHEMA = 'asgard' 
-                 AND  TABLE_NAME = '$table'
-		 AND COLUMN_NAME = '$column'
-		 AND IS_NULLABLE = 'YES'")->count() > 0;
+			FROM INFORMATION_SCHEMA.COLUMNS 
+			WHERE TABLE_SCHEMA = 'asgard' 
+			AND  TABLE_NAME = '$table'
+			AND COLUMN_NAME = '$column'
+			AND IS_NULLABLE = 'YES'")->count() > 0;
 	}
 	
 	protected function getDefault($table, $column) {
 		$r = $this->getDB()->query("SELECT * 
-                 FROM INFORMATION_SCHEMA.COLUMNS 
-                 WHERE TABLE_SCHEMA = 'asgard' 
-                 AND  TABLE_NAME = '$table'
-		 AND COLUMN_NAME = '$column'")->first();
+			FROM INFORMATION_SCHEMA.COLUMNS 
+			WHERE TABLE_SCHEMA = 'asgard' 
+			AND  TABLE_NAME = '$table'
+			AND COLUMN_NAME = '$column'")->first();
 		return $r['COLUMN_DEFAULT'];
 	}
 	
 	protected function getDataType($table, $column) {
 		$r = $this->getDB()->query("SELECT * 
-                 FROM INFORMATION_SCHEMA.COLUMNS 
-                 WHERE TABLE_SCHEMA = 'asgard' 
-                 AND  TABLE_NAME = '$table'
-		 AND COLUMN_NAME = '$column'")->first();
+			FROM INFORMATION_SCHEMA.COLUMNS 
+			WHERE TABLE_SCHEMA = 'asgard' 
+			AND  TABLE_NAME = '$table'
+			AND COLUMN_NAME = '$column'")->first();
 		return $r['DATA_TYPE'];
 	}
 	
 	protected function getType($table, $column) {
 		$r = $this->getDB()->query("SELECT * 
-                 FROM INFORMATION_SCHEMA.COLUMNS 
-                 WHERE TABLE_SCHEMA = 'asgard' 
-                 AND  TABLE_NAME = '$table'
-		 AND COLUMN_NAME = '$column'")->first();
+			FROM INFORMATION_SCHEMA.COLUMNS 
+			WHERE TABLE_SCHEMA = 'asgard' 
+			AND  TABLE_NAME = '$table'
+			AND COLUMN_NAME = '$column'")->first();
 		return $r['COLUMN_TYPE'];
 	}
 	
 	protected function getLength($table, $column) {
 		$r = $this->getDB()->query("SELECT * 
-                 FROM INFORMATION_SCHEMA.COLUMNS 
-                 WHERE TABLE_SCHEMA = 'asgard' 
-                 AND  TABLE_NAME = '$table'
-		 AND COLUMN_NAME = '$column'")->first();
+			FROM INFORMATION_SCHEMA.COLUMNS 
+			WHERE TABLE_SCHEMA = 'asgard' 
+			AND  TABLE_NAME = '$table'
+			AND COLUMN_NAME = '$column'")->first();
 		return $r['CHARACTER_MAXIMUM_LENGTH'];
 	}
 		
 	protected function isPrimary($table, $column) {
 		return $this->getDB()->query("SELECT * 
-                 FROM INFORMATION_SCHEMA.COLUMNS 
-                 WHERE TABLE_SCHEMA = 'asgard' 
-                 AND  TABLE_NAME = '$table'
-		 AND COLUMN_NAME = '$column'
-		 AND COLUMN_KEY = 'PRI'")->count() > 0;
+			FROM INFORMATION_SCHEMA.COLUMNS 
+			WHERE TABLE_SCHEMA = 'asgard' 
+			AND  TABLE_NAME = '$table'
+			AND COLUMN_NAME = '$column'
+			AND COLUMN_KEY = 'PRI'")->count() > 0;
 	}
 		
 	protected function isUnique($table, $column) {
 		return $this->getDB()->query("SELECT * 
-                 FROM INFORMATION_SCHEMA.COLUMNS 
-                 WHERE TABLE_SCHEMA = 'asgard' 
-                 AND  TABLE_NAME = '$table'
-		 AND COLUMN_NAME = '$column'
-		 AND COLUMN_KEY = 'UNI'")->count() > 0;
+			FROM INFORMATION_SCHEMA.COLUMNS 
+			WHERE TABLE_SCHEMA = 'asgard' 
+			AND  TABLE_NAME = '$table'
+			AND COLUMN_NAME = '$column'
+			AND COLUMN_KEY = 'UNI'")->count() > 0;
 	}
 		
 	protected function isIndex($table, $column) {
 		return $this->getDB()->query("SELECT * 
-                 FROM INFORMATION_SCHEMA.COLUMNS 
-                 WHERE TABLE_SCHEMA = 'asgard' 
-                 AND  TABLE_NAME = '$table'
-		 AND COLUMN_NAME = '$column'
-		 AND COLUMN_KEY = 'MUL'")->count() > 0;
+			FROM INFORMATION_SCHEMA.COLUMNS 
+			WHERE TABLE_SCHEMA = 'asgard' 
+			AND  TABLE_NAME = '$table'
+			AND COLUMN_NAME = '$column'
+			AND COLUMN_KEY = 'MUL'")->count() > 0;
 	}
 	
 	//~ isFulltext()
