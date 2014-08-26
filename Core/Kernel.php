@@ -212,6 +212,6 @@ class Kernel implements \ArrayAccess {
 	public function offsetGet($offset) {
 		if(!isset($this->params[$offset]))
 			return;
-	return $this->params[$offset];
+		return $this->params[$offset];
 	}
 }

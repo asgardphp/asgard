@@ -12,7 +12,7 @@ class Debug {
 	public static function dWithTrace(array $trace) {
 		while(ob_get_length())
 			ob_end_clean();
-			
+		
 		if(php_sapi_name() != 'cli')
 			echo '<pre>';
 		foreach(array_slice(func_get_args(), 1) as $arg)
@@ -154,9 +154,10 @@ EOT;
 			$r = '<div><span class="toggle"><span>+</span>Code:</span>'."<br>\n";
 			$r .= '<div style="display:none"><code>';
 			foreach($code as $k=>$line) {
-				if($pos == $k+1)
+				if($pos == $k+1) {
 					$r .= '<span style="float:left; display:inline-block; width:50px; color:#000">'.($offset+$k+1).'</span>
 					<div class="current_line" style="display:inline-block; background-color:#ccc;">'.$line.'</div><br>';
+				}
 				else
 					$r .= '<span style="float:left; display:inline-block; width:50px; color:#000">'.($offset+$k+1).'</span>'.$line.'<br>';
 			}
@@ -168,7 +169,7 @@ EOT;
 	public static function getCLIBacktrace($backtrace=null) {
 		if(!$backtrace)
 			$backtrace = debug_backtrace();
-			
+		
 		$r = '';
 		for($i=0; $i<count($backtrace); $i++) {
 			$trace = $backtrace[$i];

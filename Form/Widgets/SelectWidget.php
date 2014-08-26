@@ -14,15 +14,17 @@ class SelectWidget extends \Asgard\Form\Widget {
 
 		$str = '';
 		foreach($choices as $k=>$v) {
-			if($value == $k)
+			if($value == $k) {
 				$str .= \Asgard\Form\HTMLHelper::tag('option', [
 					'value'	=>	$k,
 					'selected'	=>	'selected',
 				], $v);
-			else
+			}
+			else {
 				$str .= \Asgard\Form\HTMLHelper::tag('option', [
 					'value'	=>	$k,
 				], $v);
+			}
 		}
 
 		return \Asgard\Form\HTMLHelper::tag('select', [

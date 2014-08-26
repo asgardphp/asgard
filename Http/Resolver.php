@@ -167,7 +167,7 @@ class Resolver {
 			
 		if(preg_match('/:([a-zA-Z0-9_]+)/', $route))
 			throw new \Exception('Missing parameter for route: '.$route);
-			
+		
 		return trim($route, '/');
 	}
 

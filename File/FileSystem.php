@@ -52,7 +52,7 @@ class FileSystem {
 	public static function rename($src, $dst, $mode=null) {
 		if($mode === null)
 			$mode = static::OVERRIDE;
-			
+		
 		if(!($finalDst = static::copy($src, $dst, $mode)))
 			return false;
 		else {

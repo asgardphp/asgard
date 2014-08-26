@@ -15,15 +15,17 @@ class MultipleselectWidget extends \Asgard\Form\Widget {
 
 		$str = '';
 		foreach($choices as $k=>$v) {
-			if(is_array($value) && in_array($k, $value))
+			if(is_array($value) && in_array($k, $value)) {
 				$str .= \Asgard\Form\HTMLHelper::tag('option', [
 					'value'	=>	$k,
 					'selected'	=>	'selected',
 				], $v);
-			else
+			}
+			else {
 				$str .= \Asgard\Form\HTMLHelper::tag('option', [
 					'value'	=>	$k,
 				], $v);
+			}
 		}
 
 		return \Asgard\Form\HTMLHelper::tag('select', [

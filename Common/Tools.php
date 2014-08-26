@@ -44,13 +44,13 @@ class Tools {
 
 		if($printedLength < $maxLength && $position < strlen($html))
 			$res .= (substr($html, $position, $maxLength - $printedLength));
-			
+		
 		if($position < strlen($html))
 			$res .= $trailing;
-			
+		
 		while(!empty($tags))
 			$res .= sprintf('</%s>', array_pop($tags));
-			
+		
 		return $res;
 	}
 

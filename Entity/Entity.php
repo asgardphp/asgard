@@ -177,7 +177,7 @@ abstract class Entity {
 		}
 		elseif($name !== 'translations' && $name !== 'properties')
 			$this->data[$name] = $value;
-				
+		
 		return $this;
 	}
 

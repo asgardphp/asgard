@@ -69,7 +69,7 @@ class EntityForm extends \Asgard\Form\Form {
 		$orm = $relation['entity']::orm();
 		while($v = $orm->next())
 			$ids[$v->id] = (string)$v;
-				
+		
 		if($relation['has'] == 'one') {
 			$this->add(new \Asgard\Form\Fields\SelectField([
 				'type'      =>	'integer',

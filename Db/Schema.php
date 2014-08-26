@@ -51,16 +51,16 @@ class BuildCol {
 			$sql .= $this->type.'('.$this->length.')';
 		else
 			$sql .= $this->type;
-			
+		
 		if(!$this->nullable)
 			$sql .= ' NOT NULL';
-			
+		
 		if($this->def)
 			$sql .= " DEFAULT '".$this->def."'";
-			
+		
 		if($this->autoincrement)
 			$sql .= ' AUTO_INCREMENT';
-			
+		
 		return $sql;
 	}
 }

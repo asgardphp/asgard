@@ -305,7 +305,7 @@ class DataMapper {
 		#Persist i18n
 		foreach($i18n as $locale=>$values) {
 			$dal = new \Asgard\Db\DAL($this->db, $this->getTranslationTable($entity));
-			if(!$dal->where(['id'=>$entity->id, 'locale'=>$locale])->update($values))
+			if(!$dal->where(['id'=>$entity->id, 'locale'=>$locale])->update($values)) {
 				$dal->insert(
 					array_merge(
 						$values, 
@@ -315,6 +315,7 @@ class DataMapper {
 						]
 					)
 				);
+			}
 		}
 	
 		#Persist relations

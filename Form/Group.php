@@ -350,7 +350,7 @@ class Group implements \ArrayAccess, \Iterator {
 			
 			if(isset($this->data[$name]))
 				$field->setValue($this->data[$name]);
-				
+			
 			return $field;
 		}
 		elseif($fields instanceof self) {
