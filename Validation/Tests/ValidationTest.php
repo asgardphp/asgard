@@ -142,18 +142,18 @@ class Test extends \PHPUnit_Framework_TestCase {
 		$this->assertFalse(v::rule('min', 5, true)->valid([1,2,3,4,5,6,7,8,9]));
 		$this->assertTrue(v::rule('min', 5)->valid([1,2,3,4,5,6,7,8,9]));
 
-		RulesRegistry::getInstance()->messages(['min'=>':attribute shall be greater than :min!']);
+		RulesRegistry::singleton()->messages(['min'=>':attribute shall be greater than :min!']);
 		$this->assertEquals('"3" shall be greater than 5!', v::min(5)->errors(3)->first());
 
-		RulesRegistry::getInstance()->register('test', function($input){ return $input == 'a'; });
+		RulesRegistry::singleton()->register('test', function($input){ return $input == 'a'; });
 		$this->assertTrue(v::test()->valid('a'));
 		$this->assertFalse(v::test()->valid('b'));
 
-		RulesRegistry::getInstance()->registerNamespace('Asgard\Validation\Tests');
+		RulesRegistry::singleton()->registerNamespace('Asgard\Validation\Tests');
 		$this->assertTrue(v::ble('a')->valid('a'));
 		$this->assertFalse(v::ble('a')->valid('b'));
 
-		RulesRegistry::getInstance()->register('greaterThan', function($input, $parent, $v){ $v->min($parent->input('min')); });
+		RulesRegistry::singleton()->register('greaterThan', function($input, $parent, $v){ $v->min($parent->input('min')); });
 		$this->assertFalse(v::attribute('title', v::greaterThan(5))->valid(['title'=>'4', 'min'=>5]));
 		$this->assertTrue(v::attribute('title', v::greaterThan(5))->valid(['title'=>'4', 'min'=>4]));
 

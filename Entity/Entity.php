@@ -82,6 +82,7 @@ abstract class Entity {
 	public function getValidator(array $locales=[]) {
 		$messages = [];
 		$validator = new \Asgard\Validation\Validator;
+		$validator->setRegistry(static::$container['rulesRegistry']);
 
 		foreach($this->getDefinition()->properties() as $name=>$property) {
 			if($locales && $property->i18n) {

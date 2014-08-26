@@ -1,11 +1,30 @@
 <?php
 namespace Asgard\Validation;
 
+/**
+ * Contains and manipulates inputs for validation.
+ */
 class InputBag {
+	/**
+	 * Parent input
+	 * @var InputBag
+	 */
 	protected $parent;
+	/**
+	 * Raw input
+	 * @var mixed
+	 */
 	protected $input;
+	/**
+	 * Children inputs
+	 * @var array<InputBag>
+	 */
 	protected $attributes = [];
 
+	/**
+	 * Constructor.
+	 * @param mixed $input
+	 */
 	public function __construct($input) {
 		$this->input = $input;
 		if(is_array($input)) {
@@ -14,11 +33,19 @@ class InputBag {
 		}
 	}
 
+	/**
+	 * Set the parent input bag.
+	 * @param InputBag $parent
+	 */
 	public function setParent(InputBag $parent) {
 		$this->parent = $parent;
 		return $this;
 	}
 
+	/**
+	 * Return the parent input bag.
+	 * @return InputBag
+	 */
 	public function parent() {
 		if(!$this->parent)
 			return $this;
@@ -26,10 +53,20 @@ class InputBag {
 			return $this->parent;
 	}
 
+	/**
+	 * Check if the input has an attribute.
+	 * @param  string  $attribute name of attribute
+	 * @return boolean            true if attribute exists, or false
+	 */
 	public function hasAttribute($attribute) {
 		return $this->attribute($attribute)->input() !== null;
 	}
 
+	/**
+	 * Return an children input bag.
+	 * @param  string $attribute name of attribute
+	 * @return InputBag
+	 */
 	public function attribute($attribute) {
 		if(!is_array($attribute))
 			$attribute = explode('.', $attribute);
@@ -52,10 +89,19 @@ class InputBag {
 		}
 	}
 
+	/**
+	 * Return all the children input bags.
+	 * @return array<InputBag>
+	 */
 	public function attributes() {
 		return $this->attributes;
 	}
 
+	/**
+	 * Return the raw input of an attribute.
+	 * @param  string $attribute name of attribute
+	 * @return mixed
+	 */
 	public function input($attribute=null) {
 		if($attribute)
 			return $this->attribute($attribute)->input();

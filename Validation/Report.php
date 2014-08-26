@@ -1,11 +1,30 @@
 <?php
 namespace Asgard\Validation;
 
+/**
+ * Errors container.
+ */
 class Report {
+	/**
+	 * The main error.
+	 * @var string
+	 */
 	protected $self;
+	/**
+	 * Rules errors.
+	 * @var array<string>
+	 */
 	protected $rules=[];
+	/**
+	 * Attributes errors.
+	 * @var array
+	 */
 	protected $attributes=[];
 
+	/**
+	 * Constructor.
+	 * @param array $errors array of string errors
+	 */
 	public function __construct(array $errors=[]) {
 		if(isset($errors['self']))
 			$this->self = $errors['self'];
@@ -17,10 +36,19 @@ class Report {
 		}
 	}
 
+	/**
+	 * __toString magic method.
+	 * @return string
+	 */
 	public function __toString() {
 		return $this->self;
 	}
 
+	/**
+	 * Return the error of a rule if provided, otherwise the main error.
+	 * @param  string $rule rule name
+	 * @return string
+	 */
 	public function error($rule=null) {
 		if($rule === null)
 			return $this->self;
@@ -30,6 +58,10 @@ class Report {
 			return $attribute->error();
 	}
 
+	/**
+	 * Return an array of rules and attributes errors.
+	 * @return array
+	 */
 	public function errors() {
 		$errors = $this->rules;
 		foreach($this->attributes as $attribute=>$report)
@@ -37,6 +69,11 @@ class Report {
 		return $errors;
 	}
 
+	/**
+	 * Return the first error of the report or of an attribute if provided.
+	 * @param  string $attribute attribute name
+	 * @return string
+	 */
 	public function first($attribute=null) {
 		if($attribute !== null)
 			return $this->attribute($attribute)->first();
@@ -48,6 +85,10 @@ class Report {
 		}
 	}
 
+	/**
+	 * Return the array of failed attributes.
+	 * @return array
+	 */
 	public function failed() {
 		$failed = [];
 		foreach($this->attributes as $attribute=>$report) {
@@ -60,6 +101,12 @@ class Report {
 		return $failed;
 	}
 
+	/**
+	 * Return an attribute report or set one if provided.
+	 * @param  string $attribute attribute name
+	 * @param  Report $report    attribute report
+	 * @return Report            $this or the attrbute report
+	 */
 	public function attribute($attribute, Report $report=null) {
 		if(is_string($attribute))
 			$attribute = explode('.', $attribute);
@@ -83,10 +130,18 @@ class Report {
 		}
 	}
 
+	/**
+	 * Return the reports of all attributes
+	 * @return array
+	 */
 	public function attributes() {
 		return $this->attributes;
 	}
 
+	/**
+	 * Check if the report contains an error.
+	 * @return boolean
+	 */
 	public function hasError() {
 		return $this->rules || $this->attributes;
 	}

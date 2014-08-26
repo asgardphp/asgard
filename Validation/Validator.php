@@ -11,25 +11,85 @@ use Symfony\Component\Translation\TranslatorInterface;
   * @method $this required($param=true)
   */
 class Validator {
+	/**
+	 * Validator parameters.
+	 * @var array
+	 */
 	protected $params = [];
+	/**
+	 * Validator rules.
+	 * @var array
+	 */
 	protected $rules = [];
+	/**
+	 * Validator attributes.
+	 * @var array
+	 */
 	protected $attributes = [];
+	/**
+	 * Default error message.
+	 * @var array
+	 */
 	protected $defaultMessage;
+	/**
+	 * Rules default messages.
+	 * @var array
+	 */
 	protected $messages = [];
+	/**
+	 * "Required" rule.
+	 * @var boolean
+	 */
 	protected $required;
+	/**
+	 * "isNull" callback, to determine empty inputs.
+	 * @var callback
+	 */
 	protected $isNull;
+	/**
+	 * Rules registry.
+	 * @var RulesRegistry
+	 */
 	protected $registry;
+	/**
+	 * Input.
+	 * @var mixed
+	 */
 	protected $input;
+	/**
+	 * Parent validator.
+	 * @var Validator
+	 */
 	protected $parent;
+	/**
+	 * Validator name.
+	 * @var string
+	 */
 	protected $name;
+	/**
+	 * Translator.
+	 * @var Symfony\Component\Translation\TranslatorInterface
+	 */
 	protected $translator;
+	/**
+	 * Callback to format parameters.
+	 * @var callback
+	 */
 	protected $formatParameters;
 
+	/**
+	 * Set the translator.
+	 * @param Symfony\Component\Translation\TranslatorInterface $translator
+	 */
 	public function setTranslator(TranslatorInterface $translator) {
 		$this->translator = $translator;
 		return $this;
 	}
 
+	/**
+	 * Get the translator.
+	 * @return Symfony\Component\Translation\TranslatorInterface
+	 */
 	public function getTranslator() {
 		if($this->translator)
 			return $this->translator;
@@ -37,7 +97,12 @@ class Validator {
 			return $this->parent->getTranslator();
 	}
 
-	#to capture the rules calls and required
+	/**
+	 * Capture the calls to rules. Magic __call method.
+	 * @param  string $name
+	 * @param  array  $args
+	 * @return mixed
+	 */
 	public function __call($name, array $args) {
 		if($name == 'attribute')
 			return call_user_func_array([$this, 'callAttribute'], $args);
@@ -50,7 +115,12 @@ class Validator {
 		return call_user_func_array([$this, 'callRule'], [$name, $args]);
 	}
 
-	#same in static
+	/**
+	 * Capture the static calls to rules. MAgic __callStatic method.
+	 * @param  [type] $name
+	 * @param  array  $args
+	 * @return mixed
+	 */
 	public static function __callStatic($name, array $args) {
 		$v = new static;
 		if($name == 'attribute')
@@ -64,24 +134,13 @@ class Validator {
 		return call_user_func_array([$v, 'callRule'], [$name, $args]);
 	}
 
-	#to define several rules
-	protected function callRules(array $rules, $each=false) {
-		if(count($rules) === 2 && isset($rules['each']) && isset($rules['self'])) {
-			$this->callRules($rules['each'], true);
-			$this->callRules($rules['self'], false);
-			return $this;
-		}
-
-		foreach($rules as $key=>$value) {
-			if(is_numeric($key))
-				$this->rule($value, $each);
-			else
-				$this->rule($key, $value, $each);
-		}
-		return $this;
-	}
-
-	#to define one rule
+	/**
+	 * Set a rule.
+	 * @param  string  $rule   rule name
+	 * @param  array   $params rule parameter
+	 * @param  boolean $each   to validate the rule against each input of an array.
+	 * @return Validator       $this
+	 */
 	protected function callRule($rule, $params=[], $each=false) {
 		if(!is_array($params))
 			$params = [$params];
@@ -108,7 +167,34 @@ class Validator {
 		return $this;
 	}
 
-	#set attribute validator / or get attribute if not rules provided
+	/**
+	 * Set multiple rules.
+	 * @param  array   $rules [description]
+	 * @param  boolean $each  [description]
+	 * @return Validator       $this
+	 */
+	protected function callRules(array $rules, $each=false) {
+		if(count($rules) === 2 && isset($rules['each']) && isset($rules['self'])) {
+			$this->callRules($rules['each'], true);
+			$this->callRules($rules['self'], false);
+			return $this;
+		}
+
+		foreach($rules as $key=>$value) {
+			if(is_numeric($key))
+				$this->rule($value, $each);
+			else
+				$this->rule($key, $value, $each);
+		}
+		return $this;
+	}
+
+	/**
+	 * Set an attribute validator or only return the attribute validator if no rules given.
+	 * @param  string $attribute attribute name
+	 * @param  array  $rules     attribute rules
+	 * @return Validator         $this or the attribute validator.
+	 */
 	protected function callAttribute($attribute, $rules=null) {
 		if(!is_array($attribute))
 			$attribute = explode('.', $attribute);
@@ -142,12 +228,23 @@ class Validator {
 		}
 	}
 
+	/**
+	 * Set attributes rules.
+	 * @param  array  $attributes
+	 * @return Validator       $this
+	 */
 	public function callAttributes(array $attributes) {
 		foreach($attributes as $attribute=>$rules)
 			$this->attribute($attribute, $rules);
 		return $this;
 	}
 
+	/**
+	 * Set the default message for an attribute.
+	 * @param string $attribute attribute name
+	 * @param string $message
+	 * @return Validator       $this
+	 */
 	public function setDefaultMessage($attribute, $message=null) {
 		if($message === null)
 			$this->defaultMessage = $attribute;
@@ -156,21 +253,41 @@ class Validator {
 		return $this;
 	}
 
+	/**
+	 * Get the default error message.
+	 * @return string
+	 */
 	public function getDefaultMessage() {
 		return $this->defaultMessage;
 	}
 
+	/**
+	 * Set the default message for a rule.
+	 * @param  string $rule    rule name
+	 * @param  string $message
+	 * @return Validator       $this
+	 */
 	public function ruleMessage($rule, $message=null) {
 		$this->messages[$rule] = $message;
 		return $this;
 	}
 
+	/**
+	 * Set multiple rules messages.
+	 * @param  array  $rules
+	 * @return Validator       $this
+	 */
 	public function ruleMessages(array $rules) {
 		foreach($rules as $rule=>$message)
 			$this->ruleMessage($rule, $message);
 		return $this;
 	}
 
+	/**
+	 * Set multiple attributes messages.
+	 * @param  array  $messages
+	 * @return Validator       $this
+	 */
 	public function attributesMessages(array $messages) {
 		foreach($messages as $attribute=>$attrMessages) {
 			if($attrMessages)
@@ -179,6 +296,11 @@ class Validator {
 		return $this;
 	}
 
+	/**
+	 * Set the default message for a rule.
+	 * @param  string $rule    rule name
+	 * @return string
+	 */
 	public function getRuleMessage($rule) {
 		if(isset($this->messages[$rule]))
 			return $this->messages[$rule];
@@ -186,6 +308,12 @@ class Validator {
 			return $this->parent->getRuleMessage($rule);
 	}
 
+	/**
+	 * Get an instance of a rule.
+	 * @param  string $rule    rule name
+	 * @param  array  $params [description]
+	 * @return Rule
+	 */
 	public function getRule($rule, array $params) {
 		#validator
 		if($rule instanceof static)
@@ -203,48 +331,86 @@ class Validator {
 			return $this->getRegistry()->getRule($rule, $params);
 	}
 
+	/**
+	 * Get the RulesRegistry instance.
+	 * @return RulesRegistry
+	 */
 	public function getRegistry() {
 		if($this->registry)
 			return $this->registry;
 		elseif($this->parent)
 			return $this->parent->getRegistry();
 		else
-			return RulesRegistry::getInstance();
+			return RulesRegistry::singleton();
 	}
 
+	/**
+	 * Set the RulesRegistry instance.
+	 * @param RulesRegistry $registry
+	 * @return Validator       $this
+	 */
 	public function setRegistry(RulesRegistry $registry) {
 		$this->registry = $registry;
 		return $this;
 	}
 
+	/**
+	 * Set the input for validation.
+	 * @param mixed $input
+	 */
 	public function setInput($input) {
 		if(!$input instanceof InputBag)
 			$input = new InputBag($input);
 		return $this->input = $input;
 	}
 
+	/**
+	 * Get the input.
+	 * @return mixed
+	 */
 	public function getInput() {
 		if($this->input === null)
 			return new InputBag(null);
 		return $this->input;
 	}
 
+	/**
+	 * Set the parent validator.
+	 * @param Validator $parent
+	 * @return Validator       $this
+	 */
 	public function setParent(Validator $parent) {
 		$this->parent = $parent;
 		return $this;
 	}
 
+	/**
+	 * Set the validator name.
+	 * @param string $name
+	 * @return Validator       $this
+	 */
 	public function setName($name) {
 		$this->name = $name;
 		return $this;
 	}
 
+	/**
+	 * Raise an exception if there is an error for the given input.
+	 * @param  mixed $input
+	 * @throws ValidatorException If there is an error for the given input.
+	 * @return null
+	 */
 	public function assert($input) {
 		$report = $this->errors($input);
 		if($report->hasError())
 			throw new ValidatorException('Validation failed.', $report);
 	}
 
+	/**
+	 * Check if a rule validates the input.
+	 * @param  string $rule    rule name
+	 * @return boolean         true if the input is valid, otherwise false.
+	 */
 	public function validRule($rule) {
 		if($rule instanceof static) {
 			$rule->setInput($this->input);
@@ -266,11 +432,21 @@ class Validator {
 		return true;
 	}
 
+	/**
+	 * Check if the input is null.
+	 * @param  mixed $input
+	 * @return boolean        true if the input is considered null, false otherwise.
+	 */
 	protected function checkIsNull($input) {
 		$isNull = $this->isNull;
 		return $input === null || $input === '' || ($isNull && $isNull($input));
 	}
 
+	/**
+	 * Check the input is valid.
+	 * @param  mixed $input
+	 * @return boolean        true is the input is valid, false otherwise.
+	 */
 	public function valid($input=null) {
 		if($input === null)
 			$input = $this->getInput();
@@ -297,11 +473,21 @@ class Validator {
 		return true;
 	}
 
+	/**
+	 * Return the errors report.
+	 * @param  mixed $input
+	 * @return Report
+	 */
 	public function errors($input=null) {
 		$errors = $this->_errors($input);
 		return new Report($errors);
 	}
 
+	/**
+	 * Return the raw errors.
+	 * @param  mixed $input
+	 * @return array
+	 */
 	public function _errors($input=null) {
 		if($input === null)
 			$input = $this->getInput();
@@ -359,6 +545,12 @@ class Validator {
 		return $errors;
 	}
 
+	/**
+	 * Merge two array of errors.
+	 * @param  array  $errors1
+	 * @param  array  $errors2
+	 * @return array
+	 */
 	protected function mergeErrors(array $errors1, array $errors2) {
 		foreach($errors2['rules'] as $name=>$rule) {
 			if(isset($errors1['rules'][$name])) {
@@ -377,6 +569,10 @@ class Validator {
 		return $errors1;
 	}
 
+	/**
+	 * Get the validator name.
+	 * @return string
+	 */
 	public function getName() {
 		if($this->name)
 			return $this->name;
@@ -401,6 +597,10 @@ class Validator {
 		}
 	}
 
+	/**
+	 * Get the default error message.
+	 * @return string
+	 */
 	protected function getMessage() {
 		if($message = $this->defaultMessage) {}
 		else $message = ':attribute is not valid.';
@@ -411,6 +611,14 @@ class Validator {
 		return $this->format($message, $params);
 	}
 
+	/**
+	 * Build the error message of a rule.
+	 * @param  string $ruleName
+	 * @param  Rule $rule
+	 * @param  string $default  default message
+	 * @param  mixed $input
+	 * @return string
+	 */
 	protected function buildRuleMessage($ruleName, $rule=null, $default=null, $input=null) {
 		if($message = $this->getRuleMessage($ruleName)) {}
 		elseif($message = $this->getRegistry()->getMessage($ruleName)) {}
@@ -435,11 +643,22 @@ class Validator {
 		return $this->format($message, $params);
 	}
 
+	/**
+	 * Format parameters before passing them to the message.
+	 * @param  array        $formatParameters
+	 * @return Validator    $this
+	 */
 	public function formatParameters($formatParameters) {
 		$this->formatParameters = $formatParameters;
 		return $this;
 	}
 
+	/**
+	 * Format an error message.
+	 * @param  string $message
+	 * @param  array  $params
+	 * @return string
+	 */
 	protected function format($message, array $params) {
 		if($fm = $this->formatParameters)
 			$fm($params);
@@ -451,10 +670,20 @@ class Validator {
 		return ucfirst($message);
 	}
 
+	/**
+	 * Set a parameter.
+	 * @param string $key
+	 * @param mixed $value
+	 */
 	public function set($key, $value) {
 		$this->params[$key] = $value;
 	}
 
+	/**
+	 * Get a parameter.
+	 * @param  string $key
+	 * @return mixed
+	 */
 	public function get($key) {
 		if(!isset($this->params[$key])) {
 			if(!$this->parent)

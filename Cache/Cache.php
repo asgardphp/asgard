@@ -68,7 +68,7 @@ class Cache implements \Doctrine\Common\Cache\Cache, \ArrayAccess {
 	public function getStats() {
 		return $this->driver->getStats();
 	}
-	
+
 	/**
 	 * Array set method
 	 * @param  integer $offset
@@ -81,7 +81,7 @@ class Cache implements \Doctrine\Common\Cache\Cache, \ArrayAccess {
 		else
 			$this->save($offset, $value);
 	}
-	
+
 	/**
 	 * Array exists method
 	 * @param  integer $offset
@@ -90,7 +90,7 @@ class Cache implements \Doctrine\Common\Cache\Cache, \ArrayAccess {
 	public function offsetExists($offset) {
 		return $this->contains($offset);
 	}
-	
+
 	/**
 	 * Array unset method
 	 * @param  integer $offset
@@ -99,8 +99,8 @@ class Cache implements \Doctrine\Common\Cache\Cache, \ArrayAccess {
 	public function offsetUnset($offset) {
 		return $this->delete($offset);
 	}
-	
-	
+
+
 	/**
 	 * Array get method
 	 * @param  integer $offset

@@ -25,7 +25,10 @@ class DAL {
 		$this->addFrom($tables);
 	}
 
-	public function getParameters() {
+    /**
+     * @return array
+     */
+    public function getParameters() {
 		return $this->params;
 	}
 	
