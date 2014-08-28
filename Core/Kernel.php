@@ -2,7 +2,7 @@
 namespace Asgard\Core;
 
 class Kernel implements \ArrayAccess {
-	use \Asgard\Container\ContainerAware;
+	use \Asgard\Container\ContainerAwareTrait;
 
 	const VERSION = 0.1;
 	protected $params = [];

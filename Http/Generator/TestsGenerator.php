@@ -2,7 +2,7 @@
 namespace Asgard\Http\Generator;
 
 class TestsGenerator {
-	use \Asgard\Container\ContainerAware;
+	use \Asgard\Container\ContainerAwareTrait;
 
 	public function __construct($container) {
 		$this->container = $container;

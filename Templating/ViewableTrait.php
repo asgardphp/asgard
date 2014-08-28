@@ -1,7 +1,7 @@
 <?php
 namespace Asgard\Templating;
 
-trait Viewable {
+trait ViewableTrait {
 	protected $view;
 	protected $templateEngine;
 	protected $templatePathSolvers = [];

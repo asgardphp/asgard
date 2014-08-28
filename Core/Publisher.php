@@ -2,7 +2,7 @@
 namespace Asgard\Core;
 
 class Publisher {
-	use \Asgard\Container\ContainerAware;
+	use \Asgard\Container\ContainerAwareTrait;
 	
 	protected $output;
 

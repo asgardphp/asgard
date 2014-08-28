@@ -2,7 +2,7 @@
 namespace Asgard\Http;
 
 class HttpKernel {
-	use \Asgard\Container\ContainerAware;
+	use \Asgard\Container\ContainerAwareTrait;
 
 	protected $loaded = false;
 	protected $requests = [];

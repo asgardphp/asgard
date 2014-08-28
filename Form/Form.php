@@ -2,8 +2,8 @@
 namespace Asgard\Form;
 
 class Form extends Group {
-	use \Asgard\Hook\Hookable;
-	use \Asgard\Container\ContainerAware;
+	use \Asgard\Hook\HookableTrait;
+	use \Asgard\Container\ContainerAwareTrait;
 
 	protected $options = [
 		'method'	=>	'post',

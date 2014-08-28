@@ -15,7 +15,7 @@ class EntityException extends \Exception implements \Asgard\Entity\EntityExcepti
 }
 
 class DataMapper {
-	use \Asgard\Container\ContainerAware;
+	use \Asgard\Container\ContainerAwareTrait;
 
 	protected $db;
 	protected $locale;

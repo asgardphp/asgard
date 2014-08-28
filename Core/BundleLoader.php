@@ -2,7 +2,7 @@
 namespace Asgard\Core;
 
 class BundleLoader {
-	use \Asgard\Container\ContainerAware;
+	use \Asgard\Container\ContainerAwareTrait;
 	protected $path;
 
 	public function __construct() {

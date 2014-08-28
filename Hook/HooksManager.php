@@ -9,7 +9,7 @@ use Jeremeamia\SuperClosure\SerializableClosure;
  * @author Michel Hognerud <michel@hognerud.net>
 */
 class HooksManager {
-	use \Asgard\Container\ContainerAware;
+	use \Asgard\Container\ContainerAwareTrait;
 
 	protected static $instance;
 	public $registry = [];

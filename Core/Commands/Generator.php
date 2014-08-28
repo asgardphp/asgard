@@ -2,7 +2,7 @@
 namespace Asgard\Core\Commands;
 
 class Generator {
-	use \Asgard\Container\ContainerAware;
+	use \Asgard\Container\ContainerAwareTrait;
 	
 	protected $overrideFiles = false;
 

@@ -2,7 +2,7 @@
 namespace Asgard\Entity;
 
 class EntitiesManager {
-	use \Asgard\Container\ContainerAware;
+	use \Asgard\Container\ContainerAwareTrait;
 
 	protected static $singleton;
 	protected $entities    = [];

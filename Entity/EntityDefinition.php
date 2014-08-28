@@ -2,7 +2,7 @@
 namespace Asgard\Entity;
 
 class EntityDefinition {
-	use \Asgard\Hook\Hookable;
+	use \Asgard\Hook\HookableTrait;
 	
 	#dependencies
 	protected $entitiesManager;

@@ -3,7 +3,7 @@ namespace Asgard\Hook\Tests;
 
 use \Asgard\Hook\HooksManager;
 use \Asgard\Hook\HookChain;
-use \Asgard\Hook\Hookable;
+use \Asgard\Hook\HookableTrait;
 use \Asgard\Hook\HooksContainer;
 
 class HookTest extends \PHPUnit_Framework_TestCase {
@@ -93,5 +93,5 @@ class HookTest extends \PHPUnit_Framework_TestCase {
 }
 
 class Foo {
-	use \Asgard\Hook\Hookable;
+	use HookableTrait;
 }

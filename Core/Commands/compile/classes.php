@@ -28,7 +28,7 @@ return array_map('realpath', [
 	$root.'/vendor/asgard/asgard/Form/HTMLHelper.php',
 	$root.'/vendor/asgard/asgard/Form/Widget.php',
 	$root.'/vendor/asgard/asgard/Form/Widgets/TextWidget.php',
-	$root.'/vendor/asgard/asgard/Hook/Hookable.php',
+	$root.'/vendor/asgard/asgard/Hook/HookableTrait.php',
 	$root.'/vendor/asgard/asgard/Hook/HookChain.php',
 	$root.'/vendor/asgard/asgard/Hook/HooksContainer.php',
 	$root.'/vendor/asgard/asgard/Hook/HooksManager.php',

@@ -7,7 +7,7 @@ namespace Asgard\Orm;
  * @author Michel Hognerud <michel@hognerud.net>
 */
 class ORM {
-	use \Asgard\Container\ContainerAware;
+	use \Asgard\Container\ContainerAwareTrait;
 
 	protected $dataMapper;
 	protected $entity;

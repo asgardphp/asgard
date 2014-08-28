@@ -2,7 +2,7 @@
 namespace Asgard\Http\Browser;
 
 class Browser {
-	use \Asgard\Container\ContainerAware;
+	use \Asgard\Container\ContainerAwareTrait;
 
 	protected $cookies;
 	protected $session;

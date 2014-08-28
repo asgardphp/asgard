@@ -9,7 +9,7 @@ use Symfony\Component\Console\Input\InputOption;
  * @author Michel Hognerud <michel@hognerud.net>
 */
 class Application extends \Symfony\Component\Console\Application {
-	use \Asgard\Container\ContainerAware;
+	use \Asgard\Container\ContainerAwareTrait;
 	
 	/**
 	 * Constructor.

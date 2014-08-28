@@ -2,7 +2,7 @@
 namespace Asgard\Templating\Tests;
 
 use \Asgard\Templating\PHPTemplate;
-use \Asgard\Templating\Viewable;
+use \Asgard\Templating\ViewableTrait;
 
 class TemplatingTest extends \PHPUnit_Framework_TestCase {
 	public function testPHPTemplate() {
@@ -33,7 +33,7 @@ class TemplatingTest extends \PHPUnit_Framework_TestCase {
 }
 
 class _Viewable {
-	use Viewable;
+	use ViewableTrait;
 
 	public function test() {
 		$this->test = 'hello world!';

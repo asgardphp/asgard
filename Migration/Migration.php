@@ -2,7 +2,7 @@
 namespace Asgard\Migration;
 
 class Migration {
-	use \Asgard\Container\ContainerAware;
+	use \Asgard\Container\ContainerAwareTrait;
 
 	public function __construct($container) {
 		$this->container = $container;

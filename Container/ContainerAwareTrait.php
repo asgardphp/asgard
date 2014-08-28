@@ -1,7 +1,7 @@
 <?php
 namespace Asgard\Container;
 
-trait ContainerAware {
+trait ContainerAwareTrait {
 	protected $container;
 
 	public function setContainer($container) {

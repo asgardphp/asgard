@@ -2,7 +2,7 @@
 namespace Asgard\Migration;
 
 class MigrationsManager {
-	use \Asgard\Container\ContainerAware;
+	use \Asgard\Container\ContainerAwareTrait;
 
 	protected $directory;
 	protected $tracker;

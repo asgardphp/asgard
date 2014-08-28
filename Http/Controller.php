@@ -6,9 +6,9 @@ require_once __DIR__.'/Annotations/Prefix.php';
 require_once __DIR__.'/Annotations/Route.php';
 
 abstract class Controller {
-	use \Asgard\Hook\Hookable;
-	use \Asgard\Templating\Viewable;
-	use \Asgard\Container\ContainerAware;
+	use \Asgard\Hook\HookableTrait;
+	use \Asgard\Templating\ViewableTrait;
+	use \Asgard\Container\ContainerAwareTrait;
 	
 	public $request;
 	public $response;
