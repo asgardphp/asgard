@@ -19,9 +19,9 @@ class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\Pers
 			'defaut'   => 0,
 			'orm'      => [
 				'type'              => 'int(11)',
-				'auto_increment'	=> true,
-				'key'	            => 'PRI',
-				'nullable'	        => false,
+				'auto_increment'    => true,
+				'key'               => 'PRI',
+				'nullable'          => false,
 			],
 		]);	
 
@@ -35,15 +35,8 @@ class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\Pers
 	}
 
 	protected function getDataMapper() {
-		if(!$this->dataMapper) {
-			$container = $this->definition->getContainer();
-			$this->dataMapper = new DataMapper(
-				$container['db'],
-				$container['config']->get('locale'),
-				$container['config']->get('database/prefix'),
-				$container
-			);
-		}
+		if(!$this->dataMapper)
+			$this->dataMapper = $this->definition->getContainer()->make('dataMapper');
 		return $this->dataMapper;
 	}
 

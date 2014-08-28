@@ -29,7 +29,7 @@ class ORMMigrations {
 		foreach($entities as $class) {
 			$schema = [];
 			
-			foreach($class::getDefinition()->properties() as $name=>$prop) {
+			foreach($class::getStaticDefinition()->properties() as $name=>$prop) {
 				if(!$prop->orm)
 					$col = [];
 				else
@@ -78,7 +78,7 @@ class ORMMigrations {
 					$schema[$name] = $col;
 			}
 
-			foreach($class::getDefinition()->relations as $name=>$rel) {
+			foreach($class::getStaticDefinition()->relations as $name=>$rel) {
 				if($rel->type() == 'HMABT') {
 					$table_name = $rel->getTable();
 					if(!isset($schemas[$table_name])) {

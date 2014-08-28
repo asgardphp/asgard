@@ -12,12 +12,19 @@ class FilePropertyTest extends \PHPUnit_Framework_TestCase {
 		$container['cache'] = new \Asgard\Cache\NullCache;
 		$container['rulesregistry'] = new \Asgard\Validation\RulesRegistry;
 		$container['rulesregistry']->registerNamespace('Asgard\File\Rules');
-		$container['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($container);
-		$container['request'] = new \Asgard\Http\Request;
-		$container['request']->url->setHost('localhost');
-		$container['request']->url->setRoot('folder');
-		\Asgard\Entity\Entity::setContainer($container);
-		static::$container = $container;
+		$container->register('validator', function($container) {
+			$validator = new \Asgard\Validation\Validator;
+			$validator->setRegistry($container['rulesregistry']);
+			return $validator;
+		});
+		$request = $container['request'] = new \Asgard\Http\Request;
+		$request->url->setHost('localhost');
+		$request->url->setRoot('folder');
+
+		$entitiesManager = $container['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($container);
+		$entitiesManager->setValidatorFactory($container->createFactory('validator'));
+		#set the EntitiesManager static instance for activerecord-like entities (e.g. new Article or Article::find())
+		\Asgard\Entity\EntitiesManager::setInstance($entitiesManager);
 	}
 
 	public function testSet() {
@@ -46,7 +53,7 @@ class FilePropertyTest extends \PHPUnit_Framework_TestCase {
 			],
 			'file' => __DIR__.'/Fixtures/file.txt',
 		]);
-		$definition = $ent::getDefinition();
+		$definition = $ent::getStaticDefinition();
 
 		$this->assertEquals(realpath(__DIR__.'/Fixtures/file.txt'), $definition->property('file')->serialize($ent->file));
 		$this->assertEquals(serialize([

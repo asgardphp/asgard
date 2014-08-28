@@ -2,8 +2,6 @@
 namespace Asgard\Entity\Tests;
 
 class EntityTest extends \PHPUnit_Framework_TestCase {
-	protected static $container;
-
 	public static function setUpBeforeClass() {
 		$container = new \Asgard\Container\Container;
 		$container['config'] = new \Asgard\Config\Config;
@@ -11,12 +9,41 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 		$container['hooks'] = new \Asgard\Hook\HooksManager($container);
 		$container['cache'] = new \Asgard\Cache\NullCache;
 		$container['rulesregistry'] = new \Asgard\Validation\RulesRegistry;
-		$container['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($container);
-		\Asgard\Entity\Entity::setContainer($container);
-		static::$container = $container;
+		$container->register('validator', function($container) {
+			$validator = new \Asgard\Validation\Validator;
+			$validator->setRegistry($container['rulesregistry']);
+			return $validator;
+		});
+
+		$entitiesManager = $container['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($container);
+		$entitiesManager->setValidatorFactory($container->createFactory('validator'));
+		#set the EntitiesManager static instance for activerecord-like entities (e.g. new Article or Article::find())
+		\Asgard\Entity\EntitiesManager::setInstance($entitiesManager);
 	}
 
-	public function test() {
+	public function testEntitiesWithDependencyInjection() {
+		$container = new \Asgard\Container\Container;
+		$container['hooks'] = new \Asgard\Hook\HooksManager($container);
+		$em = new \Asgard\Entity\EntitiesManager($container);
+		$news = $em->make('Asgard\Entity\Tests\Classes\News', [
+			'title' => 'Test Title',
+			'content' => 'Test Content',
+			'published' => \Carbon\Carbon::create(2009, 9, 9),
+		]);
+		$this->assertEquals('Test Title', $news->title);
+		$this->assertEquals('Test Content', $news->content);
+	}
+
+	public function testActiveRecordEntities() {
+		$news = new Classes\News([
+			'title' => 'Test Title',
+			'content' => 'Test Content'
+		]);
+		$this->assertEquals('Test Title', $news->title);
+		$this->assertEquals('Test Content', $news->content);
+	}
+
+	public function test2() {
 		$news = new Classes\News([
 			'title' => 'Test Title',
 			'content' => 'Test Content',
@@ -38,7 +65,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals('bla', $news->test2());
 
 		#configure
-		$definition = Classes\News::getDefinition();
+		$definition = Classes\News::getStaticDefinition();
 		$this->assertTrue($definition->hasProperty('another_property'));
 
 		#i18n

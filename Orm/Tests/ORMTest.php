@@ -1,27 +1,43 @@
 <?php
-class ORMTest extends PHPUnit_Framework_TestCase {
+namespace Asgard\Orm\Tests;
+
+class ORMTest extends \PHPUnit_Framework_TestCase {
 	protected static $container;
 
 	public static function setUpBeforeClass() {
-		if(!defined('_ENV_'))
-			define('_ENV_', 'test');
-
 		$container = new \Asgard\Container\Container;
-		$container['hooks'] = new \Asgard\Hook\HooksManager($container);
+		$container['hooks']  = new \Asgard\Hook\HooksManager($container);
 		$container['config'] = new \Asgard\Config\Config;
-		$container['cache'] = new \Asgard\Cache\NullCache;
+		$container['cache']  = new \Asgard\Cache\NullCache;
 		$container->register('paginator', function($container, $page, $per_page, $total) {
 			return new \Asgard\Common\Paginator($page, $per_page, $total);
 		});
-		$container['rulesregistry'] = new \Asgard\Validation\RulesRegistry;
-		$container['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($container);
+		$container['rulesregistry']   = new \Asgard\Validation\RulesRegistry;
+		$container->register('validator', function($container) {
+			$validator = new \Asgard\Validation\Validator;
+			$validator->setRegistry($container['rulesregistry']);
+			return $validator;
+		});
 		$container['db'] = new \Asgard\Db\DB([
 			'database' => 'asgard',
-			'user' => 'root',
+			'user'     => 'root',
 			'password' => '',
-			'host' => 'localhost'
+			'host'     => 'localhost'
 		]);
-		\Asgard\Entity\Entity::setContainer($container);
+		$container->register('datamapper', function($container) {
+			return new \Asgard\Orm\DataMapper(
+				$container['db'],
+				'en',
+				'',
+				$container
+			);
+		});
+
+		$entitiesManager = $container['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($container);
+		$entitiesManager->setValidatorFactory($container->createFactory('validator'));
+		#set the EntitiesManager static instance for activerecord-like entities (e.g. new Article or Article::find())
+		\Asgard\Entity\EntitiesManager::setInstance($entitiesManager);
+
 		static::$container = $container;
 	}
 	
@@ -59,7 +75,7 @@ class ORMTest extends PHPUnit_Framework_TestCase {
 		$db->query('INSERT INTO `author` (`id`, `name`) VALUES (\'3\', \'John\');');
 
 		#load
-		$cat = Asgard\Orm\Tests\Entities\Category::load(1);
+		$cat = Entities\Category::load(1);
 		$this->assertEquals(1, $cat->id);
 		$this->assertEquals('General', $cat->title);
 
@@ -67,9 +83,9 @@ class ORMTest extends PHPUnit_Framework_TestCase {
 		$this->assertEquals(2, $cat->news()->count());
 
 		#orderBy
-		$this->assertEquals(2, Asgard\Orm\Tests\Entities\Category::first()->id); #default order is id DESC
-		$this->assertEquals(2, Asgard\Orm\Tests\Entities\Category::orderBy('id DESC')->first()->id);
-		$this->assertEquals(1, Asgard\Orm\Tests\Entities\Category::orderBy('id ASC')->first()->id);
+		$this->assertEquals(2, Entities\Category::first()->id); #default order is id DESC
+		$this->assertEquals(2, Entities\Category::orderBy('id DESC')->first()->id);
+		$this->assertEquals(1, Entities\Category::orderBy('id ASC')->first()->id);
 
 		#relation shortcut
 		$this->assertEquals(2, count($cat->news));
@@ -80,23 +96,23 @@ class ORMTest extends PHPUnit_Framework_TestCase {
 		#joinToEntity
 		$this->assertEquals(
 			1, 
-			Asgard\Orm\Tests\Entities\News::joinToEntity('category', $cat)->where('title', 'Welcome!')->first()->id
+			Entities\News::joinToEntity('category', $cat)->where('title', 'Welcome!')->first()->id
 		);
-		$author = Asgard\Orm\Tests\Entities\Category::load(2);
+		$author = Entities\Category::load(2);
 		$this->assertEquals(
 			2, 
-			Asgard\Orm\Tests\Entities\News::joinToEntity('category', $cat)->joinToEntity('author', $author)->where('author.name', 'Joe')->first()->id
+			Entities\News::joinToEntity('category', $cat)->joinToEntity('author', $author)->where('author.name', 'Joe')->first()->id
 		);
 		$this->assertEquals(
 			null,
-			Asgard\Orm\Tests\Entities\News::joinToEntity('category', $cat)->joinToEntity('author', $author)->where('author.name', 'Bob')->first()
+			Entities\News::joinToEntity('category', $cat)->joinToEntity('author', $author)->where('author.name', 'Bob')->first()
 		);
 
 		#stats functions
-		$this->assertEquals(26, floor(Asgard\Orm\Tests\Entities\News::avg('score')*10));
-		$this->assertEquals(8, Asgard\Orm\Tests\Entities\News::sum('score'));
-		$this->assertEquals(5, Asgard\Orm\Tests\Entities\News::max('score'));
-		$this->assertEquals(1, Asgard\Orm\Tests\Entities\News::min('score'));
+		$this->assertEquals(26, floor(Entities\News::avg('score')*10));
+		$this->assertEquals(8, Entities\News::sum('score'));
+		$this->assertEquals(5, Entities\News::max('score'));
+		$this->assertEquals(1, Entities\News::min('score'));
 
 		#relations cascade
 		$this->assertEquals(2, count($cat->news()->author));
@@ -105,7 +121,7 @@ class ORMTest extends PHPUnit_Framework_TestCase {
 		#join
 		$this->assertEquals(
 			2, 
-			Asgard\Orm\Tests\Entities\Author::orm()
+			Entities\Author::orm()
 			->join('news')
 			->where('news.title', '1000th visitor!')
 			->first()
@@ -114,7 +130,7 @@ class ORMTest extends PHPUnit_Framework_TestCase {
 
 		#next
 		$news = [];
-		$orm = Asgard\Orm\Tests\Entities\News::orm();
+		$orm = Entities\News::orm();
 		while($n = $orm->next())
 			$news[] = $n;
 		$this->assertEquals(3, count($news));
@@ -122,44 +138,44 @@ class ORMTest extends PHPUnit_Framework_TestCase {
 		#values
 		$this->assertEquals(
 			['Welcome!', '1000th visitor!', 'Important'],
-			Asgard\Orm\Tests\Entities\News::orderBy('id ASC')->values('title')
+			Entities\News::orderBy('id ASC')->values('title')
 		);
 
 		#ids
 		$this->assertEquals(
 			[1, 2, 3],
-			Asgard\Orm\Tests\Entities\News::orderBy('id ASC')->ids()
+			Entities\News::orderBy('id ASC')->ids()
 		);
 
 		#with
-		$cats = Asgard\Orm\Tests\Entities\Category::with('news')->get();
+		$cats = Entities\Category::with('news')->get();
 		$this->assertEquals(1, count($cats[0]->data['news']));
 		$this->assertEquals(2, count($cats[1]->data['news']));
 
-		$cats = Asgard\Orm\Tests\Entities\Category::with('news', function($orm) {
+		$cats = Entities\Category::with('news', function($orm) {
 			$orm->with('author');
 		})->get();
 		$this->assertEquals(1, $cats[0]->data['news'][0]->data['author']->id);
 
 		#selectQuery
-		$cats = Asgard\Orm\Tests\Entities\Category::selectQuery('SELECT * FROM category WHERE title=?', ['General']);
+		$cats = Entities\Category::selectQuery('SELECT * FROM category WHERE title=?', ['General']);
 		$this->assertEquals(1, $cats[0]->id);
 
 		#paginate
-		$orm = Asgard\Orm\Tests\Entities\News::paginate(1, 2);
+		$orm = Entities\News::paginate(1, 2);
 		$paginator = $orm->getPaginator();
 		$this->assertTrue($paginator instanceof \Asgard\Common\Paginator);
 		$this->assertEquals(2, count($orm->get()));
-		$this->assertEquals(1, count(Asgard\Orm\Tests\Entities\News::paginate(2, 2)->get()));
+		$this->assertEquals(1, count(Entities\News::paginate(2, 2)->get()));
 
 		#offset
-		$this->assertEquals(3, Asgard\Orm\Tests\Entities\News::orderBy('id ASC')->offset(2)->first()->id);
+		$this->assertEquals(3, Entities\News::orderBy('id ASC')->offset(2)->first()->id);
 
 		#limit
-		$this->assertEquals(2, count(Asgard\Orm\Tests\Entities\News::limit(2)->get()));
+		$this->assertEquals(2, count(Entities\News::limit(2)->get()));
 
 		#two jointures with the same name
-		$r = Asgard\Orm\Tests\Entities\News::first()
+		$r = Entities\News::first()
 		->join([
 			'author' => 'news n1',
 			'category' => 'news n2',
@@ -170,13 +186,13 @@ class ORMTest extends PHPUnit_Framework_TestCase {
 
 		#validation
 		static::$container['rulesregistry']->registerNamespace('Asgard\Orm\Rules');
-		$cat = Asgard\Orm\Tests\Entities\Category::load(1);
+		$cat = Entities\Category::load(1);
 		$this->assertEquals([
 			'news' => [
 				'morethan' => 'News must have more than 3 elements.'
 			]
 		], $cat->errors());
-		$cat = new Asgard\Orm\Tests\Entities\Category;
+		$cat = new Entities\Category;
 		$this->assertEquals([
 			'news' => [
 				'relationrequired' => 'News is required.',

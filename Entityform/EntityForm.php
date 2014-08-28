@@ -18,7 +18,7 @@ class EntityForm extends \Asgard\Form\Form {
 		$this->locales            = isset($options['locales']) ? $options['locales']:[];
 	
 		$fields = [];
-		foreach($entity::getDefinition()->properties() as $name=>$property) {
+		foreach($entity::getStaticDefinition()->properties() as $name=>$property) {
 			if(isset($options['only']) && !in_array($name, $options['only']))
 				continue;
 			if(isset($options['except']) && in_array($name, $options['except']))
@@ -37,7 +37,7 @@ class EntityForm extends \Asgard\Form\Form {
 		}
 
 		parent::__construct(
-			isset($options['name']) ? $options['name']:$entity::getDefinition()->getShortName(),
+			isset($options['name']) ? $options['name']:$entity::getStaticDefinition()->getShortName(),
 			$options,
 			$request,
 			$fields
@@ -63,7 +63,7 @@ class EntityForm extends \Asgard\Form\Form {
 	/* Entity fields */
 	public function addRelation($name) {
 		$entity = $this->entity;
-		$relation = $entity::getDefinition()->relation($name);
+		$relation = $entity::getStaticDefinition()->relation($name);
 
 		$ids = [''=>$this->getTranslator()->trans('Choose')];
 		$orm = $relation['entity']::orm();
@@ -89,7 +89,7 @@ class EntityForm extends \Asgard\Form\Form {
 	/* Save & Validation */
 	public function doSave() {
 		$entity = $this->entity;
-		if($entity::getDefinition()->hasBehavior('Asgard\Entity\PersistenceBehavior'))
+		if($entity::getStaticDefinition()->hasBehavior('Asgard\Entity\PersistenceBehavior'))
 			$entity->save();
 		else
 			parent::doSave();

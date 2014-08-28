@@ -3,33 +3,40 @@ namespace Asgard\Entity;
 
 class EntityDefinition {
 	use \Asgard\Hook\Hookable;
-	use \Asgard\Container\ContainerAware;
 	
+	#dependencies
+	protected $entitiesManager;
+	protected $generalHooksManager;
+
 	protected $entityClass;
-
-	protected $metas = [];
-	protected $properties = [];
-	public $behaviors = [];
-	public $messages = [];
-	public $relations = [];
-	protected $calls = [];
-	protected $statics = [];
+	public    $behaviors       = [];
+	public    $messages        = [];
+	public    $relations       = [];
+	protected $metas           = [];
+	protected $properties      = [];
+	protected $calls           = [];
+	protected $statics         = [];
 	protected $staticsCatchAll = [];
-	protected $callsCatchAll = [];
+	protected $callsCatchAll   = [];
 
-	public function __construct($entityClass, $container) {
+	public function __construct($entityClass, $entitiesManager, $generalHooksManager=null) {
 		$reflectionClass = new \ReflectionClass($entityClass);
 		if(!$reflectionClass->IsInstantiable())
 			return;
 
-		$this->container = $container;
 		$this->entityClass = $entityClass;
+		$this->entitiesManager = $entitiesManager;
+		$this->generalHooksManager = $generalHooksManager;
 
 		$entityClass::definition($this);
 
 		$behaviors = $this->behaviors;
 		$this->behaviors = [];
 		$this->loadBehaviors($behaviors);
+	}
+
+	public function getContainer() {
+		return $this->entitiesManager->getContainer();
 	}
 
 	public function __sleep() {
@@ -110,8 +117,22 @@ class EntityDefinition {
 		}
 	}
 
+	public function setEntitiesManager($entitiesManager) {
+		$this->entitiesManager = $entitiesManager;
+		return $this;
+	}
+
+	public function setGeneralHooksManager($generalHooksManager) {
+		$this->generalHooksManager = $generalHooksManager;
+		return $this;
+	}
+
+	public function getEntitiesManager() {
+		return $this->entitiesManager;
+	}
+
 	public function loadBehaviors($behaviors) {
-		$this->container['hooks']->trigger('Asgard.Entity.LoadBehaviors', [&$behaviors]);
+		$this->generalHooksManager->trigger('Asgard.Entity.LoadBehaviors', [&$behaviors]);
 
 		foreach($behaviors as $behavior)
 			$this->loadBehavior($behavior);
@@ -159,7 +180,7 @@ class EntityDefinition {
 				$property['type'] = 'text';
 
 			$type = $property['type'];
-			$property = $this->container->make('Asgard.Entity.PropertyType.'.$type, [$property], function($params) use($type) {
+			$property = $this->getContainer()->make('Asgard.Entity.PropertyType.'.$type, [$property], function($params) use($type) {
 				$class = '\Asgard\Entity\Properties\\'.ucfirst(strtolower($type)).'Property';
 				return new $class($params);
 			});
@@ -257,10 +278,18 @@ class EntityDefinition {
 			$this->trigger('set', [$entity, $name, &$value, $locale]);
 	
 		if($this->property($name)->setHook) {
-			$hook = $this->property($name)->setHook;
+			$hook  = $this->property($name)->setHook;
 			$value = call_user_func_array($hook, [$value]);
 		}
 
 		$value = $this->property($name)->doSet($value, $entity, $name);
+	}
+
+	public function make(array $params=null, $locale=null) {
+		$entityClass = $this->entityClass;
+		$entity      = new $entityClass($params, $locale);
+		$entity->setDefinition($this);
+
+		return $entity;
 	}
 }

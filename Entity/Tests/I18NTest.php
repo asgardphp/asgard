@@ -12,8 +12,17 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 		$container['hooks'] = new \Asgard\Hook\HooksManager($container);
 		$container['cache'] = new \Asgard\Cache\NullCache;
 		$container['rulesregistry'] = new \Asgard\Validation\RulesRegistry;
-		$container['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($container);
-		\Asgard\Entity\Entity::setContainer($container);
+		$container->register('validator', function($container) {
+			$validator = new \Asgard\Validation\Validator;
+			$validator->setRegistry($container['rulesregistry']);
+			return $validator;
+		});
+
+		$entitiesManager = $container['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($container);
+		$entitiesManager->setValidatorFactory($container->createFactory('validator'));
+		#set the EntitiesManager static instance for activerecord-like entities (e.g. new Article or Article::find())
+		\Asgard\Entity\EntitiesManager::setInstance($entitiesManager);
+
 		static::$container = $container;
 	}
 

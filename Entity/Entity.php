@@ -2,41 +2,34 @@
 namespace Asgard\Entity;
 
 abstract class Entity {
-	protected static $container;
 	#public for behaviors
 	public $data = [
 		'properties'   => [],
 		'translations' => [],
 	];
+	protected $definition;
 	protected $locale;
 
 	public function __construct(array $params=null, $locale=null) {
-		#create the entity definition if does not exist yet
-		static::$container['entitiesmanager']->make(get_called_class());
-		if($locale === null)
-			$this->locale = isset(static::$container['config']['locale']) ? static::$container['config']['locale']:null;
-		else
-			$this->locale = $locale;
-
+		$this->setLocale($locale);
 		$this->loadDefault();
 		if(is_array($params))
 			$this->set($params);
 	}
 
-	public function setLocale($locale) {
-		$this->locale = $locale;
-	}
-
 	public function getLocale() {
+		if($this->locale === null)
+			$this->locale = $this->getEntitiesManager()->getDefaultLocale();
 		return $this->locale;
 	}
 
-	public static function setContainer($container) {
-		static::$container = $container;
+	public function setDefinition($definition) {
+		$this->definition = $definition;
+		return $this;
 	}
 
-	public static function getContainer() {
-		return static::$container;
+	public function setLocale($locale) {
+		$this->locale = $locale;
 	}
 	
 	/* MAGIC METHODS */
@@ -57,22 +50,30 @@ abstract class Entity {
 	}
 
 	public static function __callStatic($name, array $arguments) {
-		return static::getDefinition()->callStatic($name, $arguments);
+		return static::getStaticDefinition()->callStatic($name, $arguments);
 	}
 
 	public function __call($name, array $arguments) {
-		return static::getDefinition()->call($this, $name, $arguments);
+		return $this->getDefinition()->call($this, $name, $arguments);
 	}
 	
 	/* INIT AND ENTITY CONFIGURATION */
 	public static function definition(EntityDefinition $entityDefinition) {}
 
-	public static function getDefinition() {
-		return static::$container['entitiesmanager']->get(get_called_class());
+	public function getDefinition() {
+		if(isset($this->definition))
+			return $this->definition;
+		else
+			return $this->definition = static::getStaticDefinition();
+	}
+
+	#only for entities without dependency injection, activerecord like, e.g. new Article or Article::find();
+	public static function getStaticDefinition() {
+		return EntitiesManager::singleton()->get(get_called_class());
 	}
 
 	public function loadDefault() {
-		foreach(static::properties() as $name=>$property)
+		foreach($this->getDefinition()->properties() as $name=>$property)
 			$this->set($name, $property->getDefault($this, $name));
 				
 		return $this;
@@ -81,8 +82,7 @@ abstract class Entity {
 	/* VALIDATION */
 	public function getValidator(array $locales=[]) {
 		$messages = [];
-		$validator = new \Asgard\Validation\Validator;
-		$validator->setRegistry(static::$container['rulesRegistry']);
+		$validator = $this->getDefinition()->getEntitiesManager()->createValidator();
 
 		foreach($this->getDefinition()->properties() as $name=>$property) {
 			if($locales && $property->i18n) {
@@ -119,10 +119,9 @@ abstract class Entity {
 			$messages[$name] = $property->getMessages();
 		}
 
-		$messages = array_merge($messages, static::getDefinition()->messages());
+		$messages = array_merge($messages, $this->getDefinition()->messages());
 		
 		$validator->set('entity', $this);
-		$validator->setRegistry(static::$container['rulesregistry']);
 		$validator->attributesMessages($messages);
 
 		return $validator;
@@ -162,10 +161,10 @@ abstract class Entity {
 			return $this;
 		}
 
-		if(static::getDefinition()->hasProperty($name)) {
+		if($this->getDefinition()->hasProperty($name)) {
 			if(!$locale)
-				$locale = $this->locale;
-			if(static::getDefinition()->property($name)->i18n && $locale !== $this->getLocale()) {
+				$locale = $this->getLocale();
+			if($this->getDefinition()->property($name)->i18n && $locale !== $this->getLocale()) {
 				if($locale == 'all') {
 					foreach($value as $locale => $v)
 						$this->data['translations'][$locale][$name] = $v;
@@ -199,13 +198,13 @@ abstract class Entity {
 			return $this;
 		}
 
-		static::getDefinition()->processBeforeSet($this, $name, $value, $locale, $hook);
+		$this->getDefinition()->processBeforeSet($this, $name, $value, $locale, $hook);
 
-		if(static::getDefinition()->hasProperty($name)) {
+		if($this->getDefinition()->hasProperty($name)) {
 			if(!$locale)
 				$locale = $this->getLocale();
 
-			if(static::getDefinition()->property($name)->i18n && $locale !== $this->getLocale())
+			if($this->getDefinition()->property($name)->i18n && $locale !== $this->getLocale())
 				$this->data['translations'][$locale][$name] = $value;
 			else
 				$this->data['properties'][$name] = $value;
@@ -221,7 +220,7 @@ abstract class Entity {
 			$locale = $this->getLocale();
 		
 		if($this->getDefinition()->hasProperty($name)) {
-			if($this::getDefinition()->property($name)->i18n && $locale !== $this->getLocale()) {
+			if($this->getDefinition()->property($name)->i18n && $locale !== $this->getLocale()) {
 				#multiple locales at once
 				if(is_array($locale)) {
 					$res = [];
@@ -263,8 +262,8 @@ abstract class Entity {
 	public function toArrayRaw() {
 		$res = [];
 		
-		foreach(static::getDefinition()->properties() as $name=>$property) {
-			if(static::getDefinition()->property($name)->get('multiple'))
+		foreach($this->getDefinition()->properties() as $name=>$property) {
+			if($this->getDefinition()->property($name)->get('multiple'))
 				$res[$name] = $this->get($name)->all();
 			else
 				$res[$name] = $this->get($name);
@@ -276,7 +275,7 @@ abstract class Entity {
 	public function toArray() {
 		$res = [];
 		
-		foreach(static::getDefinition()->properties() as $name=>$property) {
+		foreach($this->getDefinition()->properties() as $name=>$property) {
 			$res[$name] = $this->get($name);
 			if($property->get('multiple')) {
 				foreach($res[$name] as $k=>$v)
@@ -338,16 +337,16 @@ abstract class Entity {
 			$locales = $this->getLocales();
 		$res = [];
 		
-		foreach(static::getDefinition()->properties() as $name=>$property) {
+		foreach($this->getDefinition()->properties() as $name=>$property) {
 			if($property->i18n) {
 				foreach($locales as $locale) {
-					if(static::getDefinition()->property($name)->get('multiple'))
+					if($this->getDefinition()->property($name)->get('multiple'))
 						$res[$name][$locale] = $this->get($name, $locale)->all();
 					else
 						$res[$name][$locale] = $this->get($name, $locale);
 				}
 			}
-			elseif(static::getDefinition()->property($name)->get('multiple'))
+			elseif($this->getDefinition()->property($name)->get('multiple'))
 				$res[$name] = $this->get($name)->all();
 			else
 				$res[$name] = $this->get($name);
@@ -361,10 +360,10 @@ abstract class Entity {
 			$locales = $this->getLocales();
 		$res = [];
 		
-		foreach(static::getDefinition()->properties() as $name=>$property) {
+		foreach($this->getDefinition()->properties() as $name=>$property) {
 			if($property->i18n) {
 				foreach($locales as $locale) {
-					if(static::getDefinition()->property($name)->get('multiple')) {
+					if($this->getDefinition()->property($name)->get('multiple')) {
 						foreach($this->get($name, $locale)->all() as $k=>$v)
 							$res[$name][$locale][$k] = $this->propertyToArray($v, $property);
 					}
@@ -372,7 +371,7 @@ abstract class Entity {
 						$res[$name][$locale] = $this->propertyToArray($this->get($name, $locale), $property);
 				}
 			}
-			elseif(static::getDefinition()->property($name)->get('multiple')) {
+			elseif($this->getDefinition()->property($name)->get('multiple')) {
 				$res[$name] = [];
 				foreach($this->get($name)->all() as $k=>$v)
 					$res[$name][$k] = $this->propertyToArray($v, $property);

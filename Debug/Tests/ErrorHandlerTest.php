@@ -13,6 +13,7 @@ class ErrorHandlerTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testPHPError() {
+		#registering the errorhandler globally
 		\Asgard\Debug\ErrorHandler::register();
 		$this->setExpectedException('ErrorException');
 

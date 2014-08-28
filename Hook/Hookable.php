@@ -99,7 +99,7 @@ trait Hookable {
 	 * 
 	 * @param HooksManager hooksManager
 	*/
-	public function setHook(HooksManager $hooksManager) {
+	public function setHooksManager(HooksManager $hooksManager) {
 		$this->hooksManager = $hooksManager;
 	}
 }

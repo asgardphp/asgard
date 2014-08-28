@@ -19,7 +19,6 @@ class Kernel implements \ArrayAccess {
 		if(!$this->container) {
 			$this->container = $this->buildContainer($this->getConfig()['cache']);
 			$this->container['kernel'] = $this;
-			\Asgard\Container\Container::setInstance($this->container);
 		}
 		return $this->container;
 	}
@@ -95,12 +94,14 @@ class Kernel implements \ArrayAccess {
 		if($cache) {
 			$c = $this->getCache($cache);
 			if(($this->container = $c->fetch('app')) !== false) {
+				#make $this->container the default instance of Container, in case someones uses it
 				\Asgard\Container\Container::setInstance($this->container);
 				return $this->container;
 			}
 		}
 
 		$bundles = $this->getAllBundles();
+		#use the Container default instance, in case someones uses it
 		$container = $this->container = \Asgard\Container\Container::singleton();
 
 		foreach($bundles as $bundle)

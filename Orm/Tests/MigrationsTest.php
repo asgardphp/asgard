@@ -14,7 +14,6 @@ class MigrationsTest extends \PHPUnit_Framework_TestCase {
 		$container['hooks'] = new \Asgard\Hook\HooksManager;
 		$container['cache'] = new \Asgard\Cache\NullCache;
 		$container['entitiesManager'] = new \Asgard\Entity\EntitiesManager($container);
-		\Asgard\Entity\Entity::setContainer($container);
 
 		$ormm = new \Asgard\Orm\ORMMigrations();
 		$schema = new \Asgard\Db\Schema($container['db']);

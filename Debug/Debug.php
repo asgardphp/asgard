@@ -1,6 +1,7 @@
 <?php
 namespace Asgard\Debug;
 
+#using static calls to make debugging available anywhere in the code
 class Debug {
 	protected static $url;
 

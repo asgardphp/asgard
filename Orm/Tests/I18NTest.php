@@ -5,21 +5,30 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 	protected static $container;
 
 	public static function setUpBeforeClass() {
-		$container = new \Asgard\Container\Container();
-		$container['hooks'] = new \Asgard\Hook\HooksManager($container);
-		$container['config'] = new \Asgard\Config\Config();
-		$container['config']->set('locale', 'en');
-		$container['config']->set('locales', ['en', 'fr']);
-		$container['cache'] = new \Asgard\Cache\NullCache;
-		$container['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($container);
+		$container = new \Asgard\Container\Container;
+		$container['hooks']             = new \Asgard\Hook\HooksManager($container);
+		$container['cache']             = new \Asgard\Cache\NullCache;
 		$config = [
 			'database' => 'asgard',
-			'user' => 'root',
+			'user'     => 'root',
 			'password' => '',
-			'host' => 'localhost'
+			'host'     => 'localhost'
 		];
 		$container['db'] = new \Asgard\Db\DB($config);
-		\Asgard\Entity\Entity::setContainer($container);
+		$container->register('datamapper', function($container) {
+			return new \Asgard\Orm\DataMapper(
+				$container['db'],
+				'en',
+				'',
+				$container
+			);
+		});
+
+		$entitiesManager = $container['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($container);
+		#set the EntitiesManager static instance for activerecord-like entities (e.g. new Article or Article::find())
+		\Asgard\Entity\EntitiesManager::setInstance($entitiesManager);
+		$entitiesManager->setDefaultLocale('en');
+
 		static::$container = $container;
 
 		$mysql = new \Asgard\Db\MySQL($config);

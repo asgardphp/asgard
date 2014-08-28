@@ -12,7 +12,6 @@ class EntityFormTest extends \PHPUnit_Framework_TestCase {
 		$container['cache'] = new \Asgard\Cache\NullCache;
 		$container['translator'] = new \Symfony\Component\Translation\Translator('en');
 		$container['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($container);
-		\Asgard\Entity\Entity::setContainer($container);
 		static::$container = $container;
 	}
 

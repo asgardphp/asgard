@@ -5,12 +5,15 @@ class MultipleTest extends \PHPUnit_Framework_TestCase {
 	protected static $container;
 
 	public static function setUpBeforeClass() {
-		$container = new \Asgard\Container\Container();
-		$container['config'] = new \Asgard\Config\Config();
+		$container = new \Asgard\Container\Container;
+		$container['config'] = new \Asgard\Config\Config;
 		$container['hooks'] = new \Asgard\Hook\HooksManager($container);
 		$container['cache'] = new \Asgard\Cache\NullCache;
-		$container['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($container);
-		\Asgard\Entity\Entity::setContainer($container);
+
+		$entitiesManager = $container['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($container);
+		#set the EntitiesManager static instance for activerecord-like entities (e.g. new Article or Article::find())
+		\Asgard\Entity\EntitiesManager::setInstance($entitiesManager);
+
 		static::$container = $container;
 	}
 
@@ -83,6 +86,6 @@ class MultipleTest extends \PHPUnit_Framework_TestCase {
 		$e->names[] = 'Bob';
 		$e->names[] = 'Joe';
 
-		$this->assertEquals('a:2:{i:0;s:3:"Bob";i:1;s:3:"Joe";}', $e::getDefinition()->property('names')->serialize($e->names));
+		$this->assertEquals('a:2:{i:0;s:3:"Bob";i:1;s:3:"Joe";}', $e::getStaticDefinition()->property('names')->serialize($e->names));
 	}
 }

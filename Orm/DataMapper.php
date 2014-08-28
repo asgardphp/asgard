@@ -67,8 +67,8 @@ class DataMapper {
 	}
 
 	public function getTable($entityClass) {
-		if(isset($entityClass::getDefinition()->table) && $entityClass::getDefinition()->table)
-			return $this->prefix.$entityClass::getDefinition()->table;
+		if(isset($entityClass::getStaticDefinition()->table) && $entityClass::getStaticDefinition()->table)
+			return $this->prefix.$entityClass::getStaticDefinition()->table;
 		else
 			return $this->prefix.$entityClass::getShortName();
 	}
@@ -106,7 +106,7 @@ class DataMapper {
 	}
 
 	public function relation(\Asgard\Entity\Entity $entity, $name) {
-		$rel = $this->getRelation($entity::getDefinition(), $name);
+		$rel = $this->getRelation($entity::getStaticDefinition(), $name);
 		$relation_type = $rel->type();
 		$relEntity = $rel['entity'];
 		
@@ -130,8 +130,8 @@ class DataMapper {
 
 	protected static function unserialize(\Asgard\Entity\Entity $entity, array $data) {
 		foreach($data as $k=>$v) {
-			if($entity::getDefinition()->hasProperty($k))
-				$data[$k] = $entity::getDefinition()->property($k)->unserialize($v, $entity, $k);
+			if($entity::getStaticDefinition()->hasProperty($k))
+				$data[$k] = $entity::getStaticDefinition()->property($k)->unserialize($v, $entity, $k);
 			else
 				unset($data[$k]);
 		}
@@ -143,7 +143,7 @@ class DataMapper {
 		return $entity::trigger('destroy', [$entity], function($chain, $entity) {
 			$orms = [];
 
-			foreach($entity::getDefinition()->relations() as $name=>$relation) {
+			foreach($entity::getStaticDefinition()->relations() as $name=>$relation) {
 				if(isset($relation['cascade']['delete']) && $relation['cascade']['delete']) {
 					$orm = $entity->$name();
 					if(!is_object($orm))
@@ -159,7 +159,7 @@ class DataMapper {
 				$r = static::entityORM($entity)->getDAL()->delete();
 
 			#Files
-			foreach($entity::getDefinition()->properties() as $name=>$prop) {
+			foreach($entity::getStaticDefinition()->properties() as $name=>$prop) {
 				if($prop instanceof \Asgard\Entity\Properties\FileProperty) {
 					if($prop->get('multiple')) {
 						foreach($entity->get($name) as $file)
@@ -186,10 +186,10 @@ class DataMapper {
 		$data = $entity->toArrayRaw();
 		$validator = $entity->getValidator();
 		foreach($entity->getDefinition()->relations() as $name=>$relation) {
-			$data[$name] = $entity::getDefinition()->relation($name);
+			$data[$name] = $entity::getStaticDefinition()->relation($name);
 			$validator->attribute($name, $relation->getRules());
 		}
-		return $entity::getDefinition()->trigger('validation', [$entity, $validator, &$data], function($chain, $entity, $validator, &$data) {
+		return $entity::getStaticDefinition()->trigger('validation', [$entity, $validator, &$data], function($chain, $entity, $validator, &$data) {
 			return $validator->valid($data);
 		});
 	}
@@ -198,7 +198,7 @@ class DataMapper {
 		$data = $entity->toArrayRaw();
 		$validator = $entity->getValidator();
 		foreach($entity->getDefinition()->relations() as $name=>$relation) {
-			$data[$name] = $entity::getDefinition()->relation($name);
+			$data[$name] = $entity::getStaticDefinition()->relation($name);
 			$validator->attribute($name, $relation->getRules());
 		}
 		$errors = $entity::trigger('validation', [$entity, $validator, &$data], function($chain, $entity, $validator, &$data) {
@@ -227,7 +227,7 @@ class DataMapper {
 		$entity::trigger('save', [$entity]);
 
 		#Files
-		foreach($entity::getDefinition()->properties() as $name=>$prop) {
+		foreach($entity::getStaticDefinition()->properties() as $name=>$prop) {
 			if($prop instanceof \Asgard\Entity\Properties\FileProperty) {
 				if($prop->get('multiple')) {
 					$files = $entity->$name = array_values($entity->$name->all());
@@ -251,7 +251,7 @@ class DataMapper {
 
 		$vars = [];
 		#process data
-		foreach($entity::getDefinition()->propertyNames() as $name) {
+		foreach($entity::getStaticDefinition()->propertyNames() as $name) {
 			
 			if($entity::property($name)->i18n) {
 				$value = $entity->get($name, $entity->getLocales());
@@ -265,10 +265,10 @@ class DataMapper {
 		}
 
 		#persist entity ids
-		foreach($entity::getDefinition()->relations as $relation => $params) {
+		foreach($entity::getStaticDefinition()->relations as $relation => $params) {
 			if(!isset($entity->data[$relation]))
 				continue;
-			$rel = $entity::getDefinition()->relations[$relation];
+			$rel = $entity::getStaticDefinition()->relations[$relation];
 			$type = $rel['type'];
 			if($type == 'belongsTo' || $type == 'hasOne') {
 				$link = $rel->getLink();
@@ -319,10 +319,10 @@ class DataMapper {
 		}
 	
 		#Persist relations
-		foreach($entity::getDefinition()->relations as $relation => $params) {
+		foreach($entity::getStaticDefinition()->relations as $relation => $params) {
 			if(!isset($entity->data[$relation]))
 				continue;
-			$rel = static::getRelation($entity::getDefinition(), $relation);
+			$rel = static::getRelation($entity::getStaticDefinition(), $relation);
 			$reverse_rel = $rel->reverse();
 			$type = $rel['type'];
 

@@ -88,7 +88,7 @@ class EntityRelation implements \ArrayAccess {
 		$name = $this->name;
 
 		$rev_relations = [];
-		foreach($relation_entity::getDefinition()->relations() as $rev_rel_name=>$rev_rel) {
+		foreach($relation_entity::getStaticDefinition()->relations() as $rev_rel_name=>$rev_rel) {
 			$relEntityClass = preg_replace('/^\\\/', '', strtolower($rev_rel['entity']));
 
 			if($relEntityClass == $entityName
@@ -118,7 +118,7 @@ class EntityRelation implements \ArrayAccess {
 		$reverse_rel = $this->reverseRelationParams();
 		$entity = $this->params['entity'];
 		$rel_name = $reverse_rel['name'];
-		return $entity::getDefinition()->relations[$rel_name];
+		return $entity::getStaticDefinition()->relations[$rel_name];
 	}
 
 	public function offsetSet($offset, $value) {

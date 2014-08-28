@@ -99,6 +99,19 @@ class Container implements \ArrayAccess {
 		return isset($this->registry[$name]);
 	}
 
+	public function createFactory($what) {
+		if(is_string($what)) {
+			return new Factory(function($container, array $params) use($what) {
+				return $container->make($what, $params);
+			}, $this);
+		}
+		elseif(is_callable($what)) {
+			return new Factory(function($container, array $params) use($what) {
+				return $what($container, $params);
+			}, $this);
+		}
+	}
+
 	public function offsetSet($offset, $value) {
 		if(is_null($offset))
 			throw new \LogicException('Offset must not be null.');

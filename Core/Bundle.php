@@ -16,7 +16,13 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		});
 
 		#Entity
-		$container->register('entitiesmanager', function($container) { return new \Asgard\Entity\EntitiesManager($container); } );
+		$container->register('entitiesmanager', function($container) {
+			$entitiesManager = new \Asgard\Entity\EntitiesManager($container);
+			$entitiesManager->setHooksManager($container['hooks']);
+			$entitiesManager->setDefaultLocale($container['config']['locale']);
+			$entitiesManager->setValidatorFactory($container->createFactory('validator'));
+			return $entitiesManager;
+		});
 		
 		#Form
 		$container->register('widgetsManager', function() { return new \Asgard\Form\WidgetsManager; });
@@ -69,14 +75,21 @@ class Bundle extends \Asgard\Core\BundleLoader {
 
 		#Validation
 		$container->register('validator', function() { return new \Asgard\Validation\Validator; } );
-		$container->register('rulesregistry', function() { return \Asgard\Validation\RulesRegistry::getInstance(); } );
+		$container->register('rulesregistry', function() { return new \Asgard\Validation\RulesRegistry; } );
+
+		#DataMapper
+		$container->register('datamapper', function($container) {
+			return new \Asgard\Orm\DataMapper(
+				$container['db'],
+				$container['config']['locale'],
+				$container['config']['database/prefix'],
+				$container
+			);
+		});
 	}
 
 	public function run($container) {
 		parent::run($container);
-
-		#Entity
-		\Asgard\Entity\Entity::setContainer($container);
 
 		#Files
 		$container['rulesregistry']->registerNamespace('Asgard\File\Rules');

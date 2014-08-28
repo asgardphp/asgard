@@ -38,8 +38,8 @@ class ORM {
 		$this->container = $container;
 		$this->dataMapper = $datamapper;
 
-		if($entity::getDefinition()->order_by)
-			$this->orderBy($entity::getDefinition()->order_by);
+		if($entity::getStaticDefinition()->order_by)
+			$this->orderBy($entity::getStaticDefinition()->order_by);
 		else
 			$this->orderBy('id DESC');
 	}
@@ -61,9 +61,9 @@ class ORM {
 	*/
 	public function __call($relationName, array $args) {
 		$current_entity = $this->entity;
-		if(!$current_entity::getDefinition()->hasRelation($relationName))
+		if(!$current_entity::getStaticDefinition()->hasRelation($relationName))
 			throw new \Exception('Relation '.$relationName.' does not exist.');
-		$relation = $current_entity::getDefinition()->relations[$relationName];
+		$relation = $current_entity::getStaticDefinition()->relations[$relationName];
 		$reverse_relation = $relation->reverse();
 		$reverse_relation_name = $reverse_relation['name'];
 		$relation_entity = $relation['entity'];
@@ -103,12 +103,12 @@ class ORM {
 	public function joinToEntity($relation, \Asgard\Entity\Entity $entity) {
 		if(is_string($relation)) {
 			$current_entity = $this->entity;
-			$relation = $current_entity::getDefinition()->relations[$relation];
+			$relation = $current_entity::getStaticDefinition()->relations[$relation];
 		}
 
 		if($relation['polymorphic']) {
-			$this->where([$relation['link_type'] => $entity::getDefinition()->getShortName()]);
-			$relation['real_entity'] = $entity::getDefinition()->getShortName();
+			$this->where([$relation['link_type'] => $entity::getStaticDefinition()->getShortName()]);
+			$relation['real_entity'] = $entity::getStaticDefinition()->getShortName();
 		}
 		$this->join($relation);
 
@@ -175,7 +175,7 @@ class ORM {
 	protected static function unserializeSet(\Asgard\Entity\Entity $entity, array $data, $locale=null) {
 		foreach($data as $k=>$v) {
 			if($entity::hasProperty($k))
-				$data[$k] = $entity::getDefinition()->property($k)->unserialize($v, $entity, $k);
+				$data[$k] = $entity::getStaticDefinition()->property($k)->unserialize($v, $entity, $k);
 			else
 				unset($data[$k]);
 		}
@@ -271,7 +271,7 @@ class ORM {
 		if($current_entity::isI18N()) {
 			$translation_table = $this->geti18nTable();
 			$selects = [$table.'.*'];
-			foreach($current_entity::getDefinition()->properties() as $name=>$property) {
+			foreach($current_entity::getStaticDefinition()->properties() as $name=>$property) {
 				if($property->i18n)
 					$selects[] = $translation_table.'.'.$name;
 			}
@@ -312,7 +312,7 @@ class ORM {
 						if(!$v instanceof EntityRelation) {
 							if(strpos($v, ' '))
 								list($v, $alias) = explode(' ', $v);
-							$relation = $current_entity::getDefinition()->relations[$v];
+							$relation = $current_entity::getStaticDefinition()->relations[$v];
 						}
 						$this->jointure($dal, $relation, $alias, $table);
 					}
@@ -321,7 +321,7 @@ class ORM {
 						if(strpos($relationName, ' '))
 							list($relationName, $alias) = explode(' ', $relationName);
 						$recJoins = $v;
-						$relation = $current_entity::getDefinition()->relations[$relationName];
+						$relation = $current_entity::getStaticDefinition()->relations[$relationName];
 						$entity = $relation['entity'];
 
 						$this->jointure($dal, $relation, $alias, $table);
@@ -335,7 +335,7 @@ class ORM {
 				if(!$relation instanceof EntityRelation) {
 					if(strpos($relation, ' '))
 						list($relation, $alias) = explode(' ', $relation);
-					$relation = $current_entity::getDefinition()->relations[$relation];
+					$relation = $current_entity::getStaticDefinition()->relations[$relation];
 				}
 				$this->jointure($dal, $relation, $alias, $table);
 			}
@@ -429,7 +429,7 @@ class ORM {
 
 		if(count($entities) && count($this->with)) {
 			foreach($this->with as $relation_name=>$closure) {
-				$rel = $current_entity::getDefinition()->relations[$relation_name];
+				$rel = $current_entity::getStaticDefinition()->relations[$relation_name];
 				$relation_type = $rel->type();
 				$relation_entity = $rel['entity'];
 
