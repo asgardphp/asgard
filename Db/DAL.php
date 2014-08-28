@@ -2,23 +2,23 @@
 namespace Asgard\Db;
 
 class DAL {
-	public $db = null;
-	public $tables = [];
+	#dependencies
+	public $db;
+	protected $paginatorFactory;
+
+	public $tables  = [];
 	public $columns = [];
-	public $where = [];
-	public $offset = null;
-	public $limit = null;
-	public $orderBy = null;
-	public $groupBy = null;
-	public $joins = [];
-	public $params = [];
-
-	public $into = null;
-
-	public $page = null;
-	public $per_page = null;
-
-	protected $query = null;
+	public $where   = [];
+	public $joins   = [];
+	public $params  = [];
+	public $offset;
+	public $limit;
+	public $orderBy;
+	public $groupBy;
+	public $into;
+	public $page;
+	public $per_page;
+	protected $query;
 
 	public function __construct(DB $db, $tables=null) {
 		$this->db = $db;
@@ -153,10 +153,17 @@ class DAL {
 		return $this;
 	}
 
+	public function setPaginatorFactory($paginatorFactory) {
+		$this->paginatorFactory = $paginatorFactory;
+		return $this;
+	}
+
 	public function getPaginator() {
 		if($this->page === null || $this->per_page === null)
 			return;
-		return new \Asgard\Common\Paginator($this->count(), $this->page, $this->per_page);
+		if(!$this->paginatorFactory)
+			return new \Asgard\Common\Paginator($this->count(), $this->page, $this->per_page);
+		return $this->paginatorFactory->create([$this->count(), $this->page, $this->per_page]);
 	}
 
 	/* SETTERS */

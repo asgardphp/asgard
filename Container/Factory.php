@@ -5,7 +5,7 @@ class Factory {
 	protected $callback;
 	protected $container;
 
-	public function __construct($callback, $container) {
+	public function __construct($callback, $container=null) {
 		$this->callback = $callback;
 		$this->container = $container;
 	}

@@ -23,6 +23,11 @@ class Kernel implements \ArrayAccess {
 		return $this->container;
 	}
 
+	public function setConfig($config) {
+		$this->config = $config;
+		return $this;
+	}
+
 	public function getConfig() {
 		if(!$this->config) {
 			$this->config = $config = new \Asgard\Config\Config();

@@ -2,6 +2,9 @@
 namespace Asgard\Form;
 
 class Group implements \ArrayAccess, \Iterator {
+	#dependencies
+	protected $widgetsManager;
+
 	protected $name = null;
 	protected $parent;
 	protected $data = [];
@@ -9,7 +12,6 @@ class Group implements \ArrayAccess, \Iterator {
 	protected $errors = [];
 	protected $hasfile;
 	protected $request;
-	protected $widgetsManager;
 
 	/* Constructor */
 	public function __construct(
@@ -25,6 +27,10 @@ class Group implements \ArrayAccess, \Iterator {
 	}
 
 	/* Dependencies */
+	public function createValidator() {
+		return $this->parent->getTranslator();
+	}
+
 	public function getTranslator() {
 		return $this->parent->getTranslator();
 	}
@@ -263,7 +269,7 @@ class Group implements \ArrayAccess, \Iterator {
 	}
 
 	protected function getValidator() {
-		$validator = new \Asgard\Validation\Validator;
+		$validator = $this->createValidator();
 		$constrains = [];
 		$messages = [];
 		

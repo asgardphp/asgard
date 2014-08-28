@@ -14,6 +14,7 @@ class Form extends Group {
 	protected $translator;
 	protected $saveCallback;
 	protected $preSaveCallback;
+	protected $validatorFactory;
 
 	/* Constructor */
 	public function __construct(
@@ -32,6 +33,20 @@ class Form extends Group {
 	}
 
 	/* Dependencies */
+	public function setValidatorFactory($validatorFactory) {
+		$this->validatorFactory = $validatorFactory;
+		return $this;
+	}
+
+	public function createValidator() {
+		if($this->validatorFactory)
+			return $this->validatorFactory->create();
+		elseif($this->parent)
+			return $this->parent->createValidator();
+		else
+			return new \Asgard\Validation\Validator;
+	}
+
 	public function setTranslator($translator) {
 		$this->translator = $translator;
 		return $this;

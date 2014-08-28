@@ -5,9 +5,6 @@ class DALTest extends \PHPUnit_Framework_TestCase {
 	protected static $db;
 
 	public static function setUpBeforeClass() {
-		if(!defined('_ENV_'))
-			define('_ENV_', 'test');
-
 		$config = [
 			'host' => 'localhost',
 			'user' => 'root',
@@ -20,24 +17,18 @@ class DALTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	protected static function getDAL() {
-		return new \Asgard\Db\DAL(static::$db);
+		$dal = new \Asgard\Db\DAL(static::$db);
+		$dal->setPaginatorFactory(new \Asgard\Container\Factory(function($container, $params) {
+			return new \Asgard\Common\Paginator(
+				$params[0], #total
+				$params[1], #page
+				$params[2] #per_page
+			);
+		}));
+		return $dal;
 	}
 
 	public function test1() {
-		$dal = $this->getDAL()->from('news')->where(['news.title LIKE ?' => '%test%'])
-			->where([
-				'or' => [
-					'id=?' => 4,
-					'and' => [
-						'news.title LIKE ?' => '%test%',
-						'news.content LIKE ?' => '%bla%'
-					]
-				]
-			]);
-		$this->assertEquals('SELECT * FROM `news` WHERE `news`.`title` LIKE ? AND (`id`=? OR (`news`.`title` LIKE ? AND `news`.`content` LIKE ?))', $dal->buildSQL());
-		$this->assertEquals(['%test%', 4, '%test%', '%bla%'], $dal->getParameters());
-		return;
-		
 		/* TABLES */
 		$this->assertEquals('SELECT * FROM `news`', $this->getDAL()->from('news')->buildSQL());
 		$this->assertEquals('SELECT * FROM `news` `n`', $this->getDAL()->from('news n')->buildSQL());
