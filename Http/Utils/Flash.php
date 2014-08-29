@@ -33,7 +33,7 @@ class Flash {
 	}
 	
 	public function add($type, $message) {
-		if(is_array($message))
+		if(isset($message[$type]) && is_array($message[$type]))
 			$this->messages[$type] = array_merge($this->messages[$type], $message);
 		else
 			$this->messages[$type][] = $message;
