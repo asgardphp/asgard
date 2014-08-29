@@ -11,8 +11,9 @@ class Kernel implements \ArrayAccess {
 	protected $bundles;
 	protected $loaded = false;
 
-	public function __construct($root=null) {
-		$this['root'] = $root;
+	public function __construct($root=null, $env=null) {
+		$this->setRoot($root);
+		$this->setEnv($env);
 	}
 
 	public function getContainer() {
@@ -34,6 +35,16 @@ class Kernel implements \ArrayAccess {
 			$config->loadConfigDir($this['root'].'/config', $this->getEnv());
 		}
 		return $this->config;
+	}
+
+	public function setRoot($root) {
+		$this->params['root'] = $root;
+		return $this;
+	}
+
+	public function setEnv($env) {
+		$this->params['env'] = $env;
+		return $this;
 	}
 
 	public function getEnv() {
@@ -69,16 +80,17 @@ class Kernel implements \ArrayAccess {
 	}
 
 	protected function setDefaultEnvironment() {
-		global $argv;
+		#Using _ENV_ and $_SERVER only as the last chance to guess the environment.
+		#User can and should set the environment through constructor or setEnv($env).
 
 		if(isset($this['env']))
 			return;
 		if(defined('_ENV_'))
 			$this['env'] = _ENV_;
 		elseif($this['consoleMode']) {
-			foreach($argv as $k=>$v) {
-				if($v === '--env' && isset($argv[$k+1])) {
-					$this['env'] = $argv[$k+1];
+			foreach($_SERVER['argv'] as $k=>$v) {
+				if($v === '--env' && isset($_SERVER['argv'][$k+1])) {
+					$this['env'] = $_SERVER['argv'][$k+1];
 					return;
 				}
 			}
