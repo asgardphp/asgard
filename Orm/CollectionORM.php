@@ -1,20 +1,45 @@
 <?php
 namespace Asgard\Orm;
 
+/**
+ * ORM for related entities.
+ */
 class CollectionORM extends ORM implements \Asgard\Entity\Collection {
+	/**
+	 * Parent entity
+	 * @var \Asgard\Entity\Entity
+	 */
 	protected $parent;
+	/**
+	 * Relation name
+	 * @var string
+	 */
 	protected $relation;
 
-	public function __construct(\Asgard\Entity\Entity $entity, $relation_name, $db, $locale=null, $prefix=null, $container=null, $datamapper=null) {
+	/**
+	 * Constructor.
+	 * @param \Asgar\dEntity\Entity $entity   \Asgard\Entity\Entity
+	 * @param string                          $relation_name
+	 * @param string                          $locale        default locale
+	 * @param string                          $prefix        tables prefix
+	 * @param DataMapper                      $datamapper
+	 * @param \Asgard\Container\Factory       $paginatorFactory
+	 */
+	public function __construct(\Asgard\Entity\Entity $entity, $relation_name, $locale=null, $prefix=null, DataMapper $datamapper=null, \Asgard\Container\Factory $paginatorFactory=null) {
 		$this->parent = $entity;
 
 		$this->relation = $entity->getDefinition()->relations[$relation_name];
 
-		parent::__construct($this->relation['entity'], $db, $locale, $prefix, $container, $datamapper);
+		parent::__construct($this->relation['entity'], $locale, $prefix, $datamapper, $paginatorFactory);
 
 		$this->joinToEntity($this->relation->reverse(), $entity);
 	}
 	
+	/**
+	 * Update the related entities.
+	 * @param  array           $ids  array of entity ids
+	 * @return CollectionORM         $this
+	 */
 	public function sync($ids) {
 		if(!$ids)
 			$ids = [];
@@ -53,6 +78,10 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 		return $this;
 	}
 	
+	/**
+	 * Add new entities to the relation.
+	 * @param  array  $ids
+	 */
 	public function add($ids) {
 		if(!is_array($ids))
 			$ids = [$ids];
@@ -85,6 +114,11 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 		return $this;
 	}
 
+	/**
+	 * Create a new entity and add it to the relation.
+	 * @param  array $params entity default attributes
+	 * @return \Asgard\Entity\Entitiy
+	 */
 	public function create(array $params=[]) {
 		$relEntity = $this->relation['entity'];
 		$new = new $relEntity;
@@ -101,6 +135,11 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 		return $new;
 	}
 	
+	/**
+	 * Remove entities from the relation.
+	 * @param  array $id
+	 * @return CollectionORM $this
+	 */
 	public function remove($ids) {
 		if(!is_array($ids))
 			$ids = [$ids];

@@ -77,13 +77,23 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		$container->register('validator', function() { return new \Asgard\Validation\Validator; } );
 		$container->register('rulesregistry', function() { return new \Asgard\Validation\RulesRegistry; } );
 
-		#DataMapper
+		#ORM
+		$container->register('paginator', function($container, $count, $page, $per_page) {
+			return new \Asgard\Common\Paginator($count, $page, $per_page);
+		});
+		$container->register('orm', function($container, $entityClass, $locale, $prefix, $dataMapper) {
+			return new \Asgard\Orm\ORM($entityClass, $locale, $prefix, $dataMapper, $container->createFactory('paginator'));
+		});
+		$container->register('collectionOrm', function($container, $entityClass, $name, $locale, $prefix, $dataMapper) {
+			return new \Asgard\Orm\CollectionORM($entityClass, $name, $locale, $prefix, $dataMapper, $container->createFactory('paginator'));
+		});
 		$container->register('datamapper', function($container) {
 			return new \Asgard\Orm\DataMapper(
 				$container['db'],
 				$container['config']['locale'],
 				$container['config']['database/prefix'],
-				$container
+				$container->createFactory('orm'),
+				$container->createFactory('collectionOrm')
 			);
 		});
 	}

@@ -1,41 +1,77 @@
 <?php
 namespace Asgard\Orm;
 
-class EntityException extends \Exception implements \Asgard\Entity\EntityExceptionInterface {
-	protected $errors = [];
-
-	public function __construct($msg, array $errors) {
-		parent::__construct($msg);
-		$this->errors = $errors;
-	}
-
-	public function getErrors() {
-		return $this->errors;
-	}
-}
-
+/**
+ * Handle database storage of entities.
+ */
 class DataMapper {
-	use \Asgard\Container\ContainerAwareTrait;
 
+	/**
+	 * Database access.
+	 * @var \Asgard\Db\DB
+	 */
 	protected $db;
+	/**
+	 * Default locale.
+	 * @var string
+	 */
 	protected $locale;
+	/**
+	 * Tables prefix.
+	 * @var string
+	 */
 	protected $prefix;
+	/**
+	 * ORM Factory.
+	 * @var \Asgard\Container\Factory
+	 */
+	protected $ormFactory;
+	/**
+	 * CollectionORM Factory.
+	 * @var \Asgard\Container\Factory
+	 */
+	protected $collectionOrmFactory;
 
-	public function __construct(\Asgard\Db\DB $db, $locale=null, $prefix=null, $container=null) {
-		$this->db = $db;
-		$this->locale = $locale;
-		$this->prefix = $prefix;
-		$this->container = $container;
+	/**
+	 * Constructor.
+	 * @param \Asgard\Db\DB $db
+	 * @param string                    $locale    Default locale.
+	 * @param string                    $prefix    Tables prefix.
+	 * @param \Asgard\Container\Factory $ormFactory
+	 * @param \Asgard\Container\Factory $collectionOrmFactory
+	 */
+	public function __construct(\Asgard\Db\DB $db, $locale='en', $prefix=null, \Asgard\Container\Factory $ormFactory=null, \Asgard\Container\Factory $collectionOrmFactory=null) {
+		$this->db                   = $db;
+		$this->locale               = $locale;
+		$this->prefix               = $prefix;
+		$this->ormFactory           = $ormFactory;
+		$this->collectionOrmFactory = $collectionOrmFactory;
 	}
 
+	/**
+	 * Check if the entity is not stored.
+	 * @param  \Asgard\Entity\Entity $entity
+	 * @return boolean                       true if entity not stored, false otherwise
+	 */
 	public function isNew(\Asgard\Entity\Entity $entity) {
 		return $entity->id === null;
 	}
 
+	/**
+	 * Check if the entity is stored.
+	 * @param  \Asgard\Entity\Entity $entity
+	 * @return boolean                       true if entity stored, false otherwisedescription]
+	 */
 	public function isOld(\Asgard\Entity\Entity $entity) {
 		return !static::isNew($entity);
 	}
 
+	/**
+	 * Load an entity from database.
+	 * @param  string                $entityClass entity class
+	 * @param  integer               $id          entity id
+	 * @return \Asgard\Entity\Entity
+	 */
 	public function load($entityClass, $id) {
 		if(!ctype_digit($id) && !is_int($id))
 			return;
@@ -50,11 +86,23 @@ class DataMapper {
 		return $entity;
 	}
 	
+	/**
+	 * Create an ORM instance.
+	 * @param  string          $entityClass 
+	 * @return \Asgard\Orm\ORM
+	 */
 	public function orm($entityClass) {
-		$orm = new ORM($entityClass, $this->db, $this->locale, $this->prefix, $this->container, $this);
-		return $orm;
+		if($this->ormFactory)
+			return $this->ormFactory->create([$entityClass, $this->locale, $this->prefix, $this]);
+		else
+			return new ORM($entityClass, $this->locale, $this->prefix, $this);
 	}
 	
+	/**
+	 * Create an ORM instance for a specific entity.
+	 * @param  \Asgard\Entity\Entity $entity
+	 * @return \Asgard\Orm\ORM
+	 */
 	protected function entityORM(\Asgard\Entity\Entity $entity) {
 		if($this->isNew($entity))
 			return $this->orm(get_class($entity));
@@ -62,10 +110,20 @@ class DataMapper {
 			return $this->orm(get_class($entity))->where(['id' => $entity->id]);
 	}
 	
+	/**
+	 * Get the translations table of an entity class.
+	 * @param  string $entityClass
+	 * @return string
+	 */
 	public function getTranslationTable($entityClass) {
 		return $this->getTable($entityClass).'_translation';
 	}
 
+	/**
+	 * Get the table of an entity class.
+	 * @param  string $entityClass
+	 * @return string
+	 */
 	public function getTable($entityClass) {
 		if(isset($entityClass::getStaticDefinition()->table) && $entityClass::getStaticDefinition()->table)
 			return $this->prefix.$entityClass::getStaticDefinition()->table;
@@ -73,15 +131,32 @@ class DataMapper {
 			return $this->prefix.$entityClass::getShortName();
 	}
 
+	/**
+	 * Return all entities of a class.
+	 * @param  string $entityClass
+	 * @return array
+	 */
 	public function all($entityClass) {
 		return $this->orm($entityClass)->all();
 	}
 	
+	/**
+	 * Destroy all entities of a clas.
+	 * @param  string $entityClass 
+	 * @return DataMapper $this
+	 */
 	public function destroyAll($entityClass) {
 		foreach($this->all($entityClass) as $entity)
 			$this->destroy($entity);
+		return $this;
 	}
 	
+	/**
+	 * Destroy a specific entity.
+	 * @param  string  $entityClass entity class
+	 * @param  integer $id          entity id
+	 * @return boolean true if success, false otherwise
+	 */
 	public function destroyOne($entityClass, $id) {
 		if($entity = $this->load($entityClass, $id)) {
 			$this->destroy($entity);
@@ -90,9 +165,15 @@ class DataMapper {
 		return false;
 	}
 	
+	/**
+	 * Return an entity with translations.
+	 * @param  \Asgard\Entity\Entity $entity
+	 * @param  string                $locale
+	 * @return \Asgard\Entity\Entity
+	 */
 	public function getI18N(\Asgard\Entity\Entity $entity, $locale=null) {
 		$dal = new \Asgard\Db\DAL($this->db, $this->getTranslationTable($entity));
-		$res = $dal->where(['id' => $entity->id])->where(['locale'=>$locale])->first();
+		$res = $dal->where(['id' => $entity->id, 'locale'=>$locale])->first();
 		if(!$res)
 			return;
 		unset($res['id']);
@@ -101,12 +182,24 @@ class DataMapper {
 		return static::unserialize($entity, $res);
 	}
 
+	/**
+	 * Get a relation object.
+	 * @param  \Asgard\Entity\EntityDefinition $definition
+	 * @param  string                          $name       relation name
+	 * @return \Asgard\Entity\
+	 */
 	public function getRelation(\Asgard\Entity\EntityDefinition $definition, $name) {
 		return $definition->relation($name);
 	}
 
+	/**
+	 * Return the related entities of an entity.
+	 * @param  \Asgard\Entity\Entity $entity
+	 * @param  string             $name   relation name
+	 * @return \Asgrd\Entity\Entity|CollectionORM
+	 */
 	public function relation(\Asgard\Entity\Entity $entity, $name) {
-		$rel = $this->getRelation($entity::getStaticDefinition(), $name);
+		$rel = $this->getRelation($entity->getDefinition(), $name);
 		$relation_type = $rel->type();
 		$relEntity = $rel['entity'];
 		
@@ -122,16 +215,25 @@ class DataMapper {
 				return $relEntity::where(['id' => $entity->get($link)]);
 			case 'hasMany':
 			case 'HMABT':
-				return new \Asgard\Orm\CollectionORM($entity, $name, $this->db, $this->locale, $this->prefix, $this->container, $this);
+				if($this->collectionOrmFactory)
+					return $this->collectionOrmFactory->create([$entity, $name, $this->locale, $this->prefix, $this]);
+				else
+					return new CollectionORM($entity, $name, $this->locale, $this->prefix, $this);
 			default:	
 				throw new \Exception('Relation '.$relation_type.' does not exist.');
 		}
 	}
 
+	/**
+	 * Unserialize data of an entity.
+	 * @param  \Asgard\Entity\Entity $entity
+	 * @param  array                 $data
+	 * @return array                 unserialized data
+	 */
 	protected static function unserialize(\Asgard\Entity\Entity $entity, array $data) {
 		foreach($data as $k=>$v) {
-			if($entity::getStaticDefinition()->hasProperty($k))
-				$data[$k] = $entity::getStaticDefinition()->property($k)->unserialize($v, $entity, $k);
+			if($entity->getDefinition()->hasProperty($k))
+				$data[$k] = $entity->getDefinition()->property($k)->unserialize($v, $entity, $k);
 			else
 				unset($data[$k]);
 		}
@@ -139,11 +241,16 @@ class DataMapper {
 		return $data;
 	}
 
+	/**
+	 * Destroy an entity.
+	 * @param  \Asgard\Entity\Entity $entity
+	 * @return true for success, otherwise false
+	 */
 	public function destroy(\Asgard\Entity\Entity $entity) {
 		return $entity::trigger('destroy', [$entity], function($chain, $entity) {
 			$orms = [];
 
-			foreach($entity::getStaticDefinition()->relations() as $name=>$relation) {
+			foreach($entity->getDefinition()->relations() as $name=>$relation) {
 				if(isset($relation['cascade']['delete']) && $relation['cascade']['delete']) {
 					$orm = $entity->$name();
 					if(!is_object($orm))
@@ -159,7 +266,7 @@ class DataMapper {
 				$r = static::entityORM($entity)->getDAL()->delete();
 
 			#Files
-			foreach($entity::getStaticDefinition()->properties() as $name=>$prop) {
+			foreach($entity->getefinition()->properties() as $name=>$prop) {
 				if($prop instanceof \Asgard\Entity\Properties\FileProperty) {
 					if($prop->get('multiple')) {
 						foreach($entity->get($name) as $file)
@@ -177,28 +284,45 @@ class DataMapper {
 		});
 	}
 
+	/**
+	 * Create and store an entity.
+	 * @param  string  $entityClass 
+	 * @param  array   $values        default entity attributes
+	 * @param  boolean $force         skip validation
+	 * @return \Asgard\Entity\Entity
+	 */
 	public function create($entityClass, $values=null, $force=false) {
 		$m = new $entityClass;
 		return $m->save($values, $force);
 	}
 	
+	/**
+	 * Validate an entity.
+	 * @param  \Asgard\Entity\Entity $entity
+	 * @return true for valid, otherwise false
+	 */
 	public function valid(\Asgard\Entity\Entity $entity) {
 		$data = $entity->toArrayRaw();
 		$validator = $entity->getValidator();
 		foreach($entity->getDefinition()->relations() as $name=>$relation) {
-			$data[$name] = $entity::getStaticDefinition()->relation($name);
+			$data[$name] = $entity->getDefinition()->relation($name);
 			$validator->attribute($name, $relation->getRules());
 		}
-		return $entity::getStaticDefinition()->trigger('validation', [$entity, $validator, &$data], function($chain, $entity, $validator, &$data) {
+		return $entity->getDefinition()->trigger('validation', [$entity, $validator, &$data], function($chain, $entity, $validator, &$data) {
 			return $validator->valid($data);
 		});
 	}
 
+	/**
+	 * Return entity errors.
+	 * @param  \Asgard\Entity\Entity $entity
+	 * @return array
+	 */
 	public function errors(\Asgard\Entity\Entity $entity) {
 		$data = $entity->toArrayRaw();
 		$validator = $entity->getValidator();
 		foreach($entity->getDefinition()->relations() as $name=>$relation) {
-			$data[$name] = $entity::getStaticDefinition()->relation($name);
+			$data[$name] = $entity->getDefinition()->relation($name);
 			$validator->attribute($name, $relation->getRules());
 		}
 		$errors = $entity::trigger('validation', [$entity, $validator, &$data], function($chain, $entity, $validator, &$data) {
@@ -214,6 +338,13 @@ class DataMapper {
 		return $e;
 	}
 
+	/**
+	 * Store an entity.
+	 * @param  \Asgard\Entity\Entity $entity
+	 * @param  array                 $values entity attributes
+	 * @param  boolean               $force  skip validation
+	 * @return true for successful storage, false otherwise
+	 */
 	public function save(\Asgard\Entity\Entity $entity, $values=null, $force=false) {
 		#set $values if any
 		if($values)
@@ -227,7 +358,7 @@ class DataMapper {
 		$entity::trigger('save', [$entity]);
 
 		#Files
-		foreach($entity::getStaticDefinition()->properties() as $name=>$prop) {
+		foreach($entity->getDefinition()->properties() as $name=>$prop) {
 			if($prop instanceof \Asgard\Entity\Properties\FileProperty) {
 				if($prop->get('multiple')) {
 					$files = $entity->$name = array_values($entity->$name->all());
@@ -251,7 +382,7 @@ class DataMapper {
 
 		$vars = [];
 		#process data
-		foreach($entity::getStaticDefinition()->propertyNames() as $name) {
+		foreach($entity->getDefinition()->propertyNames() as $name) {
 			
 			if($entity::property($name)->i18n) {
 				$value = $entity->get($name, $entity->getLocales());
@@ -265,10 +396,10 @@ class DataMapper {
 		}
 
 		#persist entity ids
-		foreach($entity::getStaticDefinition()->relations as $relation => $params) {
+		foreach($entity->getDefinition()->relations as $relation => $params) {
 			if(!isset($entity->data[$relation]))
 				continue;
-			$rel = $entity::getStaticDefinition()->relations[$relation];
+			$rel = $entity->getDefinition()->relations[$relation];
 			$type = $rel['type'];
 			if($type == 'belongsTo' || $type == 'hasOne') {
 				$link = $rel->getLink();
@@ -319,10 +450,10 @@ class DataMapper {
 		}
 	
 		#Persist relations
-		foreach($entity::getStaticDefinition()->relations as $relation => $params) {
+		foreach($entity->getDefinition()->relations as $relation => $params) {
 			if(!isset($entity->data[$relation]))
 				continue;
-			$rel = static::getRelation($entity::getStaticDefinition(), $relation);
+			$rel = static::getRelation($entity->getDefinition(), $relation);
 			$reverse_rel = $rel->reverse();
 			$type = $rel['type'];
 
@@ -337,5 +468,13 @@ class DataMapper {
 		}
 
 		return $entity;
+	}
+
+	/**
+	 * Return the database instance.
+	 * @return \Asgard\Db\DB
+	 */
+	public function getDB() {
+		return $this->db;
 	}
 }

@@ -7,39 +7,94 @@ namespace Asgard\Orm;
  * @author Michel Hognerud <michel@hognerud.net>
 */
 class ORM {
-	use \Asgard\Container\ContainerAwareTrait;
-
+	/**
+	 * DataMapper instance.
+	 * @var DataMapper
+	 */
 	protected $dataMapper;
+	/**
+	 * Entity class.
+	 * @var string
+	 */
 	protected $entity;
+	/**
+	 * Eager-loaded relations.
+	 * @var array
+	 */
 	protected $with;
+	/**
+	 * Conditions.
+	 * @var array
+	 */
 	protected $where = [];
+	/**
+	 * OrderBy.
+	 * @var string
+	 */
 	protected $orderBy;
+	/**
+	 * Limit.
+	 * @var integer
+	 */
 	protected $limit;
+	/**
+	 * Offset.
+	 * @var integer
+	 */
 	protected $offset;
+	/**
+	 * Joined relations.
+	 * @var array
+	 */
 	protected $join = [];
+	/**
+	 * Page number.
+	 * @var integer
+	 */
 	protected $page;
+	/**
+	 * Number of elements per page.
+	 * @var integer
+	 */
 	protected $per_page;
-	protected $db;
+	/**
+	 * Default locale.
+	 * @var string
+	 */
 	protected $locale;
+	/**
+	 * Tables prefix.
+	 * @var string
+	 */
 	protected $prefix;
-
+	/**
+	 * Ongoing DAL instance.
+	 * @var \Asgard\Db\DAL
+	 */
 	protected $tmp_dal = null;
+	/**
+	 * Paginator factory.
+	 * @var \Asgard\Container\Factory
+	 */
+	protected $paginatorFactory = null;
 	
 	/**
 	 * Constructor.
-	 * 
-	 * @param \Asgard\Entity\Entity entity The entity class.
-	*/
-	public function __construct($entity, $db, $locale=null, $prefix=null, $container=null, $datamapper=null) {
-		$this->entity = $entity;
-		$this->db = $db;
-		$this->locale = $locale;
-		$this->prefix = $prefix;
-		$this->container = $container;
+	 * @param string                    $entityClass
+	 * @param string                    $locale           default locale
+	 * @param string                    $prefix           tables prefix
+	 * @param DataMapper                $datamapper
+	 * @param \Asgard\Container\Factory $paginatorFactory
+	 */
+	public function __construct($entityClass, $locale=null, $prefix=null, DataMapper $datamapper=null, \Asgard\Container\Factory $paginatorFactory=null) {
+		$this->entity     = $entityClass;
+		$this->locale     = $locale;
+		$this->prefix     = $prefix;
 		$this->dataMapper = $datamapper;
+		$this->paginatorFactory = $paginatorFactory;
 
-		if($entity::getStaticDefinition()->order_by)
-			$this->orderBy($entity::getStaticDefinition()->order_by);
+		if($entityClass::getStaticDefinition()->order_by)
+			$this->orderBy($entityClass::getStaticDefinition()->order_by);
 		else
 			$this->orderBy('id DESC');
 	}
@@ -244,22 +299,13 @@ class ORM {
 	}
 	
 	/**
-	 * Returns the DB object used to access the database.
-	 * 
-	 * @return \Asgard\Db\DB
-	*/
-	public function getDB() {
-		return $this->db;
-	}
-	
-	/**
 	 * Returns the DAL object used to build queries.
 	 * 
 	 * @return \Asgard\Db\DAL
 	*/
 	public function getDAL() {
 		$current_entity = $this->entity;
-		$dal = new \Asgard\Db\DAL($this->getDB());
+		$dal = new \Asgard\Db\DAL($this->dataMapper->getDB());
 		$table = $this->getTable();
 		$dal->orderBy($this->orderBy);
 		$dal->limit($this->limit);
@@ -518,7 +564,7 @@ class ORM {
 		$entities = [];
 		$entity = $this->entity;
 		
-		$dal = new \Asgard\Db\DAL($this->getDB());
+		$dal = new \Asgard\Db\DAL($this->dataMapper->getDB());
 		$rows = $dal->query($sql, $args)->all();
 		foreach($rows as $row)
 			$entities[] = static::unserializeSet(new $entity, $row);
@@ -553,7 +599,11 @@ class ORM {
 	public function getPaginator() {
 		$page = $this->page !== null ? $this->page : 1;
 		$per_page = $this->per_page !== null ? $this->per_page : 10;
-		return $this->container->make('paginator', [$this->count(), $page, $per_page]);
+
+		if($this->paginatorFactory)
+			return $this->paginatorFactory->create([$this->count(), $page, $per_page]);
+		else
+			return new \Asgard\Common\Paginator($this->count(), $page, $per_page);
 	}
 	
 	/**

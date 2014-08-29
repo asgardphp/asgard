@@ -5,14 +5,11 @@ class ORMTest extends \PHPUnit_Framework_TestCase {
 	protected static $container;
 
 	public static function setUpBeforeClass() {
-		$container = new \Asgard\Container\Container;
-		$container['hooks']  = new \Asgard\Hook\HooksManager($container);
-		$container['config'] = new \Asgard\Config\Config;
-		$container['cache']  = new \Asgard\Cache\NullCache;
-		$container->register('paginator', function($container, $page, $per_page, $total) {
-			return new \Asgard\Common\Paginator($page, $per_page, $total);
-		});
-		$container['rulesregistry']   = new \Asgard\Validation\RulesRegistry;
+		$container                  = new \Asgard\Container\Container;
+		$container['hooks']         = new \Asgard\Hook\HooksManager($container);
+		$container['config']        = new \Asgard\Config\Config;
+		$container['cache']         = new \Asgard\Cache\NullCache;
+		$container['rulesregistry'] = new \Asgard\Validation\RulesRegistry;
 		$container->register('validator', function($container) {
 			$validator = new \Asgard\Validation\Validator;
 			$validator->setRegistry($container['rulesregistry']);
@@ -24,12 +21,22 @@ class ORMTest extends \PHPUnit_Framework_TestCase {
 			'password' => '',
 			'host'     => 'localhost'
 		]);
+		$container->register('paginator', function($container, $count, $page, $per_page) {
+			return new \Asgard\Common\Paginator($count, $page, $per_page);
+		});
+		$container->register('orm', function($container, $entityClass, $locale, $prefix, $dataMapper) {
+			return new \Asgard\Orm\ORM($entityClass, $locale, $prefix, $dataMapper, $container->createFactory('paginator'));
+		});
+		$container->register('collectionOrm', function($container, $entityClass, $name, $locale, $prefix, $dataMapper) {
+			return new \Asgard\Orm\CollectionORM($entityClass, $name, $locale, $prefix, $dataMapper, $container->createFactory('paginator'));
+		});
 		$container->register('datamapper', function($container) {
 			return new \Asgard\Orm\DataMapper(
 				$container['db'],
 				'en',
 				'',
-				$container
+				$container->createFactory('orm'),
+				$container->createFactory('collectionOrm')
 			);
 		});
 

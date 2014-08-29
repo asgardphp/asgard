@@ -1,19 +1,42 @@
 <?php
 namespace Asgard\Orm;
 
+/**
+ * Handle the migrations for the ORM.
+ */
 class ORMMigrations {
+	/**
+	 * MigrationsManager instance.
+	 * @var \Asgard\Migration\MigrationsManager
+	 */
 	protected $migrationsManager;
 
+	/**
+	 * Constructor.
+	 * @param \Asgard\Migration\MigrationsManager $migrationsManager
+	 */
 	public function __construct($migrationsManager=null) {
 		$this->migrationsManager = $migrationsManager;
 	}
 
+	/**
+	 * Automatically migrate entities tables.
+	 * @param  array         $entities
+	 * @param  \Asgard\Db\Schema $s
+	 */
 	public function autoMigrate($entities, \Asgard\Db\Schema $s) {
 		if(!is_array($entities))
 			$entities = [$entities];
 		$this->processSchemas($this->getEntitiesSchemas($entities), $s);
 	}
 
+	/**
+	 * Generate a migration from entities.
+	 * @param  array      $entities
+	 * @param  string     $migrationName
+	 * @param  \Asgard\Db\DB $db
+	 * @return string     name of migration
+	 */
 	public function generateMigration(array $entities, $migrationName, \Asgard\Db\DB $db) {
 		if(!is_array($entities))
 			$entities = [$entities];
@@ -24,6 +47,11 @@ class ORMMigrations {
 		return $this->migrationsManager->create($up, $down, $migrationName, '\Asgard\Migration\DBMigration');
 	}
 
+	/**
+	 * Generate schemas of entities.
+	 * @param  array  $entities
+	 * @return array
+	 */
 	protected function getEntitiesSchemas(array $entities) {
 		$schemas = [];
 		foreach($entities as $class) {
@@ -123,6 +151,11 @@ class ORMMigrations {
 		return $schemas;
 	}
 
+	/**
+	 * Process the schemas.
+	 * @param  array          $schemas
+	 * @param  \Asgard\Db\Schema $s
+	 */
 	protected function processSchemas(array $schemas, \Asgard\Db\Schema $s) {
 		foreach($schemas as $tableName=>$cols) {
 			$s->create($tableName, function($table) use($cols) {
@@ -145,6 +178,11 @@ class ORMMigrations {
 		}
 	}
 
+	/**
+	 * Fetch the SQL schemas
+	 * @param  \Asgard\Db\DB $db
+	 * @return array
+	 */
 	protected function getSQLSchemas(\Asgard\Db\DB $db) {
 		$tables = [];
 		foreach($db->query('SHOW TABLES')->all() as $v) {
@@ -169,6 +207,13 @@ class ORMMigrations {
 		return $tables;
 	}
 
+	/**
+	 * Build the migration code by comparing the new schemas to the old ones.
+	 * @param  array   $newSchemas 
+	 * @param  array   $oldSchemas 
+	 * @param  boolean $drop       true to drop the old tables
+	 * @return string  migration code
+	 */
 	protected function buildMigration($newSchemas, $oldSchemas, $drop) {
 		$res = '';
 		foreach($newSchemas as $table=>$newSchema) {
@@ -214,14 +259,30 @@ class ORMMigrations {
 		return trim($res, "\n");
 	}
 
+	/**
+	 * Generate code to drop a table.
+	 * @param  string $table
+	 * @return string
+	 */
 	protected function dropTable($table) {
 		return "\$this->container['schema']->drop('$table');\n\n";
 	}
 
+	/**
+	 * Generate code to drop a column.
+	 * @param  string $col
+	 * @return string
+	 */
 	protected function dropColumn($col) {
 		return "\n\t\$table->drop('$col');";
 	}
 
+	/**
+	 * Generate code to create a table.
+	 * @param  string $table
+	 * @param  array $cols
+	 * @return string
+	 */
 	protected function createTable($table, $cols) {
 		$res = "\$this->container['schema']->create('$table', function(\$table) {";
 		foreach($cols as $col=>$params)
@@ -231,6 +292,12 @@ class ORMMigrations {
 		return $res;
 	}
 
+	/**
+	 * Generate the code to update a column.
+	 * @param  string $col    column name
+	 * @param  array  $params column parameters
+	 * @return string
+	 */
 	protected function updateColumn($col, $params) {
 		$res = "\n\t\$table->col('$col')";
 		if(isset($params['type']))
@@ -274,6 +341,12 @@ class ORMMigrations {
 		return $res;
 	}
 
+	/**
+	 * Generate the code to create a column.
+	 * @param  string $col    column name
+	 * @param  array  $params column parameters
+	 * @return string
+	 */
 	protected function createColumn($col, $params) {
 		$res = "\n\t\$table->add('$col', '$params[type]')";
 		if($params['nullable'])

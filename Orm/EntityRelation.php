@@ -1,12 +1,37 @@
 <?php
 namespace Asgard\Orm;
 
+/**
+ * Define relation between entities.
+ */
 class EntityRelation implements \ArrayAccess {
+	/**
+	 * Entity class.
+	 * @var string
+	 */
 	protected $entityClass;
+	/**
+	 * Reverse relation parameters.
+	 * @var array
+	 */
 	protected $reverseRelation;
+	/**
+	 * Relation name.
+	 * @var string
+	 */
 	public $name;
+	/**
+	 * Parameters.
+	 * @var array
+	 */
 	public $params = [];
 
+	/**
+	 * Constructor.
+	 * @param \Asgard\Entity\EntityDefinition $entityDefinition
+	 * @param string                          $name
+	 * @param array                           $params
+	 */
 	public function __construct(\Asgard\Entity\EntityDefinition $entityDefinition, $name, array $params) {
 		$entityClass = $entityDefinition->getClass();
 		$this->entityClass = $entityClass;
@@ -29,25 +54,40 @@ class EntityRelation implements \ArrayAccess {
 		}
 	}
 
+	/**
+	 * Get the relation link attribute.
+	 * @return string
+	 */
 	public function getLink() {
-		if($this->type() == 'hasMany') {
+		if($this->type() == 'hasMany')
 			return $this->reverseRelationParams()['name'].'_id';
-		}
-		elseif($this->type() == 'belongsTo') {
+		elseif($this->type() == 'belongsTo')
 			return $this->name.'_id';
-		}
 	}
 
+	/**
+	 * Get the link A for a HMABT relation.
+	 * @return string
+	 */
 	public function getLinkA() {
 		$entityClass = $this->entityClass;
 		return $entityClass::getShortName().'_id';
 	}
 
+	/**
+	 * Get the link B for a HMABT relation.
+	 * @return string
+	 */
 	public function getLinkB() {
 		$entityClass = $this->params['entity'];
 		return $entityClass::getShortName().'_id';
 	}
 
+	/**
+	 * Get the table of an entity class.
+	 * @param  string $prefix table prefix
+	 * @return string
+	 */
 	public function getTable($prefix=null) {
 		$entityClass = $this->entityClass;
 		$relationEntityClass = $this->params['entity'];
@@ -58,6 +98,10 @@ class EntityRelation implements \ArrayAccess {
 			return $prefix.$relationEntityClass::getShortName().'_'.$entityClass::getShortName();
 	}
 
+	/**
+	 * Get the relation type.
+	 * @return string   hasOne, belongsTo, hasMany or HMABT
+	 */
 	public function type() {
 		$rev = $this->reverseRelationParams();
 
@@ -77,6 +121,10 @@ class EntityRelation implements \ArrayAccess {
 			throw new \Exception('Problem with relation type.');
 	}
 
+	/**
+	 * Get the reverse relation parameters.
+	 * @return array
+	 */
 	protected function reverseRelationParams() {
 		if($this->reverseRelation !== null)
 			return $this->reverseRelation;
@@ -114,6 +162,10 @@ class EntityRelation implements \ArrayAccess {
 		}
 	}
 
+	/**
+	 * Get the reverse relation instance.
+	 * @return EntityRelation
+	 */
 	public function reverse() {
 		$reverse_rel = $this->reverseRelationParams();
 		$entity = $this->params['entity'];
@@ -121,22 +173,44 @@ class EntityRelation implements \ArrayAccess {
 		return $entity::getStaticDefinition()->relations[$rel_name];
 	}
 
+	/**
+	 * Array set implementation.
+	 * @param  string $offset
+	 * @param  mixed  $value
+	 */
 	public function offsetSet($offset, $value) {
 		$this->params[$offset] = $value;
 	}
 
+	/**
+	 * Array exists implementation.
+	 * @param  string $offset
+	 */
 	public function offsetExists($offset) {
 		return isset($this->params[$offset]);
 	}
 
+	/**
+	 * Array unset implementation.
+	 * @param  string $offset
+	 */
 	public function offsetUnset($offset) {
 		unset($this->params[$offset]);
 	}
 
+	/**
+	 * Array get implementation.
+	 * @param  string $offset
+	 * @return mixed
+	 */
 	public function offsetGet($offset) {
 		return isset($this->params[$offset]) ? $this->params[$offset] : null;
 	}
 
+	/**
+	 * Get the relation validation rules.
+	 * @return array
+	 */
 	public function getRules() {
 		$res = isset($this->params['validation']) ? $this->params['validation']:[];
 		if(!is_array($res))

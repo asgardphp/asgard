@@ -5,9 +5,9 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 	protected static $container;
 
 	public static function setUpBeforeClass() {
-		$container = new \Asgard\Container\Container;
-		$container['hooks']             = new \Asgard\Hook\HooksManager($container);
-		$container['cache']             = new \Asgard\Cache\NullCache;
+		$container          = new \Asgard\Container\Container;
+		$container['hooks'] = new \Asgard\Hook\HooksManager($container);
+		$container['cache'] = new \Asgard\Cache\NullCache;
 		$config = [
 			'database' => 'asgard',
 			'user'     => 'root',
@@ -17,10 +17,7 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 		$container['db'] = new \Asgard\Db\DB($config);
 		$container->register('datamapper', function($container) {
 			return new \Asgard\Orm\DataMapper(
-				$container['db'],
-				'en',
-				'',
-				$container
+				$container['db']
 			);
 		});
 
