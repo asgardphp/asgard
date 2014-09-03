@@ -71,7 +71,9 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		});
 
 		#Common
-		$container->register('paginator', function($container, $page, $per_page, $total) { return new \Asgard\Common\Paginator($page, $per_page, $total, $container['request']); });
+		$container->register('paginator', function($container, $count, $page, $per_page) {
+			return new \Asgard\Common\Paginator($count, $page, $per_page, $container['request']);
+		});
 
 		#Validation
 		$container->register('validator', function($container) {
@@ -82,9 +84,6 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		$container->register('rulesregistry', function() { return new \Asgard\Validation\RulesRegistry; } );
 
 		#ORM
-		$container->register('paginator', function($container, $count, $page, $per_page) {
-			return new \Asgard\Common\Paginator($count, $page, $per_page);
-		});
 		$container->register('orm', function($container, $entityClass, $locale, $prefix, $dataMapper) {
 			return new \Asgard\Orm\ORM($entityClass, $locale, $prefix, $dataMapper, $container->createFactory('paginator'));
 		});
