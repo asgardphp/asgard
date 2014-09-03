@@ -266,7 +266,7 @@ class DataMapper {
 				$r = static::entityORM($entity)->getDAL()->delete();
 
 			#Files
-			foreach($entity->getefinition()->properties() as $name=>$prop) {
+			foreach($entity->getDefinition()->properties() as $name=>$prop) {
 				if($prop instanceof \Asgard\Entity\Properties\FileProperty) {
 					if($prop->get('multiple')) {
 						foreach($entity->get($name) as $file)

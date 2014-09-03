@@ -74,7 +74,11 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		$container->register('paginator', function($container, $page, $per_page, $total) { return new \Asgard\Common\Paginator($page, $per_page, $total, $container['request']); });
 
 		#Validation
-		$container->register('validator', function() { return new \Asgard\Validation\Validator; } );
+		$container->register('validator', function($container) {
+			$validator = new \Asgard\Validation\Validator;
+			$validator->setRegistry($container['rulesregistry']);
+			return $validator;
+		});
 		$container->register('rulesregistry', function() { return new \Asgard\Validation\RulesRegistry; } );
 
 		#ORM
