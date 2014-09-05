@@ -1,13 +1,28 @@
 <?php
 namespace Asgard\Migration;
 
+/**
+ * Tracker class to track migrations statuses.
+ */
 class Tracker {
+	/**
+	 * Migations directory.
+	 * @var string
+	 */
 	protected $dir;
 
+	/**
+	 * Constructor.
+	 * @param string $dir
+	 */
 	public function __construct($dir) {
 		$this->dir = $dir;
 	}
 
+	/**
+	 * Return the list of registered migratins.
+	 * @return array
+	 */
 	public function getList() {
 		if(!file_exists($this->dir.'/migrations.json'))
 			return [];
@@ -21,6 +36,10 @@ class Tracker {
 		return $migrations;
 	}
 
+	/**
+	 * Return the list of down migrations.
+	 * @return array
+	 */
 	public function getDownList() {
 		$list = $this->getList();
 		foreach($list as $migration=>$params) {
@@ -30,6 +49,10 @@ class Tracker {
 		return $list;
 	}
 
+	/**
+	 * Return the list of up migrations.
+	 * @return array
+	 */
 	public function getUpList() {
 		$list = $this->getList();
 		foreach($list as $migration=>$params) {
@@ -39,11 +62,20 @@ class Tracker {
 		return $list;
 	}
 
+	/**
+	 * Check if a migration is registered.
+	 * @param  string  $migration 
+	 * @return boolean            true if registered, false otherwise
+	 */
 	public function has($migration) {
 		$list = $this->getList();
 		return isset($list[$migration]);
 	}
 
+	/**
+	 * Return the next migration to be executed.
+	 * @return string    migration name
+	 */
 	public function getNext() {
 		$list = $this->getList();
 		foreach($list as $migration=>$params) {
@@ -52,6 +84,10 @@ class Tracker {
 		}
 	}
 
+	/**
+	 * Return the last executed migration.
+	 * @return string    migration name
+	 */
 	public function getLast() {
 		$list = array_reverse($this->getList());
 		foreach($list as $migration=>$params) {
@@ -60,6 +96,11 @@ class Tracker {
 		}
 	}
 
+	/**
+	 * Get all migrations until a given migration name
+	 * @param  string $untilMigration 
+	 * @return arra
+	 */
 	public function getUntil($untilMigration) {
 		$list = [];
 		if(!in_array($untilMigration, array_keys($this->getList())))
@@ -73,6 +114,10 @@ class Tracker {
 		return $list;
 	}
 
+	/**
+	 * Register a migration.
+	 * @param string $migrationName
+	 */
 	public function add($migrationName) {
 		$list = $this->getList();
 		if(isset($list[$migrationName]))
@@ -81,12 +126,20 @@ class Tracker {
 		$this->writeMigrations($list);
 	}
 
+	/**
+	 * Remove a migration.
+	 * @param  string $migrationName 
+	 */
 	public function remove($migrationName) {
 		$list = $this->getList();
 		unset($list[$migrationName]);
 		$this->writeMigrations($list);
 	}
 
+	/**
+	 * Mark a migration as unmigrated.
+	 * @param  string $migrationName
+	 */
 	public function unmigrate($migrationName) {
 		$list = $this->getList();
 		if(!isset($list[$migrationName]['migrated']))
@@ -95,16 +148,29 @@ class Tracker {
 		$this->writeTracking($list);
 	}
 
+	/**
+	 * Mark a migration as migrated.
+	 * @param  string $migrationName
+	 */
 	public function migrate($migrationName) {
 		$list = $this->getList();
 		$list[$migrationName]['migrated'] = time()+microtime();
 		$this->writeTracking($list);
 	}
 
+	/**
+	 * Check if a migration was migrated.
+	 * @param  string  $migrationName
+	 * @return boolean                true if it was, false otherwise
+	 */
 	public function isUp($migrationName) {
 		return isset($this->getList()[$migrationName]['migrated']);
 	}
 
+	/**
+	 * Persist migrations list.
+	 * @param  array $res 
+	 */
 	protected function writeMigrations($res) {
 		uasort($res, function($a, $b) {
 			if(isset($a['migrated']) && !isset($b['migrated']))
@@ -124,6 +190,10 @@ class Tracker {
 		file_put_contents($this->dir.'/migrations.json', json_encode($migrations, JSON_PRETTY_PRINT));
 	}
 
+	/**
+	 * Persist migration statuses.
+	 * @param  array $res 
+	 */
 	protected function writeTracking($res) {
 		uasort($res, function($a, $b) {
 			if(isset($a['migrated']) && !isset($b['migrated']))

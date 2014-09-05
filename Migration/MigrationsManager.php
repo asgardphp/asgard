@@ -1,22 +1,46 @@
 <?php
 namespace Asgard\Migration;
 
+/**
+ * Manage the migrations.
+ */
 class MigrationsManager {
 	use \Asgard\Container\ContainerAwareTrait;
 
+	/**
+	 * Directory where migrations are located.
+	 * @var string
+	 */
 	protected $directory;
+	/**
+	 * Tracker instance to track migrations statuses.
+	 * @var Tracker
+	 */
 	protected $tracker;
 
+	/**
+	 * Constructor.
+	 * @param string $directory
+	 * @param \Asgard\Container\Container $container 
+	 */
 	public function __construct($directory, $container=[]) {
 		$this->directory = $directory;
 		$this->container = $container;
 		$this->tracker = new Tracker($directory);
 	}
 
+	/**
+	 * Return the tracker instance.
+	 * @return Tracker
+	 */
 	public function getTracker() {
 		return $this->tracker;
 	}
 
+	/**
+	 * Add a migration file.
+	 * @param string $file file path
+	 */
 	public function add($file) {
 		$dst = $this->directory.'/'.basename($file);
 		if(($path = \Asgard\File\FileSystem::copy($file, $dst, \Asgard\File\FileSystem::RENAME)) === false)
@@ -26,6 +50,14 @@ class MigrationsManager {
 		return $migrationName;
 	}
 
+	/**
+	 * Create a new migration from given code.
+	 * @param  string $up    
+	 * @param  string $down  
+	 * @param  string $name  migration name
+	 * @param  string $class entity class
+	 * @return string        final migration name
+	 */
 	public function create($up, $down, $name, $class='\Asgard\Migration\Migration') {
 		$up = implode("\n\t\t", explode("\n", $up));
 		$down = implode("\n\t\t", explode("\n", $down));
@@ -52,10 +84,19 @@ class '.$name.' extends '.$class.' {
 		return explode('.', basename($dst))[0];
 	}
 
+	/**
+	 * Check if it contains a migration.
+	 * @param  string  $migrationName 
+	 * @return boolean                true if migration exists, false otherwise
+	 */
 	public function has($migrationName) {
 		return $this->tracker->has($migrationName);
 	}
 
+	/**
+	 * Remove a migration.
+	 * @param  string $migrationName
+	 */
 	public function remove($migrationName) {
 		if($this->tracker->isUp($migrationName))
 			return;
@@ -63,6 +104,12 @@ class '.$name.' extends '.$class.' {
 			$this->tracker->remove($migrationName);
 	}
 
+	/**
+	 * Execute a migration.
+	 * @param  string  $migrationName
+	 * @param  boolean $tracking      true to track the migration status
+	 * @return boolean                true for success, otherwise false
+	 */
 	public function migrate($migrationName, $tracking=false) {
 		if($tracking && $this->tracker->isUp($migrationName))
 			return false;
@@ -74,6 +121,10 @@ class '.$name.' extends '.$class.' {
 		return true;
 	}
 
+	/**
+	 * Execute a migration file directly.
+	 * @param  string $file file path
+	 */
 	public function migrateFile($file) {
 		if(!file_exists($file))
 			throw new \Exception($file.' does not exists.');
@@ -83,6 +134,11 @@ class '.$name.' extends '.$class.' {
 		$migration->_up();
 	}
 
+	/**
+	 * Execute all migrations.
+	 * @param  boolean $tracking true to track the migration status
+	 * @return boolean                true for success, otherwise false
+	 */
 	public function migrateAll($tracking=false) {
 		if($tracking)
 			$list = $this->tracker->getDownList();
@@ -95,14 +151,23 @@ class '.$name.' extends '.$class.' {
 		return true;
 	}
 
+	/**
+	 * Rollback and re-execute all migrations.
+	 * @return boolean                true for success, otherwise false
+	 */
 	public function reset() {
 		foreach($this->tracker->getUpList() as $migrationName=>$params) {
 			if($this->unmigrate($migrationName) === false)
 				return false;
 		}
-		return true;
+		return $this->migrateAll(true);
 	}
 
+	/**
+	 * Rollback a migration.
+	 * @param  string $migrationName 
+	 * @return boolean                true for success, otherwise false
+	 */
 	public function unmigrate($migrationName) {
 		if(!$this->tracker->isUp($migrationName))
 			return false;
@@ -116,10 +181,17 @@ class '.$name.' extends '.$class.' {
 		return true;
 	}
 
+	/**
+	 * Rollback the last migration.
+	 */
 	public function rollback() {
 		return $this->unmigrate($this->tracker->getLast());
 	}
 
+	/**
+	 * Rollback until a given migration name.
+	 * @param  string $migrationName 
+	 */
 	public function rollbackUntil($migrationName) {
 		foreach($this->tracker->getUntil($migrationName) as $_migrationName)
 			$this->unmigrate($_migrationName);

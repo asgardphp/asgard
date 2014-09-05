@@ -1,7 +1,13 @@
 <?php
 namespace Asgard\Migration;
 
+/**
+ * Migration class for database
+ */
 abstract class DBMigration extends Migration {
+	/**
+	 * {@inheritdoc}
+	 */
 	public function _up() {
 		$db = $this->container['db'];
 
@@ -15,6 +21,9 @@ abstract class DBMigration extends Migration {
 		}
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function _down() {
 		$db = $this->container['db'];
 		
