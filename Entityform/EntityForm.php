@@ -24,13 +24,13 @@ class EntityForm extends \Asgard\Form\Form {
 	
 	/**
 	 * Constructor.
-	 * @param \Asgard\Entity\Entity $entity             
-	 * @param array                 $options            
-	 * @param \Asgard\Http\Request  $request            
-	 * @param EntityFieldsSolver    $entityFieldsSolver 
+	 * @param \Asgard\Entity\Entity $entity
+	 * @param array                 $options
+	 * @param \Asgard\Http\Request  $request
+	 * @param EntityFieldsSolver    $entityFieldsSolver
 	 */
 	public function __construct(
-		\Asgard\Entity\Entity $entity, 
+		\Asgard\Entity\Entity $entity,
 		array $options                  = [],
 		\Asgard\Http\Request $request   = null,
 		$entityFieldsSolver             = null
@@ -68,10 +68,10 @@ class EntityForm extends \Asgard\Form\Form {
 
 	/**
 	 * Add another nested fields solver.
-	 * @param EntityFieldsSolver $entityFieldsSolver 
+	 * @param EntityFieldsSolver $entityFieldsSolver
 	 */
 	public function addEntityFieldsSolver($entityFieldsSolver) {
-		$this->entityFieldsSolver->add($entityFieldsSolver);
+		$this->entityFieldsSolver->addSolver($entityFieldsSolver);
 	}
 
 	/**
@@ -137,31 +137,31 @@ class EntityForm extends \Asgard\Form\Form {
 	}
 
 	/**
-	 * Return the errors of a field if provided, or all.
-	 * @param  null|\Asgard\Form\Field $field
+	 * Return the errors of a nested-group if provided, or all.
+	 * @param  null|\Asgard\Form\Group $field
 	 * @return array
 	 */
-	public function errors($field=null) {
+	public function errors($group=null) {
 		if(!$this->sent())
 			return [];
 
-		if(!$field)
-			$field = $this;
+		if(!$group)
+			$group = $this;
 
 		$errors = [];
-		if($field instanceof \Asgard\Form\Group) {
-			if($field instanceof static)
-				$errors = $field->myErrors();
-			elseif($field instanceof \Asgard\Form\Group)
-				$errors = $field->errors();
+		if($group instanceof \Asgard\Form\Group) {
+			if($group instanceof static)
+				$errors = $group->myErrors();
+			elseif($group instanceof \Asgard\Form\Group)
+				$errors = $group->errors();
 			else
-				throw new \Exception('The field should not be a: '.get_class($field));
+				throw new \Exception('The field should not be a: '.get_class($group));
 				
-			foreach($field as $name=>$sub_field) {
+			foreach($group as $name=>$sub_field) {
 				if($sub_field instanceof \Asgard\Form\Group) {
-					$field_errors = $this->errors($sub_field);
-					if(count($field_errors) > 0)
-						$errors[$name] = $field_errors;
+					$group_errors = $this->errors($sub_field);
+					if(count($group_errors) > 0)
+						$errors[$name] = $group_errors;
 				}
 			}
 		}
@@ -175,10 +175,10 @@ class EntityForm extends \Asgard\Form\Form {
 	/* Internal */
 	/**
 	 * Get the field for a property.
-	 * @param  \Asgard\Entity\Entity   $entity  
-	 * @param  string                  $name    
+	 * @param  \Asgard\Entity\Entity   $entity
+	 * @param  string                  $name
 	 * @param  \Asgard\Entity\Property $property
-	 * @param  string                  $locale  
+	 * @param  string                  $locale
 	 * @return \Asgard\Form\Field
 	 */
 	protected function getPropertyField(\Asgard\Entity\Entity $entity, $name, \Asgard\Entity\Property $property, $locale=null) {
@@ -222,10 +222,10 @@ class EntityForm extends \Asgard\Form\Form {
 
 	/**
 	 * Get the default value of a property.
-	 * @param  \Asgard\Entity\Entity $entity
-	 * @param  string                $name    
-	 * @param  string                $property
-	 * @param  string                $locale  
+	 * @param  \Asgard\Entity\Entity   $entity
+	 * @param  string                  $name
+	 * @param  \Asgard\Entity\Property $property
+	 * @param  string                  $locale
 	 * @return mixed
 	 */
 	protected function getDefaultValue(\Asgard\Entity\Entity $entity, $name, $property, $locale) {

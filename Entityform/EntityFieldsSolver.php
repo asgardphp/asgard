@@ -59,7 +59,7 @@ class EntityFieldsSolver {
 
 	/**
 	 * Add a callback.
-	 * @param callback $cb 
+	 * @param callback $cb
 	 */
 	public function add($cb) {
 		$this->callbacks[] = $cb;
