@@ -1,12 +1,34 @@
 <?php
 namespace Asgard\Entityform;
 
+/**
+ * Create form from an entity.
+ */
 class EntityForm extends \Asgard\Form\Form {
+	/**
+	 * Entity.
+	 * @var \Asgard\Entity\Entity
+	 */
 	protected $entity;
+	/**
+	 * Form locales.
+	 * @var array
+	 */
 	protected $locales = [];
+	/**
+	 * Fields solver.
+	 * @var EntityFieldsSolver
+	 */
 	protected $entityFieldsSolver;
 
-	/* Constructor */
+	
+	/**
+	 * Constructor.
+	 * @param \Asgard\Entity\Entity $entity             
+	 * @param array                 $options            
+	 * @param \Asgard\Http\Request  $request            
+	 * @param EntityFieldsSolver    $entityFieldsSolver 
+	 */
 	public function __construct(
 		\Asgard\Entity\Entity $entity, 
 		array $options                  = [],
@@ -44,11 +66,18 @@ class EntityForm extends \Asgard\Form\Form {
 		);
 	}
 
-	/* General */
+	/**
+	 * Add another nested fields solver.
+	 * @param EntityFieldsSolver $entityFieldsSolver 
+	 */
 	public function addEntityFieldsSolver($entityFieldsSolver) {
 		$this->entityFieldsSolver->add($entityFieldsSolver);
 	}
 
+	/**
+	 * Return the main fields solver.
+	 * @return EntityFieldsSolver
+	 */
 	public function getEntityFieldsSolver() {
 		if(!$this->entityFieldsSolver)
 			$this->entityFieldsSolver = new EntityFieldsSolver;
@@ -56,11 +85,19 @@ class EntityForm extends \Asgard\Form\Form {
 		return $this->entityFieldsSolver;
 	}
 
+	/**
+	 * Return the entity.
+	 * @return \Asgard\Entity\Entity
+	 */
 	public function getEntity() {
 		return $this->entity;
 	}
 
 	/* Entity fields */
+	/**
+	 * Embed an entity relation in the form.
+	 * @param string $name
+	 */
 	public function addRelation($name) {
 		$entity = $this->entity;
 		$relation = $entity::getStaticDefinition()->relation($name);
@@ -87,6 +124,10 @@ class EntityForm extends \Asgard\Form\Form {
 	}
 	
 	/* Save & Validation */
+	/**
+	 * Save the entity.
+	 * @return boolean true for success
+	 */
 	public function doSave() {
 		$entity = $this->entity;
 		if($entity::getStaticDefinition()->hasBehavior('Asgard\Entity\PersistenceBehavior'))
@@ -95,6 +136,11 @@ class EntityForm extends \Asgard\Form\Form {
 			parent::doSave();
 	}
 
+	/**
+	 * Return the errors of a field if provided, or all.
+	 * @param  null|\Asgard\Form\Field $field
+	 * @return array
+	 */
 	public function errors($field=null) {
 		if(!$this->sent())
 			return [];
@@ -127,6 +173,14 @@ class EntityForm extends \Asgard\Form\Form {
 	}
 
 	/* Internal */
+	/**
+	 * Get the field for a property.
+	 * @param  \Asgard\Entity\Entity   $entity  
+	 * @param  string                  $name    
+	 * @param  \Asgard\Entity\Property $property
+	 * @param  string                  $locale  
+	 * @return \Asgard\Form\Field
+	 */
 	protected function getPropertyField(\Asgard\Entity\Entity $entity, $name, \Asgard\Entity\Property $property, $locale=null) {
 		$field = $this->getEntityFieldsSolver()->solve($property);
 
@@ -147,6 +201,11 @@ class EntityForm extends \Asgard\Form\Form {
 		return $field;
 	}
 
+	/**
+	 * Get the options of a property.
+	 * @param  \Asgard\Entity\Property $property
+	 * @return array
+	 */
 	protected function getEntityFieldOptions(\Asgard\Entity\Property $property) {
 		$options = [];
 
@@ -161,13 +220,25 @@ class EntityForm extends \Asgard\Form\Form {
 		return $options;
 	}
 
-	protected function getDefaultValue($entity, $name, $property, $locale) {
+	/**
+	 * Get the default value of a property.
+	 * @param  \Asgard\Entity\Entity $entity
+	 * @param  string                $name    
+	 * @param  string                $property
+	 * @param  string                $locale  
+	 * @return mixed
+	 */
+	protected function getDefaultValue(\Asgard\Entity\Entity $entity, $name, $property, $locale) {
 		if($property->get('form.hidden'))
 			return '';
 		elseif($entity->get($name, $locale) !== null)
 			return $entity->get($name, $locale);
 	}
 	
+	/**
+	 * Return its own errors.
+	 * @return array
+	 */
 	protected function myErrors() {
 		$data = $this->data();
 		$data = array_filter($data, function($v) {
