@@ -19,7 +19,7 @@ abstract class Entity {
 
 	public function getLocale() {
 		if($this->locale === null)
-			$this->locale = $this->getEntitiesManager()->getDefaultLocale();
+			$this->locale = $this->getDefinition()->getEntitiesManager()->getDefaultLocale();
 		return $this->locale;
 	}
 

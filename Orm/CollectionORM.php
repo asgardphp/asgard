@@ -6,13 +6,13 @@ namespace Asgard\Orm;
  */
 class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 	/**
-	 * Parent entity
+	 * Parent entity.
 	 * @var \Asgard\Entity\Entity
 	 */
 	protected $parent;
 	/**
-	 * Relation name
-	 * @var string
+	 * Relation instance.
+	 * @var EntityRelation
 	 */
 	protected $relation;
 

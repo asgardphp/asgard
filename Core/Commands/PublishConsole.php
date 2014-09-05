@@ -29,44 +29,44 @@ class PublishCommand extends \Asgard\Console\Command {
 		#copy app
 		if($publishApp && file_exists($bundle.'/app')) {
 			if($publisher->publish($bundle.'/app', $root.'/app'))
-				$this->info('App files have been published.');
+				$output->info('App files have been published.');
 			else
-				$this->warning('App files could not be published.');
+				$output->warning('App files could not be published.');
 
 			#copy tests - only publish if bundle comes with app/
 			if($publishTests && file_exists($bundle.'/tests')) {
 				if($publisher->publish($bundle.'/tests', $root.'/tests'))
-					$this->info('Test files have been published.');
+					$output->info('Test files have been published.');
 				else
-					$this->warning('Test files could not be published.');
+					$output->warning('Test files could not be published.');
 			}
 		}
 
 		#copy config
 		if($publishConfig && file_exists($bundle.'/config')) {
 			if($publisher->publish($bundle.'/config', $root.'/config'))
-				$this->info('Config files have been published.');
+				$output->info('Config files have been published.');
 			else
-				$this->warning('Config files could not be published.');
+				$output->warning('Config files could not be published.');
 		}
 
 		#copy web
 		if($publishWeb && file_exists($bundle.'/web')) {
 			if($publisher->publish($bundle.'/web', $root.'/web'))
-				$this->info('Web files have been published.');
+				$output->info('Web files have been published.');
 			else
-				$this->warning('Web files could not be published.');
+				$output->warning('Web files could not be published.');
 		}
 
 		#copy migrations
 		if($publishMigrations && file_exists($bundle.'/migrations/migrations.json')) {
 			if($publisher->publishMigrations($bundle.'/migrations', $root.'/migrations', $migrate))
-				$this->info('Migration files have been published.');
+				$output->info('Migration files have been published.');
 			else
-				$this->warning('Migration files could not be published.');
+				$output->warning('Migration files could not be published.');
 		}
 
-		$this->info('Files published with success.');
+		$output->info('Files published with success.');
 	}
 
 	protected function getOptions() {

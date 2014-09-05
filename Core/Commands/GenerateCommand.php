@@ -17,6 +17,8 @@ class GenerateCommand extends \Asgard\Console\Command {
 	
 		$yaml = new \Symfony\Component\Yaml\Parser();
 		$raw = $yaml->parse(file_get_contents($path));
+		if(!is_array($raw))
+			throw new \Exception($path.' is invalid.');
 		$bundles = [];
 
 		$overrideFiles = $this->input->getOption('override-bundles');

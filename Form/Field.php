@@ -7,6 +7,10 @@ abstract class Field {
 	protected $parent;
 	public    $name;
 	protected $value;
+	/**
+	 * Widget.
+	 * @var string|callback
+	 */
 	protected $widget    = 'text';
 	protected $errors    = [];
 

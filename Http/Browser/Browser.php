@@ -123,11 +123,11 @@ class Browser {
 			if(is_array($file))
 				$this->createTemporaryFiles($file);
 			else {
-				while(true) {
+				do {
 					$dst = sys_get_temp_dir().uniqid().'.tmp';
 					if(!file_exists($dst))
 						break;
-				}
+				} while(true);
 				copy($file->src(), $dst);
 				$file->setSrc($dst);
 			}

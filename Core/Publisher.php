@@ -15,7 +15,7 @@ class Publisher {
 		$r = true;
 		foreach(glob($src.'/*') as $file) {
 			$dst = $dstDir.'/'.basename($file);
-			static::copy($file, $dst);
+			$this->copy($file, $dst);
 		}
 		return $r;
 	}
@@ -26,7 +26,7 @@ class Publisher {
 			if(basename($file) === 'migrations.json')
 				continue;
 			$dst = $dstDir.'/'.basename($file);
-			static::copy($file, $dst);
+			$this->copy($file, $dst);
 		}
 
 		if(!$r) {
@@ -45,12 +45,12 @@ class Publisher {
 		}
 	}
 
-	public static function copy($src, $dst) {
+	public function copy($src, $dst) {
 		if(is_dir($src))
-			return static::copyDir($src, $dst);
+			return $this->copyDir($src, $dst);
 		else {
 			if(file_exists($dst)) {
-				$dst = static::getNewFilename($odst = $dst);
+				$dst = \Asgard\File\FileSystem::getNewFilename($odst = $dst);
 				$this->output->writeln('<warning>The file '.$odst.' had to be renamed into '.$dst.'.</warning>');
 			}
 
@@ -63,13 +63,13 @@ class Publisher {
 		}
 	}
 
-	protected static function copyDir($src, $dst) {
+	protected function copyDir($src, $dst) {
 		$r = true;
 		$dir = opendir($src);
 		\Asgard\File\FileSystem::mkdir($dst);
 		while(false !== ($file = readdir($dir))) { 
 			if(($file != '.') && ($file != '..'))
-				$r = $r && static::copy($src.'/'.$file, $dst.'/'.$file);
+				$r = $r && $this->copy($src.'/'.$file, $dst.'/'.$file);
 		} 
 		closedir($dir);
 

@@ -74,7 +74,7 @@ class FileSystem {
 	 * Rename a file.
 	 * @param  string $src
 	 * @param  string $dst
-	 * @param  const $mode 
+	 * @param  integer $mode 
 	 * @return boolean     true for success, otherwise false
 	 */
 	public static function rename($src, $dst, $mode=null) {
@@ -93,7 +93,7 @@ class FileSystem {
 	 * Copy a file.
 	 * @param  string $src
 	 * @param  string $dst
-	 * @param  const $mode 
+	 * @param  integer $mode 
 	 * @return boolean     true for success, otherwise false
 	 */
 	public static function copy($src, $dst, $mode=null) {
@@ -123,7 +123,7 @@ class FileSystem {
 	 * Copy a directory.
 	 * @param  string $src
 	 * @param  string $dst
-	 * @param  const $mode 
+	 * @param  integer $mode 
 	 * @return boolean     true for success, otherwise false
 	 */
 	protected static function copyDir($src, $dst, $mode=null) {
@@ -212,7 +212,7 @@ class FileSystem {
 	 * Write into a file.
 	 * @param  string $dst
 	 * @param  string $content 
-	 * @param  const $mode
+	 * @param  integer $mode
 	 * @return boolean      true for success, otherwise false
 	 */
 	public static function write($dst, $content, $mode=null) {

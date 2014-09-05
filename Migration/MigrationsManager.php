@@ -78,6 +78,8 @@ class '.$name.' extends '.$class.' {
 	}
 }";
 		$dst = \Asgard\File\FileSystem::write($dst, $migration, \Asgard\File\FileSystem::RENAME);
+		if($dst === false)
+			throw new \Exception($dst.' can not be created.');
 
 		$this->tracker->add($name);
 

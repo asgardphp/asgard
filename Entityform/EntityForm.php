@@ -171,7 +171,7 @@ class EntityForm extends \Asgard\Form\Form {
 	protected function myErrors() {
 		$data = $this->data();
 		$data = array_filter($data, function($v) {
-			if($v instanceof \Asgard\Form\HttpFile && $v->error())
+			if($v instanceof \Asgard\Http\HttpFile && $v->error())
 				return false;
 			return $v !== null;
 		});

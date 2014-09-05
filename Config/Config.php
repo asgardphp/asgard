@@ -19,8 +19,10 @@ class Config extends \Asgard\Common\Bag {
 	
 	public function loadConfigFile($filename) {
 		$yaml = new \Symfony\Component\Yaml\Parser();
-		if(($r = file_get_contents($filename)))
-			$this->load($yaml->parse($r));
+		if(($r = file_get_contents($filename))) {
+			if(is_array($res = $yaml->parse($r)))
+				$this->load($res);
+		}
 		return $this;
 	}
 }

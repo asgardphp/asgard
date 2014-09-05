@@ -20,7 +20,6 @@ class RoutesCommand extends \Asgard\Console\Command {
 
 		$routes = $this->resolver->sortRoutes()->getRoutes();
 		foreach($routes as $route) {
-			$controller = $route->getController();
 			$action = $route->getAction();
 			$table->addRow([
 				$route->get('method'),

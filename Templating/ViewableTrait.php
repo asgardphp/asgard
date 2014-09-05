@@ -126,7 +126,8 @@ trait ViewableTrait {
 		if(!file_exists($file))
 			throw new \Exception('The template file "'.$orig.'" could not be found.');
 
-		extract((array)$this);
+		$params = (array)$this;
+		extract($params);
 
 		ob_start();
 		include($file);

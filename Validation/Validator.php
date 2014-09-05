@@ -28,7 +28,7 @@ class Validator {
 	protected $attributes = [];
 	/**
 	 * Default error message.
-	 * @var array
+	 * @var string
 	 */
 	protected $defaultMessage;
 	/**
@@ -79,7 +79,7 @@ class Validator {
 
 	/**
 	 * Set the translator.
-	 * @param Symfony\Component\Translation\TranslatorInterface $translator
+	 * @param \Symfony\Component\Translation\TranslatorInterface $translator
 	 */
 	public function setTranslator(TranslatorInterface $translator) {
 		$this->translator = $translator;
@@ -88,7 +88,7 @@ class Validator {
 
 	/**
 	 * Get the translator.
-	 * @return Symfony\Component\Translation\TranslatorInterface
+	 * @return \Symfony\Component\Translation\TranslatorInterface
 	 */
 	public function getTranslator() {
 		if($this->translator)
