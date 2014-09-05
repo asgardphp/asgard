@@ -3,50 +3,39 @@ namespace Asgard\Hook;
 
 /**
  * Extend "Hookable" to make hookable instances.
- * 
  * @author Michel Hognerud <michel@hognerud.net>
 */
 trait HookableTrait {
 	protected $hooksManager;
 	
 	/**
-	 * Checks if has a hook.
-	 * 
+	 * Check if has a hook.
 	 * @param string name
-	 * 
 	 * @return boolean
-	 * 
-	 * @api 
 	*/
 	public function hasHook($name) {
-		if(!$this->getHooksManager()) return false;
+		if(!$this->getHooksManager())
+			return false;
 		return $this->getHooksManager()->has($name);
 	}
 	
 	/**
-	 * Triggers a hook.
-	 * 
+	 * Trigger a hook.
 	 * @param string name
 	 * @param Callback cb
-	 * 
 	 * @return mixed
-	 * 
-	 * @api 
 	*/
 	public function trigger($name, array $args=[], $cb=null, &$chain=null) {
-		if(!$this->getHooksManager()) return;
+		if(!$this->getHooksManager())
+			return;
 		return $this->getHooksManager()->trigger($name, $args, $cb, $chain);
 	}
 	
 	/**
-	 * Sets a hook.
-	 * 
+	 * Set a hook.
 	 * @param string hookName
 	 * @param Callback cb
-	 * 
 	 * @return mixed
-	 * 
-	 * @api 
 	*/
 	public function hook($hookName, $cb) {
 		$args = [$hookName, $cb];
@@ -54,14 +43,10 @@ trait HookableTrait {
 	}
 	
 	/**
-	 * Sets a "before" hook.
-	 * 
+	 * Set a "before" hook.
 	 * @param string hookName
 	 * @param Callback cb
-	 * 
 	 * @return mixed
-	 * 
-	 * @api 
 	*/
 	public function hookBefore($hookName, $cb) {
 		$args = [$hookName, $cb];
@@ -69,14 +54,10 @@ trait HookableTrait {
 	}
 	
 	/**
-	 * Sets an
+	 * Set an "after" hook.
 	 * 
-	 * @param string hookName
 	 * @param Callback cb
-	 * 
 	 * @return mixed
-	 * 
-	 * @api 
 	*/
 	public function hookAfter($hookName, $cb) {
 		$args = [$hookName, $cb];
@@ -84,8 +65,7 @@ trait HookableTrait {
 	}
 	
 	/**
-	 * Gets the hooks manager.
-	 * 
+	 * Get the hooks manager.
 	 * @return HooksManager
 	*/
 	public function getHooksManager() {
@@ -95,8 +75,7 @@ trait HookableTrait {
 	}
 	
 	/**
-	 * Sets the hooks manager.
-	 * 
+	 * Set the hooks manager.
 	 * @param HooksManager hooksManager
 	*/
 	public function setHooksManager(HooksManager $hooksManager) {

@@ -143,6 +143,14 @@ class Kernel implements \ArrayAccess {
 		return $this->bundles;
 	}
 
+	protected function getHooksAnnotationsReader($cache) {
+		$annotationsReader = new \Asgard\Hook\AnnotationsReader();
+		if($cache)
+			$annotationsReader->setCache($this->getCache($cache));
+		$annotationsReader->setDebug($this->getConfig()['debug']);
+		return $annotationsReader;
+	}
+
 	protected function doGetBundles($cache=false) {
 		if($cache) {
 			$c = $this->getCache($cache);
@@ -196,6 +204,9 @@ class Kernel implements \ArrayAccess {
 
 		if($cache)
 			$c->save('bundles', $bundles);
+
+		foreach($bundles as $bundle)
+			$bundle->setHooksAnnotationsReader($this->getHooksAnnotationsReader($cache));
 
 		return $bundles;
 	}

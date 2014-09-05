@@ -5,15 +5,26 @@ use Jeremeamia\SuperClosure\SerializableClosure;
 
 /**
  * The hooks manager.
- * 
  * @author Michel Hognerud <michel@hognerud.net>
 */
 class HooksManager {
 	use \Asgard\Container\ContainerAwareTrait;
 
+	/**
+	 * Static instance.
+	 * @var HooksManager
+	 */
 	protected static $instance;
+	/**
+	 * Hooks registry.
+	 * @var array
+	 */
 	public $registry = [];
 	
+	/**
+	 * Return a static instance.
+	 * @return HooksManager
+	 */
 	public static function singleton() {
 		if(!static::$instance)
 			static::$instance = new static;
@@ -22,7 +33,6 @@ class HooksManager {
 
 	/**
 	 * Constructor.
-	 * 
 	 * @param \Asgard\Container\Container app Application container.
 	*/
 	public function __construct($container=null) {
@@ -30,14 +40,11 @@ class HooksManager {
 	}
 
 	/**
-	 * Triggers a hook.
-	 * 
+	 * Trigger a hook.
 	 * @param string name
 	 * @param array args
 	 * @param Callback cb Default callback.
 	 * @param HooksChain
-	 * 
-	 * @api 
 	*/
 	public function trigger($name, array $args=[], $cb=null, &$chain=null) {
 		$chain = new HookChain($this->container);
@@ -55,13 +62,9 @@ class HooksManager {
 	}
 	
 	/**
-	 * Checks if a hook is present.
-	 * 
+	 * Check if a hook is present.
 	 * @param string identifier
-	 * 
 	 * @return boolean
-	 * 
-	 * @api 
 	*/
 	public function has($identifier) {
 		if(is_string($identifier))
@@ -78,8 +81,7 @@ class HooksManager {
 	}
 	
 	/**
-	 * Sets a hook.
-	 * 
+	 * Set a hook.
 	 * @param string identifier Hook identifier.
 	 * @param Callback cb
 	 * @param integer priority Hook priority in the list.
@@ -99,10 +101,8 @@ class HooksManager {
 	}
 	
 	/**
-	 * Returns hooks.
-	 * 
+	 * Return hooks.
 	 * @param string identifier Hook identifier.
-	 * 
 	 * @return array Callbacks.
 	*/
 	public function get($identifier) {
@@ -124,8 +124,7 @@ class HooksManager {
 	}
 	
 	/**
-	 * Creates a hook.
-	 * 
+	 * Create a hook.
 	 * @param string identifier
 	 * @param Callback. cb
 	 * @param before|on|after type
@@ -139,48 +138,36 @@ class HooksManager {
 	}
 	
 	/**
-	 * Sets a hook.
-	 * 
+	 * Set a hook.
 	 * @param string identifier
 	 * @param Callback cb
-	 * 
-	 * @api 
 	*/
 	public function hook($identifier, $cb) {
 		$this->createhook($identifier, $cb, 'on');
 	}
 	
 	/**
-	 * Sets a "before" hook.
-	 * 
+	 * Set a "before" hook.
 	 * @param string identifier
 	 * @param Callback cb
 	 * @param integer priority Hook priority in the list.
-	 * 
-	 * @api 
 	*/
 	public function hookBefore($identifier, $cb) {
 		$this->createhook($identifier, $cb, 'before');
 	}
 	
 	/**
-	 * Sets an "after" hook.
-	 * 
+	 * Set an "after" hook.
 	 * @param string identifier
 	 * @param Callback cb
-	 * 
-	 * @api 
 	*/
 	public function hookAfter($identifier, $cb) {
 		$this->createhook($identifier, $cb, 'after');
 	}
 	
 	/**
-	 * Sets multiple hooks.
-	 * 
-	 * @param array allhooks
-	 * 
-	 * @api 
+	 * Set multiple hooks.
+	 * @param array
 	*/
 	public function hooks(array $allhooks) {
 		foreach($allhooks as $name=>$hooks) {

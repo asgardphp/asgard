@@ -75,10 +75,8 @@ class HookTest extends \PHPUnit_Framework_TestCase {
 	public function testHooksContainer() {
 		$hooks = new HooksManager();
 
-		\Asgard\Container\Container::singleton()['cache'] = new \Asgard\Cache\NullCache();
-		\Asgard\Container\Container::singleton()['config'] = ['debug'=>0];
-
-		$fhooks = \Asgard\Hook\Tests\Fixtures\Hooks::fetchHooks();
+		$annotationsReader = new \Asgard\Hook\AnnotationsReader;
+		$fhooks = $annotationsReader->fetchHooks('Asgard\Hook\Tests\Fixtures\Hooks');
 
 		$hooks->hooks($fhooks);
 

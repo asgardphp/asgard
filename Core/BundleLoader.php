@@ -4,10 +4,16 @@ namespace Asgard\Core;
 class BundleLoader {
 	use \Asgard\Container\ContainerAwareTrait;
 	protected $path;
+	protected $hooksAnnotationsReader;
 
 	public function __construct() {
 		$reflector = new \ReflectionClass(get_called_class());
 		$this->path = dirname($reflector->getFileName());
+	}
+
+	public function setHooksAnnotationsReader($hooksAnnotationsReader) {
+		$this->hooksAnnotationsReader = $hooksAnnotationsReader;
+		return $this;
 	}
 
 	public function setPath($path) {
@@ -84,7 +90,7 @@ class BundleLoader {
 			foreach(glob($this->getPath().'/Hooks/*.php') as $filename) {
 				$class = \Asgard\Common\Tools::loadClassFile($filename);
 				if(is_subclass_of($class, 'Asgard\Hook\HooksContainer'))
-					$hooks = array_merge_recursive($hooks, $class::fetchHooks());
+					$hooks = array_merge_recursive($hooks, $this->hooksAnnotationsReader->fetchHooks($class));
 			}
 		}
 		return $hooks;

@@ -3,18 +3,32 @@ namespace Asgard\Hook;
 
 /**
  * Chain of hooks to be executed.
- * 
  * @author Michel Hognerud <michel@hognerud.net>
 */
 class HookChain {
+	/**
+	 * All callbacks.
+	 * @var array
+	 */
 	public $calls;
+	/**
+	 * To continue the chain calls.
+	 * @var boolean
+	 */
 	protected $continue = true;
+	/**
+	 * Number of executed calls.
+	 * @var integer
+	 */
 	public $executed = 0;
+	/**
+	 * Services container.
+	 * @var \Asgard\Container\Container
+	 */
 	public $container;
 	
 	/**
 	 * Constructor.
-	 * 
 	 * @param \Asgard\Container\Container app Application container.
 	*/
 	public function __construct($container=null) {
@@ -22,8 +36,7 @@ class HookChain {
 	}
 	
 	/**
-	 * Executes the chain.
-	 * 
+	 * Execute the chain.
 	 * @return mixed
 	*/
 	public function run(array $args) {
@@ -40,9 +53,7 @@ class HookChain {
 	}
 	
 	/**
-	 * Stops the execution.
-	 * 
-	 * @api 
+	 * Stop the execution.
 	*/
 	public function stop() {
 		$this->continue = false;
