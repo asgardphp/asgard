@@ -31,14 +31,14 @@ class PublishCommand extends \Asgard\Console\Command {
 			if($publisher->publish($bundle.'/app', $root.'/app'))
 				$this->info('App files have been published.');
 			else
-				$this->warning('App files could not be published.');
+				$this->comment('App files could not be published.');
 
 			#copy tests - only publish if bundle comes with app/
 			if($publishTests && file_exists($bundle.'/tests')) {
 				if($publisher->publish($bundle.'/tests', $root.'/tests'))
 					$this->info('Test files have been published.');
 				else
-					$this->warning('Test files could not be published.');
+					$this->comment('Test files could not be published.');
 			}
 		}
 
@@ -47,7 +47,7 @@ class PublishCommand extends \Asgard\Console\Command {
 			if($publisher->publish($bundle.'/config', $root.'/config'))
 				$this->info('Config files have been published.');
 			else
-				$this->warning('Config files could not be published.');
+				$this->comment('Config files could not be published.');
 		}
 
 		#copy web
@@ -55,7 +55,7 @@ class PublishCommand extends \Asgard\Console\Command {
 			if($publisher->publish($bundle.'/web', $root.'/web'))
 				$this->info('Web files have been published.');
 			else
-				$this->warning('Web files could not be published.');
+				$this->comment('Web files could not be published.');
 		}
 
 		#copy migrations
@@ -63,7 +63,7 @@ class PublishCommand extends \Asgard\Console\Command {
 			if($publisher->publishMigrations($bundle.'/migrations', $root.'/migrations', $migrate))
 				$this->info('Migration files have been published.');
 			else
-				$this->warning('Migration files could not be published.');
+				$this->comment('Migration files could not be published.');
 		}
 
 		$this->info('Files published with success.');
