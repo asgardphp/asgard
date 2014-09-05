@@ -44,7 +44,7 @@ class CookieManager implements \ArrayAccess {
 	  
 	public function delete($path, $_path='/') {
 		if(!headers_sent())
-			setcookie($path, false, -10000, $_path);
+			setcookie($path, null, -10000, $_path);
 		unset($_COOKIE[$path]);
 	}
 

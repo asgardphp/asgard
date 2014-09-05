@@ -131,7 +131,7 @@ class GenerateCommand extends \Asgard\Console\Command {
 
 					if(in_array('index', $entity['front']) || isset($entity['front']['index'])) {
 						if(isset($entity['front']['index']))
-							\Asgard\File\FileSystem::copy($entity['front']['index'], $dst.'html/'.strtolower($bundle['entities'][$name]['meta']['name'].'/index.php'), false);
+							\Asgard\File\FileSystem::copy($entity['front']['index'], $dst.'html/'.strtolower($bundle['entities'][$name]['meta']['name'].'/index.php'));
 						else
 							$generator->processFile(__DIR__.'/bundle_template/html/_entity/index.php', $dst.'html/'.strtolower($bundle['entities'][$name]['meta']['name'].'/index.php'), ['bundle'=>$bundle, 'entity'=>$entity]);
 						if($bundle['tests']) {
@@ -143,7 +143,7 @@ class GenerateCommand extends \Asgard\Console\Command {
 					}
 					if(in_array('show', $entity['front']) || isset($entity['front']['show'])) {
 						if(isset($entity['front']['show']))
-							\Asgard\File\FileSystem::copy($entity['front']['show'], $dst.'html/'.strtolower($bundle['entities'][$name]['meta']['name'].'/show.php'), false);
+							\Asgard\File\FileSystem::copy($entity['front']['show'], $dst.'html/'.strtolower($bundle['entities'][$name]['meta']['name'].'/show.php'));
 						else
 							$generator->processFile(__DIR__.'/bundle_template/html/_entity/show.php', $dst.'html/'.strtolower($bundle['entities'][$name]['meta']['name'].'/show.php'), ['bundle'=>$bundle, 'entity'=>$entity]);
 						if($bundle['tests']) {

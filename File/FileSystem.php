@@ -199,7 +199,7 @@ class FileSystem {
 	
 	/**
 	 * Make a directory.
-	 * @param  strng $dir 
+	 * @param  string $dir 
 	 * @return boolean     true for success, otherwise false
 	 */
 	public static function mkdir($dir) {

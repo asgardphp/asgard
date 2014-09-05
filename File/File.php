@@ -139,7 +139,7 @@ class File {
 	/**
 	 * Move the file to a directory.
 	 * @param  string $dir
-	 * @param  const $mode
+	 * @param  integer $mode
 	 * @return boolean     return the new file path.
 	 */
 	public function moveToDir($dir, $mode=null) {
@@ -171,7 +171,7 @@ class File {
 	/**
 	 * Rename the file.
 	 * @param  string $dst
-	 * @param  const $mode
+	 * @param  integer $mode
 	 * @return string    new filename
 	 */
 	public function rename($dst, $mode=null) {
@@ -199,7 +199,7 @@ class File {
 	/**
 	 * Copy the file.
 	 * @param  string $dst
-	 * @param  const $mode
+	 * @param  integer $mode
 	 * @return boolean     true for success, otherwise false
 	 */
 	public function copy($dst, $mode=null) {

@@ -61,13 +61,11 @@ class EntityDefinition {
 				$this->addProperty($name, $property);
 		}
 		else
-			$this->metas[$name] = $value;
+			$this->set($name, $value);
 	}
 
 	public function __get($name) {
-		if(!isset($this->metas[$name]))
-			return;
-		return $this->metas[$name];
+		return $this->get($name);
 	}
 
 	public function __isset($name) {
@@ -230,6 +228,16 @@ class EntityDefinition {
 				return true;
 		}
 		return false;
+	}
+
+	public function set($name, $value) {
+		$this->metas[$name] = $value;
+		return $this;
+	}
+
+	public function get($k) {
+		if($this->metas[$k])
+			return $this->metas[$k];
 	}
 
 	public function isI18N() {

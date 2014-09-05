@@ -64,7 +64,7 @@ class InputBag {
 
 	/**
 	 * Return an children input bag.
-	 * @param  string $attribute name of attribute
+	 * @param  array|string $attribute name of attribute
 	 * @return InputBag
 	 */
 	public function attribute($attribute) {

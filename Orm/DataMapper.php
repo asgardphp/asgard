@@ -172,7 +172,7 @@ class DataMapper {
 	 * @return \Asgard\Entity\Entity
 	 */
 	public function getI18N(\Asgard\Entity\Entity $entity, $locale=null) {
-		$dal = new \Asgard\Db\DAL($this->db, $this->getTranslationTable($entity));
+		$dal = new \Asgard\Db\DAL($this->db, $this->getTranslationTable(get_class($entity)));
 		$res = $dal->where(['id' => $entity->id, 'locale'=>$locale])->first();
 		if(!$res)
 			return;
@@ -435,7 +435,7 @@ class DataMapper {
 		
 		#Persist i18n
 		foreach($i18n as $locale=>$values) {
-			$dal = new \Asgard\Db\DAL($this->db, $this->getTranslationTable($entity));
+			$dal = new \Asgard\Db\DAL($this->db, $this->getTranslationTable(get_class($entity)));
 			if(!$dal->where(['id'=>$entity->id, 'locale'=>$locale])->update($values)) {
 				$dal->insert(
 					array_merge(
