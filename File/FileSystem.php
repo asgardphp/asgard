@@ -1,12 +1,28 @@
 <?php
 namespace Asgard\File;
 
+/**
+ * File system.
+ */
 class FileSystem {
+	/**
+	 * Modes
+	 * OVERRIDE: override existing files
+	 * RENAME: rename new files
+	 * IGNORE: ignore new files
+	 * MERGEDIR: merge directories
+	 */
 	const OVERRIDE = 1;
 	const RENAME   = 2;
 	const IGNORE   = 4;
 	const MERGEDIR = 8;
 
+	/**
+	 * Get the relative path.
+	 * @param  string $from
+	 * @param  string $to  
+	 * @return string
+	 */
 	public static function relativeTo($from, $to) {
 		$from = is_dir($from) ? rtrim($from, '\/') . '/' : $from;
 		$to   = is_dir($to)   ? rtrim($to, '\/') . '/'   : $to;
@@ -32,6 +48,11 @@ class FileSystem {
 		return implode('/', $relPath);
 	}
 
+	/**
+	 * Get a new unique filename if file exists.
+	 * @param  string $dst 
+	 * @return string
+	 */
 	public static function getNewFilename($dst) {
 		$fileexts = explode('.', $dst);
 		if(count($fileexts) > 1) {
@@ -49,6 +70,13 @@ class FileSystem {
 		return $dst;
 	}
 
+	/**
+	 * Rename a file.
+	 * @param  string $src
+	 * @param  string $dst
+	 * @param  const $mode 
+	 * @return boolean     true for success, otherwise false
+	 */
 	public static function rename($src, $dst, $mode=null) {
 		if($mode === null)
 			$mode = static::OVERRIDE;
@@ -61,6 +89,13 @@ class FileSystem {
 		}
 	}
 
+	/**
+	 * Copy a file.
+	 * @param  string $src
+	 * @param  string $dst
+	 * @param  const $mode 
+	 * @return boolean     true for success, otherwise false
+	 */
 	public static function copy($src, $dst, $mode=null) {
 		if($mode === null)
 			$mode = static::OVERRIDE;
@@ -84,6 +119,13 @@ class FileSystem {
 		}
 	}
 
+	/**
+	 * Copy a directory.
+	 * @param  string $src
+	 * @param  string $dst
+	 * @param  const $mode 
+	 * @return boolean     true for success, otherwise false
+	 */
 	protected static function copyDir($src, $dst, $mode=null) {
 		if($mode === null)
 			$mode = static::OVERRIDE;
@@ -110,6 +152,11 @@ class FileSystem {
 		return false;
 	}
 
+	/**
+	 * Delete a file.
+	 * @param  string $file
+	 * @return boolean      true for success, false otherwise
+	 */
 	public static function delete($file) {
 		if(!file_exists($file))
 			return false;
@@ -122,6 +169,11 @@ class FileSystem {
 		return true;
 	}
 	
+	/**
+	 * Delete a directory.
+	 * @param  string $directory 
+	 * @return boolean     true for success, otherwise false
+	 */
 	protected static function deleteDir($directory) {
 		if(substr($directory,-1) == '/')
 			$directory = substr($directory, 0, -1);
@@ -145,12 +197,24 @@ class FileSystem {
 		return true;
 	}
 	
+	/**
+	 * Make a directory.
+	 * @param  strng $dir 
+	 * @return boolean     true for success, otherwise false
+	 */
 	public static function mkdir($dir) {
 		if(!file_exists($dir))
 			return mkdir($dir, 0777, true);
 		return true;
 	}
 
+	/**
+	 * Write into a file.
+	 * @param  string $dst
+	 * @param  string $content 
+	 * @param  const $mode
+	 * @return boolean      true for success, otherwise false
+	 */
 	public static function write($dst, $content, $mode=null) {
 		if($mode === null)
 			$mode = static::OVERRIDE;

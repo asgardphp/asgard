@@ -1,7 +1,13 @@
 <?php
 namespace Asgard\File\Rules;
 
+/**
+ * Check that the file is an image.
+ */
 class Image extends \Asgard\Validation\Rule {
+	/**
+	 * {@inherits}
+	 */
 	public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\Validator $validator) {
 		if(!$input instanceof \Asgard\File\File)
 			return;
@@ -12,6 +18,9 @@ class Image extends \Asgard\Validation\Rule {
 		return in_array($mime, ['image/jpeg', 'image/png', 'image/gif']);
 	}
 
+	/**
+	 * {@inherits}
+	 */
 	public function getMessage() {
 		return 'The file :attribute must be an image (jpg, png or gif).';
 	}
