@@ -1,9 +1,19 @@
 <?php
 namespace Asgard\Email;
 
+/**
+ * Send email through Swift.
+ */
 class SwiftEmail implements DriverInterface {
+	/**
+	 * The transport options.
+	 * @var array
+	 */
 	protected $transport;
 
+	/**
+     * {@inheritdoc}
+	 */
 	public function transport($transport) {
 		if(isset($transport['transport']) && $transport['transport'] == 'smtp') {
 			$host = isset($transport['host']) ? $transport['host']:'localhost';
@@ -25,6 +35,9 @@ class SwiftEmail implements DriverInterface {
 		$this->transport = $transport;
 	}
 
+	/**
+     * {@inheritdoc}
+	 */
 	public function send($cb) {
 		$mailer = \Swift_Mailer::newInstance($this->transport);
 
