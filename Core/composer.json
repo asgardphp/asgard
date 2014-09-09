@@ -7,12 +7,11 @@
 	}],
     "require": {
         "php": ">=5.4.0",
-        "asgard/config": "@dev",
-        "asgard/container": "@dev",
-		"asgard/common": "@dev"
+        "asgard/config": "v0.*",
+        "asgard/container": "v0.*",
+		"asgard/common": "v0.*"
     },
     "autoload": {
         "psr-4": {"Asgard\\Core\\": "."}
-    },
-    "minimum-stability": "dev"
+    }
 }

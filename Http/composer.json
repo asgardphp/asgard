@@ -11,13 +11,12 @@
     "require": {
         "php": ">=5.4.0",
         "doctrine/annotations": "1.*",
-        "asgard/cache": "@dev",
-        "asgard/common": "@dev",
-        "asgard/file": "@dev",
-        "asgard/hook": "@dev",
-        "asgard/container": "@dev",
-        "asgard/debug": "@dev",
-        "asgard/templating": "@dev"
-    },
-    "minimum-stability": "dev"
+        "asgard/cache": "v0.*",
+        "asgard/common": "v0.*",
+        "asgard/file": "v0.*",
+        "asgard/hook": "v0.*",
+        "asgard/container": "v0.*",
+        "asgard/debug": "v0.*",
+        "asgard/templating": "v0.*"
+    }
 }

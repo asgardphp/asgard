@@ -10,6 +10,5 @@
     },
     "autoload": {
         "psr-4": {"Asgard\\Templating\\": "."}
-    },
-    "minimum-stability": "dev"
+    }
 }

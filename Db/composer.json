@@ -10,8 +10,7 @@
     },
     "require": {
         "php": ">=5.4.0",
-        "asgard/common": "@dev",
-        "asgard/container": "@dev"
-    },
-    "minimum-stability": "dev"
+        "asgard/common": "v0.*",
+        "asgard/container": "v0.*"
+    }
 }

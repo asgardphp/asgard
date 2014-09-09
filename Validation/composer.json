@@ -7,7 +7,7 @@
 	}],
     "require": {
         "php": ">=5.4.0",
-        "asgard/common": "@dev"
+        "asgard/common": "v0.*"
     },
     "suggest": {
         "symfony/translation": "2.*"
@@ -17,6 +17,5 @@
     },
     "autoload": {
         "psr-4": {"Asgard\\Validation\\": "."}
-    },
-    "minimum-stability": "dev"
+    }
 }

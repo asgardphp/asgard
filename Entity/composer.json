@@ -10,21 +10,20 @@
     },
     "require": {
         "php": ">=5.4.0",
-        "asgard/container": "@dev",
-        "asgard/cache": "@dev",
-        "asgard/hook": "@dev",
-        "asgard/config": "@dev",
-        "asgard/common": "@dev",
-        "asgard/file": "@dev",
-        "asgard/validation": "@dev"
+        "asgard/container": "v0.*",
+        "asgard/cache": "v0.*",
+        "asgard/hook": "v0.*",
+        "asgard/config": "v0.*",
+        "asgard/common": "v0.*",
+        "asgard/file": "v0.*",
+        "asgard/validation": "v0.*"
     },
     "require-dev": {
-        "asgard/http": "@dev",
+        "asgard/http": "v0.*",
         "nesbot/carbon": "1.*"
     },
     "suggest": {
-        "asgard/http": "@dev",
+        "asgard/http": "v0.*",
         "nesbot/carbon": "1.*"
-    },
-    "minimum-stability": "dev"
+    }
 }

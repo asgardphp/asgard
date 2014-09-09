@@ -11,6 +11,5 @@
     },
     "autoload": {
         "psr-4": {"Asgard\\Container\\": "."}
-    },
-    "minimum-stability": "dev"
+    }
 }

@@ -10,8 +10,7 @@
     },
     "require": {
         "php": ">=5.4.0",
-        "asgard/form": "@dev",
-        "asgard/entity": "@dev"
-    },
-    "minimum-stability": "dev"
+        "asgard/form": "v0.*",
+        "asgard/entity": "v0.*"
+    }
 }
