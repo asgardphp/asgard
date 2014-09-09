@@ -15,7 +15,7 @@ File is a package to work with the file system and it provides a class to manipu
 In your composer file:
 
     "require": {
-        "asgard/file": "dev-master"
+        "asgard/file": "0.*"
 	}
 
 <a name="filesystem"></a>

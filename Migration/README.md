@@ -17,7 +17,7 @@ The migration packages lets you manage and execute your migrations.
 In your composer file:
 
     "require": {
-        "asgard/migration": "dev-master"
+        "asgard/migration": "0.*"
 	}
 
 <a name="lifecycle"></a>

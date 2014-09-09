@@ -10,7 +10,7 @@ The DB package lets you manipulate the database, build SQL queries and manipulat
 In your composer file:
 
     "require": {
-        "asgard/db": "dev-master"
+        "asgard/db": "0.*"
 	}
 
 ##DB

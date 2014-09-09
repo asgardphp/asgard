@@ -9,8 +9,8 @@
         "php": ">=5.4.0",
         "jeremeamia/SuperClosure": "1.*",
         "doctrine/annotations": "1.*",
-        "asgard/cache": "v0.*",
-        "asgard/container": "v0.*"
+        "asgard/cache": "0.*",
+        "asgard/container": "0.*"
     },
     "autoload": {
         "psr-4": {"Asgard\\Hook\\": "."}

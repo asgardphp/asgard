@@ -13,7 +13,7 @@ The debug package helps to handle errors and display debugging information to th
 In your composer file:
 
     "require": {
-        "asgard/debug": "dev-master"
+        "asgard/debug": "0.*"
 	}
 
 <a name="errorhandler"></a>

@@ -14,7 +14,7 @@ The Asgard Console package is an simple extension to the [Symfony Console compon
 In your composer file:
 
     "require": {
-        "asgard/console": "dev-master"
+        "asgard/console": "0.*"
 	}
 
 <a name="usage"></a>

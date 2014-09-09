@@ -16,7 +16,7 @@
 In your composer file:
 
     "require": {
-        "asgard/validation": "dev-master"
+        "asgard/validation": "0.*"
 	}
 
 <a name="validator"></a>

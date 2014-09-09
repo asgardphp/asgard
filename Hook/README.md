@@ -12,6 +12,7 @@ If you have ever used an event manager, you will find the Hooks component very s
 - [Executing callbacks before and after hooks](#executing)
 - [Filters](#filters)
 - [The HooksChain Object](#hookschain)
+- [HooksContainer](#hookscontainer)
 
 <a name="installation"></a>
 ##Installation
@@ -20,7 +21,7 @@ If you have ever used an event manager, you will find the Hooks component very s
 In your composer file:
 
     "require": {
-        "asgard/hook": "dev-master"
+        "asgard/hook": "0.*"
 	}
 
 <a name="usage-asgard"></a>
@@ -69,7 +70,7 @@ And after:
 		// ...
 	});
 
-<a name="install"></a>
+<a name="filters"></a>
 ##Filters
 Hooks can be used as filters when parameters are passed by reference
 
@@ -78,7 +79,7 @@ Hooks can be used as filters when parameters are passed by reference
 	});
 	$hm->trigger('name_of_hook', [&$param]);
 
-<a name="install"></a>
+<a name="hookschain"></a>
 ##The HooksChain object
 The chain contains all the callbacks to be executed in a hook. If a function returns a value, the chain stops and the value is returned by the trigger method.
 
@@ -94,6 +95,33 @@ To know how many functions have been executed in a hook:
 	$count = $chain->executed;
 
 Here we provide a reference to retrieve the chain object and its executed property.
+
+<a name="hookscontainer"></a>
+##HooksContainer
+A HooksContainer is a class containing hooks. It extends Asgard\Hook\HooksContainer and contains methods that are matched to hooks with annotations.
+
+Example:
+
+	<?php
+	namespace Bundle\Hooks;
+
+	class SomeHooks extends \Asgard\Hook\HooksContainer {
+		/**
+		 * @Hook("Asgard.Http.Start")
+		 */
+		public static function start($chain, $request) {
+			//do something when HTTP starts processing a request
+		}
+	}
+
+Here the method start is executed when the hook "Asgard.Http.Start" is triggered.
+
+If you are working with a Asgard project, all HooksContainer in the Hooks/ folder of a bundle are automatically loaded.
+
+If not, you can register the hooks with:
+
+	$hooks = \Bundle\Hooks\SomeHooks::fetchHooks();
+	$hooksManager->hooks($hooks);
 
 ###Contributing
 

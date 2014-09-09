@@ -10,10 +10,10 @@
     },
     "require": {
         "php": ">=5.4.0",
-        "asgard/db": "v0.*",
-        "asgard/common": "v0.*",
-        "asgard/entity": "v0.*",
-        "asgard/migration": "v0.*",
-        "asgard/validation": "v0.*"
+        "asgard/db": "0.*",
+        "asgard/common": "0.*",
+        "asgard/entity": "0.*",
+        "asgard/migration": "0.*",
+        "asgard/validation": "0.*"
     }
 }

@@ -16,7 +16,7 @@ Templating is a simple package which provides interfaces to build your own templ
 In your composer file:
 
     "require": {
-        "asgard/templating": "dev-master"
+        "asgard/templating": "0.*"
 	}
 
 <a name="interfaces"></a>

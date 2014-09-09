@@ -10,7 +10,7 @@ Library to handle HTTP requests, routing, controllers and responses.
 In your composer file:
 
     "require": {
-        "asgard/http": "dev-master"
+        "asgard/http": "0.*"
 	}
 
 ##Request & Response

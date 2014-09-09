@@ -10,7 +10,7 @@ The ORM package gives you the possibility to store, fetch, search entities and d
 In your composer file:
 
     "require": {
-        "asgard/orm": "dev-master"
+        "asgard/orm": "0.*"
 	}
 
 ##Entity Relations

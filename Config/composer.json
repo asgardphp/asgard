@@ -11,6 +11,6 @@
     "require": {
         "php": ">=5.4.0",
         "symfony/yaml": "2.*",
-        "asgard/common": "v0.*"
+        "asgard/common": "0.*"
     }
 }

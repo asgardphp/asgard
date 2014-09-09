@@ -21,7 +21,7 @@ Entities are elements that represent your data. Some frameworks call them models
 In your composer file:
 
     "require": {
-        "asgard/entity": "dev-master"
+        "asgard/entity": "0.*"
 	}
 
 <a name="instance"></a>

@@ -28,7 +28,7 @@ The Form library makes it very easy to build forms, render them, remember inputs
 In your composer file:
 
     "require": {
-        "asgard/form": "dev-master"
+        "asgard/form": "0.*"
 	}
 
 <a name="usage-asgard"></a>

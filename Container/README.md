@@ -22,7 +22,7 @@ The container provides services to the application. In the Asgard framework, the
 In your composer file:
 
     "require": {
-        "asgard/container": "dev-master"
+        "asgard/container": "0.*"
 	}
 
 <a name="usage-asgard"></a>

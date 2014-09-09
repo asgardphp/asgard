@@ -19,7 +19,7 @@ Asgard\Cache is a wrapper for the doctrine cache package. It provides a few addi
 In your composer file:
 
     "require": {
-        "asgard/cache": "dev-master"
+        "asgard/cache": "0.*"
 	}
 
 <a name="usage-asgard"></a>

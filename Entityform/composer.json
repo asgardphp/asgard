@@ -10,7 +10,7 @@
     },
     "require": {
         "php": ">=5.4.0",
-        "asgard/form": "v0.*",
-        "asgard/entity": "v0.*"
+        "asgard/form": "0.*",
+        "asgard/entity": "0.*"
     }
 }

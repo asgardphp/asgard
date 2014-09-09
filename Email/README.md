@@ -16,7 +16,7 @@
 In your composer file:
 
     "require": {
-        "asgard/email": "dev-master"
+        "asgard/email": "0.*"
 	}
 
 <a name="usage-asgard"></a>

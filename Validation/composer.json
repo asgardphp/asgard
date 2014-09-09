@@ -7,7 +7,7 @@
 	}],
     "require": {
         "php": ">=5.4.0",
-        "asgard/common": "v0.*"
+        "asgard/common": "0.*"
     },
     "suggest": {
         "symfony/translation": "2.*"

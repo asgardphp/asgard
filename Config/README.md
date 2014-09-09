@@ -18,7 +18,7 @@ The Config package helps you manage the configuration of your application.
 In your composer file:
 
     "require": {
-        "asgard/config": "dev-master"
+        "asgard/config": "0.*"
 	}
 
 <a name="usage-asgard"></a>

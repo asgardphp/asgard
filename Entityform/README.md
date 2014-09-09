@@ -19,7 +19,7 @@ Entityform help you generate forms from entities. It creates the form fields cor
 In your composer file:
 
     "require": {
-        "asgard/entityform": "dev-master"
+        "asgard/entityform": "0.*"
 	}
 
 <a name="usage-asgard"></a>
