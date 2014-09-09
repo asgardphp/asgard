@@ -38,19 +38,17 @@ class InstallCommand extends \Asgard\Console\Command {
 	}
 
 	protected function install($src, $suggest, $migrate, $updateComposer, $root, &$modules, &$containerComposer) {
-		$tmp = \Asgard\Common\Tools::randstr(10);
+		$tmp = $root.'/tmp/'.\Asgard\Common\Tools::randstr(10);
 
 		list($src, $tag) = explode('=', $src.'=');
 
-		if(!$this->gitInstall($src, $tmp) || ($tag && !$this->gitCheckout($tag))) {
+		if(!$this->gitInstall($src, $tmp) || ($tag && !$this->gitCheckout($tmp, $tag))) {
 			$this->error('The files could not be downloaded.');
-			\Asgard\File\FileSystem::delete($tmp);
 			return;
 		}
 
 		if(!file_exists($tmp.'/asgard.json')) {
 			$this->error('asgard.json is missing for '.$src.'.');
-			\Asgard\File\FileSystem::delete($tmp);
 			return;
 		}
 
@@ -60,7 +58,6 @@ class InstallCommand extends \Asgard\Console\Command {
 			$asgard = [];
 		if(!isset($asgard['name'])) {
 			$this->error('Name missing for '.$src.'.');
-			\Asgard\File\FileSystem::delete($tmp);
 			return;
 		}
 		else
@@ -68,7 +65,6 @@ class InstallCommand extends \Asgard\Console\Command {
 
 		if(in_array($name, $modules)) {
 			$this->comment($name.' has already been installed.');
-			\Asgard\File\FileSystem::delete($tmp);
 			return;
 		}
 
@@ -113,8 +109,6 @@ class InstallCommand extends \Asgard\Console\Command {
 
 		$modules[] = $name;
 
-		\Asgard\File\FileSystem::delete($tmp);
-
 		$this->info('Module "'.$name.'" added with success.');
 	}
 
@@ -123,8 +117,8 @@ class InstallCommand extends \Asgard\Console\Command {
 		return $this->runCommand($cmd, true);
 	}
 
-	protected function gitCheckout($tag) {
-		$cmd = 'git checkout tags/'.$tag;
+	protected function gitCheckout($dir, $tag) {
+		$cmd = 'cd "'.$dir.'" & git checkout tags/'.$tag;
 		return $this->runCommand($cmd, true);
 	}
 
