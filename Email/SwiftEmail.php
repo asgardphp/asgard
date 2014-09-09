@@ -7,7 +7,7 @@ namespace Asgard\Email;
 class SwiftEmail implements DriverInterface {
 	/**
 	 * The transport options.
-	 * @var array
+	 * @var Swift_SendmailTransport|Swift_MailTransport|Swift_SmtpTransport
 	 */
 	protected $transport;
 

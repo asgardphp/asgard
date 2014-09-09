@@ -25,7 +25,7 @@ class SwiftMessage extends \Swift_Message {
 
 	/**
 	 * Set the sender.
-	 * @param  array|string $from
+	 * @param  string $from
 	 * @return SwiftMessage $this
 	 */
 	public function from($from) {

@@ -7,7 +7,7 @@ namespace Asgard\Email;
 interface DriverInterface {
 	/**
 	 * Set the email transport options.
-	 * @param  array $transport
+	 * @param mixed $transport
 	 */
 	public function transport($transport);
 
