@@ -1,7 +1,16 @@
 <?php
 namespace Asgard\Config;
 
+/**
+ * Configuration bag.
+ */
 class Config extends \Asgard\Common\Bag {
+	/**
+	 * Load a directory.
+	 * @param  string $dir
+	 * @param  string $env
+	 * @return Config      $this
+	 */
 	public function loadConfigDir($dir, $env=null) {
 		foreach(glob($dir.'/*.yml') as $filename) {
 			if(is_dir($filename))
@@ -17,6 +26,11 @@ class Config extends \Asgard\Common\Bag {
 		return $this;
 	}
 	
+	/**
+	 * Load a file.
+	 * @param  string $filename
+	 * @return Confug $this
+	 */
 	public function loadConfigFile($filename) {
 		$yaml = new \Symfony\Component\Yaml\Parser();
 		if(($r = file_get_contents($filename))) {
