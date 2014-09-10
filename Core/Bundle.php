@@ -9,7 +9,7 @@ class Bundle extends \Asgard\Core\BundleLoader {
 	 * Register services.
 	 * @param  \Asgard\Container\Container $container
 	 */
-	public function buildContainer(\Asgard\Container\Container$container) {
+	public function buildContainer(\Asgard\Container\Container $container) {
 		#Db
 		$container->register('schema', function($container) { return new \Asgard\Db\Schema($container['db']); } );
 		$container->register('db', function($container) { return new \Asgard\Db\DB($container['config']['database']); } );
