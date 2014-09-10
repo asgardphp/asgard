@@ -5,7 +5,6 @@ use Symfony\Component\Console\Input\InputOption;
 
 /**
  * The Asgard Console Application
- * 
  * @author Michel Hognerud <michel@hognerud.net>
 */
 class Application extends \Symfony\Component\Console\Application {
@@ -13,7 +12,6 @@ class Application extends \Symfony\Component\Console\Application {
 	
 	/**
 	 * Constructor.
-	 * 
 	 * @param \Asgard\Container\Container container The application container
 	*/
 	public function __construct($name, $version=null, $container=null) {
@@ -24,8 +22,7 @@ class Application extends \Symfony\Component\Console\Application {
 	}
 
 	/**
-	 * Returns the default input definition.
-	 * 
+	 * Return the default input definition.
 	 * @return \Symfony\Component\Console\Input\InputDefinition
 	*/
 	protected function getDefaultInputDefinition() {

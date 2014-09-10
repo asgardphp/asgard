@@ -7,10 +7,29 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 
+/**
+ * Command parent class.
+ */
 class Command extends \Symfony\Component\Console\Command\Command {
+	/**
+	 * Command name.
+	 * @var string
+	 */
 	protected $name;
+	/**
+	 * Command description.
+	 * @var string
+	 */
 	protected $description;
+	/**
+	 * Input instance
+	 * @var \Symfony\Component\Console\Input\InputInterface
+	 */
 	protected $input;
+	/**
+	 * Output instance
+	 * @var \Symfony\Component\Console\Output\OutputInterface
+	 */
 	protected $output;
 	
 	/**
@@ -24,8 +43,7 @@ class Command extends \Symfony\Component\Console\Command\Command {
 	}
 	
 	/**
-	 * Returns the services container.
-	 * 
+	 * Return the services container.
 	 * @return \Asgard\Container\Container
 	*/
 	protected function getContainer() {
@@ -34,7 +52,7 @@ class Command extends \Symfony\Component\Console\Command\Command {
 	}
 	
 	/**
-	 * Sets options and arguments of the command.
+	 * Set options and arguments of the command.
 	*/
 	protected function specifyParameters() {
 		foreach ($this->getArguments() as $arguments)
@@ -46,7 +64,6 @@ class Command extends \Symfony\Component\Console\Command\Command {
 	
 	/**
 	 * Command options.
-	 * 
 	 * @return array
 	*/
 	protected function getOptions() {
@@ -55,13 +72,15 @@ class Command extends \Symfony\Component\Console\Command\Command {
 	
 	/**
 	 * Command arguments.
-	 * 
 	 * @return array
 	*/
 	protected function getArguments() {
 		return [];
 	}
 
+	/**
+	 * {@inheritdoc}
+	 */
 	public function run(InputInterface $input, OutputInterface $output) {
 		$this->input = $input;
 		$this->output = $output;
@@ -69,6 +88,12 @@ class Command extends \Symfony\Component\Console\Command\Command {
 		return parent::run($input, $output);
 	}
 
+	/**
+	 * Call another command.
+	 * @param  string $command
+	 * @param  array $arguments
+	 * @return integer
+	 */
 	public function call($command, array $arguments = []) {
 		$instance = $this->getApplication()->find($command);
 		$arguments['command'] = $command;
@@ -76,6 +101,12 @@ class Command extends \Symfony\Component\Console\Command\Command {
 		return $instance->run(new ArrayInput($arguments), $this->output);
 	}
 
+	/**
+	 * Call another command silently.
+	 * @param  string $command  
+	 * @param  array $arguments
+	 * @return integer
+	 */
 	public function callSilent($command, array $arguments = []) {
 		$instance = $this->getApplication()->find($command);
 		$arguments['command'] = $command;
@@ -83,25 +114,46 @@ class Command extends \Symfony\Component\Console\Command\Command {
 		return $instance->run(new ArrayInput($arguments), new NullOutput);
 	}
 
+	/**
+	 * Prompt user for confirmation.
+	 * @param  string $questionStr
+	 * @return boolean            
+	 */
 	public function confirm($questionStr) {
 		$helper = $this->getHelperSet()->get('question');
-		$question = new ConfirmationQuestion($questionStr, false);
+		$question = new ConfirmationQuestion($questionStr.' (yes/no)', false);
 
 		return $helper->ask($this->input, $this->output, $question);
 	}
 
+	/**
+	 * Output information message.
+	 * @param  string $msg 
+	 */
 	public function info($msg) {
 		$this->output->writeln('<info>'.$msg.'</info>');
 	}
 
+	/**
+	 * Output error message.
+	 * @param  string $msg
+	 */
 	public function error($msg) {
 		$this->output->writeln('<error>'.$msg.'</error>');
 	}
 
+	/**
+	 * Output comment message.
+	 * @param  string $msg
+	 */
 	public function comment($msg) {
 		$this->output->writeln('<comment>'.$msg.'</comment>');
 	}
 
+	/**
+	 * Output question message.
+	 * @param  string $msg
+	 */
 	public function question($msg) {
 		$this->output->writeln('<question>'.$msg.'</question>');
 	}
