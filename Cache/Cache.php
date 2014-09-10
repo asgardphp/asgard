@@ -1,7 +1,14 @@
 <?php
-namespace Asgard\Cache;
+namespace 
 
+/**
+ * Cache wrapper.
+ */
 class Cache implements \Doctrine\Common\Cache\Cache, \ArrayAccess {
+	/**
+	 * Cache driver.
+	 * @var \Doctrine\Common\Cache\Cache
+	 */
 	protected $driver;
 
 	/**

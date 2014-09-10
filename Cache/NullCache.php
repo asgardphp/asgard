@@ -1,6 +1,9 @@
 <?php
 namespace Asgard\Cache;
 
+/**
+ * Fake cache class. Uses the same API but does not persist objects.
+ */
 class NullCache implements \Doctrine\Common\Cache\Cache {
 	/**
 	 * {@inheritdoc}
