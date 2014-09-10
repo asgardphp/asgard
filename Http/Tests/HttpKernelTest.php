@@ -35,14 +35,14 @@ class HttpKernelTest extends \PHPUnit_Framework_TestCase {
 		$resolver = $this->getMock('Asgard\Http\Resolver', ['getRoute'], [new \Asgard\Cache\NullCache]);
 		$resolver->expects($this->once())->method('getRoute')->will($this->returnValue(new \Asgard\Http\Route('', 'Asgard\Http\Tests\Fixtures\HomeController', 'error')));
 
-		$kernel = new HttpKernel([
+		$kernel = new HttpKernel(new \Asgard\Container\Container([
 			'hooks' => new \Asgard\Hook\HooksManager,
 			'errorHandler' => new \Asgard\Debug\ErrorHandler,
 			'resolver' => $resolver,
 			'config' => [
 				'debug' => true
 			]
-		]);
+		]));
 		$response = $kernel->process(new Request, true);
 		$this->assertEquals(500, $response->getCode());
 		$this->assertContains('Undefined variable: a', $response->content);
@@ -52,14 +52,14 @@ class HttpKernelTest extends \PHPUnit_Framework_TestCase {
 		$resolver = $this->getMock('Asgard\Http\Resolver', ['getRoute'], [new \Asgard\Cache\NullCache]);
 		$resolver->expects($this->once())->method('getRoute')->will($this->returnValue(new \Asgard\Http\Route('', 'Asgard\Http\Tests\Fixtures\HomeController', 'error')));
 
-		$kernel = new HttpKernel([
+		$kernel = new HttpKernel(new \Asgard\Container\Container([
 			'hooks' => new \Asgard\Hook\HooksManager,
 			'errorHandler' => new \Asgard\Debug\ErrorHandler,
 			'resolver' => $resolver,
 			'config' => [
 				'debug' => false
-			],
-		]);
+			]
+		]));
 		$response = $kernel->process(new Request, true);
 		$this->assertEquals(500, $response->getCode());
 		$this->assertEquals('<h1>Error</h1>Oops, something went wrong.', $response->content);
@@ -73,14 +73,14 @@ class HttpKernelTest extends \PHPUnit_Framework_TestCase {
 		$hook->hook('Asgard.Http.Exception.Asgard\Http\Tests\NotFoundException', function($chain, $e, &$response, $request) {
 			$response = 'plplpl';
 		});
-		$kernel = new HttpKernel([
+		$kernel = new HttpKernel(new \Asgard\Container\Container([
 			'hooks' => $hook,
 			'errorHandler' => new \Asgard\Debug\ErrorHandler,
 			'resolver' => $resolver,
 			'config' => [
 				'debug' => false
 			],
-		]);
+		]));
 		$response = $kernel->process(new Request, true);
 		$this->assertEquals('plplpl', $response);
 	}
