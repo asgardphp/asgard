@@ -22,14 +22,14 @@ class ErrorHandlerTest extends \PHPUnit_Framework_TestCase {
 
 	public function testLogging() {
 		$errorHandler = new \Asgard\Debug\ErrorHandler();
-		$logger = $this->getMock('Log', ['log']);
+		$logger = $this->getMock('Psr\Log\LoggerInterface', ['log','emergency','alert','critical','error','warning','notice','info','debug']);
 		$logger->expects($this->once())->method('log')->with('error', 'Exception: ', $this->callback(function($a) {
 			return isset($a['file']) && isset($a['line']) && isset($a['trace']);
 		}));
 		$errorHandler->setLogger($logger);
 		$errorHandler->logException(new \Exception);
 
-		$logger = $this->getMock('Log', ['log']);
+		$logger = $this->getMock('Psr\Log\LoggerInterface', ['log','emergency','alert','critical','error','warning','notice','info','debug']);
 		$logger->expects($this->once())->method('log')->with('error', 'A message', $this->callback([$this, 'checkLog']));
 		$errorHandler->setLogger($logger);
 		$errorHandler->logException(new \Asgard\Debug\PSRException('A message'));
@@ -39,7 +39,7 @@ class ErrorHandlerTest extends \PHPUnit_Framework_TestCase {
 			echo $a;
 			$this->assertTrue(false, 'Should not reach this line.');
 		} catch(\ErrorException $e) {
-			$logger = $this->getMock('Log', ['log']);
+			$logger = $this->getMock('Psr\Log\LoggerInterface', ['log','emergency','alert','critical','error','warning','notice','info','debug']);
 			$logger->expects($this->once())->method('log')->with('notice', 'PHP (E_NOTICE): Undefined variable: a', $this->callback([$this, 'checkLog']));
 			$errorHandler->setLogger($logger);
 			$errorHandler->logException($e);
@@ -68,11 +68,6 @@ class ErrorHandlerTest extends \PHPUnit_Framework_TestCase {
 
 	public function checkLog($a) {
 		return isset($a['file']) && isset($a['line']) && isset($a['trace']);
-	}
-}
-
-class Log {
-	public function log($level, $message, array $context = []) {
 	}
 }
 

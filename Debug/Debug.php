@@ -2,15 +2,31 @@
 namespace Asgard\Debug;
 
 #using static calls to make debugging available anywhere in the code
+
+/**
+ * Debugging utils.
+ */
 class Debug {
+	/**
+	 * Url object to link to javascript files.
+	 * @var \Asgard\Http\URL
+	 */
 	protected static $url;
 
+	/**
+	 * Create the backtrace and forward it to dWithTrace.
+	 */
 	public static function d() {
 		$args = func_get_args();
 		static::dWithTrace(array_merge([debug_backtrace()], $args));
 	}
 
+	/**
+	 * Print out the backtrace and the given arguments.
+	 * @param  array  $trace
+	 */
 	public static function dWithTrace(array $trace) {
+		#clear all active buffers
 		while(ob_get_length())
 			ob_end_clean();
 		
@@ -24,10 +40,19 @@ class Debug {
 		die(static::getReport($trace));
 	}
 
+	/**
+	 * Set the URL dependency.
+	 * @param \Asgard\Http\URL $url
+	 */
 	public static function setURL($url) {
 		static::$url = $url;
 	}
 
+	/**
+	 * Return the HTML or CLI debug report.
+	 * @param  array  $backtrace
+	 * @return string
+	 */
 	public static function getReport(array $backtrace) {
 		$request = \Asgard\Http\Request::singleton();
 
@@ -41,6 +66,12 @@ class Debug {
 		return $r;
 	}
 	
+	/**
+	 * Format the backtrace in HTML.
+	 * @param  \Asgard\Http\Request $request
+	 * @param  array                $backtrace
+	 * @return string
+	 */
 	public static function getHTMLBacktrace(\Asgard\Http\Request $request, $backtrace=null) {
 		if(!$backtrace)
 			$backtrace = debug_backtrace();
@@ -143,6 +174,14 @@ EOT;
 		return $r;
 	}
 
+	/**
+	 * Return the code extract.
+	 * @param  string  $file   file path
+	 * @param  integer $offset from line
+	 * @param  integer $limit  number of lines
+	 * @param  integer $pos    line position
+	 * @return string
+	 */
 	protected static function getCode($file, $offset, $limit, $pos) {
 		ob_start();
 		highlight_string(file_get_contents($file));
@@ -167,6 +206,11 @@ EOT;
 		}
 	}
 	
+	/**
+	 * Return the backtrace formatted for CLI.
+	 * @param  array $backtrace
+	 * @return string
+	 */
 	public static function getCLIBacktrace($backtrace=null) {
 		if(!$backtrace)
 			$backtrace = debug_backtrace();
@@ -182,6 +226,11 @@ EOT;
 		return $r;
 	}
 
+	/**
+	 * Return the request formatted for HTML.
+	 * @param  \Asgard\Http\Request $r
+	 * @return string
+	 */
 	public static function getHTMLRequest(\Asgard\Http\Request $r) {
 		$res = '<b>Request</b><br>';
 		$res .= '<div>';
@@ -195,7 +244,14 @@ EOT;
 		return $res;
 	}
 
-	protected static function inputs($r, $input, $name) {
+	/**
+	 * Return the inputs formatted for HTML.
+	 * @param  \Asgard\Http\Request $r
+	 * @param  string $input        request input name
+	 * @param  string $name         php input name
+	 * @return string
+	 */
+	protected static function inputs(\Asgard\Http\Request $r, $input, $name) {
 		if($r->$input->size()) {
 			$res = '<div><span class="toggle"><span>+</span>'.$name.':</span>';
 			$res .= '<div style="display:none"><ul>';
@@ -210,6 +266,11 @@ EOT;
 		}
 	}
 
+	/**
+	 * Return var_dump output.
+	 * @param  mixed $var
+	 * @return string
+	 */
 	protected static function var_dump_to_string($var) {
 		if(is_string($var))
 			return $var;

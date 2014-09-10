@@ -1,6 +1,9 @@
 <?php
 namespace Asgard\Debug;
 
+/**
+ * Error handler.
+ */
 class ErrorHandler {
 	protected static $reservedMemory;
 	protected static $errorAtStart;
@@ -8,6 +11,10 @@ class ErrorHandler {
 	protected $logPHPErrors = false;
 	protected $logger;
 
+	/**
+	 * Register the PHP error handler.
+	 * @return ErrorHandler
+	 */
 	public static function register() {
 		static::$reservedMemory = str_repeat('a', 10240);
 		static::$errorAtStart = error_get_last();
@@ -19,21 +26,34 @@ class ErrorHandler {
 		return $errorHandler;
 	}
 
+	/**
+	 * Called on shutdown.
+	 */
 	public function shutdownFunction() {
 		if(($e=error_get_last()) && $e !== static::$errorAtStart) {
 			while(ob_get_level()) { ob_end_clean(); }
-	        $exceptionHandler = set_exception_handler(function() {});
-	        restore_exception_handler();
+			$exceptionHandler = set_exception_handler(function() {});
+			restore_exception_handler();
 			$exception = new FatalErrorException($e['message'], $e['type'], 0, $e['file'], $e['line']);
 			call_user_func_array($exceptionHandler, [$exception]);
 		}
 	}
 
+	/**
+	 * Ignore PHP errors from a directory.
+	 * @param  string $dir
+	 * @return ErrorHandler $this
+	 */
 	public function ignoreDir($dir) {
 		$this->ignoreDirs[] = realpath($dir);
 		return $this;
 	}
 
+	/**
+	 * Return backtrace from an exception.
+	 * @param  \Exception $e
+	 * @return array
+	 */
 	public function getBacktraceFromException(\Exception $e) {
 		$trace = $e->getTrace();
 
@@ -67,11 +87,23 @@ class ErrorHandler {
 		return $trace;
 	}
 
+	/**
+	 * To log PHP errors.
+	 * @param boolean $log
+	 */
 	public function setLogPHPErrors($log) {
 		$this->logPHPErrors = $log;
 		return $this;
 	}
 
+	/**
+	 * PHP Error handler.
+	 * @param  integer $errno
+	 * @param  string  $errstr 
+	 * @param  string  $errfile
+	 * @param  integer $errline
+	 * @throws \ErrorException For all PHP errors.
+	 */
 	public function phpErrorHandler($errno, $errstr, $errfile, $errline) {
 		foreach($this->ignoreDirs as $dir) {
 			if(strpos($errfile, $dir) === 0)
@@ -83,6 +115,11 @@ class ErrorHandler {
 		throw new \ErrorException($errstr, $errno, 0, $errfile, $errline);
 	}
 
+	/**
+	 * Exception handler.
+	 * @param  \Exception $e
+	 * @param  boolean   $kill kill the process
+	 */
 	public function exceptionHandler(\Exception $e, $kill=true) {
 		static::$reservedMemory = null;
 
@@ -107,6 +144,10 @@ class ErrorHandler {
 		}
 	}
 
+	/**
+	 * Log an exception.
+	 * @param  \Exception $e
+	 */
 	public function logException(\Exception $e) {
 		if(!$this->isLogging())
 			return;
@@ -132,6 +173,14 @@ class ErrorHandler {
 		$this->log($severity, $msg, $e->getFile(), $e->getLine(), $trace);
 	}
 
+	/**
+	 * Log an error.
+	 * @param  integer $severity
+	 * @param  string  $message 
+	 * @param  string  $file    
+	 * @param  integer $line    
+	 * @param  array   $trace   
+	 */
 	public function log($severity, $message, $file, $line, $trace=null) {
 		if(!$this->isLogging())
 			return;
@@ -144,15 +193,28 @@ class ErrorHandler {
 		$this->logger->log($severity, $message, $context);
 	}
 
+	/**
+	 * Check if is logging.
+	 * @return boolean true if logging
+	 */
 	public function isLogging() {
 		return !!$this->logger;
 	}
 
-	public function setLogger($logger) {
+	/**
+	 * Set a logger dependency.
+	 * @param \Psr\Log\LoggerInterface $logger
+	 */
+	public function setLogger(\Psr\Log\LoggerInterface $logger) {
 		$this->logger = $logger;
 		return $this;
 	}
 
+	/**
+	 * Return error severity from error code.
+	 * @param  integer $code
+	 * @return integer
+	 */
 	public static function getPHPErrorSeverity($code) {
 		$PHP_ERROR_LEVELS = [
 			E_PARSE => \Psr\Log\LogLevel::ERROR,
@@ -172,6 +234,11 @@ class ErrorHandler {
 		return $PHP_ERROR_LEVELS[$code];
 	}
 
+	/**
+	 * Get PHP error type from code.
+	 * @param  integer $code
+	 * @return string
+	 */
 	public static function getPHPError($code) {
 		$errors = [
 			1 => 'E_ERROR',
