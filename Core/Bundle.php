@@ -1,8 +1,15 @@
 <?php
 namespace Asgard\Core;
 
+/**
+ * Asgard core bundle.
+ */
 class Bundle extends \Asgard\Core\BundleLoader {
-	public function buildContainer($container) {
+	/**
+	 * Register services.
+	 * @param  \Asgard\Container\Container $container
+	 */
+	public function buildContainer(\Asgard\Container\Container$container) {
 		#Db
 		$container->register('schema', function($container) { return new \Asgard\Db\Schema($container['db']); } );
 		$container->register('db', function($container) { return new \Asgard\Db\DB($container['config']['database']); } );
@@ -101,7 +108,11 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		});
 	}
 
-	public function run($container) {
+	/**
+	 * Run the bundle.
+	 * @param  \Asgard\Container\Container $container
+	 */
+	public function run(\Asgard\Container\Container $container) {
 		parent::run($container);
 
 		#Files

@@ -1,25 +1,51 @@
 <?php
 namespace Asgard\Core;
 
+/**
+ * Publish bundle assets.
+ */
 class Publisher {
 	use \Asgard\Container\ContainerAwareTrait;
 	
+	/**
+	 * Console output.
+	 * @var \Symfony\Component\Console\Output\OutputInterface
+	 */
 	protected $output;
 
+	/**
+	 * Constructor.
+	 * @param \Asgard\Container\Container                       $container
+	 * @param \Symfony\Component\Console\Output\OutputInterface $output
+	 */
 	public function __construct($container, $output) {
 		$this->container = $container;
 		$this->output = $output;
 	}
 
+	/**
+	 * Publish assets from a directory to another.
+	 * @param  string $src   
+	 * @param  string $dstDir
+	 * @return boolean true for success
+	 */
 	public function publish($src, $dstDir) {
 		$r = true;
 		foreach(glob($src.'/*') as $file) {
 			$dst = $dstDir.'/'.basename($file);
-			$this->copy($file, $dst);
+			if(!$this->copy($file, $dst))
+				$r = false;
 		}
 		return $r;
 	}
 
+	/**
+	 * Publish migration files.
+	 * @param  string  $src    
+	 * @param  string  $dstDir 
+	 * @param  boolean $migrate
+	 * @return boolean true for success         
+	 */
 	public function publishMigrations($src, $dstDir, $migrate) {
 		$r = true;
 		foreach(glob($src.'/*') as $file) {
@@ -45,6 +71,12 @@ class Publisher {
 		}
 	}
 
+	/**
+	 * Copy files.
+	 * @param  string $src
+	 * @param  string $dst
+	 * @return boolean   true for success
+	 */
 	public function copy($src, $dst) {
 		if(is_dir($src))
 			return $this->copyDir($src, $dst);
@@ -63,6 +95,12 @@ class Publisher {
 		}
 	}
 
+	/**
+	 * Copy a directory.
+	 * @param  string $src
+	 * @param  string $dst
+	 * @return boolean   true for success
+	 */
 	protected function copyDir($src, $dst) {
 		$r = true;
 		$dir = opendir($src);

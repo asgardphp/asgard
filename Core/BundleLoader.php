@@ -1,33 +1,68 @@
 <?php
 namespace Asgard\Core;
 
+/**
+ * Bundles parent class.
+ */
 class BundleLoader {
 	use \Asgard\Container\ContainerAwareTrait;
+
+	/**
+	 * Bundle path.
+	 * @var string
+	 */
 	protected $path;
+	/**
+	 * Hooks annotations reader.
+	 * @var \Asgard\Hook\AnnotationsReader
+	 */
 	protected $hooksAnnotationsReader;
 
+	/**
+	 * Constructor.
+	 */
 	public function __construct() {
 		$reflector = new \ReflectionClass(get_called_class());
 		$this->path = dirname($reflector->getFileName());
 	}
 
+	/**
+	 * Set hooks annotations reader dependency.
+	 * @param \Asgard\Hook\AnnotationsReader $hooksAnnotationsReader
+	 */
 	public function setHooksAnnotationsReader($hooksAnnotationsReader) {
 		$this->hooksAnnotationsReader = $hooksAnnotationsReader;
 		return $this;
 	}
 
+	/**
+	 * Set bundle path.
+	 * @param string $path
+	 */
 	public function setPath($path) {
 		$this->path = realpath($path);
 	}
 
+	/**
+	 * Get bundle path.
+	 * @return sting
+	 */
 	public function getPath() {
 		return $this->path;
 	}
 
-	public function buildContainer($container) {
+	/**
+	 * Register services.
+	 * @param  \Asgard\Container\Container $container
+	 */
+	public function buildContainer(\Asgard\Container\Container $container) {
 	}
 
-	public function run($container) {
+	/**
+	 * Run the bundle.
+	 * @param  \Asgard\Container\Container $container
+	 */
+	public function run(\Asgard\Container\Container $container) {
 		$bundleData = $container['cache']->fetch('bundles/'.$this->getID());
 		if($bundleData !== false) {
 			$hooks = $bundleData['hooks'];
@@ -58,6 +93,10 @@ class BundleLoader {
 		}
 	}
 
+	/**
+	 * Load bundle's entities.
+	 * @param  \Asgard\Entity\EntitiesManager $entitiesManager
+	 */
 	protected function loadEntities($entitiesManager) {
 		foreach(glob($this->getPath().'/Entities/*.php') as $file) {
 			$class = \Asgard\Common\Tools::loadClassFile($file);
@@ -66,11 +105,19 @@ class BundleLoader {
 		}
 	}
 
+	/**
+	 * Load bundle's translations.
+	 * @param  \Symfony\Component\Translation\Translator $translator
+	 */
 	protected function loadTranslations($translator) {
 		foreach(glob($this->getPath().'/translations/'.$translator->getLocale().'/*') as $file)
 			$translator->addResource('yaml', $file, $translator->getLocale());
 	}
 
+	/**
+	 * Load bundle's commands.
+	 * @param  \Asgard\Console\Application $console
+	 */
 	protected function loadCommands($console) {
 		if(file_exists($this->getPath().'/Commands/')) {
 			foreach(glob($this->getPath().'/Commands/*.php') as $filename) {
@@ -84,6 +131,10 @@ class BundleLoader {
 		}
 	}
 
+	/**
+	 * Return bundle's hooks.
+	 * @return array
+	 */
 	protected function loadHooks() {
 		$hooks = [];
 		if(file_exists($this->getPath().'/Hooks/')) {
@@ -96,6 +147,10 @@ class BundleLoader {
 		return $hooks;
 	}
 
+	/**
+	 * Return bundle's controller routes.
+	 * @return array
+	 */
 	protected function loadControllers() {
 		$routes = [];
 		if(file_exists($this->getPath().'/Controllers/')) {
@@ -108,6 +163,10 @@ class BundleLoader {
 		return $routes;
 	}
 
+	/**
+	 * Get the bundle unique id.
+	 * @return string
+	 */
 	protected function getID() {
 		return sha1($this->getPath());
 	}
