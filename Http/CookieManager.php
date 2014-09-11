@@ -1,33 +1,69 @@
 <?php
 namespace Asgard\Http;
 
+/**
+ * To manage cookies.
+ */
 class CookieManager implements \ArrayAccess {
+	/**
+	 * Return all cookies.
+	 * @return array
+	 */
 	public function all() {
 		return $_COOKIE;
 	}
 
+	/**
+	 * Clear all cookies.
+	 * @return CookieManager $this
+	 */
 	public function clear() {
 		$_COOKIE = [];
 		return $this;
 	}
 
+	/**
+	 * Return the number of cookies.
+	 * @return integer
+	 */
 	public function size() {
 		return count($_COOKIE);
 	}
 
+	/**
+	 * Set all cookies.
+	 * @param array $data
+	 */
 	public function setAll($data) {
 		$this->clear()->set($data);
 	}
 	
+	/**
+	 * Check if it contains a cookie.
+	 * @param  string  $path
+	 * @return boolean true if cookie exists.
+	 */
 	public function has($path) {
 		return isset($_COOKIE[$path]);
 	}
 
+	/**
+	 * Get a cookie.
+	 * @param  string $path
+	 * @return mixed
+	 */
 	public function get($path) {
 		if(!$this->has($path)) return;
 		return $_COOKIE[$path];
 	}
 
+	/**
+	 * Set a cookie.
+	 * @param string $what
+	 * @param mixed $value
+	 * @param integer $time
+	 * @param string $path
+	 */
 	public function set($what, $value=null, $time=null, $path='/') {
 		if(is_array($what)) {
 			foreach($what as $k=>$v)
@@ -41,13 +77,24 @@ class CookieManager implements \ArrayAccess {
 			}
 		}
 	}
-	  
+	
+	/**
+	 * Delete a cookie.
+	 * @param  strnig $path
+	 * @param  string $_path
+	 */
 	public function delete($path, $_path='/') {
 		if(!headers_sent())
 			setcookie($path, null, -10000, $_path);
 		unset($_COOKIE[$path]);
 	}
 
+	/**
+	 * Array set implementation.
+	 * @param  integer $offset 
+	 * @param  mixed   $value
+	 * @throws \LogicException If $offset is null
+	 */
 	public function offsetSet($offset, $value) {
 		if(is_null($offset))
 			throw new \LogicException('Offset must not be null.');
@@ -55,14 +102,28 @@ class CookieManager implements \ArrayAccess {
 			$this->set($offset, $value);
 	}
 
+	/**
+	 * Array exists implementation.
+	 * @param  integer $offset 
+	 * @return boolean true if cookie exists.
+	 */
 	public function offsetExists($offset) {
 		return $this->has($offset);
 	}
 
+	/**
+	 * Array unset implementation.
+	 * @param  integer $offset 
+	 */
 	public function offsetUnset($offset) {
-		return $this->delete($offset);
+		$this->delete($offset);
 	}
 
+	/**
+	 * Array get implementation.
+	 * @param  integer $offset 
+	 * @return mixed
+	 */
 	public function offsetGet($offset) {
 		return $this->get($offset);
 	}

@@ -1,15 +1,36 @@
 <?php
 namespace Asgard\Http\Filters;
 
+/**
+ * Page layout filter. Adds a layout to the reponse.
+ */
 class PageLayout extends \Asgard\Http\Filter {
+	/**
+	 * Layout callback or template.
+	 * @var null|callable|string
+	 */
 	protected $layout;
+	/**
+	 * HTML layout callback or template.
+	 * @var null|callable|string
+	 */
 	protected $htmlLayout;
 
+	/**
+	 * Constructor.
+	 * @param null|callable|string $layout
+	 * @param null|callable|string $htmlLayout
+	 */
 	public function __construct($layout=null, $htmlLayout=null) {
 		$this->layout = $layout;
 		$this->htmlLayout = $htmlLayout;
 	}
 
+	/**
+	 * To be executed before the action.
+	 * @param  \Asgard\Http\Controller $controller
+	 * @param  \Asgard\Http\Request    $request
+	 */
 	public function before(\Asgard\Http\Controller $controller, \Asgard\Http\Request $request) {
 		if(!isset($controller->layout))
 			$controller->layout = null;
@@ -17,6 +38,12 @@ class PageLayout extends \Asgard\Http\Filter {
 			$controller->htmlLayout = null;
 	}
 
+	/**
+	 * To be executed after the action.
+	 * @param  \Asgard\Http\Controller $controller
+	 * @param  \Asgard\Http\Request    $request
+	 * @param  mixed                   $result
+	 */
 	public function after(\Asgard\Http\Controller $controller, \Asgard\Http\Request $request, &$result) {
 		if(!is_string($result) || $controller->request->header['x-requested-with'] == 'XMLHttpRequest')
 			return;

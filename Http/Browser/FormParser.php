@@ -1,11 +1,30 @@
 <?php
 namespace Asgard\Http\Browser;
 
+/**
+ * Form field.
+ */
 class Field {
+	/**
+	 * Field value.
+	 * @var string
+	 */
 	protected $value;
+	/**
+	 * Field choices.
+	 * @var array
+	 */
 	protected $choices = [];
+	/**
+	 * Field type.
+	 * @var [type]
+	 */
 	protected $type;
 
+	/**
+	 * Constructor.
+	 * @param \DOMElement $node
+	 */
 	function __construct(\DOMElement $node) {
 		$nodeName = $node->nodeName;
 
@@ -61,6 +80,10 @@ class Field {
 		}
 	}
 
+	/**
+	 * Add a choice to the field.
+	 * @param \DOMElement $node
+	 */
 	public function addChoice(\DOMElement $node) {
 		if($node->nodeName != 'input')
 			return;
@@ -80,35 +103,78 @@ class Field {
 		}
 	}
 
+	/**
+	 * Get the field's value.
+	 * @return string
+	 */
 	public function getValue() {
 		return $this->value;
 	}
 
+	/**
+	 * Set the field's value.
+	 * @param string $value
+	 */
 	public function setValue($value) {
 		$this->value = $value;
 	}
 
+	/**
+	 * Get the field's type.
+	 * @return string
+	 */
 	public function getType() {
 		return $this->type;
 	}
 }
 
+/**
+ * Form parser.
+ * Credit to Symfony.
+ */
 class FormParser {
+	/**
+	 * Fields.
+	 * @var array
+	 */
 	protected $fields = [];
+	/**
+	 * Submit button xpath.
+	 * @var string
+	 */
 	protected $submit = null;
 
+	/**
+	 * Check if it contains a field.
+	 * @param  string  $name
+	 * @return boolean
+	 */
 	public function has($name) {
 		return isset($this->fields[$name]);
 	}
 
+	/**
+	 * Return a field.
+	 * @param  string $name
+	 * @return Field
+	 */
 	public function get($name) {
 		return $this->fields[$name];
 	}
 
+	/**
+	 * Set a field's value.
+	 * @param string $name
+	 * @param string $value
+	 */
 	public function set($name, $value) {
-	   $this->fields[$name] = $value;
+		$this->fields[$name] = $value;
 	}
 
+	/**
+	 * Add a field.
+	 * @param \DOMElement $node
+	 */
 	public function add(\DOMElement $node) {
 		$name = $node->getAttribute('name');
 		if($this->has($name))
@@ -117,6 +183,11 @@ class FormParser {
 			$this->set($name, new Field($node));
 	}
 
+	/**
+	 * Get a field path.
+	 * @param  string $name
+	 * @return string
+	 */
 	protected function getPath($name) {
 		$path = [];
 		$matches = null;
@@ -128,6 +199,10 @@ class FormParser {
 		return $path;
 	}
 
+	/**
+	 * Get form values.
+	 * @return array
+	 */
 	public function values() {
 		$res = [];
 		foreach($this->fields as $name=>$field) {
@@ -152,10 +227,19 @@ class FormParser {
 		return $res;
 	}
 
+	/**
+	 * Simulate the click on a form button.
+	 * @param  string $submit
+	 */
 	public function clickOn($submit) {
 		$this->submit = $submit;
 	}
 
+	/**
+	 * Parse the HTML form.
+	 * @param  string $html
+	 * @param  string $xpath xpath to form
+	 */
 	public function parse($html, $xpath) {
 		$doc = new \DOMDocument();
 		$doc->loadHTML($html);

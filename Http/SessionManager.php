@@ -1,7 +1,13 @@
 <?php
 namespace Asgard\Http;
 
+/**
+ * Session manager.
+ */
 class SessionManager implements \ArrayAccess {
+	/**
+	 * Constructor.
+	 */
 	public function __construct() {
 		if(headers_sent())
 			return;
@@ -14,35 +20,70 @@ class SessionManager implements \ArrayAccess {
 		session_start();
 	}
 
+	/**
+	 * Return all session variables.
+	 * @return array
+	 */
 	public function all() {
 		return $_SESSION;
 	}
 
+	/**
+	 * Clear all session variables.
+	 * @return SessionManager $this
+	 */
 	public function clear() {
 		$_SESSION = [];
 		return $this;
 	}
 
+	/**
+	 * Return the number of session variables.
+	 * @return integer
+	 */
 	public function size() {
 		return count($_SESSION);
 	}
 
+	/**
+	 * Set all session variables.
+	 * @param array $data
+	 */
 	public function setAll($data) {
 		$this->clear()->set($data);
 	}
 	
+	/**
+	 * Check if the session has a variable.
+	 * @param  string  $path
+	 * @return boolean
+	 */
 	public function has($path) {
 		return \Asgard\Common\ArrayUtils::string_array_isset($_SESSION, $path);
 	}
 	
+	/**
+	 * Delete a session variable.
+	 * @param  string $path
+	 */
 	public function delete($path) {
-		return \Asgard\Common\ArrayUtils::string_array_unset($_SESSION, $path);
+		\Asgard\Common\ArrayUtils::string_array_unset($_SESSION, $path);
 	}
 
+	/**
+	 * Get a session variable.
+	 * @param  string $path
+	 * @return mixed
+	 */
 	public function get($path) {
 		return \Asgard\Common\ArrayUtils::string_array_get($_SESSION, $path);
 	}
 
+	/**
+	 * Set a session variable.
+	 * @param string $path
+	 * @param mixed $value
+	 */
 	public function set($path, $value=null) {
 		if(is_array($path)) {
 			foreach($path as $k=>$v)
@@ -53,6 +94,12 @@ class SessionManager implements \ArrayAccess {
 		}
 	}
 
+	/**
+	 * Array set implementation.
+	 * @param  string $offset
+	 * @param  mixed $value
+	 * @throws \LogicException If offset is null.
+	 */
 	public function offsetSet($offset, $value) {
 		if(is_null($offset))
 			throw new \LogicException('Offset must not be null.');
@@ -60,14 +107,28 @@ class SessionManager implements \ArrayAccess {
 			$this->set($offset, $value);
 	}
 
+	/**
+	 * Array exists implementation.
+	 * @param  string $offset
+	 * @return boolean
+	 */
 	public function offsetExists($offset) {
 		return $this->has($offset);
 	}
 
+	/**
+	 * Array unset implementation.
+	 * @param  string $offset
+	 */
 	public function offsetUnset($offset) {
-		return $this->delete($offset);
+		$this->delete($offset);
 	}
 
+	/**
+	 * Array get implementation.
+	 * @param  string $offset
+	 * @return mixed
+	 */
 	public function offsetGet($offset) {
 		return $this->get($offset);
 	}

@@ -1,29 +1,86 @@
 <?php
 namespace Asgard\Http;
 
+/**
+ * Resolve routes to actions.
+ */
 class Resolver {
+	/**
+	 * Routes
+	 * @var array
+	 */
 	protected $routes = [];
+	/**
+	 * Http kernel object.
+	 * @var HttpKernel
+	 */
 	protected $httpKernel;
+	/**
+	 * Cache instance.
+	 * @var \Asgard\Cache\Cache
+	 */
 	protected $cache;
+	/**
+	 * Cached results.
+	 * @var array
+	 */
 	protected $results = [];
 
+	/**
+	 * Constructor.
+	 * @param \Asgard\Cache\Cache $cache
+	 */
 	public function __construct($cache) {
 		$this->cache = $cache;
 	}
 
+	/**
+	 * Set the routes.
+	 * @param array $routes
+	 */
 	public function setRoutes(array $routes) {
 		$this->routes = $routes;
 	}
 
+	/**
+	 * Add routes.
+	 * @param array $routes
+	 */
 	public function addRoutes(array $routes) {
 		foreach($routes as $route)
 			$this->addRoute($route);
 	}
 
+	/**
+	 * Add one route.
+	 * @param Route $route
+	 */
 	public function addRoute($route) {
 		$this->routes[] = $route;
 	}
 	
+	/**
+	 * Check if a request matches a route.
+	 * @param  Request     $request
+	 * @param  string      $route
+	 * @param  array|null  $requirements
+	 * @param  string|null $method
+	 * @return boolean
+	 */
+	public static function match(Request $request, $route, $requirements=null, $method=null) {
+		$with = trim($request->url->get(), '/');
+		return static::matchWith($route, $with, $requirements, $request, $method);
+	}
+	
+	/**
+	 * Actually check if request and route match.
+	 * @param  string       $route
+	 * @param  string       $with
+	 * @param  array|null   $requirements
+	 * @param  Request      $request
+	 * @param  string|null  $method
+	 * @return boolean
+	 */
 	public static function matchWith($route, $with, $requirements=null, $request=null, $method=null) {
 		if($method !== null) {
 			if(is_array($method)) {
@@ -56,11 +113,12 @@ class Resolver {
 		}
 	}
 	
-	public static function match(\Asgard\Http\Request $request, $route, $requirements=null, $method=null) {
-		$with = trim($request->url->get(), '/');
-		return static::matchWith($route, $with, $requirements, $request, $method);
-	}
-	
+	/**
+	 * Get a regex from a route.
+	 * @param  string     $route
+	 * @param  array|null $requirements
+	 * @return string
+	 */
 	public static function getRegexFromRoute($route, $requirements) {
 		preg_match_all('/:([a-zA-Z0-9_]+)/', $route, $symbols);
 		$regex = preg_quote($route, '/');
@@ -85,7 +143,12 @@ class Resolver {
 		return $regex;
 	}
 
-	public function getRoute(\Asgard\Http\Request $request) {
+	/**
+	 * Get the route matching a request.
+	 * @param  Request     $request
+	 * @return array|null  null if not found.
+	 */
+	public function getRoute(Request $request) {
 		$request_key = sha1(serialize([$request->method(), $request->url->get()]));
 
 		$results = $this->cache->fetch('Router/requests/'.$request_key, function() use($request) {
@@ -109,6 +172,9 @@ class Resolver {
 		return $results['route'];
 	}
 
+	/**
+	 * Sort the routes by order of coverage. Routes covering less first.
+	 */
 	public function sortRoutes() {
 		usort($this->routes, function($r1, $r2) {
 			$route1 = $r1->getRoute();
@@ -148,6 +214,13 @@ class Resolver {
 		return $this;
 	}
 	
+	/**
+	 * [buildRoute description]
+	 * @param  string     $route
+	 * @param  array      $params
+	 * @throws \Exception If a parameter is missing for the route.
+	 * @return string
+	 */
 	public static function buildRoute($route, array $params=[]) {
 		foreach($params as $symbol=>$param) {
 			$count = 0;
@@ -171,10 +244,21 @@ class Resolver {
 		return trim($route, '/');
 	}
 
+	/**
+	 * Return the routes.
+	 * @return array
+	 */
 	public function getRoutes() {
 		return $this->routes;
 	}
 
+	/**
+	 * Return the url for a route or a controller/action couple.
+	 * @param  array|string  $what
+	 * @param  array         $params
+	 * @throws \Exception    If route not found.
+	 * @return string
+	 */
 	public function url_for($what, array $params=[]) {
 		#controller/action
 		if(is_array($what)) {
@@ -207,10 +291,18 @@ class Resolver {
 		throw new \Exception('Route not found.');
 	}
 
+	/**
+	 * Set the HttpKernel dependency.
+	 * @param HttpKernel $httpKernel
+	 */
 	public function setHttpKernel(HttpKernel $httpKernel) {
 		$this->httpKernel = $httpKernel;
 	}
 
+	/**
+	 * Get the url instance.
+	 * @return URL
+	 */
 	public function getUrl() {
 		return $this->httpKernel->getLastRequest()->url;
 	}

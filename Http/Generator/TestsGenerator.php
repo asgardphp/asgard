@@ -1,13 +1,25 @@
 <?php
 namespace Asgard\Http\Generator;
 
+/**
+ * HTTP tests generator.
+ */
 class TestsGenerator {
 	use \Asgard\Container\ContainerAwareTrait;
 
-	public function __construct($container) {
+	/**
+	 * Constructor.
+	 * @param \Asgard\Container\Container $container
+	 */
+	public function __construct(\Asgard\Container\Container $container) {
 		$this->container = $container;
 	}
 
+	/**
+	 * Generate tests.
+	 * @param  string $dst destination test file.
+	 * @return integer     number of generated tests.
+	 */
 	public function generateTests($dst) {
 		$tests = $this->doGenerateTests($count);
 		if($tests === false)
@@ -16,6 +28,11 @@ class TestsGenerator {
 		return $count;
 	}
 
+	/**
+	 * Add tests to a test file.
+	 * @param array  $tests
+	 * @param string $dst
+	 */
 	public function addTests($tests, $dst) {
 		if(!file_exists($dst))
 			$this->createTestFile($dst);
@@ -26,6 +43,11 @@ class TestsGenerator {
 		\Asgard\File\FileSystem::write($dst, $res);
 	}
 
+	/**
+	 * Actually perform the tests generation.
+	 * @param  integer $count
+	 * @return boolean true for success.
+	 */
 	protected function doGenerateTests(&$count) {
 		$root = $this->container['kernel']['root'];
 
@@ -96,6 +118,10 @@ class TestsGenerator {
 		return implode('', $res);
 	}
 
+	/**
+	 * Create a new test file.
+	 * @param  string $dst
+	 */
 	protected function createTestFile($dst) {
 		\Asgard\File\FileSystem::write($dst, '<?php
 class '.explode('.', basename($dst))[0].' extends \Asgard\Http\Test {

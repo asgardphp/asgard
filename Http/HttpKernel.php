@@ -1,33 +1,83 @@
 <?php
 namespace Asgard\Http;
 
+/**
+ * HTTP Kernel.
+ */
 class HttpKernel {
 	use \Asgard\Container\ContainerAwareTrait;
 
+	/**
+	 * Variable to check if the kernel was already loaded.
+	 * @var boolean
+	 */
 	protected $loaded = false;
+	/**
+	 * Nested requests.
+	 * @var array
+	 */
 	protected $requests = [];
+	/**
+	 * File to be included at startup.
+	 * @var string
+	 */
 	protected $start;
+	/**
+	 * File to be included on shutdown.
+	 * @var string
+	 */
 	protected $end;
+	/**
+	 * Template path solvers.
+	 * @var array
+	 */
 	protected $templatePathSolvers = [];
-
+	/**
+	 * Controller filters.
+	 * @var array
+	 */
 	protected $filters = [];
+	/**
+	 * Controller before filters.
+	 * @var array
+	 */
 	protected $beforeFilters = [];
+	/**
+	 * Controller after filters.
+	 * @var array
+	 */
 	protected $afterFilters = [];
 
-	public function __construct($container) {
+	/**
+	 * Constructor.
+	 * @param \Asgard\Container\Container $container
+	 */
+	public function __construct(\Asgard\Container\Container $container) {
 		$this->container = $container;
 	}
 
+	/**
+	 * Set the start file.
+	 * @param  string $start
+	 */
 	public function start($start) {
 		$this->start = $start;
 	}
 
+	/**
+	 * Set the end file.
+	 * @param  string $end
+	 */
 	public function end($end) {
 		$this->end = $end;
 	}
 
+	/**
+	 * Run the kernel and return a response.
+	 * @return Response
+	 */
 	public function run() {
-		$request = \Asgard\Http\Request::singleton();
+		$request = Request::singleton();
 		$request->isInitial = true;
 
 		$response = $this->process($request);
@@ -36,12 +86,23 @@ class HttpKernel {
 		return $response;
 	}
 
-	private function setRequest($request) {
+	/**
+	 * Set the HTTP request.
+	 * @param Request $request
+	 */
+	private function setRequest(Request $request) {
 		$this->container['request'] = $request;
-		\Asgard\Http\Request::setInstance($request);
+		Request::setInstance($request);
 	}
 
+	/**
+	 * Process the request.
+	 * @param  Request $request
+	 * @param  boolean $catch   true to catch exceptions.
+	 * @return Response
+	 */
 	public function process(Request $request, $catch=true) {
+		#Credit to Symfony
 		$this->setRequest($request);
 		$this->requests[] = $request;
 
@@ -88,12 +149,23 @@ class HttpKernel {
 		return $response;
 	}
 
+	/**
+	 * Get the last given request.
+	 * @return Request|null
+	 */
 	public function getLastRequest() {
 		if(!isset($this->requests[count($this->requests)-1]))
 			return;
 		return $this->requests[count($this->requests)-1];
 	}
 
+	/**
+	 * Return a raw response.
+	 * @param  Request $request
+	 * @param  boolean $catch   true to catch exceptions.
+	 * @throws Exceptions\NotFoundException If route not found.
+	 * @return mixed
+	 */
 	protected function processRaw(Request $request, $catch=true) {
 		$resolver = $this->container['resolver'];
 		$resolver->sortRoutes();
@@ -116,7 +188,15 @@ class HttpKernel {
 		return $this->runController($controllerClass, $action, $request, $route);
 	}
 
-	public function runController($controllerClass, $action, $request, $route=null) {
+	/**
+	 * Run the controller and action.
+	 * @param  string $controllerClass
+	 * @param  string $action
+	 * @param  Request $request
+	 * @param  null|string $route        Route prefix to match.
+	 * @return mixed
+	 */
+	public function runController($controllerClass, $action, Request $request, $route=null) {
 		$controller = new $controllerClass();
 		$controller->setContainer($this->container);
 
@@ -132,11 +212,20 @@ class HttpKernel {
 		return $controller->run($action, $request);
 	}
 
+	/**
+	 * Add a template path solver.
+	 * @param callable $cb
+	 */
 	public function addTemplatePathSolver($cb) {
 		$this->templatePathSolvers[] = $cb;
 	}
 
-	protected function getExceptionResponse($e) {
+	/**
+	 * Get a response from an exception.
+	 * @param  \Exception $e
+	 * @return Response
+	 */
+	protected function getExceptionResponse(\Exception $e) {
 		while(ob_get_length())
 			ob_end_clean();
 
@@ -164,37 +253,79 @@ class HttpKernel {
 		}
 	}
 
+	/**
+	 * Filter all controllers and actions.
+	 * @param  Filter $filter
+	 * @param  array $args
+	 * @return HttpKernel  $this
+	 */
 	public function filterAll($filter, $args=[]) {
 		$this->filters[] = ['filter'=>$filter, 'args'=>$args];
 		return $this;
 	}
 
+	/**
+	 * Fillter controllers and actions with criteria.
+	 * @param  array  $criteria
+	 * @param  Filter $filter
+	 * @param  array  $args
+	 * @return HttpKernel  $this
+	 */
 	public function filter($criteria, $filter, $args=[]) {
 		$this->filters[] = ['criteria'=>$criteria, 'filter'=>$filter, 'args'=>$args];
 		return $this;
 	}
 
+	/**
+	 * Filter before all controllers and actions.
+	 * @param  callable $filter
+	 * @return HttpKernel  $this
+	 */
 	public function filterBeforeAll($filter) {
 		$this->beforeFilters[] = ['filter'=>$filter];
 		return $this;
 	}
 
+	/**
+	 * Filter before controllers and actions with criteria.
+	 * @param  array    $criteria
+	 * @param  callable $filter
+	 * @return HttpKernel  $this
+	 */
 	public function filterBefore($criteria, $filter) {
 		$this->beforeFilters[] = ['criteria'=>$criteria, 'filter'=>$filter];
 		return $this;
 	}
 
+	/**
+	 * Filter after all controllers and actions.
+	 * @param  callable $filter
+	 * @return HttpKernel  $this
+	 */
 	public function filterAfterAll($filter) {
 		$this->afterFilters[] = ['filter'=>$filter];
 		return $this;
 	}
 
+	/**
+	 * Filter after controllers and actions with criteria.
+	 * @param  array    $criteria
+	 * @param  callable $filter
+	 * @return HttpKernel  $this
+	 */
 	public function filterAfter($criteria, $filter) {
 		$this->afterFilters[] = ['criteria'=>$criteria, 'filter'=>$filter];
 		return $this;
 	}
 
-	protected function addFilters($controller, $action, $request, $route=null) {
+	/**
+	 * Add filters to the controller.
+	 * @param Controller   $controller
+	 * @param string       $action
+	 * @param Request      $request
+	 * @param null|string  $route       Route prefix to match.
+	 */
+	protected function addFilters(Controller $controller, $action, Request $request, $route=null) {
 		$controllerClass = get_class($controller);
 
 		foreach($this->filters as $_filter) {

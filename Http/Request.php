@@ -1,34 +1,94 @@
 <?php
 namespace Asgard\Http;
 
+/**
+ * Request class.
+ */
 class Request implements \ArrayAccess {
+	/**
+	 * Default instance.
+	 * @var Request
+	 */
 	static protected $instance;
+	/**
+	 * GET input.
+	 * @var \Asgard\Common\Bag
+	 */
 	public $get;
+	/**
+	 * POST input.
+	 * @var \Asgard\Common\Bag
+	 */
 	public $post;
+	/**
+	 * FILE input.
+	 * @var \Asgard\Common\Bag
+	 */
 	public $file;
+	/**
+	 * SERVER input.
+	 * @var \Asgard\Common\Bag
+	 */
 	public $server;
+	/**
+	 * COOKIE input.
+	 * @var [type]
+	 */
 	public $cookie;
+	/**
+	 * Headers input.
+	 * @var \Asgard\Common\Bag
+	 */
 	public $header;
+	/**
+	 * Session input.
+	 * @var \Asgard\Common\Bag
+	 */
 	public $session;
+	/**
+	 * Request body.
+	 * @var string
+	 */
 	public $body = '';
+	/**
+	 * Request url.
+	 * @var [type]
+	 */
 	public $url;
-
+	/**
+	 * Boolean to check if it is the initial request.
+	 * @var boolean
+	 */
 	public $isInitial = false;
-
+	/**
+	 * Request parameters.
+	 * @var array
+	 */
 	public $params = [
 		'format'	=>	'html',
 	];
 
+	/**
+	 * Return the default instance.
+	 * @return Request
+	 */
 	public static function singleton() {
 		if(!static::$instance)
 			static::$instance = static::createFromGlobals();
 		return static::$instance;
 	}
 
-	public static function setInstance($instance) {
+	/**
+	 * Set the default instance.
+	 * @param Request $instance
+	 */
+	public static function setInstance(Request $instance) {
 		static::$instance = $instance;
 	}
 
+	/**
+	 * Constructor.
+	 */
 	public function __construct() {
 		$this->url = new \Asgard\Http\URL($this);
 		$this->get = new \Asgard\Common\Bag;
@@ -40,6 +100,10 @@ class Request implements \ArrayAccess {
 		$this->session = new \Asgard\Common\Bag;
 	}
 
+	/**
+	 * Create a Request from the global inputs.
+	 * @return Request
+	 */
 	public static function createFromGlobals() {
 		$request = new static;
 		$request->get->setAll($_GET);
@@ -76,21 +140,39 @@ class Request implements \ArrayAccess {
 		return $request;
 	}
 
+	/**
+	 * Set the files.
+	 * @param array $files
+	 */
 	public function setFiles($files) {
 		$files = $this->parseFiles($files);
 		$this->file->setAll($files);
 	}
 
+	/**
+	 * Parse the JSON body.
+	 * @return mixed
+	 */
 	public function getJSON() {
 		try {
 			return json_decode($this->body, true);
 		} catch(\Exception $e) {}
 	}
 
+	/**
+	 * Set the JSON body.
+	 * @param mixed $data
+	 */
 	public function setJSON($data) {
 		$this->body = json_encode($data);
 	}
 
+	/**
+	 * Set the url.
+	 * @param string $server
+	 * @param string $root
+	 * @param string $url
+	 */
 	public function setURL($server, $root, $url) {
 		$this->url = new \Asgard\Http\URL($this, $server, $root, $url);
 
@@ -100,10 +182,21 @@ class Request implements \ArrayAccess {
 		return $this;
 	}
 
+	/**
+	 * Get a parameter.
+	 * @param  string $name
+	 * @return mixed
+	 */
 	public function getParam($name) {
 		return $this->params[$name];
 	}
 
+	/**
+	 * Set a parameter.
+	 * @param string   $name
+	 * @param mixed    $value
+	 * @return Request $this
+	 */
 	public function setParam($name, $value=null) {
 		if(is_array($name)) {
 			foreach($name as $k=>$v)
@@ -114,6 +207,11 @@ class Request implements \ArrayAccess {
 		return $this;
 	}
 
+	/**
+	 * Array set implementation.
+	 * @param  string $offset
+	 * @param  mixed $value
+	 */
 	public function offsetSet($offset, $value) {
 		if (is_null($offset))
 			$this->params[] = $value;
@@ -121,18 +219,36 @@ class Request implements \ArrayAccess {
 			$this->params[$offset] = $value;
 	}
 
+	/**
+	 * Array exists implementation.
+	 * @param  string $offset
+	 * @return boolean
+	 */
 	public function offsetExists($offset) {
 		return isset($this->params[$offset]);
 	}
 
+	/**
+	 * Array unset implementation.
+	 * @param  string $offset
+	 */
 	public function offsetUnset($offset) {
 		unset($this->params[$offset]);
 	}
 	
+	/**
+	 * Array get implementation.
+	 * @param  string $offset
+	 * @return mixed
+	 */
 	public function offsetGet($offset) {
 		return isset($this->params[$offset]) ? $this->params[$offset] : null;
 	}
 
+	/**
+	 * Get the request format.
+	 * @return string
+	 */
 	public function format() {
 		preg_match('/\.([^\.]+)$/', $this->url->get(), $matches);
 		if(isset($matches[1]))
@@ -140,42 +256,78 @@ class Request implements \ArrayAccess {
 		return 'html';
 	}
 
+	/**
+	 * Get the request method.
+	 * @return string
+	 */
 	public function method() {
 		return isset($this->server['REQUEST_METHOD']) ? strtoupper($this->server['REQUEST_METHOD']):'GET';
 	}
 
+	/**
+	 * Set the request method.
+	 * @param string $value
+	 */
 	public function setMethod($value) {
 		$this->server['REQUEST_METHOD'] = $value;
 		return $this;
 	}
 
+	/**
+	 * Get the IP address.
+	 * @return string
+	 */
 	public function ip() {
 		return $this->server['REMOTE_ADDR'];
 	}
 
+	/**
+	 * Set the IP address.
+	 * @param string $value
+	 */
 	public function setIP($value) {
 		$this->server['REMOTE_ADDR'] = $value;
 		return $this;
 	}
 
+	/**
+	 * Get the referer.
+	 * @return string
+	 */
 	public function referer() {
 		return $this->server['HTTP_REFERER'];
 	}
 
+	/**
+	 * Set the referer.
+	 * @param string $value
+	 */
 	public function setReferer($value) {
 		$this->server['HTTP_REFERER'] = $value;
 		return $this;
 	}
 
+	/**
+	 * Get the body.
+	 * @return string
+	 */
 	public function getBody() {
 		return $this->body;
 	}
 
+	/**
+	 * Set the body.
+	 * @param string $value
+	 */
 	public function setBody($value) {
 		$this->body = $value;
 		return $this;
 	}
 
+	/**
+	 * Fetch headers.
+	 * @return array
+	 */
 	protected static function getAllHeaders() {
 		$headers = [];
 		foreach($_SERVER as $name => $value) {
@@ -185,6 +337,11 @@ class Request implements \ArrayAccess {
 		return $headers; 
 	}
 
+	/**
+	 * Parse FILE input and return HttpFile objects.
+	 * @param  array  $raw 
+	 * @return array
+	 */
 	protected function parseFiles(array $raw) {
 		if(isset($raw['name']) && isset($raw['type']) && isset($raw['tmp_name']) && isset($raw['error']) && isset($raw['size'])) {
 			if(is_array($raw['name'])) {
@@ -211,6 +368,12 @@ class Request implements \ArrayAccess {
 		return $files;
 	}
 	
+	/**
+	 * Used by parseFiles.
+	 * @param  string $type
+	 * @param  array  $files
+	 * @return array
+	 */
 	protected function convertTo($type, array $files) {
 		$res = [];
 		foreach($files as $name=>$file) {
@@ -223,6 +386,15 @@ class Request implements \ArrayAccess {
 		return $res;
 	}
 	
+	/**
+	 * Used by parseFiles.
+	 * @param  array  $name
+	 * @param  array  $type
+	 * @param  array  $tmp_name
+	 * @param  array  $error
+	 * @param  array  $size
+	 * @return array
+	 */
 	protected function merge_all(array $name, array $type, array $tmp_name, array $error, array $size) {
 		foreach($name as $k=>$v) {
 			if(isset($v['name']) && !is_array($v['name']))

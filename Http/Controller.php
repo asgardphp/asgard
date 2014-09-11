@@ -1,32 +1,72 @@
 <?php
 namespace Asgard\Http;
 
+/**
+ * Controller parent class.
+ */
 abstract class Controller {
 	use \Asgard\Hook\HookableTrait;
 	use \Asgard\Templating\ViewableTrait;
 	use \Asgard\Container\ContainerAwareTrait;
 	
+	/**
+	 * Request instance.
+	 * @var Request
+	 */
 	public $request;
+	/**
+	 * Response instance.
+	 * @var Response
+	 */
 	public $response;
+	/**
+	 * Called action.
+	 * @var string
+	 */
 	protected $action;
+	/**
+	 * Before action filters.
+	 * @var array
+	 */
 	protected $beforeFilters = [];
+	/**
+	 * After action filters.
+	 * @var array
+	 */
 	protected $afterFilters = [];
 
-	/* FILTERS */
+	/**
+	 * Add a filter.
+	 * @param callable $filter
+	 */
 	public function addFilter($filter) {
 		$filter->setController($this);
 		$this->addBeforeFilter([$filter, 'before']);
 		$this->addAfterFilter([$filter, 'after']);
 	}
 
+	/**
+	 * Add a filter before the action.
+	 * @param callable $filter
+	 */
 	public function addBeforeFilter($filter) {
 		$this->beforeFilters[] = $filter;
 	}
 
+	/**
+	 * Add a filter after the action.
+	 * @param callable $filter
+	 */
 	public function addAfterFilter($filter) {
 		$this->afterFilters[] = $filter;
 	}
 
+	/**
+	 * Run the action.
+	 * @param  string $action
+	 * @param  Request|null $request
+	 * @return mixed
+	 */
 	public function run($action, $request=null) {
 		$this->action = $action;
 		$this->view = $action;
@@ -62,34 +102,72 @@ abstract class Controller {
 		return $this->response;
 	}
 
+	/**
+	 * Process the template of an action.
+	 * @param  string $method
+	 * @param  array  $args
+	 * @return string
+	 */
 	protected function doRun($method, array $args=[]) {
 		$method .= 'Action';
 		return $this->runTemplate($method, $args);
 	}
 
-	public function before(\Asgard\Http\Request $request) {
+	/**
+	 * To be executed before the action.
+	 * @param  Request $request [description]
+	 * @return mixed
+	 */
+	public function before(Request $request) {
 	}
 
-	public function after(\Asgard\Http\Request $request, &$result) {
+	/**
+	 * To be executed after the action.
+	 * @param  Request $request
+	 * @param  mixed            $result
+	 */
+	public function after(Request $request, &$result) {
 	}
 
+	/**
+	 * Get the ongoing action.
+	 * @return string
+	 */
 	public function getAction() {
 		return $this->action;
 	}
 
-	/* UTILS */
+	/**
+	 * Return a Flash instance.
+	 * @return Utils\Flash
+	 */
 	public function getFlash() {
-		return new \Asgard\Http\Utils\Flash($this->request->session);
+		return new Utils\Flash($this->request->session);
 	}
 
+	/**
+	 * Return to the previous page.
+	 * @return Response
+	 */
 	public function back() {
 		return $this->response->redirect($this->request->server['HTTP_REFERER']);
 	}
 
+	/**
+	 * Throw a "not found" exception.
+	 * @param  string $msg
+	 * @throws Exceptions\NotFoundException
+	 */
 	public function notFound($msg=null) {
 		throw new Exceptions\NotFoundException($msg);
 	}
-	
+
+	/**
+	 * Return the url for a given action.
+	 * @param  string $action
+	 * @param  array  $params
+	 * @return string
+	 */
 	public function url_for($action, $params=[]) {
 		return $this->container['resolver']->url_for([get_called_class(), $action], $params);
 	}
