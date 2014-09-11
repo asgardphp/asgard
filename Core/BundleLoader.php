@@ -17,6 +17,11 @@ class BundleLoader {
 	 * @var \Asgard\Hook\AnnotationsReader
 	 */
 	protected $hooksAnnotationsReader;
+	/**
+	 * Controllers annotations reader.
+	 * @var \Asgard\Htp\AnnotationsReader
+	 */
+	protected $controllersAnnotationsReader;
 
 	/**
 	 * Constructor.
@@ -32,6 +37,15 @@ class BundleLoader {
 	 */
 	public function setHooksAnnotationsReader($hooksAnnotationsReader) {
 		$this->hooksAnnotationsReader = $hooksAnnotationsReader;
+		return $this;
+	}
+
+	/**
+	 * Set controllers annotations reader dependency.
+	 * @param \Asgard\Http\AnnotationsReader $controllersAnnotationsReader
+	 */
+	public function setControllersAnnotationsReader($controllersAnnotationsReader) {
+		$this->controllersAnnotationsReader = $controllersAnnotationsReader;
 		return $this;
 	}
 
@@ -157,7 +171,7 @@ class BundleLoader {
 			foreach(glob($this->getPath().'/Controllers/*.php') as $filename) {
 				$class = \Asgard\Common\Tools::loadClassFile($filename);
 				if(is_subclass_of($class, 'Asgard\Http\Controller'))
-					$routes = array_merge($routes, $class::fetchRoutes());
+					$routes = array_merge($routes, $this->controllersAnnotationsReader->fetchRoutes($class));
 			}
 		}
 		return $routes;

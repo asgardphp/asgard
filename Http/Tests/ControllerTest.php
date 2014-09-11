@@ -9,16 +9,14 @@ use \Asgard\Http\Request;
 
 class ControllerTest extends \PHPUnit_Framework_TestCase {
 	public function testAnnotationsAndRouteFor() {
-		\Asgard\Container\Container::singleton()['cache'] = new \Asgard\Cache\NullCache;
-		$routes = \Asgard\Http\Tests\Fixtures\Controllers\FooController::fetchRoutes();
+		$annotationsReader = new \Asgard\Http\AnnotationsReader;
+		$routes = $annotationsReader->fetchRoutes('Asgard\Http\Tests\Fixtures\Controllers\FooController');
 		$route = $routes[0];
 		$this->assertEquals('page/:id', $route->getRoute());
 		$this->assertEquals('example.com', $route->get('host'));
 		$this->assertEquals(['src'=>['type'=>'regex', 'regex'=>'.+']], $route->get('requirements'));
 		$this->assertEquals('get', $route->get('method'));
 		$this->assertEquals('foo', $route->get('name'));
-
-		$this->assertEquals($route, \Asgard\Http\Tests\Fixtures\Controllers\FooController::routeFor('page'));
 	}
 
 	public function testFilters() {

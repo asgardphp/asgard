@@ -1,10 +1,6 @@
 <?php
 namespace Asgard\Http;
 
-#For doctrine, which does not autoload classes...
-require_once __DIR__.'/Annotations/Prefix.php';
-require_once __DIR__.'/Annotations/Route.php';
-
 abstract class Controller {
 	use \Asgard\Hook\HookableTrait;
 	use \Asgard\Templating\ViewableTrait;
@@ -15,92 +11,6 @@ abstract class Controller {
 	protected $action;
 	protected $beforeFilters = [];
 	protected $afterFilters = [];
-
-	/* ANNOTATIONS */
-	public static function fetchRoutes() {
-		$routes = [];
-		$class = get_called_class();
-
-		$reader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
-		$reader->addNamespace('Asgard\Http\Annotations');
-		$reader = new \Doctrine\Common\Annotations\CachedReader(
-			$reader,
-			\Asgard\Container\Container::singleton()['cache'],
-			\Asgard\Container\Container::singleton()->has('config') ? \Asgard\Container\Container::singleton()['config']['debug']:false
-		);
-
-		$reflection = new \ReflectionClass($class);
-		$prefix = $reader->getClassAnnotation($reflection, 'Asgard\Http\Annotations\Prefix');
-		$prefix = $prefix !== null ? $prefix->value:'';
-
-		foreach($reflection->getMethods() as $method) {
-			if(!preg_match('/Action$/i', $method->getName()))
-				continue;
-			$routeAnnot = $reader->getMethodAnnotation($method, 'Asgard\Http\Annotations\Route');
-			if($routeAnnot !== null) {
-				$route = trim($prefix.'/'.$routeAnnot->value, '/');
-				$routes[] = new Route(
-					$route,
-					$class,
-					preg_replace('/Action$/i', '', $method->getName()),
-					[
-						'host' => $routeAnnot->host,
-						'requirements' => $routeAnnot->requirements,
-						'method' => $routeAnnot->method,
-						'name'	=>	$routeAnnot->name
-					]
-				);
-			}
-		}
-
-		return $routes;
-	}
-
-	public static function routeFor($action) {
-		$routes = static::routesFor($action);
-		if(!isset($routes[0]))
-			return;
-		return $routes[0];
-	}
-
-	public static function routesFor($action) {
-		$routes = [];
-		$class = get_called_class();
-
-		$reader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
-		$reader->addNamespace('Asgard\Http\Annotations');
-		$reader = new \Doctrine\Common\Annotations\CachedReader(
-			$reader,
-			\Asgard\Container\Container::singleton()['cache'],
-			\Asgard\Container\Container::singleton()->has('config') ? \Asgard\Container\Container::singleton()['config']['debug']:false
-		);
-
-		$reflection = new \ReflectionClass($class);
-		$prefix = $reader->getClassAnnotation($reflection, 'Asgard\Http\Annotations\Prefix');
-		$prefix = $prefix !== null ? $prefix->value:'';
-
-		foreach($reflection->getMethods() as $method) {
-			if(!preg_match('/Action$/i', $method->getName()) || $method->getName() !== $action.'Action')
-				continue;
-			$routeAnnot = $reader->getMethodAnnotation($method, 'Asgard\Http\Annotations\Route');
-			if($routeAnnot !== null) {
-				$route = trim($prefix.'/'.$routeAnnot->value, '/');
-				$routes[] = new Route(
-					$route,
-					$class,
-					preg_replace('/Action$/i', '', $method->getName()),
-					[
-						'host' => $routeAnnot->host,
-						'requirements' => $routeAnnot->requirements,
-						'method' => $routeAnnot->method,
-						'name'	=>	$routeAnnot->name
-					]
-				);
-			}
-		}
-
-		return $routes;
-	}
 
 	/* FILTERS */
 	public function addFilter($filter) {

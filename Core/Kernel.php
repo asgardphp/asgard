@@ -231,6 +231,19 @@ class Kernel implements \ArrayAccess {
 	}
 
 	/**
+	 * Get the controllers annotations reader dependency.
+	 * @param  boolean|string $cache
+	 * @return \Asgard\Http\AnnotationsReader
+	 */
+	protected function getControllersAnnotationsReader($cache) {
+		$annotationsReader = new \Asgard\Http\AnnotationsReader();
+		if($cache)
+			$annotationsReader->setCache($this->getCache($cache));
+		$annotationsReader->setDebug($this->getConfig()['debug']);
+		return $annotationsReader;
+	}
+
+	/**
 	 * Actually fetch all the budles.
 	 * @param  boolean|string $cache
 	 * @return array
@@ -289,8 +302,10 @@ class Kernel implements \ArrayAccess {
 		if($cache)
 			$c->save('bundles', $bundles);
 
-		foreach($bundles as $bundle)
+		foreach($bundles as $bundle) {
 			$bundle->setHooksAnnotationsReader($this->getHooksAnnotationsReader($cache));
+			$bundle->setControllersAnnotationsReader($this->getControllersAnnotationsReader($cache));
+		}
 
 		return $bundles;
 	}
