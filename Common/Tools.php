@@ -1,7 +1,17 @@
 <?php
 namespace Asgard\Common;
 
+/**
+ * Random util functions.
+ */
 class Tools {
+	/**
+	 * Truncate HTML code.
+	 * @param  string  $html
+	 * @param  integer $maxLength
+	 * @param  string  $trailing
+	 * @return string
+	 */
 	public static function truncateHTML($html, $maxLength, $trailing='...') {
 		$html = trim($html);
 		$printedLength = 0;
@@ -54,6 +64,13 @@ class Tools {
 		return $res;
 	}
 
+	/**
+	 * Truncate a string.
+	 * @param  string  $str
+	 * @param  integer $length
+	 * @param  string  $trailing
+	 * @return string
+	 */
 	public static function truncate($str, $length, $trailing='...') {
 		$length -= mb_strlen($trailing);
 		
@@ -62,6 +79,13 @@ class Tools {
 		return $str;
 	}
 	
+	/**
+	 * Truncate a string by words.
+	 * @param  string  $str
+	 * @param  integer $length
+	 * @param  string $trailing
+	 * @return string
+	 */
 	public static function truncateWords($str, $length, $trailing='...') {
 		$words = explode(' ', $str);
 		$cutwords = array_slice($words, 0, $length);
@@ -69,6 +93,12 @@ class Tools {
 		return implode(' ', $cutwords).(count($words) > count($cutwords) ? $trailing:'');
 	}
 	
+	/**
+	 * Remove accents.
+	 * @param  string $str
+	 * @param  string $charset
+	 * @return string
+	 */
 	public static function removeAccents($str, $charset='utf-8') {
 		$str = htmlentities($str, ENT_NOQUOTES, $charset);
 		
@@ -79,6 +109,12 @@ class Tools {
 		return $str;
 	}
 	
+	/**
+	 * Generate a random string.
+	 * @param  integer $length
+	 * @param  string  $validCharacters
+	 * @return string
+	 */
 	public static function randstr($length=10, $validCharacters = 'abcdefghijklmnopqrstuxyvwzABCDEFGHIJKLMNOPQRSTUXYVWZ0123456789') {
 		$validCharNumber = strlen($validCharacters);
 		$result = '';
@@ -91,7 +127,12 @@ class Tools {
 		return $result;
 	}
 	
-	public static function loadClassFile($file, $alias=null) {
+	/**
+	 * Load a file and return the class contained in the file.
+	 * @param  string $file
+	 * @return string
+	 */
+	public static function loadClassFile($file) {
 		$before = array_merge(get_declared_classes(), get_declared_interfaces());
 		require_once $file;
 		$after = array_merge(get_declared_classes(), get_declared_interfaces());

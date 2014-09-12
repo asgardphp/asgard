@@ -1,7 +1,16 @@
 <?php
 namespace Asgard\Common;
 
+/**
+ * Class to zip files.
+ */
 class Zip {
+	/**
+	 * Zipper.
+	 * @param  string $source
+	 * @param  string $destination
+	 * @return boolean true for success
+	 */
 	public static function zip($source, $destination) {
 	    if(!extension_loaded('zip') || !file_exists($source))
 			return false;

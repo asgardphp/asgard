@@ -1,27 +1,60 @@
 <?php
 namespace Asgard\Common;
 
+/**
+ * Array utils.
+ */
 class ArrayUtils {
+	/**
+	 * Get element from array, with a path.
+	 * @param  array  $arr
+	 * @param  string $str_path  nested keys separated by ".".
+	 * @param  mixed  $default
+	 * @return mixed
+	 */
 	public static function string_array_get($arr, $str_path, $default=null) {
 		$path = explode('.', $str_path);
 		return static::array_get($arr, $path, $default);
 	}
 
+	/**
+	 * Set element in array, with a path.
+	 * @param  array  $arr
+	 * @param  string $str_path  nested keys separated by ".".
+	 * @param  mixed $value
+	 */
 	public static function string_array_set(&$arr, $str_path, $value) {
 		$path = explode('.', $str_path);
 		static::array_set($arr, $path, $value);
 	}
 
+	/**
+	 * Check if element in array exists.
+	 * @param  array  $arr
+	 * @param  string $str_path  nested keys separated by ".".
+	 * @return boolean
+	 */
 	public static function string_array_isset($arr, $str_path) {
 		$path = explode('.', $str_path);
 		return static::array_isset($arr, $path);
 	}
 
+	/**
+	 * Unset element in array.
+	 * @param  array  $arr
+	 * @param  string $str_path  nested keys separated by ".".
+	 */
 	public static function string_array_unset(&$arr, $str_path) {
 		$path = explode('.', $str_path);
 		static::array_unset($arr, $path);
 	}
 
+	/**
+	 * Set element in array.
+	 * @param  array  $arr
+	 * @param  string $path  list of nested keys.
+	 * @param  mixed $value
+	 */
 	public static function array_set(&$arr, $path, $value) {
 		if(!is_array($path))
 			$path = [$path];
@@ -31,6 +64,13 @@ class ArrayUtils {
 		$arr[$lastkey] = $value;
 	}
 	
+	/**
+	 * Get element in array.
+	 * @param  array  $arr
+	 * @param  string $path  list of nested keys.
+	 * @param  mixed  $default
+	 * @return mixed
+	 */
 	public static function array_get($arr, $path, $default=null) {
 		if(!is_array($path))
 			$path = [$path];
@@ -43,12 +83,18 @@ class ArrayUtils {
 		return $arr;
 	}
 	
-	public static function array_isset($arr, $keys) {
-		if(!$keys)
+	/**
+	 * Check if element exists in array.
+	 * @param  array  $arr
+	 * @param  string $path  list of nested keys.
+	 * @return boolean
+	 */
+	public static function array_isset($arr, $path) {
+		if(!$path)
 			return;
-		if(!is_array($keys))
-			$keys = [$keys];
-		foreach($keys as $key) {
+		if(!is_array($path))
+			$keys = [$path];
+		foreach($path as $key) {
 			if(!isset($arr[$key]))
 				return false;
 			else
@@ -57,17 +103,27 @@ class ArrayUtils {
 		return true;
 	}
 	
-	public static function array_unset(&$arr, $keys) {
-		if(!$keys)
+	/**
+	 * Unset element in array.
+	 * @param  array  $arr
+	 * @param  string $path  list of nested keys.
+	 */
+	public static function array_unset(&$arr, $path) {
+		if(!$path)
 			return;
-		if(!is_array($keys))
-			$keys = [$keys];
-		$lastkey = array_pop($keys);
-		foreach($keys as $parent)
+		if(!is_array($path))
+			$path = [$path];
+		$lastkey = array_pop($path);
+		foreach($path as $parent)
 			$arr =& $arr[$parent];
 		unset($arr[$lastkey]);
 	}
 
+	/**
+	 * Flatten an array.
+	 * @param  array $arr
+	 * @return array
+	 */
 	public static function flateArray($arr) {
 		if(!is_array($arr))
 			return [$arr];
@@ -82,6 +138,12 @@ class ArrayUtils {
 		return $res;
 	}
 	
+	/**
+	 * Return all ements before a given position.
+	 * @param  array   $arr
+	 * @param  integer $i
+	 * @return array
+	 */
 	public static function array_before($arr, $i) {
 		$res = [];
 		foreach($arr as $k=>$v) {
@@ -92,6 +154,12 @@ class ArrayUtils {
 		return $res;
 	}
 
+	/**
+	 * Return all ements after a given position.
+	 * @param  array   $arr
+	 * @param  integer $i
+	 * @return array
+	 */
 	public static function array_after($arr, $i) {
 		$res = [];
 		$do = false;
