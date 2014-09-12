@@ -10,7 +10,7 @@ class BrowserTest extends \PHPUnit_Framework_TestCase {
 
 		$container = new \Asgard\Container\Container;
 		$container['cache'] = new \Asgard\Cache\NullCache;
-		$container['resolver'] = new \Asgard\Http\Resolver($container);
+		$container['resolver'] = new \Asgard\Http\Resolver($container['cache']);
 		$container['httpkernel'] = new \Asgard\Http\HttpKernel($container);
 		$container['hooks'] = new \Asgard\Hook\HooksManager($container);
 		$container['resolver'] = new \Asgard\Http\Resolver($container['cache']);

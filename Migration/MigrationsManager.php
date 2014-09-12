@@ -23,7 +23,7 @@ class MigrationsManager {
 	 * @param string $directory
 	 * @param \Asgard\Container\Container $container 
 	 */
-	public function __construct($directory, $container=[]) {
+	public function __construct($directory, $container=null) {
 		$this->directory = $directory;
 		$this->container = $container;
 		$this->tracker = new Tracker($directory);

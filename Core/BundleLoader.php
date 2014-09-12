@@ -19,7 +19,7 @@ class BundleLoader {
 	protected $hooksAnnotationsReader;
 	/**
 	 * Controllers annotations reader.
-	 * @var \Asgard\Htp\AnnotationsReader
+	 * @var \Asgard\Http\AnnotationsReader
 	 */
 	protected $controllersAnnotationsReader;
 

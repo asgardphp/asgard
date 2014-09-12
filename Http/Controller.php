@@ -37,9 +37,9 @@ abstract class Controller {
 
 	/**
 	 * Add a filter.
-	 * @param callable $filter
+	 * @param Filter $filter
 	 */
-	public function addFilter($filter) {
+	public function addFilter(Filter $filter) {
 		$filter->setController($this);
 		$this->addBeforeFilter([$filter, 'before']);
 		$this->addAfterFilter([$filter, 'after']);

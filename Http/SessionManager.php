@@ -81,17 +81,17 @@ class SessionManager implements \ArrayAccess {
 
 	/**
 	 * Set a session variable.
-	 * @param string $path
+	 * @param array|string $path
 	 * @param mixed $value
 	 */
 	public function set($path, $value=null) {
+		#to set multiple variables at once.
 		if(is_array($path)) {
 			foreach($path as $k=>$v)
 				static::set($k, $v);
 		}
-		else {
+		else
 			\Asgard\Common\ArrayUtils::string_array_set($_SESSION, $path, $value);
-		}
 	}
 
 	/**

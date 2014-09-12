@@ -2,7 +2,7 @@
 namespace Asgard\Http;
 
 /**
- * 
+ * Route.
  */
 class Route {
 	/**
@@ -16,8 +16,8 @@ class Route {
 	 */
 	protected $controller;
 	/**
-	 * Action name.
-	 * @var string
+	 * Action name or callback.
+	 * @var string|callable
 	 */
 	protected $action;
 	/**
@@ -28,10 +28,10 @@ class Route {
 
 	/**
 	 * Constructor.
-	 * @param string $route
-	 * @param string $controller
-	 * @param string $action
-	 * @param array  $parameters
+	 * @param string          $route
+	 * @param string          $controller
+	 * @param string|callable $action
+	 * @param array           $parameters
 	 */
 	public function __construct($route, $controller, $action, $parameters=[]) {
 		$this->route = $route;
@@ -86,9 +86,25 @@ class Route {
 
 	/**
 	 * Get the action name.
-	 * @return string
+	 * @return string|callable
 	 */
 	public function getAction() {
 		return $this->action;
+	}
+
+	/**
+	 * Set the controller class.
+	 * @param string $controller 
+	 */
+	public function setController($controller) {
+		$this->controller = $controller;
+	}
+
+	/**
+	 * Set the action name.
+	 * @param string|callable $action
+	 */
+	public function setAction($action) {
+		$this->action = $action;
 	}
 }

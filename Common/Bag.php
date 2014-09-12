@@ -66,9 +66,9 @@ class Bag implements \ArrayAccess {
 	
 	/**
 	 * Set a value.
-	 * @param string $path    nested keys separated by ".".
-	 * @param mixed  $value
-	 * @return Bag  $this
+	 * @param string|array $path    nested keys separated by ".".
+	 * @param mixed        $value
+	 * @return Bag         $this
 	 */
 	public function set($path, $value=null) {
 		#to set multiple elements at once

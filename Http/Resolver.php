@@ -73,16 +73,16 @@ class Resolver {
 	}
 	
 	/**
-	 * Actually check if request and route match.
+	 * Actually check if url and route match.
 	 * @param  string       $route
 	 * @param  string       $with
 	 * @param  array|null   $requirements
-	 * @param  Request      $request
+	 * @param  Request|null $request
 	 * @param  string|null  $method
 	 * @return boolean
 	 */
 	public static function matchWith($route, $with, $requirements=null, $request=null, $method=null) {
-		if($method !== null) {
+		if($method !== null && $request!==null) {
 			if(is_array($method)) {
 				$good = false;
 				foreach($method as $v) {
@@ -145,8 +145,8 @@ class Resolver {
 
 	/**
 	 * Get the route matching a request.
-	 * @param  Request     $request
-	 * @return array|null  null if not found.
+	 * @param  Request   $request
+	 * @return Route     null if not found.
 	 */
 	public function getRoute(Request $request) {
 		$request_key = sha1(serialize([$request->method(), $request->url->get()]));

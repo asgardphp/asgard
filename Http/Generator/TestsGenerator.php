@@ -30,7 +30,7 @@ class TestsGenerator {
 
 	/**
 	 * Add tests to a test file.
-	 * @param array  $tests
+	 * @param string $tests
 	 * @param string $dst
 	 */
 	public function addTests($tests, $dst) {

@@ -162,7 +162,7 @@ class Kernel implements \ArrayAccess {
 
 	/**
 	 * Get the cache dependency.
-	 * @param  string $cache
+	 * @param  null|string $cache
 	 * @return \Asgard\Cache\Cache
 	 */
 	protected function getCache($cache) {
@@ -172,9 +172,10 @@ class Kernel implements \ArrayAccess {
 
 	/**
 	 * Register the bundle's services.
-	 * @param  boolean|string $cache
+	 * @param  null|string $cache
+	 * @return \Asgard\Container\Container
 	 */
-	protected function buildContainer($cache=false) {
+	protected function buildContainer($cache=null) {
 		if($cache) {
 			$c = $this->getCache($cache);
 			if(($this->container = $c->fetch('app')) !== false) {
@@ -219,7 +220,7 @@ class Kernel implements \ArrayAccess {
 
 	/**
 	 * Get the hooks annotations reader dependency.
-	 * @param  boolean|string $cache
+	 * @param  null|string $cache
 	 * @return \Asgard\Hook\AnnotationsReader
 	 */
 	protected function getHooksAnnotationsReader($cache) {
@@ -232,7 +233,7 @@ class Kernel implements \ArrayAccess {
 
 	/**
 	 * Get the controllers annotations reader dependency.
-	 * @param  boolean|string $cache
+	 * @param  null|string $cache
 	 * @return \Asgard\Http\AnnotationsReader
 	 */
 	protected function getControllersAnnotationsReader($cache) {
@@ -245,10 +246,10 @@ class Kernel implements \ArrayAccess {
 
 	/**
 	 * Actually fetch all the budles.
-	 * @param  boolean|string $cache
+	 * @param  null|string $cache
 	 * @return array
 	 */
-	protected function doGetBundles($cache=false) {
+	protected function doGetBundles($cache=null) {
 		if($cache) {
 			$c = $this->getCache($cache);
 			if(($res = $c->fetch('bundles')) !== false)

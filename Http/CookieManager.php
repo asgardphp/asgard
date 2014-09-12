@@ -59,12 +59,13 @@ class CookieManager implements \ArrayAccess {
 
 	/**
 	 * Set a cookie.
-	 * @param string $what
+	 * @param array|string $what
 	 * @param mixed $value
 	 * @param integer $time
 	 * @param string $path
 	 */
 	public function set($what, $value=null, $time=null, $path='/') {
+		#set multiple elements at once
 		if(is_array($what)) {
 			foreach($what as $k=>$v)
 				static::set($k, $v);
@@ -80,7 +81,7 @@ class CookieManager implements \ArrayAccess {
 	
 	/**
 	 * Delete a cookie.
-	 * @param  strnig $path
+	 * @param  string $path
 	 * @param  string $_path
 	 */
 	public function delete($path, $_path='/') {
@@ -91,7 +92,7 @@ class CookieManager implements \ArrayAccess {
 
 	/**
 	 * Array set implementation.
-	 * @param  integer $offset 
+	 * @param  string $offset 
 	 * @param  mixed   $value
 	 * @throws \LogicException If $offset is null
 	 */
@@ -104,7 +105,7 @@ class CookieManager implements \ArrayAccess {
 
 	/**
 	 * Array exists implementation.
-	 * @param  integer $offset 
+	 * @param  string $offset 
 	 * @return boolean true if cookie exists.
 	 */
 	public function offsetExists($offset) {
@@ -113,7 +114,7 @@ class CookieManager implements \ArrayAccess {
 
 	/**
 	 * Array unset implementation.
-	 * @param  integer $offset 
+	 * @param  string $offset 
 	 */
 	public function offsetUnset($offset) {
 		$this->delete($offset);
@@ -121,7 +122,7 @@ class CookieManager implements \ArrayAccess {
 
 	/**
 	 * Array get implementation.
-	 * @param  integer $offset 
+	 * @param  string $offset 
 	 * @return mixed
 	 */
 	public function offsetGet($offset) {

@@ -87,7 +87,7 @@ class DAL {
 	/**
 	 * Constructor.
 	 * @param DB     $db
-	 * @param array  $tables
+	 * @param string|null  $tables
 	 */
 	public function __construct(DB $db, $tables=null) {
 		$this->db = $db;
@@ -192,7 +192,7 @@ class DAL {
 
 	/**
 	 * Add a LEFT jointure.
-	 * @param  string $table
+	 * @param  string|array $table
 	 * @param  array  $conditions
 	 * @return DAL    $this
 	 */
@@ -202,7 +202,7 @@ class DAL {
 
 	/**
 	 * Add a RIGHT jointure.
-	 * @param  string $table
+	 * @param  string|array $table
 	 * @param  array  $conditions
 	 * @return DAL    $this
 	 */
@@ -212,7 +212,7 @@ class DAL {
 
 	/**
 	 * Add an INNER jointure.
-	 * @param  string $table
+	 * @param  string|array $table
 	 * @param  array  $conditions
 	 * @return DAL    $this
 	 */

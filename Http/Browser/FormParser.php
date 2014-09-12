@@ -95,8 +95,6 @@ class Field {
 					$this->value = $inputValue;
 				break;
 			case 'checkbox':
-				if(!is_array($this->value))
-					$this->value = [];
 				if($node->getAttribute('checked') == 'checked')
 					$this->value = $inputValue;
 				break;
@@ -163,11 +161,11 @@ class FormParser {
 	}
 
 	/**
-	 * Set a field's value.
+	 * Set a field.
 	 * @param string $name
-	 * @param string $value
+	 * @param Field $value
 	 */
-	public function set($name, $value) {
+	public function set($name, Field $value) {
 		$this->fields[$name] = $value;
 	}
 

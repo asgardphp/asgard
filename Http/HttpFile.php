@@ -64,7 +64,7 @@ class HttpFile extends \Asgard\File\File {
 
 	/**
 	 * Set the file size.
-	 * @param string $size
+	 * @param integer $size
 	 */
 	public function setSize($size) {
 		$this->size = $size;

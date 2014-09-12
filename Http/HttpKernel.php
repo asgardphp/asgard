@@ -190,10 +190,10 @@ class HttpKernel {
 
 	/**
 	 * Run the controller and action.
-	 * @param  string $controllerClass
-	 * @param  string $action
-	 * @param  Request $request
-	 * @param  null|string $route        Route prefix to match.
+	 * @param  string      $controllerClass
+	 * @param  string      $action
+	 * @param  Request     $request
+	 * @param  null|Route  $route        Route prefix to match.
 	 * @return mixed
 	 */
 	public function runController($controllerClass, $action, Request $request, $route=null) {
@@ -255,7 +255,7 @@ class HttpKernel {
 
 	/**
 	 * Filter all controllers and actions.
-	 * @param  Filter $filter
+	 * @param  string $filter
 	 * @param  array $args
 	 * @return HttpKernel  $this
 	 */
@@ -267,7 +267,7 @@ class HttpKernel {
 	/**
 	 * Fillter controllers and actions with criteria.
 	 * @param  array  $criteria
-	 * @param  Filter $filter
+	 * @param  string $filter
 	 * @param  array  $args
 	 * @return HttpKernel  $this
 	 */
@@ -323,7 +323,7 @@ class HttpKernel {
 	 * @param Controller   $controller
 	 * @param string       $action
 	 * @param Request      $request
-	 * @param null|string  $route       Route prefix to match.
+	 * @param null|Route   $route       Route prefix to match.
 	 */
 	protected function addFilters(Controller $controller, $action, Request $request, $route=null) {
 		$controllerClass = get_class($controller);
