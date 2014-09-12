@@ -1,47 +1,132 @@
 <?php
 namespace Asgard\Db;
 
+/**
+ * Database Abstraction Layer.
+ */
 class DAL {
-	#dependencies
+	/**
+	 * Database instance.
+	 * @var DB
+	 */
 	public $db;
+	/**
+	 * Paginator factory.
+	 * @var \Asgard\Container\Factory
+	 */
 	protected $paginatorFactory;
-
+	/**
+	 * Tables to access.
+	 * @var array
+	 */
 	public $tables  = [];
+	/**
+	 * Columns to access.
+	 * @var array
+	 */
 	public $columns = [];
+	/**
+	 * Where conditions.
+	 * @var array
+	 */
 	public $where   = [];
+	/**
+	 * Jointures.
+	 * @var array
+	 */
 	public $joins   = [];
+	/**
+	 * Parameters.
+	 * @var array
+	 */
 	public $params  = [];
+	/**
+	 * Offset.
+	 * @var integer
+	 */
 	public $offset;
+	/**
+	 * Limit.
+	 * @var integer
+	 */
 	public $limit;
+	/**
+	 * Order by.
+	 * @var string
+	 */
 	public $orderBy;
+	/**
+	 * Group by.
+	 * @var string
+	 */
 	public $groupBy;
+	/**
+	 * Into table.
+	 * @var string
+	 */
 	public $into;
+	/**
+	 * Page number.
+	 * @var integer
+	 */
 	public $page;
+	/**
+	 * Number of rows per page.
+	 * @var integer
+	 */
 	public $per_page;
+	/**
+	 * Query instance.
+	 * @var Query
+	 */
 	protected $query;
+	/**
+	 * 
+	 */
 
+	/**
+	 * Constructor.
+	 * @param DB     $db
+	 * @param array  $tables
+	 */
 	public function __construct(DB $db, $tables=null) {
 		$this->db = $db;
 		$this->addFrom($tables);
 	}
 
     /**
+     * Return the DAL parameters.
      * @return array
      */
     public function getParameters() {
 		return $this->params;
 	}
 	
+	/**
+	 * Set FROM tables.
+	 * @param  string $tables  Separated by ,
+	 * @return DAL    $this
+	 */
 	public function from($tables) {
 		$this->tables = [];
 		return $this->addFrom($tables);
 	}
 	
+	/**
+	 * INTO table.
+	 * @param  string $table
+	 * @return DAL    $this
+	 */
 	public function into($table) {
 		$this->into = $table;
 		return $this;
 	}
 
+	/**
+	 * Add FROM tables.
+	 * @param string $tables  Separated by ,
+	 * @return DAL  $this
+	 */
 	public function addFrom($tables) {
 		if(!$tables)
 			return $this;
@@ -66,6 +151,11 @@ class DAL {
 		return $this;
 	}
 
+	/**
+	 * Remove a FROM table.
+	 * @param  string $what
+	 * @return DALm   $this
+	 */
 	public function removeFrom($what) {
 		foreach($this->tables as $alias=>$table) {
 			if($alias === $what) {
@@ -77,6 +167,13 @@ class DAL {
 		return $this;
 	}
 
+	/**
+	 * Create a jointure.
+	 * @param  string $type
+	 * @param  string $table
+	 * @param  array  $conditions
+	 * @return DAL    $this
+	 */
 	protected function join($type, $table, $conditions=null) {
 		if(is_array($table)) {
 			foreach($table as $_table=>$_conditions)
@@ -93,24 +190,50 @@ class DAL {
 		return $this;
 	}
 
+	/**
+	 * Add a LEFT jointure.
+	 * @param  string $table
+	 * @param  array  $conditions
+	 * @return DAL    $this
+	 */
 	public function leftjoin($table, $conditions=null) {
 		return $this->join('leftjoin', $table, $conditions);
 	}
 
+	/**
+	 * Add a RIGHT jointure.
+	 * @param  string $table
+	 * @param  array  $conditions
+	 * @return DAL    $this
+	 */
 	public function rightjoin($table, $conditions=null) {
 		return $this->join('rightjoin', $table, $conditions);
 	}
 
+	/**
+	 * Add an INNER jointure.
+	 * @param  string $table
+	 * @param  array  $conditions
+	 * @return DAL    $this
+	 */
 	public function innerjoin($table, $conditions=null) {
 		return $this->join('innerjoin', $table, $conditions);
 	}
 
+	/**
+	 * Return the next row.
+	 * @return array
+	 */
 	public function next() {
 		if($this->query === null)
 			$this->query = $this->query();
 		return $this->query->next();
 	}
 	
+	/**
+	 * Reset all parameters.
+	 * @return DAL  $this
+	 */
 	public function reset() {
 		$this->tables = [];
 		$this->columns = [];
@@ -125,6 +248,12 @@ class DAL {
 		return $this;
 	}
 	
+	/**
+	 * Execute a query.
+	 * @param  string $sql
+	 * @param  array  $params
+	 * @return Query
+	 */
 	public function query($sql=null, array $params=[]) {
 		if($sql === null) {
 			$sql = $this->buildSQL();
@@ -135,15 +264,28 @@ class DAL {
 		return $this->db->query($sql, $params);
 	}
 	
-	/* GETTERS */
+	/**
+	 * Return the first row only.
+	 * @return array
+	 */
 	public function first() {
 		return $this->query()->first();
 	}
 	
+	/**
+	 * Return selected rows.
+	 * @return array
+	 */
 	public function get() {
 		return $this->query()->all();
 	}
 	
+	/**
+	 * Paginate the results.
+	 * @param  integer  $page
+	 * @param  integer  $per_page
+	 * @return DAL    $this
+	 */
 	public function paginate($page, $per_page=10) {
 		$this->page = $page = $page ? $page:1;
 		$this->per_page = $per_page;
@@ -153,11 +295,20 @@ class DAL {
 		return $this;
 	}
 
+	/**
+	 * Set the paginator factory.
+	 * @param \Asgard\Container\Factory $paginatorFactory
+	 * @return DAL    $this
+	 */
 	public function setPaginatorFactory($paginatorFactory) {
 		$this->paginatorFactory = $paginatorFactory;
 		return $this;
 	}
 
+	/**
+	 * Get a paginator instance.
+	 * @return \Asgard\Common\Paginator
+	 */
 	public function getPaginator() {
 		if($this->page === null || $this->per_page === null)
 			return;
@@ -166,12 +317,21 @@ class DAL {
 		return $this->paginatorFactory->create([$this->count(), $this->page, $this->per_page]);
 	}
 
-	/* SETTERS */
+	/**
+	 * Set SELECT columns.
+	 * @param  string|array $columns
+	 * @return DAL    $this
+	 */
 	public function select($columns) {
 		$this->columns = [];
 		return $this->addSelect($columns);
 	}
 
+	/**
+	 * Add SELECT columns.
+	 * @param string|array $columns
+	 * @return DAL    $this
+	 */
 	public function addSelect($columns) {
 		if(is_array($columns))
 			return $this->_addSelect($columns);
@@ -196,6 +356,10 @@ class DAL {
 		return $this;
 	}
 
+	/**
+	 * Add array of SELECT columns.
+	 * @param array $columns
+	 */
 	protected function _addSelect(array $columns) {
 		if(array_values($columns) === $columns) {
 			foreach($columns as $k=>$v) {
@@ -207,6 +371,11 @@ class DAL {
 		return $this;
 	}
 
+	/**
+	 * Remove a SELECT column.
+	 * @param  string $what
+	 * @return DAL    $this
+	 */
 	public function removeSelect($what) {
 		foreach($this->columns as $alias=>$column) {
 			if($alias === $what) {
@@ -217,26 +386,52 @@ class DAL {
 		return $this;
 	}
 
+	/**
+	 * Set offset.
+	 * @param  integer $offset
+	 * @return DAL    $this
+	 */
 	public function offset($offset) {
 		$this->offset = $offset;
 		return $this;
 	}
-		
+	
+	/**
+	 * Set limit.
+	 * @param  integer $limit
+	 * @return DAL    $this
+	 */
 	public function limit($limit) {
 		$this->limit = $limit;
 		return $this;
 	}
 
+	/**
+	 * Set order by.
+	 * @param  string $orderBy
+	 * @return DAL    $this
+	 */
 	public function orderBy($orderBy) {
 		$this->orderBy = $orderBy;
 		return $this;
 	}
-		
+	
+	/**
+	 * Set group by.
+	 * @param  string $groupBy
+	 * @return DAL    $this
+	 */
 	public function groupBy($groupBy) {
 		$this->groupBy = $groupBy;
 		return $this;
 	}
-		
+	
+	/**
+	 * Add WHERE conditions.
+	 * @param  array|string $conditions
+	 * @param  mixed $values
+	 * @return DAL    $this
+	 */
 	public function where($conditions, $values=null) {
 		if($values !== null)
 			$this->where[$conditions] = $values;
@@ -246,7 +441,14 @@ class DAL {
 		return $this;
 	}
 
-	/* CONDITIONS PROCESSING */
+	/**
+	 * Format the conditions.
+	 * @param  array  $params
+	 * @param  string  $condition
+	 * @param  boolean $brackets
+	 * @param  string  $table
+	 * @return array   first element is the SQL, second is the parameters.
+	 */
 	protected function processConditions($params, $condition = 'and', $brackets=false, $table=null) {
 		if(count($params) == 0)
 			return ['', []];
@@ -291,11 +493,21 @@ class DAL {
 		return [$result, \Asgard\Common\ArrayUtils::flateArray($pdoparams)];
 	}
 
+	/**
+	 * Remove a jointure.
+	 * @param  string $alias
+	 * @return DAL    $this
+	 */
 	public function removeJointure($alias) {
 		unset($this->joins[$alias]);
 		return $this;
 	}
 	
+	/**
+	 * Format identifiers.
+	 * @param  string $condition
+	 * @return string
+	 */
 	protected function replace($condition) {
 		$condition = preg_replace_callback('/[a-z_][a-z0-9._]*(?![^\(]*\))/', function($matches) {
 			if(strpos($matches[0], '.')===false && count($this->joins) > 0 && count($this->tables)===1)
@@ -307,10 +519,20 @@ class DAL {
 		return $condition;
 	}
 
+	/**
+	 * Check if string is an identifier.
+	 * @param  string  $str
+	 * @return boolean
+	 */
 	protected static function isIdentifier($str) {
 		return preg_match('/^[a-z_][a-z0-9._]*$/', $str);
 	}
 
+	/**
+	 * Quote idenfitiers.
+	 * @param  string $str
+	 * @return string
+	 */
 	protected function identifierQuotes($str) {
 		return preg_replace_callback('/[a-z_][a-z0-9._]*/', function($matches) {
 			$res = [];
@@ -320,7 +542,10 @@ class DAL {
 		}, $str);
 	}
 	
-	/* BUILDERS */
+	/**
+	 * Build the list of columns.
+	 * @return string
+	 */
 	protected function buildColumns() {
 		$select = [];
 		if(!$this->columns)
@@ -344,6 +569,10 @@ class DAL {
 		return implode(', ', $select);
 	}
 
+	/**
+	 * Return the default table.
+	 * @return string
+	 */
 	protected function getDefaultTable() {
 		if(count($this->tables) === 1)
 			return array_keys($this->tables)[0];
@@ -351,14 +580,23 @@ class DAL {
 			return null;
 	}
 
+	/**
+	 * Build the WHERE conditions.
+	 * @param  null|string $default
+	 * @return array  1st element is the SQL, 2nd is the parameters.
+	 */
 	protected function buildWhere($default=null) {
-		$r = $this->processConditions($this->where, 'and', false, $default !==null ? $default:$this->getDefaultTable());
+		$r = $this->processConditions($this->where, 'and', false, $default!==null ? $default:$this->getDefaultTable());
 		if($r[0])
 			return [' WHERE '.$r[0], $r[1]];
 		else
 			return ['', []];
 	}
 
+	/**
+	 * Build GROUP BY.
+	 * @return string
+	 */
 	protected function buildGroupby() {
 		if(!$this->groupBy)
 			return;
@@ -375,6 +613,10 @@ class DAL {
 		return ' GROUP BY '.implode(', ', $res);
 	}
 
+	/**
+	 * Build ORDER By.
+	 * @return string
+	 */
 	protected function buildOrderby() {
 		if(!$this->orderBy)
 			return;
@@ -408,6 +650,10 @@ class DAL {
 		return ' ORDER BY '.implode(', ', $res);
 	}
 
+	/**
+	 * Build jointures.
+	 * @return string
+	 */
 	protected function buildJointures() {
 		$params = [];
 		$jointures = '';
@@ -423,6 +669,14 @@ class DAL {
 		return [$jointures, $params];
 	}
 
+	/**
+	 * Build a jointure.
+	 * @param  string $type
+	 * @param  string $table
+	 * @param  array  $conditions
+	 * @param  string $alias
+	 * @return string
+	 */
 	protected function buildJointure($type, $table, $conditions, $alias=null) {
 		$params = [];
 		$jointure = '';
@@ -453,6 +707,10 @@ class DAL {
 		return [$jointure, $params];
 	}
 
+	/**
+	 * Build LIMIT
+	 * @return string
+	 */
 	protected function buildLimit() {
 		if(!$this->limit && !$this->offset)
 			return '';
@@ -470,6 +728,11 @@ class DAL {
 		return $limit;
 	}
 
+	/**
+	 * Build the lit of tables.
+	 * @param  boolean $with_alias  Add aliases or not.
+	 * @return string
+	 */
 	public function buildTables($with_alias=true) {
 		$tables = [];
 		if(!$this->tables)
@@ -483,6 +746,10 @@ class DAL {
 		return implode(', ', $tables);
 	}
 
+	/**
+	 * Build a SELECT SQL query.
+	 * @return string
+	 */
 	public function buildSQL() {
 		$params = [];
 
@@ -502,6 +769,11 @@ class DAL {
 		return 'SELECT '.$columns.' FROM '.$tables.$jointures.$where.$groupby.$orderBy.$limit;
 	}
 
+	/**
+	 * Build an UPDATE SQL query.
+	 * @param  array  $values
+	 * @return string
+	 */
 	public function buildUpdateSQL(array $values) {
 		if(count($values) == 0)
 			throw new \Exception('Update values should not be empty.');
@@ -528,6 +800,11 @@ class DAL {
 		return 'UPDATE '.$tables.$jointures.$str.$where.$orderBy.$limit;
 	}
 
+	/**
+	 * Build a DELETE SQL query.
+	 * @param  array $del_tables
+	 * @return string
+	 */
 	public function buildDeleteSQL(array $del_tables=[]) {
 		$params = [];
 
@@ -552,6 +829,11 @@ class DAL {
 			return 'DELETE FROM '.$tables.$jointures.$where.$orderBy.$limit;
 	}
 
+	/**
+	 * Build an INSERT SQL query.
+	 * @param  array  $values
+	 * @return string
+	 */
 	public function buildInsertSQL(array $values) {
 		if(count($values) == 0)
 			throw new \Exception('Insert values should not be empty.');
@@ -575,13 +857,22 @@ class DAL {
 		return 'INSERT INTO '.$into.$str;
 	}
 	
-	/* FUNCTIONS */
+	/**
+	 * Update rows.
+	 * @param  array  $values
+	 * @return Query
+	 */
 	public function update(array $values) {
 		$sql = $this->buildUpdateSQL($values);
 		$params = $this->getParameters();
 		return $this->db->query($sql, $params)->affected();
 	}
 	
+	/**
+	 * Insert rows.
+	 * @param  array  $values
+	 * @return Query
+	 */
 	public function insert(array $values) {
 		$sql = $this->buildInsertSQL($values);
 		$params = $this->getParameters();
@@ -589,12 +880,24 @@ class DAL {
 		return $this->db->id();
 	}
 	
+	/**
+	 * Delete rows.
+	 * @param  array $tables
+	 * @return Query
+	 */
 	public function delete(array $tables=[]) {
 		$sql = $this->buildDeleteSQL($tables);
 		$params = $this->getParameters();
 		return $this->db->query($sql, $params)->affected();
 	}
 
+	/**
+	 * Execute a math function.
+	 * @param  string      $fct
+	 * @param  null|string $what
+	 * @param  null|string $group_by
+	 * @return string
+	 */
 	protected function _function($fct, $what=null, $group_by=null) {
 		if($what === null)
 			$what = '*';
@@ -621,22 +924,51 @@ class DAL {
 		}
 	}
 	
+	/**
+	 * Count number of rows.
+	 * @param  null|string $group_by
+	 * @return string
+	 */
 	public function count($group_by=null) {
 		return $this->_function('count', null, $group_by);
 	}
 	
+	/**
+	 * Return the minimum value.
+	 * @param  string      $what
+	 * @param  null|string $group_by
+	 * @return string
+	 */
 	public function min($what, $group_by=null) {
 		return $this->_function('min', $what, $group_by);
 	}
 	
+	/**
+	 * Return the maximum value.
+	 * @param  string      $what
+	 * @param  null|string $group_by
+	 * @return string
+	 */
 	public function max($what, $group_by=null) {
 		return $this->_function('max', $what, $group_by);
 	}
 	
+	/**
+	 * Return the average value.
+	 * @param  string $what
+	 * @param  null|string $group_by
+	 * @return string
+	 */
 	public function avg($what, $group_by=null) {
 		return $this->_function('avg', $what, $group_by);
 	}
 	
+	/**
+	 * Return the sum.
+	 * @param  string $what
+	 * @param  null|string $group_by
+	 * @return string
+	 */
 	public function sum($what, $group_by=null) {
 		return $this->_function('sum', $what, $group_by);
 	}

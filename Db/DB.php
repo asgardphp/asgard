@@ -1,13 +1,23 @@
 <?php
 namespace Asgard\Db;
 
+/**
+ * Database.
+ */
 class DB {
+	/**
+	 * \PDO instance.
+	 * @var \PDO
+	 */
 	protected $db;
+	/**
+	 * Configuration.
+	 * @var array
+	 */
 	protected $config;
 	
 	/**
-	 * Constructor
-	 * 
+	 * Constructor.
 	 * @param array config database configuration
 	 * @param \PDO db database connection
 	*/
@@ -20,7 +30,12 @@ class DB {
 		$this->db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 	}
 
-	protected function getPDO($config) {
+	/**
+	 * Get the PDO instance.
+	 * @param  array $config
+	 * @return \PDO
+	 */
+	protected function getPDO(array $config) {
 		$driver = isset($config['driver']) ? $config['driver']:'mysql';
 		$user = isset($config['user']) ? $config['user']:'root';
 		$password = isset($config['password']) ? $config['password']:'';
@@ -40,25 +55,26 @@ class DB {
 		}
 	}
 
+	/**
+	 * Return the configuration.
+	 * @return array
+	 */
 	public function getConfig() {
 		return $this->config;
 	}
 	
 	/**
-	 * sdsf
-	 * 
-	 * @return sdfsd sdfds
+	 * Return the database instance.
+	 * @return \PDO
 	*/
 	public function getDB() {
 		return $this->db;
 	}
 	
 	/**
-	 * Executes an SQL query
-	 * 
-	 * @param String sql SQL query
-	 * @param array args SQL parameters
-	 * 
+	 * Execute an SQL query.
+	 * @param string $sql SQL query
+	 * @param array $args SQL parameters
 	 * @return Asgard\Db\Query Query object
 	*/
 	public function query($sql, array $args=[]) {
@@ -66,30 +82,29 @@ class DB {
 	}
 	
 	/**
-	 * Returns the last inserted id
-	 * 
-	 * @return Integer Last inserted id
+	 * Return the last inserted id.
+	 * @return integer Last inserted id
 	*/
 	public function id() {
 		return $this->db->lastInsertId();
 	}
 	
 	/**
-	 * Starts a new SQL transaction
+	 * Start a new SQL transaction.
 	*/
 	public function beginTransaction() {
 		$this->db->beginTransaction();
 	}
 	
 	/**
-	 * Commits the SQL transaction
+	 * Commit the SQL transaction.
 	*/
 	public function commit() {
 		$this->db->commit();
 	}
 	
 	/**
-	 * Rolls back the SQL transaction
+	 * Roll back the SQL transaction.
 	*/
 	public function rollback() {
 		$this->db->rollback();
