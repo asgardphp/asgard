@@ -1,5 +1,7 @@
 #Debug
 
+[![Build Status](https://travis-ci.org/asgardphp/debug.svg?branch=master)](https://travis-ci.org/asgardphp/debug)
+
 The debug package helps to handle errors and display debugging information to the developer.
 
 - [Installation](#installation)
@@ -59,11 +61,3 @@ Display the debug screen:
 	\Asgard\Debug\d($var1, $var2, ...);
 
 In an Asgard application, the global function d() usually does the same.
-
-###Contributing
-
-Please submit all issues and pull requests to the [asgardphp/asgard](http://github.com/asgardphp/asgard) repository.
-
-### License
-
-The Asgard framework is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT)
