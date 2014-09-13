@@ -5,13 +5,9 @@
 Library to handle HTTP requests, routing, controllers and responses.
 
 ##Installation
-**If you are using the Asgard Framework you don't need to install this library as it part of the default libraries that Asgard uses.**
+**If you are working on an Asgard project you don't need to install this library as it is already part of the standard libraries.**
 
-In your composer file:
-
-    "require": {
-        "asgard/http": "0.*"
-	}
+	composer require asgard/http 0.*
 
 ##Request & Response
 

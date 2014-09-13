@@ -5,13 +5,9 @@
 The ORM package gives you the possibility to store, fetch, search entities and define their relations to each other. It works with the [Asgard Entity package](http://github.com/asgardphp/entity).
 
 ##Installation
-**If you are using the Asgard Framework you don't need to install this library as it part of the default libraries that Asgard uses.**
+**If you are working on an Asgard project you don't need to install this library as it is already part of the standard libraries.**
 
-In your composer file:
-
-    "require": {
-        "asgard/orm": "0.*"
-	}
+	composer require asgard/orm 0.*
 
 ##Entity Relations
 
