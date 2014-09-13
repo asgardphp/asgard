@@ -1,10 +1,11 @@
 {
-	"name": "asgard/email",
-	"license": "MIT",
-	"authors": [{
-		"name": "Michel Hognerud",
-		"email": "michel@hognerud.net"
-	}],
+    "name": "asgard/email",
+    "version": "0.1.0",
+    "license": "MIT",
+    "authors": [{
+        "name": "Michel Hognerud",
+        "email": "michel@hognerud.net"
+    }],
     "autoload": {
         "psr-4": {"Asgard\\Email\\": "."}
     },

@@ -1,11 +1,12 @@
 {
-	"name": "asgard/asgard",
+    "name": "asgard/asgard",
+    "version": "0.1.0",
     "description": "Asgard PHP Framework",
-	"license": "MIT",
-	"authors": [{
-		"name": "Michel Hognerud",
-		"email": "michel@hognerud.net"
-	}],
+    "license": "MIT",
+    "authors": [{
+        "name": "Michel Hognerud",
+        "email": "michel@hognerud.net"
+    }],
     "autoload": {
         "psr-4": {"Asgard\\": "."}
     },
