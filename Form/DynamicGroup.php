@@ -1,21 +1,45 @@
 <?php
 namespace Asgard\Form;
 
+/**
+ * Group with undefined number of fields.
+ */
 class DynamicGroup extends Group {
+	/**
+	 * Callback to create new fields.
+	 * @var callable
+	 */
 	protected $cb;
+	/**
+	 * Callback to render fields.
+	 * @var callbable
+	 */
 	protected $default_render;
 
 	#todo name?
+	/**
+	 * Constructor.
+	 * @param callable $cb
+	 * @param callable $default_render
+	 */
 	public function __construct($cb=null, $default_render=null) {
 		$this->cb = $cb;
 		$this->default_render = $default_render;
 	}
 
+	/**
+	 * Set callback.
+	 * @param callable $cb
+	 */
 	public function setCallback($cb) {
 		$this->cb = $cb;
 	}
 
-	/* Data */
+	/**
+	 * Set group data.
+	 * @param array $data
+	 * @return DynamicGroup $this
+	 */
 	public function setData(array $data) {
 		$this->data = array_values($data);
 
@@ -29,11 +53,19 @@ class DynamicGroup extends Group {
 		return $this;
 	}
 
-	/* Rendering */
+	/**
+	 * Set default renderer.
+	 * @param callable $default_render
+	 */
 	public function setDefaultRender($default_render) {
 		$this->default_render = $default_render;
 	}
 
+	/**
+	 * Render a field or a sub-group.
+	 * @param  Group|Field $field
+	 * @return string|Widget
+	 */
 	public function field($field=null) {
 		$default_render = $this->default_render;
 		if($default_render === null)
@@ -42,6 +74,11 @@ class DynamicGroup extends Group {
 			return $default_render($field);
 	}
 
+	/**
+	 * Render the javascript template.
+	 * @param  string $offset
+	 * @return string
+	 */
 	public function renderTemplate($offset='') {
 		$randstr = \Asgard\Common\Tools::randstr(10);
 		$jq = $this->renderNew('{{'.$randstr.'}}');
@@ -52,7 +89,12 @@ class DynamicGroup extends Group {
 		return $jq;
 	}
 
-	/* Internal */
+	/**
+	 * Create a new field or sub-group.
+	 * @param  string $name
+	 * @param  mixed $data
+	 * @return Field|Group
+	 */
 	protected function newField($name=null, $data=null) {
 		if($name !== null && isset($this[$name]))
 			return;
@@ -64,6 +106,11 @@ class DynamicGroup extends Group {
 		return $newelement;
 	}
 
+	/**
+	 * Render a new field or sub-group.
+	 * @param  string $offset
+	 * @return string|Widget
+	 */
 	protected function renderNew($offset=null) {
 		$default_render = $this->default_render;
 
@@ -87,6 +134,11 @@ class DynamicGroup extends Group {
 		return $r;
 	}
 
+	/**
+	 * Render a field with its own rendering.
+	 * @param  Field $field
+	 * @return string|Widget
+	 */
 	protected function renderField($field) {
 		return $field->def();
 	}
