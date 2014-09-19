@@ -6,21 +6,18 @@ class News extends \Asgard\Entity\Entity {
 		$definition->properties = [
 			'title',
 			'content',
+			'category' => [
+				'type' => 'entity',
+				'entity' => 'Asgard\Orm\Tests\Entities\Category',
+			],
+			'author' => [
+				'type' => 'entity',
+				'entity' => 'Asgard\Orm\Tests\Entities\Author',
+			],
 		];
 
 		$definition->behaviors = [
 			new \Asgard\Orm\ORMBehavior
-		];
-
-		$definition->relations = [
-			'category' => [
-				'entity' => 'Asgard\Orm\Tests\Entities\Category',
-				'has' => 'one'
-			],
-			'author' => [
-				'entity' => 'Asgard\Orm\Tests\Entities\Author',
-				'has' => 'one'
-			],
 		];
 	}
 }

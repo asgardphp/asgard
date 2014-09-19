@@ -18,23 +18,6 @@ class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\Pers
 		if(!isset($definition->order_by))
 			$definition->set('order_by', 'id DESC');
 		
-		$definition->addProperty('id', [
-			'type'     => 'text', 
-			'editable' => false, 
-			'required' => false,
-			'position' => 0,
-			'defaut'   => 0,
-			'orm'      => [
-				'type'              => 'int(11)',
-				'auto_increment'    => true,
-				'key'               => 'PRI',
-				'nullable'          => false,
-			],
-		]);	
-
-		foreach($definition->relations as $name=>$params)
-			$definition->relations[$name] = new EntityRelation($definition, $name, $params);
-		
 		$definition->hook('set', [$this, 'hookSet']);
 		$definition->hook('get', [$this, 'hookGet']);
 		$definition->hook('getI18N', [$this, 'hookgetI18N']);
@@ -59,8 +42,8 @@ class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\Pers
 	 * @param  mixed                  $value
 	 */
 	public function hookSet(\Asgard\Hook\HookChain $chain, \Asgard\Entity\Entity $entity, $name, $value) {
-		if($entity::hasRelation($name)) {
-			$rel = $this->static_getRelationProperty($name);
+		if($this->getDataMapper()->hasRelation($this->definition, $name)) {
+			$rel = $this->getDataMapper()->getRelation($this->definition, $name);
 			if($rel->type() == 'belongsTo')
 				$entity->{$rel->getLink()} = $value;
 		}
@@ -73,8 +56,8 @@ class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\Pers
 	 * @param  string                 $name
 	 */
 	public function hookGet(\Asgard\Hook\HookChain $chain, \Asgard\Entity\Entity $entity, $name) {
-		if($entity::hasRelation($name)) {
-			$rel = $this->dataMapper->relation($entity, $name);
+		if($this->getDataMapper()->hasRelation($this->definition, $name)) {
+			$rel = $this->getDataMapper()->relation($entity, $name);
 			if($rel instanceof \Asgard\Entity\Collection)
 				return $rel->get();
 			else
@@ -131,7 +114,7 @@ class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\Pers
 	 * @return null|\Asgard\Entity\Entity|\Asgard\Orm\CollectionORM
 	 */
 	public function callCatchAll($entity, $name, $args, &$processed) {
-		if($entity::hasRelation($name)) {
+		if($this->getDataMapper()->hasRelation($this->definition, $name)) {
 			$processed = true;
 			return $entity->relation($name);
 		}
@@ -163,7 +146,7 @@ class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\Pers
 	 * @return array
 	 */
 	public function static_relations() {
-		return $this->definition->relations;
+		return $this->getDataMapper()->relations($this->definition);
 	}
 
 	/**
@@ -172,7 +155,7 @@ class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\Pers
 	 * @return array  relation parameters
 	 */
 	public function static_relation($name) {
-		return $this->static_relations()[$name];
+		return $this->getDataMapper()->relation($this->definition, $name);
 	}
 
 	/**
@@ -181,7 +164,7 @@ class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\Pers
 	 * @return boolean true if the entity class has the relation, false otherwise
 	 */
 	public function static_hasRelation($name) {
-		return array_key_exists($name, $this->static_relations());
+		return $this->getDataMapper()->hasRelation($this->definition, $name);
 	}
 
 	/**

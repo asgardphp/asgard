@@ -7,7 +7,7 @@ class EntityWithFile extends \Asgard\Entity\Entity {
 			'name',
 			'files' => [
 				'type' => 'file',
-				'multiple' => true
+				'many' => true
 			],
 			'file' => [
 				'type' => 'file',

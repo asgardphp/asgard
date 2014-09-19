@@ -20,7 +20,7 @@ class MultipleTest extends \PHPUnit_Framework_TestCase {
 	public function testAdd() {
 		$e = new Fixtures\EntityMultiple();
 
-		$this->assertInstanceOf('Asgard\Entity\Multiple', $e->names);
+		$this->assertInstanceOf('Asgard\Entity\ManyCollection', $e->names);
 
 		$e->names[] = 'Bob';
 		$e->names->add('Joe');
@@ -33,7 +33,7 @@ class MultipleTest extends \PHPUnit_Framework_TestCase {
 	public function testRemove() {
 		$e = new Fixtures\EntityMultiple();
 
-		$this->assertInstanceOf('Asgard\Entity\Multiple', $e->names);
+		$this->assertInstanceOf('Asgard\Entity\ManyCollection', $e->names);
 
 		$e->names[] = 'Bob';
 		$e->names[] = 'Joe';
@@ -51,7 +51,7 @@ class MultipleTest extends \PHPUnit_Framework_TestCase {
 	public function testGet() {
 		$e = new Fixtures\EntityMultiple();
 
-		$this->assertInstanceOf('Asgard\Entity\Multiple', $e->names);
+		$this->assertInstanceOf('Asgard\Entity\ManyCollection', $e->names);
 
 		$e->names[] = 'Bob';
 		$e->names[] = 'Joe';
@@ -63,7 +63,7 @@ class MultipleTest extends \PHPUnit_Framework_TestCase {
 	public function testIterate() {
 		$e = new Fixtures\EntityMultiple();
 
-		$this->assertInstanceOf('Asgard\Entity\Multiple', $e->names);
+		$this->assertInstanceOf('Asgard\Entity\ManyCollection', $e->names);
 
 		$e->names[] = 'Bob';
 		$e->names[] = 'Joe';
@@ -81,7 +81,7 @@ class MultipleTest extends \PHPUnit_Framework_TestCase {
 	public function testSerialize() {
 		$e = new Fixtures\EntityMultiple();
 
-		$this->assertInstanceOf('Asgard\Entity\Multiple', $e->names);
+		$this->assertInstanceOf('Asgard\Entity\ManyCollection', $e->names);
 
 		$e->names[] = 'Bob';
 		$e->names[] = 'Joe';

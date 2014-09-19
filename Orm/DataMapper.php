@@ -7,6 +7,11 @@ namespace Asgard\Orm;
 class DataMapper {
 
 	/**
+	 * Entities Manager.
+	 * @var \Asgard\Entity\EntitiesManager
+	 */
+	protected $entitiesManager;
+	/**
 	 * Database access.
 	 * @var \Asgard\Db\DB
 	 */
@@ -40,7 +45,8 @@ class DataMapper {
 	 * @param \Asgard\Container\Factory $ormFactory
 	 * @param \Asgard\Container\Factory $collectionOrmFactory
 	 */
-	public function __construct(\Asgard\Db\DB $db, $locale='en', $prefix=null, \Asgard\Container\Factory $ormFactory=null, \Asgard\Container\Factory $collectionOrmFactory=null) {
+	public function __construct(\Asgard\Entity\EntitiesManager $entitiesManager, \Asgard\Db\DB $db, $locale='en', $prefix=null, \Asgard\Container\Factory $ormFactory=null, \Asgard\Container\Factory $collectionOrmFactory=null) {
+		$this->entitiesManager      = $entitiesManager;
 		$this->db                   = $db;
 		$this->locale               = $locale;
 		$this->prefix               = $prefix;
@@ -63,7 +69,7 @@ class DataMapper {
 	 * @return boolean                       true if entity stored, false otherwisedescription]
 	 */
 	public function isOld(\Asgard\Entity\Entity $entity) {
-		return !static::isNew($entity);
+		return !$this->isNew($entity);
 	}
 
 	/**
@@ -92,10 +98,11 @@ class DataMapper {
 	 * @return \Asgard\Orm\ORM
 	 */
 	public function orm($entityClass) {
+		$definition = $this->entitiesManager->get($entityClass);
 		if($this->ormFactory)
-			return $this->ormFactory->create([$entityClass, $this->locale, $this->prefix, $this]);
+			return $this->ormFactory->create([$definition, $this->locale, $this->prefix, $this]);
 		else
-			return new ORM($entityClass, $this->locale, $this->prefix, $this);
+			return new ORM($definition, $this->locale, $this->prefix, $this);
 	}
 	
 	/**
@@ -125,10 +132,11 @@ class DataMapper {
 	 * @return string
 	 */
 	public function getTable($entityClass) {
-		if(isset($entityClass::getStaticDefinition()->table) && $entityClass::getStaticDefinition()->table)
-			return $this->prefix.$entityClass::getStaticDefinition()->table;
+		$definition = $this->entitiesManager->get($entityClass);
+		if(isset($definition->table) && $definition->table)
+			return $this->prefix.$definition->table;
 		else
-			return $this->prefix.$entityClass::getShortName();
+			return $this->prefix.$definition->getShortName();
 	}
 
 	/**
@@ -183,19 +191,38 @@ class DataMapper {
 	}
 
 	/**
-	 * Get a relation object.
+	 * Return the entity relations objects.
 	 * @param  \Asgard\Entity\EntityDefinition $definition
+	 * @return array
+	 */
+	public function relations(\Asgard\Entity\EntityDefinition $definition) {
+		if($relations = $definition->get('relations'))
+			return $relations;
+		else {
+			$relations = [];
+			foreach($definition->properties() as $name=>$prop) {
+				if($prop->get('type') == 'entity')
+					$relations[$name] = new EntityRelation($definition, $this, $name, $prop->params);
+			}
+			$definition->set('relations', $relations);
+			return $relations;
+		}
+	}
+
+	/**
+	 * Get a relation object.
+	 * @param  \Asgard\Entity\EntityDefinition entityClass
 	 * @param  string                          $name       relation name
-	 * @return \Asgard\Entity\
+	 * @return EntityRelation
 	 */
 	public function getRelation(\Asgard\Entity\EntityDefinition $definition, $name) {
-		return $definition->relation($name);
+		return $this->relations($definition)[$name];
 	}
 
 	/**
 	 * Return the related entities of an entity.
 	 * @param  \Asgard\Entity\Entity $entity
-	 * @param  string             $name   relation name
+	 * @param  string                $name   relation name
 	 * @return \Asgrd\Entity\Entity|CollectionORM
 	 */
 	public function relation(\Asgard\Entity\Entity $entity, $name) {
@@ -212,7 +239,7 @@ class DataMapper {
 					if(!$relEntity)
 						return;
 				}
-				return $relEntity::where(['id' => $entity->get($link)]);
+				return $this->orm($relEntity)->where(['id' => $entity->get($link)]);
 			case 'hasMany':
 			case 'HMABT':
 				if($this->collectionOrmFactory)
@@ -222,6 +249,10 @@ class DataMapper {
 			default:	
 				throw new \Exception('Relation '.$relation_type.' does not exist.');
 		}
+	}
+
+	public function hasRelation(\Asgard\Entity\EntityDefinition $definition, $name) {
+		return isset($this->relations($definition)[$name]);
 	}
 
 	/**
@@ -234,8 +265,8 @@ class DataMapper {
 		foreach($data as $k=>$v) {
 			if($entity->getDefinition()->hasProperty($k))
 				$data[$k] = $entity->getDefinition()->property($k)->unserialize($v, $entity, $k);
-			else
-				unset($data[$k]);
+			// else
+			// 	unset($data[$k]);
 		}
 
 		return $data;
@@ -247,7 +278,7 @@ class DataMapper {
 	 * @return true for success, otherwise false
 	 */
 	public function destroy(\Asgard\Entity\Entity $entity) {
-		return $entity::trigger('destroy', [$entity], function($chain, $entity) {
+		return $entity->getDefinition()->trigger('destroy', [$entity], function($chain, $entity) {
 			$orms = [];
 
 			foreach($entity->getDefinition()->relations() as $name=>$relation) {
@@ -260,15 +291,15 @@ class DataMapper {
 				}
 			}
 
-			if($entity::isI18N())
-				$r = static::entityORM($entity)->getDAL()->delete([$this->getTable($entity), $this->getTranslationTable($entity)]);
+			if($entity->getDefinition()->isI18N())
+				$r = $this->entityORM($entity)->getDAL()->delete([$this->getTable($entity), $this->getTranslationTable($entity)]);
 			else
-				$r = static::entityORM($entity)->getDAL()->delete();
+				$r = $this->entityORM($entity)->getDAL()->delete();
 
 			#Files
 			foreach($entity->getDefinition()->properties() as $name=>$prop) {
 				if($prop instanceof \Asgard\Entity\Properties\FileProperty) {
-					if($prop->get('multiple')) {
+					if($prop->get('many')) {
 						foreach($entity->get($name) as $file)
 							$file->delete();
 					}
@@ -292,7 +323,7 @@ class DataMapper {
 	 * @return \Asgard\Entity\Entity
 	 */
 	public function create($entityClass, $values=null, $force=false) {
-		$m = new $entityClass;
+		$m = $this->entitiesManager->get($entityClass)->make();
 		return $m->save($values, $force);
 	}
 	
@@ -321,11 +352,11 @@ class DataMapper {
 	public function errors(\Asgard\Entity\Entity $entity) {
 		$data = $entity->toArrayRaw();
 		$validator = $entity->getValidator();
-		foreach($entity->getDefinition()->relations() as $name=>$relation) {
-			$data[$name] = $entity->getDefinition()->relation($name);
+		foreach($this->relations($entity->getDefinition()) as $name=>$relation) {
+			$data[$name] = $this->relation($entity, $name);
 			$validator->attribute($name, $relation->getRules());
 		}
-		$errors = $entity::trigger('validation', [$entity, $validator, &$data], function($chain, $entity, $validator, &$data) {
+		$errors = $entity->getDefinition()->trigger('validation', [$entity, $validator, &$data], function($chain, $entity, $validator, &$data) {
 			return $validator->errors($data);
 		});
 
@@ -355,12 +386,12 @@ class DataMapper {
 			throw new EntityException($msg, $errors);
 		}
 
-		$entity::trigger('save', [$entity]);
+		$entity->getDefinition()->trigger('save', [$entity]);
 
 		#Files
 		foreach($entity->getDefinition()->properties() as $name=>$prop) {
 			if($prop instanceof \Asgard\Entity\Properties\FileProperty) {
-				if($prop->get('multiple')) {
+				if($prop->get('many')) {
 					$files = $entity->$name = array_values($entity->$name->all());
 					foreach($files as $k=>$file) {
 						if($file->shouldDelete()) {
@@ -381,56 +412,47 @@ class DataMapper {
 		}
 
 		$vars = [];
+		$i18n = [];
 		#process data
-		foreach($entity->getDefinition()->propertyNames() as $name) {
-			
-			if($entity::property($name)->i18n) {
+		foreach($entity->getDefinition()->properties() as $name=>$prop) {
+			#i18n properties
+			if($prop->i18n) {
 				$value = $entity->get($name, $entity->getLocales());
-				foreach($value as $k=>$v)
-					$vars[$name][$k] = $entity::property($name)->serialize($v);
+				foreach($value as $locale=>$v)
+					$i18n[$locale][$name] = $entity->getDefinition()->property($name)->serialize($v);
 			}
+			#relations with a single entity
+			elseif($prop->get('type') == 'entity') {
+				$rel = $this->getRelation($entity->getDefinition(), $name);
+				$type = $rel->type();
+				if($type == 'belongsTo' || $type == 'hasOne') {
+					$link = $rel->getLink();
+					$relatedEntity = $entity->data['properties'][$name];
+					if(is_object($relatedEntity)) {
+						if($this->isNew($relatedEntity))
+							$this->save($relatedEntity, null, $force);
+						$vars[$link] = $relatedEntity->id;
+					}
+					else
+						$vars[$link] = $relatedEntity;
+				}
+			}
+			#other properties
 			else {
 				$value = $entity->get($name);
-				$vars[$name] = $entity::property($name)->serialize($value);
+				$vars[$name] = $prop->serialize($value);
 			}
-		}
-
-		#persist entity ids
-		foreach($entity->getDefinition()->relations as $relation => $params) {
-			if(!isset($entity->data[$relation]))
-				continue;
-			$rel = $entity->getDefinition()->relations[$relation];
-			$type = $rel['type'];
-			if($type == 'belongsTo' || $type == 'hasOne') {
-				$link = $rel->getLink();
-				if(is_object($entity->data[$relation]))
-					$vars[$link] = $entity->data[$relation]->id;
-				else
-					$vars[$link] = $entity->data[$relation];
-			}
-		}
-		
-		#persist i18n
-		$values = [];
-		$i18n = [];
-		foreach($vars as $p => $v) {
-			if($entity::property($p)->i18n) {
-				foreach($v as $locale=>$locale_value)
-					$i18n[$locale][$p] = $locale_value;
-			}
-			else
-				$values[$p] = $v;
 		}
 
 		#Persist
 		$orm = $this->orm(get_class($entity));
 		#new
 		if(!isset($entity->id) || !$entity->id)
-			$entity->id = $orm->getDAL()->insert($values);
+			$entity->id = $orm->getDAL()->insert($vars);
 		#existing
 		elseif(count($vars) > 0) {
-			if(!$orm->reset()->where(['id'=>$entity->id])->getDAL()->update($values))
-				$entity->id = $orm->getDAL()->insert($values);
+			if(!$orm->reset()->where(['id'=>$entity->id])->getDAL()->update($vars))
+				$entity->id = $orm->getDAL()->insert($vars);
 		}		
 		
 		#Persist i18n
@@ -450,21 +472,21 @@ class DataMapper {
 		}
 	
 		#Persist relations
-		foreach($entity->getDefinition()->relations as $relation => $params) {
-			if(!isset($entity->data[$relation]))
+		foreach($this->relations($entity->getDefinition()) as $relation => $params) {
+			if(!isset($entity->data['properties'][$relation]))
 				continue;
-			$rel = static::getRelation($entity->getDefinition(), $relation);
+			$rel = $this->getRelation($entity->getDefinition(), $relation);
 			$reverse_rel = $rel->reverse();
-			$type = $rel['type'];
+			$type = $rel->type();
 
 			if($type == 'hasOne') {
 				$relation_entity = $rel['entity'];
 				$link = $reverse_rel->getLink();
-				$relation_entity::where([$link => $entity->id])->getDAL()->update([$link => 0]);
-				$relation_entity::where(['id' => $entity->data[$relation]])->getDAL()->update([$link => $entity->id]);
+				$this->orm($relation_entity)->where([$link => $entity->id])->getDAL()->update([$link => 0]);
+				$this->orm($relation_entity)->where(['id' => $entity->data[$relation]->id])->getDAL()->update([$link => $entity->id]);
 			}
-			elseif($type == 'hasMany' || $type == 'HMABT')
-				$entity->$relation()->sync($entity->data[$relation]);
+			elseif($rel['many'])
+				$this->relation($entity, $relation)->sync($entity->data['properties'][$relation]->all());
 		}
 
 		return $entity;

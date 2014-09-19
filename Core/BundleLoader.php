@@ -115,7 +115,7 @@ class BundleLoader {
 		foreach(glob($this->getPath().'/Entities/*.php') as $file) {
 			$class = \Asgard\Common\Tools::loadClassFile($file);
 			if(is_subclass_of($class, 'Asgard\Entity\Entity'))
-				$entitiesManager->addEntity($class);
+				$entitiesManager->makeDefinition($class);
 		}
 	}
 

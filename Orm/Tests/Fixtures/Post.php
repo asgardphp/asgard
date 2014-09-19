@@ -15,17 +15,15 @@ class Post extends \Asgard\Entity\Entity {
 			'content' => [
 				'type' => 'longtext',
 				'i18n' => true
-			]
-		];
-
-		$definition->relations = [
+			],
 			'author' => [
+				'type' => 'entity',
 				'entity' => 'Asgard\Orm\Tests\Fixtures\Author',
-				'has' => 'one'
 			],
 			'categories' => [
+				'type' => 'entity',
 				'entity' => 'Asgard\Orm\Tests\Fixtures\Category',
-				'has' => 'many'
+				'many' => true,
 			],
 		];
 

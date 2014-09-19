@@ -99,6 +99,7 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		});
 		$container->register('datamapper', function($container) {
 			return new \Asgard\Orm\DataMapper(
+				$container['entitiesManager'],
 				$container['db'],
 				$container['config']['locale'],
 				$container['config']['database/prefix'],
@@ -151,13 +152,15 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			$em = $container['entitiesManager'];
 			$mm = $container['migrationsManager'];
 
+			#if database is available
 			try {
 				$db = $container['db'];
+				$dataMapper = $container['dataMapper'];
 
-				$ormAutomigrate = new \Asgard\Orm\Commands\AutoMigrateCommand($em, $mm, $db);
+				$ormAutomigrate = new \Asgard\Orm\Commands\AutoMigrateCommand($em, $mm, $dataMapper);
 				$container['console']->add($ormAutomigrate);
 
-				$ormGenerateMigration = new \Asgard\Orm\Commands\GenerateMigrationCommand($em, $mm, $db);
+				$ormGenerateMigration = new \Asgard\Orm\Commands\GenerateMigrationCommand($em, $mm, $dataMapper);
 				$container['console']->add($ormGenerateMigration);
 
 				$dbRestore = new \Asgard\Db\Commands\RestoreCommand($db);

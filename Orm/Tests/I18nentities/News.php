@@ -11,17 +11,15 @@ class News extends \Asgard\Entity\Entity {
 					'required'	=>	false,
 				]
 			],
+			'comments'	=>	[
+				'type' => 'entity',
+				'entity'	=>	'\Asgard\Orm\Tests\I18nentities\Comment',
+				'many' => true,
+			],
 		];
 
 		$definition->behaviors = [
 			new \Asgard\Orm\ORMBehavior
-		];
-
-		$definition->relations = [
-			'comments'	=>	[
-				'entity'	=>	'\Asgard\Orm\Tests\I18nentities\Comment',
-				'has'		=>	'many',
-			],
 		];
 	}
 }

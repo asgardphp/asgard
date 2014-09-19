@@ -30,7 +30,7 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 
 		$this->relation = $entity->getDefinition()->relations[$relation_name];
 
-		parent::__construct($this->relation['entity'], $locale, $prefix, $datamapper, $paginatorFactory);
+		parent::__construct($entity->getDefinition()->getEntitiesManager()->get($this->relation['entity']), $locale, $prefix, $datamapper, $paginatorFactory);
 
 		$this->joinToEntity($this->relation->reverse(), $entity);
 	}
@@ -40,29 +40,34 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 	 * @param  array           $ids  array of entity ids
 	 * @return CollectionORM         $this
 	 */
-	public function sync($ids) {
+	public function sync($ids, $force=false) {
 		if(!$ids)
 			$ids = [];
 		if(!is_array($ids))
 			$ids = [$ids];
 		foreach($ids as $k=>$v) {
-			if($v instanceof \Asgard\Entity\Entity)
+			if($v instanceof \Asgard\Entity\Entity) {
+				if($this->dataMapper->isNew($v))
+					$this->dataMapper->save($v, null, $force);
 				$ids[$k] = (int)$v->id;
+			}
 		}
 	
 		switch($this->relation->type()) {
 			case 'hasMany':
 				$relation_entity = $this->relation['entity'];
 				$link = $this->relation->getLink();
-				$dal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $relation_entity::getTable());
+				$dal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->dataMapper->getTable($relation_entity));
 				$dal->where([$link => $this->parent->id])->update([$link => 0]);
-				if($ids)
-					$dal->reset()->where(['id IN ('.implode(', ', $ids).')'])->update([$link => $this->parent->id]);
+				if($ids) {
+					$newDal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->dataMapper->getTable($relation_entity));
+					$newDal->where(['id IN ('.implode(', ', $ids).')'])->update([$link => $this->parent->id]);
+				}
 				break;
 			case 'HMABT':
 				$dal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->relation->getTable());
 				$dal->where([$this->relation->getLinkA() => $this->parent->id])->delete();
-				$dal->reset();
+				$dal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->relation->getTable());
 				$i = 1;
 				foreach($ids as $id) {
 					if(isset($this->relation['sortfield']) && $this->relation['sortfield'])
@@ -121,7 +126,7 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 	 */
 	public function create(array $params=[]) {
 		$relEntity = $this->relation['entity'];
-		$new = new $relEntity;
+		$new = $this->definition->make();
 		switch($this->relation['type']) {
 			case 'hasMany':
 				$params[$this->relation->getLink()] = $this->parent->id;

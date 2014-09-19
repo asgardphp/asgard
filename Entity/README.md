@@ -90,7 +90,7 @@ or set multiple values at once:
 
 	$article->set(['title'=>'hello', 'content'=>'everyone'])
 
-<a name="multiple"></a>
+<a name="properties"></a>
 ##Properties
 **boolean**
 
@@ -158,11 +158,11 @@ For that, add the multiple parameter like so:
 
 	$definition->properties = [
 		'title' => [
-			'multiple' => true
+			'many' => true
 		]
 	]
 
-Now, $article->title will return a Asgard\Entity\Multiple object which can be used like an array:
+Now, $article->title will return a Asgard\Entity\ManyCollection object which can be used like an array:
 
 	$article->title[] = 'new title';
 	$article->title[0] //new title

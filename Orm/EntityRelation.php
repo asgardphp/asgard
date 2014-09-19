@@ -11,6 +11,16 @@ class EntityRelation implements \ArrayAccess {
 	 */
 	protected $entityClass;
 	/**
+	 * Entity definition.
+	 * @var \Asgard\Entity\Definition
+	 */
+	protected $entityDefinition;
+	/**
+	 * DataMapper.
+	 * @var DataMapper
+	 */
+	protected $dataMapper;
+	/**
 	 * Reverse relation parameters.
 	 * @var array
 	 */
@@ -32,26 +42,13 @@ class EntityRelation implements \ArrayAccess {
 	 * @param string                          $name
 	 * @param array                           $params
 	 */
-	public function __construct(\Asgard\Entity\EntityDefinition $entityDefinition, $name, array $params) {
+	public function __construct(\Asgard\Entity\EntityDefinition $entityDefinition, DataMapper $dataMapper, $name, array $params) {
 		$entityClass = $entityDefinition->getClass();
 		$this->entityClass = $entityClass;
+		$this->entityDefinition = $entityDefinition;
+		$this->dataMapper = $dataMapper;
 		$this->params = $params;
 		$this->params['name'] = $this->name = $name;
-
-		if(isset($params['polymorphic']) && $params['polymorphic']) {
-			#No hasMany/HMABT for polymorphic
-			$this->params['link'] = $name.'_id';
-			$this->params['link_type'] = $name.'_type';
-
-			$entityDefinition->addProperty($this->params['link'], ['type' => 'integer', 'required' => (isset($this->params['required']) && $this->params['required']), 'editable'=>false]);
-			$entityDefinition->addProperty($this->params['link_type'], ['type' => 'text', 'required' => (isset($this->params['required']) && $this->params['required']), 'editable'=>false]);
-		}
-		else {
-			if($this->params['has'] == 'one') {
-				$this->params['link'] = $name.'_id';
-				$entityDefinition->addProperty($this->params['link'], ['type' => 'integer', 'required' => (isset($this->params['required']) && $this->params['required']), 'editable'=>false]);
-			}
-		}
 	}
 
 	/**
@@ -61,7 +58,7 @@ class EntityRelation implements \ArrayAccess {
 	public function getLink() {
 		if($this->type() == 'hasMany')
 			return $this->reverseRelationParams()['name'].'_id';
-		elseif($this->type() == 'belongsTo')
+		elseif($this->type() == 'belongsTo' || $this->type() == 'hasOne')
 			return $this->name.'_id';
 	}
 
@@ -70,8 +67,7 @@ class EntityRelation implements \ArrayAccess {
 	 * @return string
 	 */
 	public function getLinkA() {
-		$entityClass = $this->entityClass;
-		return $entityClass::getShortName().'_id';
+		return $this->entityDefinition->getShortName().'_id';
 	}
 
 	/**
@@ -80,22 +76,23 @@ class EntityRelation implements \ArrayAccess {
 	 */
 	public function getLinkB() {
 		$entityClass = $this->params['entity'];
-		return $entityClass::getShortName().'_id';
+		return $this->entityDefinition->getEntitiesManager()->get($entityClass)->getShortName().'_id';
 	}
 
 	/**
-	 * Get the table of an entity class.
+	 * Get the table of a HMABT table.
 	 * @param  string $prefix table prefix
 	 * @return string
 	 */
 	public function getTable($prefix=null) {
-		$entityClass = $this->entityClass;
 		$relationEntityClass = $this->params['entity'];
+		$entityShortName = $this->entityDefinition->getShortName();
+		$relationEntityShortName = $this->entityDefinition->getEntitiesManager()->get($relationEntityClass)->getShortName();
 
-		if($entityClass::getShortName() < $relationEntityClass::getShortName())
-			return $prefix.$entityClass::getShortName().'_'.$relationEntityClass::getShortName();
+		if($entityShortName < $relationEntityShortName)
+			return $prefix.$entityShortName.'_'.$relationEntityShortName;
 		else
-			return $prefix.$relationEntityClass::getShortName().'_'.$entityClass::getShortName();
+			return $prefix.$relationEntityShortName.'_'.$entityShortName;
 	}
 
 	/**
@@ -105,20 +102,18 @@ class EntityRelation implements \ArrayAccess {
 	public function type() {
 		$rev = $this->reverseRelationParams();
 
-		if($this->params['has'] == 'one') {
-			if($rev['has'] == 'one')
-				return 'hasOne';
-			elseif($rev['has'] == 'many')
-				return 'belongsTo';
-		}
-		elseif($this->params['has'] == 'many') {
-			if($rev['has'] == 'one')
-				return 'hasMany';
-			elseif($rev['has'] == 'many')
+		if($this['many']) {
+			if($rev['many'])
 				return 'HMABT';
+			else
+				return 'hasMany';
 		}
-		else
-			throw new \Exception('Problem with relation type.');
+		else {
+			if($rev['many'])
+				return 'belongsTo';
+			else
+				return 'hasOne';
+		}
 	}
 
 	/**
@@ -133,10 +128,11 @@ class EntityRelation implements \ArrayAccess {
 		$entityName = preg_replace('/^\\\/', '', $origEntityName);
 
 		$relation_entity = $this->params['entity'];
+		$relationEntityDefinition = $this->entityDefinition->getEntitiesManager()->get($relation_entity);
 		$name = $this->name;
 
 		$rev_relations = [];
-		foreach($relation_entity::getStaticDefinition()->relations() as $rev_rel_name=>$rev_rel) {
+		foreach($this->dataMapper->relations($relationEntityDefinition) as $rev_rel_name=>$rev_rel) {
 			$relEntityClass = preg_replace('/^\\\/', '', strtolower($rev_rel['entity']));
 
 			if($relEntityClass == $entityName
@@ -168,9 +164,10 @@ class EntityRelation implements \ArrayAccess {
 	 */
 	public function reverse() {
 		$reverse_rel = $this->reverseRelationParams();
-		$entity = $this->params['entity'];
+		$relation_entity = $this->params['entity'];
+		$relationEntityDefinition = $this->entityDefinition->getEntitiesManager()->get($relation_entity);
 		$rel_name = $reverse_rel['name'];
-		return $entity::getStaticDefinition()->relations[$rel_name];
+		return $this->dataMapper->getRelation($relationEntityDefinition, $rel_name);
 	}
 
 	/**

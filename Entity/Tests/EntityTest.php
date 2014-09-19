@@ -92,11 +92,12 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals('news', Classes\News::getShortName());
 
 		#toJSON
-		$this->assertEquals('{"title":"bla","content":"Test Content","published":"2009-09-09","another_property":null}', $news->toJSON());
+		$this->assertEquals('{"id":null,"title":"bla","content":"Test Content","published":"2009-09-09","another_property":null}', $news->toJSON());
 
 		#toArray
 		$this->assertEquals(
 			[
+				'id' => null,
 				'title' => 'bla',
 				'content' => 'Test Content',
 				'published' => '2009-09-09',
@@ -110,6 +111,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 		unset($newsArray['published']);
 		$this->assertEquals(
 			[
+				'id' => null,
 				'title' => 'bla',
 				'content' => 'Test Content',
 				#'published' => \Carbon\Carbon::create(2009, 9, 9),
@@ -137,7 +139,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 			]),
 		];
 		$this->assertEquals(
-			'[{"title":"Title 1","content":"Content 1","published":"2009-09-09","another_property":null},{"title":"Title 2","content":"Content 2","published":"2009-09-09","another_property":null},{"title":"Title 3","content":"Content 3","published":"2009-09-09","another_property":null}]',
+			'[{"id":null,"title":"Title 1","content":"Content 1","published":"2009-09-09","another_property":null},{"id":null,"title":"Title 2","content":"Content 2","published":"2009-09-09","another_property":null},{"id":null,"title":"Title 3","content":"Content 3","published":"2009-09-09","another_property":null}]',
 			Classes\News::arrayToJSON($news)
 		);
 

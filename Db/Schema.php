@@ -681,7 +681,7 @@ class Column {
 	 * @return Column $this
 	 */
 	public function primary() {
-		$sql = 'ALTER TABLE `'.$this->table.'` ADD PRIMARY(`'.$this->name.'`)';
+		$sql = 'ALTER TABLE `'.$this->table.'` ADD PRIMARY KEY (`'.$this->name.'`)';
 		$this->db->query($sql);
 		
 		return $this;

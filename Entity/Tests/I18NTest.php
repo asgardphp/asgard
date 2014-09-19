@@ -45,6 +45,7 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 
 		#arrays
 		$this->assertEquals([
+			'id' => null,
 			'title' => [
 				'en' => 'Hello',
 				'fr' => 'Bonjour'
@@ -52,6 +53,7 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 		], $post->toArrayRawI18N());
 
 		$this->assertEquals([
+			'id' => null,
 			'title' => [
 				'en' => 'Hello',
 				'fr' => 'Bonjour'
@@ -59,6 +61,7 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 		], $post->toArrayI18N());
 
 		$this->assertEquals(json_encode([
+			'id' => null,
 			'title' => [
 				'en' => 'Hello',
 				'fr' => 'Bonjour'
@@ -66,6 +69,7 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 		]), $post->toJSONI18N());
 
 		$this->assertEquals(json_encode([[
+			'id' => null,
 			'title' => [
 				'en' => 'Hello',
 				'fr' => 'Bonjour'
@@ -104,6 +108,7 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 
 		#arrays
 		$this->assertEquals([
+			'id' => null,
 			'titles' => [
 				'en' => ['Hello'],
 				'fr' => ['Bonjour']
@@ -111,6 +116,7 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 		], $post->toArrayRawI18N());
 
 		$this->assertEquals([
+			'id' => null,
 			'titles' => [
 				'en' => ['Hello'],
 				'fr' => ['Bonjour']
@@ -118,6 +124,7 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 		], $post->toArrayI18N());
 
 		$this->assertEquals(json_encode([
+			'id' => null,
 			'titles' => [
 				'en' => ['Hello'],
 				'fr' => ['Bonjour']
@@ -125,6 +132,7 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 		]), $post->toJSONI18N());
 
 		$this->assertEquals(json_encode([[
+			'id' => null,
 			'titles' => [
 				'en' => ['Hello'],
 				'fr' => ['Bonjour']

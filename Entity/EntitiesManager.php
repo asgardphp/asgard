@@ -1,19 +1,49 @@
 <?php
 namespace Asgard\Entity;
 
+/**
+ * 
+ */
 class EntitiesManager {
 	use \Asgard\Container\ContainerAwareTrait;
 
+	/**
+	 * [$singleton description]
+	 * @var [type]
+	 */
 	protected static $singleton;
-	protected $entities    = [];
+	/**
+	 * [$definitions description]
+	 * @var [type]
+	 */
 	protected $definitions = [];
+	/**
+	 * [$cache description]
+	 * @var [type]
+	 */
 	protected $cache;
+	/**
+	 * [$defaultLocale description]
+	 * @var [type]
+	 */
 	protected $defaultLocale;
+	/**
+	 * [$validatorFactory description]
+	 * @var [type]
+	 */
 	protected $validatorFactory;
+	/**
+	 * [$hooksManager description]
+	 * @var [type]
+	 */
 	protected $hooksManager;
 
-	#needs services container for entity behaviors
-	public function __construct($container) {
+	/**
+	 * [__construct description]
+	 * @param \Asgard\Container\Container $container
+	 */
+	public function __construct(\Asgard\Container\Container $container=null) {
+		#need services container for entity behaviors only
 		$this->setContainer($container);
 	}
 
@@ -71,15 +101,6 @@ class EntitiesManager {
 		return $this->defaultLocale;
 	}
 
-	public function addEntity($entityClass) {
-		$this->entities[] = $entityClass;
-		return $this;
-	}
-
-	public function getEntities() {
-		return $this->entities;
-	}
-
 	public function get($entityClass) {
 		if(!$this->has($entityClass))
 			$this->makeDefinition($entityClass);
@@ -106,6 +127,10 @@ class EntitiesManager {
 		$this->definitions[$entityClass] = $definition;
 
 		return $definition;
+	}
+
+	public function getDefinitions() {
+		return $this->definitions;
 	}
 
 	public function make($entityClass, array $params=null, $locale=null) {

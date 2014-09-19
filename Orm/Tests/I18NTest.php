@@ -15,16 +15,18 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 			'host'     => 'localhost'
 		];
 		$container['db'] = new \Asgard\Db\DB($config);
-		$container->register('datamapper', function($container) {
-			return new \Asgard\Orm\DataMapper(
-				$container['db']
-			);
-		});
 
 		$entitiesManager = $container['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($container);
 		#set the EntitiesManager static instance for activerecord-like entities (e.g. new Article or Article::find())
 		\Asgard\Entity\EntitiesManager::setInstance($entitiesManager);
 		$entitiesManager->setDefaultLocale('en');
+		
+		$container->register('datamapper', function($container) {
+			return new \Asgard\Orm\DataMapper(
+				$container['entitiesManager'],
+				$container['db']
+			);
+		});
 
 		static::$container = $container;
 

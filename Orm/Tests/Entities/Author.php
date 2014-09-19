@@ -5,17 +5,15 @@ class Author extends \Asgard\Entity\Entity {
 	public static function definition(\Asgard\Entity\EntityDefinition $definition) {
 		$definition->properties = [
 			'name',
+			'news' => [
+				'type' => 'entity',
+				'entity' => 'Asgard\Orm\Tests\Entities\News',
+				'many' => true,
+			],
 		];
 
 		$definition->behaviors = [
 			new \Asgard\Orm\ORMBehavior
-		];
-
-		$definition->relations = [
-			'news' => [
-				'entity' => 'Asgard\Orm\Tests\Entities\News',
-				'has' => 'many'
-			],
 		];
 	}
 }

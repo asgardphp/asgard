@@ -6,7 +6,7 @@ class EntityMultiple extends \Asgard\Entity\Entity {
 		$definition->properties = [
 			'names' => [
 				'type' => 'text',
-				'multiple' => true
+				'many' => true
 			],
 		];
 	}

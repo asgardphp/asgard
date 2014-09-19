@@ -6,42 +6,66 @@ namespace Asgard\Orm;
  */
 class ORMMigrations {
 	/**
-	 * MigrationsManager instance.
+	 * MigrationsManager dependency.
 	 * @var \Asgard\Migration\MigrationsManager
 	 */
 	protected $migrationsManager;
+	/**
+	 * DataMapper dependency.
+	 * @var DataMapper
+	 */
+	protected $dataMapper;
 
 	/**
 	 * Constructor.
 	 * @param \Asgard\Migration\MigrationsManager $migrationsManager
 	 */
-	public function __construct($migrationsManager=null) {
+	public function __construct($dataMapper, $migrationsManager=null) {
+		$this->dataMapper = $dataMapper;
 		$this->migrationsManager = $migrationsManager;
 	}
 
 	/**
 	 * Automatically migrate entities tables.
-	 * @param  array         $entities
-	 * @param  \Asgard\Db\Schema $s
+	 * @param  \Asgard\Entity\EntitiesManager $entitiesManager
+	 * @param  \Asgard\Db\Schema              $schema
 	 */
-	public function autoMigrate($entities, \Asgard\Db\Schema $s) {
-		if(!is_array($entities))
-			$entities = [$entities];
-		$this->processSchemas($this->getEntitiesSchemas($entities), $s);
+	public function autoMigrate(\Asgard\Entity\EntitiesManager $entitiesManager, \Asgard\Db\Schema $schema) {
+		$this->doAutoMigrate($entitiesManager->getDefinitions(), $schema);
 	}
 
 	/**
 	 * Generate a migration from entities.
-	 * @param  array      $entities
+	 * @param  \Asgard\Entity\EntitiesManager $entitiesManager
 	 * @param  string     $migrationName
-	 * @param  \Asgard\Db\DB $db
 	 * @return string     name of migration
 	 */
-	public function generateMigration(array $entities, $migrationName, \Asgard\Db\DB $db) {
-		if(!is_array($entities))
-			$entities = [$entities];
-		$entitiesSchemas = $this->getEntitiesSchemas($entities);
-		$sqlSchemas = $this->getSQLSchemas($db);
+	public function generateMigration(\Asgard\Entity\EntitiesManager $entitiesManager, $migrationName) {
+		return $this->doGenerateMigration($entitiesManager->getDefinitions(), $migrationName);
+	}
+
+	/**
+	 * Automatically migrate given entity definitions.
+	 * @param  array|\Asgard\Entity\EntityDefinition $definitions
+	 * @param  \Asgard\Db\Schema                     schema
+	 */
+	public function doAutoMigrate($definitions, \Asgard\Db\Schema $schema) {
+		if(!is_array($definitions))
+			$definitions = [$definitions];
+		$this->processSchemas($this->getEntitiesSchemas($definitions), $schema);
+	}
+
+	/**
+	 * Generate a migration from given entity definitions.
+	 * @param  array|\Asgard\Entity\EntityDefinition $definitions
+	 * @param  string                                $migrationName
+	 * @return string                                name of migration
+	 */
+	public function doGenerateMigration($definitions, $migrationName) {
+		if(!is_array($definitions))
+			$definitions = [$definitions];
+		$entitiesSchemas = $this->getEntitiesSchemas($definitions);
+		$sqlSchemas = $this->getSQLSchemas($this->dataMapper->getDB());
 		$up = $this->buildMigration($entitiesSchemas, $sqlSchemas, false);
 		$down = $this->buildMigration($sqlSchemas, $entitiesSchemas, true);
 		return $this->migrationsManager->create($up, $down, $migrationName, '\Asgard\Migration\DBMigration');
@@ -49,20 +73,62 @@ class ORMMigrations {
 
 	/**
 	 * Generate schemas of entities.
-	 * @param  array  $entities
+	 * @param  array $definitions
 	 * @return array
 	 */
-	protected function getEntitiesSchemas(array $entities) {
+	protected function getEntitiesSchemas(array $definitions) {
+		$dataMapper = $this->dataMapper;
 		$schemas = [];
-		foreach($entities as $class) {
+		foreach($definitions as $definition) {
 			$schema = [];
 			
-			foreach($class::getStaticDefinition()->properties() as $name=>$prop) {
+			foreach($definition->properties() as $name=>$prop) {
 				if(!$prop->orm)
 					$col = [];
 				else
 					$col = $prop->orm;
-				if($prop->get('multiple'))
+
+				#relations
+				if($prop->get('type') == 'entity') {
+					$relation = $dataMapper->getRelation($definition, $name);
+					#relations with one entity
+					if(!$relation['many']) {
+						$schema[$relation->getLink()] = [
+							'type'           => 'int(11)',
+							'nullable'       => true,
+							'auto_increment' => false,
+							'default'        => null,
+							'key'            => null,
+						];
+					}
+					#HMABT relations
+					elseif($relation->type() == 'HMABT') {
+						$table_name = $relation->getTable();
+						#if table was not already created by the opposite entity
+						if(!isset($schemas[$table_name])) {
+							$arr = [
+								$relation->getLinkA() => [
+									'type'           => 'int(11)',
+									'nullable'       => true,
+									'auto_increment' => false,
+									'default'        => null,
+									'key'            => null,
+								],
+								$relation->getLinkB() => [
+									'type'           => 'int(11)',
+									'nullable'       => true,
+									'auto_increment' => false,
+									'default'        => null,
+									'key'            => null,
+								],
+							];
+							$schemas[$table_name] = $arr;
+						}
+					}
+					continue;
+				}
+
+				if($prop->get('many'))
 					$col['type'] = 'blob';
 				elseif(!isset($prop->orm['type'])) {
 					if(method_exists($prop, 'getSQLType'))
@@ -82,60 +148,35 @@ class ORMMigrations {
 				$col['position'] = $prop->params['position'];
 
 				if($prop->i18n) {
-					if(!isset($schemas[$class::getTable().'_translation'])) {
-						$schemas[$class::getTable().'_translation'] = [
+					if(!isset($schemas[$dataMapper->getTable($definition->getClass()).'_translation'])) {
+						$schemas[$dataMapper->getTable($definition->getClass()).'_translation'] = [
 							'id' => [
-								'type'	=>	'int(11)',
-								'nullable'	=>	false,
-								'auto_increment'	=>	false,
-								'default'	=>	null,
-								'key'	=>	null,
+								'type'           => 'int(11)',
+								'nullable'       => false,
+								'auto_increment' => false,
+								'default'        => null,
+								'key'            => null,
 							],
 							'locale' => [
-								'type'	=>	'varchar(50)',
-								'nullable'	=>	false,
-								'auto_increment'	=>	false,
-								'default'	=>	null,
-								'key'	=>	null,
+								'type'           => 'varchar(50)',
+								'nullable'       => false,
+								'auto_increment' => false,
+								'default'        => null,
+								'key'            => null,
 							],
 						];
 					}
-					$schemas[$class::getTable().'_translation'][$name] = $col;
+					$schemas[$dataMapper->getTable($definition->getClass()).'_translation'][$name] = $col; #todo replace by getTranslationTable
 				}
 				else
 					$schema[$name] = $col;
 			}
 
-			foreach($class::getStaticDefinition()->relations as $name=>$rel) {
-				if($rel->type() == 'HMABT') {
-					$table_name = $rel->getTable();
-					if(!isset($schemas[$table_name])) {
-						$arr = [
-							$rel->getLinkA()	=>	[
-								'type'	=>	'int(11)',
-								'nullable'	=>	false,
-								'auto_increment'	=>	false,
-								'default'	=>	null,
-								'key'	=>	null,
-							],
-							$rel->getLinkB()	=>	[
-								'type'	=>	'int(11)',
-								'nullable'	=>	false,
-								'auto_increment'	=>	false,
-								'default'	=>	null,
-								'key'	=>	null,
-							],
-						];
-						$schemas[$table_name] = $arr;
-					}
-				}
-			}
-
 			uasort($schema, function($a, $b) {
 				if(!isset($a['position']))
-					return -1;
-				if(!isset($b['position']))
 					return 1;
+				if(!isset($b['position']))
+					return -1;
 				if($a['position'] < $b['position'])
 					return -1;
 				return 1;
@@ -145,7 +186,7 @@ class ORMMigrations {
 			foreach($schema as $k=>$col)
 				$schema[$k]['position'] = $i++;
 
-			$schemas[$class::getTable()] = $schema;
+			$schemas[$dataMapper->getTable($definition->getClass())] = $schema;
 		}
 
 		return $schemas;
@@ -153,7 +194,7 @@ class ORMMigrations {
 
 	/**
 	 * Process the schemas.
-	 * @param  array          $schemas
+	 * @param  array             $schemas
 	 * @param  \Asgard\Db\Schema $s
 	 */
 	protected function processSchemas(array $schemas, \Asgard\Db\Schema $s) {
@@ -286,7 +327,7 @@ class ORMMigrations {
 	protected function createTable($table, $cols) {
 		$res = "\$this->container['schema']->create('$table', function(\$table) {";
 		foreach($cols as $col=>$params)
-			$res .= "\t".$this->createColumn($col, $params);
+			$res .= $this->createColumn($col, $params);
 		$res .= "\n});\n\n";
 		
 		return $res;
@@ -314,6 +355,16 @@ class ORMMigrations {
 			else
 				$res .= "\n		->NotNullable()";
 		}
+		if(isset($params['key'])) {
+			if($params['key'] == 'PRI')
+				$res .= "\n		->primary()";
+			elseif($params['key']=='UNI')
+				$res .= "\n		->unique()";
+			elseif($params['key']=='MUL')
+				$res .= "\n		->index()";
+			else
+				$res .= "\n		->dropIndex()";
+		}
 		if(isset($params['auto_increment'])) {
 			if($params['auto_increment'])
 				$res .= "\n		->autoincrement()";
@@ -325,16 +376,6 @@ class ORMMigrations {
 				$res .= "\n		->def(false)";
 			else
 				$res .= "\n		->def('$params[default]')";
-		}
-		if(isset($params['key'])) {
-			if($params['key'] == 'PRI')
-				$res .= "\n		->primary()";
-			elseif($params['key']=='UNI')
-				$res .= "\n		->unique()";
-			elseif($params['key']=='MUL')
-				$res .= "\n		->index()";
-			else
-				$res .= "\n		->dropIndex()";
 		}
 		$res .= ";";
 		
@@ -351,16 +392,16 @@ class ORMMigrations {
 		$res = "\n\t\$table->add('$col', '$params[type]')";
 		if($params['nullable'])
 			$res .= "\n		->nullable()";
-		if($params['auto_increment'])
-			$res .= "\n		->autoincrement()";
-		if($params['default'])
-			$res .= "\n		->def('$params[default]')";
 		if($params['key'] == 'PRI')
 			$res .= "\n		->primary()";
 		if($params['key'] == 'UNI')
 			$res .= "\n		->unique()";
 		if($params['key'] == 'MUL')
 			$res .= "\n		->index()";
+		if($params['auto_increment'])
+			$res .= "\n		->autoincrement()";
+		if($params['default'])
+			$res .= "\n		->def('$params[default]')";
 		$res .= ";";
 		
 		return $res;

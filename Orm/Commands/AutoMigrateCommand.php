@@ -10,24 +10,25 @@ class AutoMigrateCommand extends \Asgard\Console\Command {
 	protected $description = 'Generate and run a migration from ORM entities';
 	protected $entitiesManager;
 	protected $migrationsManager;
-	protected $db;
+	protected $dataMapper;
 
-	public function __construct($entitiesManager, $migrationsManager, $db) {
+	public function __construct($entitiesManager, $migrationsManager, $dataMapper) {
 		$this->entitiesManager = $entitiesManager;
 		$this->migrationsManager = $migrationsManager;
-		$this->db = $db;
+		$this->dataMapper = $dataMapper;
 		parent::__construct();
 	}
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$migration = $this->input->getArgument('migration') ? $this->input->getArgument('migration'):'Automigrate';
 
+		$dm = $this->dataMapper;
 		$mm = $this->migrationsManager;
-		$om = new \Asgard\Orm\ORMMigrations($mm);
+		$om = new \Asgard\Orm\ORMMigrations($dm, $mm);
 
 		$entities = $this->entitiesManager->getEntities();
 		
-		$migration = $om->generateMigration($entities, $migration, $this->db);
+		$migration = $om->generateMigration($entities, $migration, $this->dataMapper);
 		if($mm->has($migration))
 			$this->info('The migration was successfully generated.');
 		else

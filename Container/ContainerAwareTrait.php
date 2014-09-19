@@ -15,7 +15,7 @@ trait ContainerAwareTrait {
 	 * Set the container.
 	 * @param \Asgard\Container\Container $container
 	 */
-	public function setContainer(\Asgard\Container\Container $container) {
+	public function setContainer(\Asgard\Container\Container $container=null) {
 		$this->container = $container;
 		return $this;
 	}

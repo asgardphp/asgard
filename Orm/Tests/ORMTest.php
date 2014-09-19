@@ -30,8 +30,15 @@ class ORMTest extends \PHPUnit_Framework_TestCase {
 		$container->register('collectionOrm', function($container, $entityClass, $name, $locale, $prefix, $dataMapper) {
 			return new \Asgard\Orm\CollectionORM($entityClass, $name, $locale, $prefix, $dataMapper, $container->createFactory('paginator'));
 		});
+
+		$entitiesManager = $container['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($container);
+		$entitiesManager->setValidatorFactory($container->createFactory('validator'));
+		#set the EntitiesManager static instance for activerecord-like entities (e.g. new Article or Article::find())
+		\Asgard\Entity\EntitiesManager::setInstance($entitiesManager);
+		
 		$container->register('datamapper', function($container) {
 			return new \Asgard\Orm\DataMapper(
+				$container['entitiesManager'],
 				$container['db'],
 				'en',
 				'',
@@ -40,10 +47,6 @@ class ORMTest extends \PHPUnit_Framework_TestCase {
 			);
 		});
 
-		$entitiesManager = $container['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($container);
-		$entitiesManager->setValidatorFactory($container->createFactory('validator'));
-		#set the EntitiesManager static instance for activerecord-like entities (e.g. new Article or Article::find())
-		\Asgard\Entity\EntitiesManager::setInstance($entitiesManager);
 
 		static::$container = $container;
 	}
@@ -156,13 +159,13 @@ class ORMTest extends \PHPUnit_Framework_TestCase {
 
 		#with
 		$cats = Entities\Category::with('news')->get();
-		$this->assertEquals(1, count($cats[0]->data['news']));
-		$this->assertEquals(2, count($cats[1]->data['news']));
+		$this->assertEquals(1, count($cats[0]->data['properties']['news']));
+		$this->assertEquals(2, count($cats[1]->data['properties']['news']));
 
 		$cats = Entities\Category::with('news', function($orm) {
 			$orm->with('author');
 		})->get();
-		$this->assertEquals(1, $cats[0]->data['news'][0]->data['author']->id);
+		$this->assertEquals(1, $cats[0]->data['properties']['news'][0]->data['properties']['author']->id);
 
 		#selectQuery
 		$cats = Entities\Category::selectQuery('SELECT * FROM category WHERE title=?', ['General']);

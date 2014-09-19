@@ -13,13 +13,18 @@ class MigrationsTest extends \PHPUnit_Framework_TestCase {
 		$container['config'] = new \Asgard\Config\Config;
 		$container['hooks'] = new \Asgard\Hook\HooksManager;
 		$container['cache'] = new \Asgard\Cache\NullCache;
-		$container['entitiesManager'] = new \Asgard\Entity\EntitiesManager($container);
+		$container['entitiesManager'] = $entitiesManager = new \Asgard\Entity\EntitiesManager($container);
+		$dataMapper = new \Asgard\Orm\DataMapper($container['entitiesManager'], $container['db']);
 
-		$ormm = new \Asgard\Orm\ORMMigrations();
+		$ormm = new \Asgard\Orm\ORMMigrations($dataMapper);
 		$schema = new \Asgard\Db\Schema($container['db']);
 		$schema->dropAll();
 
-		$ormm->autoMigrate(['Asgard\Orm\Tests\Fixtures\Post', 'Asgard\Orm\Tests\Fixtures\Category', 'Asgard\Orm\Tests\Fixtures\Author'], $schema);
+		$ormm->doAutoMigrate([
+			$entitiesManager->makeDefinition('Asgard\Orm\Tests\Fixtures\Post'),
+			$entitiesManager->makeDefinition('Asgard\Orm\Tests\Fixtures\Category'),
+			$entitiesManager->makeDefinition('Asgard\Orm\Tests\Fixtures\Author')
+		], $schema);
 
 		$tables = [];
 		foreach($container['db']->query('SHOW TABLES')->all() as $v) {
@@ -29,125 +34,120 @@ class MigrationsTest extends \PHPUnit_Framework_TestCase {
 
 		$this->assertEquals(
 			[
-			  'author' =>
-			  [
-			    [
-			      'Field' => 'id',
-			      'Type' => 'int(11)',
-			      'Null' => 'NO',
-			      'Key' => 'PRI',
-			      'Default' => NULL,
-			      'Extra' => 'auto_increment',
-			    ],
-			    [
-			      'Field' => 'name',
-			      'Type' => 'varchar(255)',
-			      'Null' => 'YES',
-			      'Key' => '',
-			      'Default' => NULL,
-			      'Extra' => '',
-			    ],
-			  ],
-			  'category' =>
-			  [
-			    [
-			      'Field' => 'id',
-			      'Type' => 'int(11)',
-			      'Null' => 'NO',
-			      'Key' => 'PRI',
-			      'Default' => NULL,
-			      'Extra' => 'auto_increment',
-			    ],
-			    [
-			      'Field' => 'name',
-			      'Type' => 'varchar(255)',
-			      'Null' => 'YES',
-			      'Key' => '',
-			      'Default' => NULL,
-			      'Extra' => '',
-			    ],
-			  ],
-			  'post' =>
-			  [
-			    [
-			      'Field' => 'id',
-			      'Type' => 'int(11)',
-			      'Null' => 'NO',
-			      'Key' => 'PRI',
-			      'Default' => NULL,
-			      'Extra' => 'auto_increment',
-			    ],
-			    [
-			      'Field' => 'title',
-			      'Type' => 'varchar(255)',
-			      'Null' => 'NO',
-			      'Key' => 'UNI',
-			      'Default' => 'a',
-			      'Extra' => '',
-			    ],
-			    [
-			      'Field' => 'posted',
-			      'Type' => 'date',
-			      'Null' => 'YES',
-			      'Key' => '',
-			      'Default' => NULL,
-			      'Extra' => '',
-			    ],
-			    [
-			      'Field' => 'author_id',
-			      'Type' => 'int(11)',
-			      'Null' => 'YES',
-			      'Key' => '',
-			      'Default' => NULL,
-			      'Extra' => '',
-			    ],
-			  ],
-			  'post_translation' =>
-			  [
-			    [
-			      'Field' => 'id',
-			      'Type' => 'int(11)',
-			      'Null' => 'NO',
-			      'Key' => '',
-			      'Default' => NULL,
-			      'Extra' => '',
-			    ],
-			    [
-			      'Field' => 'locale',
-			      'Type' => 'varchar(50)',
-			      'Null' => 'NO',
-			      'Key' => '',
-			      'Default' => NULL,
-			      'Extra' => '',
-			    ],
-			    [
-			      'Field' => 'content',
-			      'Type' => 'text',
-			      'Null' => 'YES',
-			      'Key' => '',
-			      'Default' => NULL,
-			      'Extra' => '',
-			    ],
-			  ],
-			  'category_post' =>
-			  [
-			    [
-			      'Field' => 'post_id',
-			      'Type' => 'int(11)',
-			      'Null' => 'NO',
-			      'Key' => '',
-			      'Default' => NULL,
-			      'Extra' => '',
-			    ],
-			    [
-			      'Field' => 'category_id',
-			      'Type' => 'int(11)',
-			      'Null' => 'NO',
-			      'Key' => '',
-			      'Default' => NULL,
-			      'Extra' => '',
-			    ],
-			  ],
+				'author' => [
+					[
+						'Field' => 'id',
+						'Type' => 'int(11)',
+						'Null' => 'NO',
+						'Key' => 'PRI',
+						'Default' => NULL,
+						'Extra' => 'auto_increment',
+					],
+					[
+						'Field' => 'name',
+						'Type' => 'varchar(255)',
+						'Null' => 'YES',
+						'Key' => '',
+						'Default' => NULL,
+						'Extra' => '',
+					],
+				],
+				'category' => [
+					[
+						'Field' => 'id',
+						'Type' => 'int(11)',
+						'Null' => 'NO',
+						'Key' => 'PRI',
+						'Default' => NULL,
+						'Extra' => 'auto_increment',
+					],
+					[
+						'Field' => 'name',
+						'Type' => 'varchar(255)',
+						'Null' => 'YES',
+						'Key' => '',
+						'Default' => NULL,
+						'Extra' => '',
+					],
+				],
+				'post' => [
+					[
+						'Field' => 'id',
+						'Type' => 'int(11)',
+						'Null' => 'NO',
+						'Key' => 'PRI',
+						'Default' => NULL,
+						'Extra' => 'auto_increment',
+					],
+					[
+						'Field' => 'title',
+						'Type' => 'varchar(255)',
+						'Null' => 'NO',
+						'Key' => 'UNI',
+						'Default' => 'a',
+						'Extra' => '',
+					],
+					[
+						'Field' => 'posted',
+						'Type' => 'date',
+						'Null' => 'YES',
+						'Key' => '',
+						'Default' => NULL,
+						'Extra' => '',
+					],
+					[
+						'Field' => 'author_id',
+						'Type' => 'int(11)',
+						'Null' => 'YES',
+						'Key' => '',
+						'Default' => NULL,
+						'Extra' => '',
+					],
+				],
+				'post_translation' => [
+					[
+						'Field' => 'id',
+						'Type' => 'int(11)',
+						'Null' => 'NO',
+						'Key' => '',
+						'Default' => NULL,
+						'Extra' => '',
+					],
+					[
+						'Field' => 'locale',
+						'Type' => 'varchar(50)',
+						'Null' => 'NO',
+						'Key' => '',
+						'Default' => NULL,
+						'Extra' => '',
+					],
+					[
+						'Field' => 'content',
+						'Type' => 'text',
+						'Null' => 'YES',
+						'Key' => '',
+						'Default' => NULL,
+						'Extra' => '',
+					],
+				],
+				'category_post' => [
+					[
+						'Field' => 'post_id',
+						'Type' => 'int(11)',
+						'Null' => 'YES',
+						'Key' => '',
+						'Default' => NULL,
+						'Extra' => '',
+					],
+					[
+						'Field' => 'category_id',
+						'Type' => 'int(11)',
+						'Null' => 'YES',
+						'Key' => '',
+						'Default' => NULL,
+						'Extra' => '',
+					],
+				],
 			],
 			$tables
 		);
@@ -161,11 +161,17 @@ class MigrationsTest extends \PHPUnit_Framework_TestCase {
 			'password' => '',
 			'database' => 'asgard'
 		]);
+		$entitiesManager = new \Asgard\Entity\EntitiesManager;
+		$dataMapper = new \Asgard\Orm\DataMapper($entitiesManager, $db);
 		$schema = new \Asgard\Db\Schema($db);
 		$schema->dropAll();
 
-		$ormm = new \Asgard\Orm\ORMMigrations(new \Asgard\Migration\MigrationsManager(__DIR__.'/migrations/'));
-		$ormm->generateMigration(['Asgard\Orm\Tests\Fixtures\Post', 'Asgard\Orm\Tests\Fixtures\Author', 'Asgard\Orm\Tests\Fixtures\Category'], 'Post', $db);
+		$ormm = new \Asgard\Orm\ORMMigrations($dataMapper, new \Asgard\Migration\MigrationsManager(__DIR__.'/migrations/'));
+		$ormm->doGenerateMigration([
+			$entitiesManager->makeDefinition('Asgard\Orm\Tests\Fixtures\Post'),
+			$entitiesManager->makeDefinition('Asgard\Orm\Tests\Fixtures\Author'),
+			$entitiesManager->makeDefinition('Asgard\Orm\Tests\Fixtures\Category')
+		], 'Post', $db);
 
 		$this->assertRegExp('/\{'."\n".
 '    "Post": \{'."\n".
