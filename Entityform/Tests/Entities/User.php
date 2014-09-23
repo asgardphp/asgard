@@ -6,17 +6,11 @@ class User extends \Asgard\Entity\Entity {
 		$definition->properties = [
 			'name' => [
 				'required'
-			]
-		];
-
-		$definition->behaviors = [
-			new PersistenceRelationsBehavior
-		];
-
-		$definition->relations = [
+			],
 			'comments' => [
+				'type' => 'entity',
 				'entity' => 'Asgard\Entityform\Tests\Entities\Comment',
-				'has' => 'many'
+				'many' => true,
 			]
 		];
 	}

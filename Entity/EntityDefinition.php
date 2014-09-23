@@ -2,74 +2,74 @@
 namespace Asgard\Entity;
 
 /**
- * 
+ * Entity definition.
  */
 class EntityDefinition {
 	use \Asgard\Hook\HookableTrait;
 	
 	/**
-	 * [$entitiesManager description]
+	 * Entities manager dependency.
 	 * @var [type]
 	 */
 	protected $entitiesManager;
 	/**
-	 * [$generalHooksManager description]
+	 * General hooks manager dependency.
 	 * @var [type]
 	 */
 	protected $generalHooksManager;
 	/**
-	 * [$entityClass description]
+	 * Entity class.
 	 * @var [type]
 	 */
 	protected $entityClass;
 	/**
-	 * [$behaviors description]
-	 * @var [type]
+	 * Behaviors.
+	 * @var array
 	 */
 	public $behaviors = [];
 	/**
-	 * [$messages description]
-	 * @var [type]
+	 * Validation messages.
+	 * @var array
 	 */
 	public $messages = [];
 	/**
-	 * [$metas description]
-	 * @var [type]
+	 * Meta data.
+	 * @var array
 	 */
 	protected $metas = [];
 	/**
-	 * [$properties description]
-	 * @var [type]
+	 * Entity properties.
+	 * @var array
 	 */
 	protected $properties = [];
 	/**
-	 * [$calls description]
-	 * @var [type]
+	 * Calls callbacks.
+	 * @var array
 	 */
 	protected $calls = [];
 	/**
-	 * [$statics description]
-	 * @var [type]
+	 * Statics callbacks.
+	 * @var array
 	 */
 	protected $statics = [];
 	/**
-	 * [$staticsCatchAll description]
-	 * @var [type]
+	 * Statics catch all.
+	 * @var array
 	 */
 	protected $staticsCatchAll = [];
 	/**
-	 * [$callsCatchAll description]
-	 * @var [type]
+	 * Calls catch all.
+	 * @var array
 	 */
 	protected $callsCatchAll = [];
 
 	/**
-	 * [__construct description]
-	 * @param [type] $entityClass
-	 * @param [type] $entitiesManager
-	 * @param [type] $generalHooksManager
+	 * Constructor.
+	 * @param string                    $entityClass
+	 * @param EntitiesManager           $entitiesManager
+	 * @param \Asgard\Hook\HooksManager $generalHooksManager
 	 */
-	public function __construct($entityClass, $entitiesManager, $generalHooksManager=null) {
+	public function __construct($entityClass, EntitiesManager $entitiesManager, \Asgard\Hook\HooksManager $generalHooksManager=null) {
 		$reflectionClass = new \ReflectionClass($entityClass);
 		if(!$reflectionClass->IsInstantiable())
 			return;
@@ -100,15 +100,15 @@ class EntityDefinition {
 	}
 
 	/**
-	 * [getContainer description]
-	 * @return [type]
+	 * Return the services container.
+	 * @return \Asgard\Container\Container
 	 */
 	public function getContainer() {
 		return $this->entitiesManager->getContainer();
 	}
 
 	/**
-	 * [__sleep description]
+	 * __sleep magic method.
 	 * @return array
 	 */
 	public function __sleep() {
@@ -116,9 +116,9 @@ class EntityDefinition {
 	}
 
 	/**
-	 * [__set description]
-	 * @param [type] $name
-	 * @param [type] $value
+	 * __set magic method.
+	 * @param string $name
+	 * @param mixed  $value
 	 */
 	public function __set($name, $value) {
 		if($name == 'properties') {
@@ -141,17 +141,17 @@ class EntityDefinition {
 	}
 
 	/**
-	 * [__get description]
-	 * @param  [type] $name
-	 * @return [type]
+	 * __get magic method.
+	 * @param  string $name
+	 * @return mixed
 	 */
 	public function __get($name) {
 		return $this->get($name);
 	}
 
 	/**
-	 * [__isset description]
-	 * @param  [type]  $name
+	 * __isset magic method.
+	 * @param  string  $name
 	 * @return boolean
 	 */
 	public function __isset($name) {
@@ -159,21 +159,22 @@ class EntityDefinition {
 	}
 
 	/**
-	 * [__call description]
-	 * @param  [type] $name
+	 * __call magic method.
+	 * @param  string $name
 	 * @param  array  $arguments
-	 * @return [type]
+	 * @return mixed
 	 */
 	public function __call($name, array $arguments) {
 		return $this->callStatic($name, $arguments);
 	}
 
 	/**
-	 * [call description]
+	 * Handle a custom call.
 	 * @param  Entity $entity
-	 * @param  [type] $name
+	 * @param  string $name
 	 * @param  array  $arguments
-	 * @return [type]
+	 * @throws \Exception If method name does not exist.
+	 * @return mixed
 	 */
 	public function call(Entity $entity, $name, array $arguments) {
 		if(isset($this->calls[$name])) {
@@ -197,10 +198,10 @@ class EntityDefinition {
 	}
 
 	/**
-	 * [callStatic description]
-	 * @param  [type] $name
+	 * Handle a custom static call.
+	 * @param  string $name
 	 * @param  array  $arguments
-	 * @return [type]
+	 * @return mixed
 	 */
 	public function callStatic($name, array $arguments) {
 		if(isset($this->statics[$name]))
@@ -221,17 +222,19 @@ class EntityDefinition {
 	}
 
 	/**
-	 * [setEntitiesManager description]
-	 * @param [type] $entitiesManager
+	 * Set the entitiesManager dependency.
+	 * @param EntitiesManager $entitiesManager
+	 * @return EntityDefinition $this
 	 */
-	public function setEntitiesManager($entitiesManager) {
+	public function setEntitiesManager(EntitiesManager $entitiesManager) {
 		$this->entitiesManager = $entitiesManager;
 		return $this;
 	}
 
 	/**
-	 * [setGeneralHooksManager description]
-	 * @param [type] $generalHooksManager
+	 * Set the general hooks manager dependency.
+	 * @param \Asgard\Hook\HooksManager $generalHooksManager
+	 * @return EntityDefinition $this
 	 */
 	public function setGeneralHooksManager($generalHooksManager) {
 		$this->generalHooksManager = $generalHooksManager;
@@ -239,17 +242,16 @@ class EntityDefinition {
 	}
 
 	/**
-	 * [getEntitiesManager description]
-	 * @return [type]
+	 * Return the entitiesManager dependency.
+	 * @return EntitiesManager
 	 */
 	public function getEntitiesManager() {
 		return $this->entitiesManager;
 	}
 
 	/**
-	 * [loadBehaviors description]
-	 * @param  [type] $behaviors
-	 * @return [type]
+	 * Load the bahaviors.
+	 * @param  array $behaviors
 	 */
 	public function loadBehaviors($behaviors) {
 		$this->generalHooksManager->trigger('Asgard.Entity.LoadBehaviors', [&$behaviors]);
@@ -259,9 +261,8 @@ class EntityDefinition {
 	}
 
 	/**
-	 * [loadBehavior description]
-	 * @param  [type] $behavior
-	 * @return [type]
+	 * Load a behavior.
+	 * @param  mixed $behavior
 	 */
 	public function loadBehavior($behavior) {
 		if(!is_object($behavior))
@@ -287,17 +288,17 @@ class EntityDefinition {
 	}
 
 	/**
-	 * [getClass description]
-	 * @return [type]
+	 * Return the entity class.
+	 * @return string
 	 */
 	public function getClass() {
 		return $this->entityClass;
 	}
 
 	/**
-	 * [addProperty description]
-	 * @param [type] $name
-	 * @param [type] $property
+	 * Add a property.
+	 * @param string   $name
+	 * @param Property $property
 	 */
 	public function addProperty($name, $property=null) {
 		if($property === null)
@@ -341,8 +342,8 @@ class EntityDefinition {
 	}
 
 	/**
-	 * [hasProperty description]
-	 * @param  [type]  $name
+	 * Check if definition has a property.
+	 * @param  string  $name
 	 * @return boolean
 	 */
 	public function hasProperty($name) {
@@ -350,41 +351,33 @@ class EntityDefinition {
 	}
 
 	/**
-	 * [property description]
-	 * @param  [type] $name
-	 * @return [type]
+	 * Return a property.
+	 * @param  string $name
+	 * @return Property
 	 */
 	public function property($name) {
 		return $this->properties[$name];
 	}
 
 	/**
-	 * [properties description]
-	 * @return [type]
+	 * Return all properties.
+	 * @return array
 	 */
 	public function properties() {
 		return $this->properties;
 	}
 
 	/**
-	 * [propertyNames description]
-	 * @return [type]
-	 */
-	public function propertyNames() {
-		return array_keys($this->properties());
-	}
-
-	/**
-	 * [messages description]
-	 * @return [type]
+	 * Return all validation messages.
+	 * @return array
 	 */
 	public function messages() {
 		return $this->messages;
 	}
 
 	/**
-	 * [hasBehavior description]
-	 * @param  [type]  $class
+	 * Check if has a behavior.
+	 * @param  string  $class
 	 * @return boolean
 	 */
 	public function hasBehavior($class) {
@@ -396,9 +389,9 @@ class EntityDefinition {
 	}
 
 	/**
-	 * [set description]
-	 * @param [type] $name
-	 * @param [type] $value
+	 * Set a meta data.
+	 * @param string $name
+	 * @param mixed  $value
 	 */
 	public function set($name, $value) {
 		$this->metas[$name] = $value;
@@ -406,17 +399,17 @@ class EntityDefinition {
 	}
 
 	/**
-	 * [get description]
-	 * @param  [type] $k
-	 * @return [type]
+	 * Return a meta data.
+	 * @param  string $k
+	 * @return mixed
 	 */
-	public function get($k) {
-		if(isset($this->metas[$k]))
-			return $this->metas[$k];
+	public function get($name) {
+		if(isset($this->metas[$name]))
+			return $this->metas[$name];
 	}
 
 	/**
-	 * [isI18N description]
+	 * Check if contains i18n properties.
 	 * @return boolean
 	 */
 	public function isI18N() {
@@ -428,30 +421,20 @@ class EntityDefinition {
 	}
 	
 	/**
-	 * [getShortName description]
+	 * Get the entity short name.
 	 * @return [type]
 	 */
 	public function getShortName() {
-		return self::basename(strtolower($this->getClass()));
+		return basename(str_replace('\\', DIRECTORY_SEPARATOR, strtolower($this->getClass())));
 	}
 
 	/**
-	 * [basename description]
-	 * @param  [type] $ns
-	 * @return [type]
-	 */
-	private static function basename($ns) {
-		return basename(str_replace('\\', DIRECTORY_SEPARATOR, $ns));
-	}
-
-	/**
-	 * [processBeforeSet description]
-	 * @param  [type]  $entity
-	 * @param  [type]  $name
-	 * @param  [type]  $value
-	 * @param  [type]  $locale
-	 * @param  boolean $hook
-	 * @return [type]
+	 * Process values before entity set.
+	 * @param  Entity  $entity
+	 * @param  string  $name
+	 * @param  mixed   $value
+	 * @param  string  $locale
+	 * @param  boolean $hook   True to enable hooks.
 	 */
 	public function processBeforeSet($entity, $name, &$value, $locale=null, $hook=true) {
 		if($hook)
@@ -479,13 +462,12 @@ class EntityDefinition {
 	}
 
 	/**
-	 * [processBeforeAdd description]
-	 * @param  [type]  $entity
-	 * @param  [type]  $name
-	 * @param  [type]  $value
-	 * @param  [type]  $locale
-	 * @param  boolean $hook
-	 * @return [type]
+	 * Process values before adding to a ManyCollection.
+	 * @param  Entity  $entity
+	 * @param  string  $name
+	 * @param  mixed   $value
+	 * @param  string  $locale
+	 * @param  boolean $hook   True to enable hooks.
 	 */
 	public function processBeforeAdd($entity, $name, &$value, $locale=null, $hook=true) {
 		if($hook)
@@ -500,14 +482,14 @@ class EntityDefinition {
 	}
 
 	/**
-	 * [make description]
-	 * @param  [type] $params
-	 * @param  [type] $locale
-	 * @return [type]
+	 * Make a new entity.
+	 * @param  array  $attrs
+	 * @param  string $locale
+	 * @return Entity
 	 */
-	public function make(array $params=null, $locale=null) {
+	public function make(array $attrs=null, $locale=null) {
 		$entityClass = $this->entityClass;
-		$entity      = new $entityClass($params, $locale);
+		$entity      = new $entityClass($attrs, $locale);
 		$entity->setDefinition($this);
 
 		return $entity;

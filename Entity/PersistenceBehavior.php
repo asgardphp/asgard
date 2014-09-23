@@ -2,88 +2,63 @@
 namespace Asgard\Entity;
 
 /**
- * 
+ * Persistence behavior.
  */
 interface PersistenceBehavior {
-	#Article::orm()
 	/**
-	 * [static_orm description]
-	 * @return [type]
+	 * Article::orm()
+	 * @return mixed
 	 */
 	public function static_orm();
 
-	#Article::loadBy('title', 'hello world')
 	/**
-	 * [static_loadBy description]
-	 * @param  [type] $property
-	 * @param  [type] $value
-	 * @return [type]
+	 * Article::loadBy('title', 'hello world')
+	 * @param  Property $property
+	 * @param  mixed    $value
+	 * @return Entity
 	 */
 	public function static_loadBy($property, $value);
 
-	#Article::load(2)
 	/**
-	 * [static_load description]
-	 * @param  [type] $id
-	 * @return [type]
+	 * Article::load(2)
+	 * @param  integer $id
+	 * @return Entity
 	 */
 	public function static_load($id);
 
-	#Article::destroyAll()
 	/**
-	 * [static_destroyAll description]
-	 * @return [type]
+	 * Article::destroyAll()
+	 * @return integer
 	 */
 	public function static_destroyAll();
 
-	#Article::destroyOne()
 	/**
-	 * [static_destroyOne description]
-	 * @param  [type] $id
-	 * @return [type]
+	 * Article::destroyOne()
+	 * @param  integer $id
+	 * @return boolean
 	 */
 	public function static_destroyOne($id);
 
-	#Article::create()
 	/**
-	 * [static_create description]
-	 * @param  [type]  $values
+	 * Article::create()
+	 * @param  array   $attrs
 	 * @param  boolean $force
-	 * @return [type]
+	 * @return Entity
 	 */
-	public function static_create(array $values=[], $force=false);
+	public function static_create(array $attrs=[], $force=false);
 
-	#$article->save()
 	/**
-	 * [call_save description]
-	 * @param  AsgardEntityEntity $entity
-	 * @param  [type]             $values
-	 * @param  boolean            $force
-	 * @return [type]
+	 * $article->save()
+	 * @param  Entity  $entity
+	 * @param  array   $attrs
+	 * @param  boolean $force
+	 * @return Entity
 	 */
-	public function call_save(\Asgard\Entity\Entity $entity, array $values=null, $force=false);
+	public function call_save(Entity $entity, array $attrs=null, $force=false);
 
-	#$article->destroy()
 	/**
-	 * [call_destroy description]
-	 * @param  AsgardEntityEntity $entity
-	 * @return [type]
+	 * $article->destroy()
+	 * @param  Entity $entity
 	 */
-	public function call_destroy(\Asgard\Entity\Entity $entity);
-
-	#$article->isNew()
-	/**
-	 * [call_isNew description]
-	 * @param  AsgardEntityEntity $entity
-	 * @return [type]
-	 */
-	public function call_isNew(\Asgard\Entity\Entity $entity);
-
-	#$article->isOld()
-	/**
-	 * [call_isOld description]
-	 * @param  AsgardEntityEntity $entity
-	 * @return [type]
-	 */
-	public function call_isOld(\Asgard\Entity\Entity $entity);
+	public function call_destroy(Entity $entity);
 }

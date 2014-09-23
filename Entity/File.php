@@ -2,55 +2,53 @@
 namespace Asgard\Entity;
 
 /**
- * 
+ * Entity file.
  */
 class File extends \Asgard\File\File {
 	/**
-	 * [$web description]
+	 * Flag for file accessible from web.
 	 * @var boolean
 	 */
 	protected $web = false;
 	/**
-	 * [$url description]
-	 * @var [type]
+	 * URL dependency.
+	 * @var \Asgard\Http\URL
 	 */
 	protected $url;
 	/**
-	 * [$webDir description]
-	 * @var [type]
+	 * Web directory.
+	 * @var string
 	 */
 	protected $webDir;
 	/**
-	 * [$toDelete description]
-	 * @var [type]
+	 * toDelete flag.
+	 * @var boolean
 	 */
 	protected $toDelete;
 	/**
-	 * [$dir description]
-	 * @var [type]
+	 * Destination directory.
+	 * @var string
 	 */
 	protected $dir;
 
 	/**
-	 * [toDelete description]
+	 * Set toDelete flag.
 	 * @param  boolean $toDelete
-	 * @return [type]
 	 */
 	public function toDelete($toDelete=true) {
 		$this->toDelete = $toDelete;
 	}
 
 	/**
-	 * [shouldDelete description]
-	 * @return [type]
+	 * Check if should delete the file.
+	 * @return boolean
 	 */
 	public function shouldDelete() {
 		return $this->toDelete;
 	}
 
 	/**
-	 * [save description]
-	 * @return [type]
+	 * Save the file.
 	 */
 	public function save() {
 		if($this->web)
@@ -61,7 +59,7 @@ class File extends \Asgard\File\File {
 	}
 
 	/**
-	 * [__toString description]
+	 * __toString magic method. Print out the url or source.
 	 * @return string
 	 */
 	public function __toString() {
@@ -72,7 +70,7 @@ class File extends \Asgard\File\File {
 	}
 
 	/**
-	 * [isWeb description]
+	 * Check if file is accessible from web.
 	 * @return boolean
 	 */
 	public function isWeb() {
@@ -80,7 +78,7 @@ class File extends \Asgard\File\File {
 	}
 
 	/**
-	 * [setWeb description]
+	 * Set web flag.
 	 * @param [type] $web
 	 */
 	public function setWeb($web) {
@@ -88,57 +86,49 @@ class File extends \Asgard\File\File {
 	}
 
 	/**
-	 * [setUrl description]
-	 * @param [type] $url
+	 * Set URL dependency.
+	 * @param \Asgard\Http\URL $url
 	 */
 	public function setUrl($url) {
 		$this->url = $url;
 	}
 
 	/**
-	 * [url description]
-	 * @param  [type] $default
-	 * @return [type]
+	 * Return the file url.
+	 * @param  string $default
+	 * @return string
 	 */
 	public function url($default=null) {
-		if(!($src = $this->srcFromWebDir()))
+		if($this->isIn($this->webDir))
+			$src = $this->relativeToWebDir();
+		else
 			$src = $default;
 
-		if($this->url)
+		if($this->url && $src)
 			return $this->url->to($src);
 		else
 			return $src;
 	}
 
 	/**
-	 * [setWebDir description]
-	 * @param [type] $webDir
+	 * Set web directory.
+	 * @param string $webDir
 	 */
 	public function setWebDir($webDir) {
 		$this->webDir = $webDir;
 	}
 
 	/**
-	 * [srcFromWebDir description]
-	 * @return [type]
-	 */
-	public function srcFromWebDir() {
-		if(!$this->isIn($this->webDir))
-			return;
-		return str_replace($this->formatPath($this->webDir).DIRECTORY_SEPARATOR, '', $this->formatPath($this->src));
-	}
-
-	/**
-	 * [relativeToWebDir description]
-	 * @return [type]
+	 * Return relative path from web directory.
+	 * @return string
 	 */
 	public function relativeToWebDir() {
 		return $this->relativeTo($this->webDir);
 	}
 
 	/**
-	 * [setDir description]
-	 * @param [type] $dir
+	 * Set destination directory.
+	 * @param string $dir
 	 */
 	public function setDir($dir) {
 		$this->dir = $dir;

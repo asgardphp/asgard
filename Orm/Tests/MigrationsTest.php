@@ -21,9 +21,9 @@ class MigrationsTest extends \PHPUnit_Framework_TestCase {
 		$schema->dropAll();
 
 		$ormm->doAutoMigrate([
-			$entitiesManager->makeDefinition('Asgard\Orm\Tests\Fixtures\Post'),
-			$entitiesManager->makeDefinition('Asgard\Orm\Tests\Fixtures\Category'),
-			$entitiesManager->makeDefinition('Asgard\Orm\Tests\Fixtures\Author')
+			$entitiesManager->get('Asgard\Orm\Tests\Fixtures\Post'),
+			$entitiesManager->get('Asgard\Orm\Tests\Fixtures\Category'),
+			$entitiesManager->get('Asgard\Orm\Tests\Fixtures\Author')
 		], $schema);
 
 		$tables = [];
@@ -168,9 +168,9 @@ class MigrationsTest extends \PHPUnit_Framework_TestCase {
 
 		$ormm = new \Asgard\Orm\ORMMigrations($dataMapper, new \Asgard\Migration\MigrationsManager(__DIR__.'/migrations/'));
 		$ormm->doGenerateMigration([
-			$entitiesManager->makeDefinition('Asgard\Orm\Tests\Fixtures\Post'),
-			$entitiesManager->makeDefinition('Asgard\Orm\Tests\Fixtures\Author'),
-			$entitiesManager->makeDefinition('Asgard\Orm\Tests\Fixtures\Category')
+			$entitiesManager->get('Asgard\Orm\Tests\Fixtures\Post'),
+			$entitiesManager->get('Asgard\Orm\Tests\Fixtures\Author'),
+			$entitiesManager->get('Asgard\Orm\Tests\Fixtures\Category')
 		], 'Post', $db);
 
 		$this->assertRegExp('/\{'."\n".

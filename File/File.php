@@ -124,7 +124,7 @@ class File {
 	 * @return string
 	 */
 	public function relativeTo($path) {
-		return \Asgard\File\FileSystem::relativeTo($this->src, $path);
+		return \Asgard\File\FileSystem::relativeTo($path, $this->src);
 	}
 
 	/**

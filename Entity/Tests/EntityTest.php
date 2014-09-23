@@ -83,11 +83,6 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 		$this->assertTrue(is_array($properties));
 		$this->assertEquals($properties['title'], $property);
 
-		#propertyNames
-		$names = Classes\News::propertyNames();
-		$this->assertContains('title', $names);
-		$this->assertContains('content', $names);
-
 		#getEntityName
 		$this->assertEquals('news', Classes\News::getShortName());
 

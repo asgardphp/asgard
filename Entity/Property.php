@@ -4,45 +4,40 @@ namespace Asgard\Entity;
 use Jeremeamia\SuperClosure\SerializableClosure;
 
 /**
- * 
+ * Entity definition property.
  */
 class Property {
 	/**
-	 * [$entity description]
-	 * @var [type]
-	 */
-	protected $entity;
-	/**
-	 * [$position description]
-	 * @var [type]
-	 */
-	protected $position;
-	/**
-	 * [$definition description]
-	 * @var [type]
+	 * Entity definition.
+	 * @var EntityDefinition
 	 */
 	protected $definition;
 	/**
-	 * [$name description]
-	 * @var [type]
+	 * Property position.
+	 * @var integer
+	 */
+	protected $position;
+	/**
+	 * Property name.
+	 * @var string
 	 */
 	protected $name;
 	/**
-	 * [$params description]
-	 * @var [type]
+	 * Parameters.
+	 * @var array
 	 */
 	public $params = [];
 
 	/**
-	 * [__construct description]
-	 * @param [type] $params
+	 * Constructor.
+	 * @param array $params
 	 */
-	public function __construct($params) {
+	public function __construct(array $params) {
 		$this->params = $params;
 	}
 
 	/**
-	 * [__sleep description]
+	 * __sleep magic method.
 	 * @return array
 	 */
 	public function __sleep() {
@@ -54,8 +49,8 @@ class Property {
 	}
 
 	/**
-	 * [setPosition description]
-	 * @param [type] $position
+	 * Set property position.
+	 * @param integer $position
 	 */
 	public function setPosition($position) {
 		$this->params['position'] = $position;
@@ -63,54 +58,54 @@ class Property {
 	}
 
 	/**
-	 * [getPosition description]
-	 * @return [type]
+	 * Get the property position.
+	 * @return integer
 	 */
 	public function getPosition() {
 		return isset($this->params['position']) ? $this->params['position']:null;
 	}
 
 	/**
-	 * [setName description]
-	 * @param [type] $name
+	 * Set the name.
+	 * @param string $name
 	 */
 	public function setName($name) {
 		$this->name = $name;
 	}
 
 	/**
-	 * [setDefinition description]
-	 * @param [type] $definition
+	 * Set the definition.
+	 * @param EntityDefinition $definition
 	 */
 	public function setDefinition($definition) {
 		$this->definition = $definition;
 	}
 
 	/**
-	 * [required description]
-	 * @return [type]
+	 * Check if entity is required.
+	 * @return boolean
 	 */
 	public function required() {
 		if(isset($this->params['required']))
-			return $this->params['required'];
+			return !!$this->params['required'];
 		if(isset($this->params['validation']['required']))
-			return $this->params['validation']['required'];
+			return !!$this->params['validation']['required'];
 	}
 
 	/**
-	 * [__get description]
-	 * @param  [type] $what
-	 * @return [type]
+	 * __get magic method.
+	 * @param  string $what
+	 * @return mixed
 	 */
 	public function __get($what) {
 		return $this->get($what);
 	}
 
 	/**
-	 * [get description]
-	 * @param  [type] $path
-	 * @param  [type] $default
-	 * @return [type]
+	 * Get a parameter.
+	 * @param  string $path
+	 * @param  mixed  $default
+	 * @return mixed
 	 */
 	public function get($path, $default=null) {
 		if(!$this->has($path))
@@ -119,8 +114,8 @@ class Property {
 	}
 	
 	/**
-	 * [has description]
-	 * @param  [type]  $path
+	 * Check if has a parameter.
+	 * @param  string  $path
 	 * @return boolean
 	 */
 	public function has($path) {
@@ -128,23 +123,23 @@ class Property {
 	}
 
 	/**
-	 * [getParams description]
-	 * @return [type]
+	 * Return parameters.
+	 * @return array
 	 */
 	public function getParams() {
 		return $this->params;
 	}
 
 	/**
-	 * [getName description]
-	 * @return [type]
+	 * Return the name.
+	 * @return string
 	 */
 	public function getName() {
 		return $this->name;
 	}
 
 	/**
-	 * [__toString description]
+	 * __toString magic method.
 	 * @return string
 	 */
 	public function __toString() {
@@ -152,10 +147,10 @@ class Property {
 	}
 
 	/**
-	 * [getDefault description]
-	 * @param  [type] $entity
-	 * @param  [type] $name
-	 * @return [type]
+	 * Return the default value.
+	 * @param  Entity $entity
+	 * @param  strng  $name
+	 * @return mixed
 	 */
 	public function getDefault($entity, $name) {
 		if($this->get('many'))
@@ -171,16 +166,16 @@ class Property {
 	}
 
 	/**
-	 * [_getDefault description]
-	 * @return [type]
+	 * Return the default value for a single element.
+	 * @return null
 	 */
 	protected function _getDefault() {
 		return null;
 	}
 
 	/**
-	 * [getRules description]
-	 * @return [type]
+	 * Return the validation rules.
+	 * @return array
 	 */
 	public function getRules() {
 		$res = isset($this->params['validation']) ? $this->params['validation']:[];
@@ -193,8 +188,8 @@ class Property {
 	}
 
 	/**
-	 * [getMessages description]
-	 * @return [type]
+	 * Return the validation messages.
+	 * @return array
 	 */
 	public function getMessages() {
 		if(isset($this->params['messages']))
@@ -202,9 +197,9 @@ class Property {
 	}
 
 	/**
-	 * [serialize description]
-	 * @param  [type] $val
-	 * @return [type]
+	 * Serialize the value.
+	 * @param  mixed $val
+	 * @return string
 	 */
 	public function serialize($val) {
 		if($this->get('many')) {
@@ -223,9 +218,9 @@ class Property {
 	}
 
 	/**
-	 * [doSerialize description]
-	 * @param  [type] $val
-	 * @return [type]
+	 * Actually perform serialization for a single element.
+	 * @param  mixed $val
+	 * @return string
 	 */
 	protected function doSerialize($val) {
 		if(is_string($val) || is_numeric($val) || is_bool($val) || is_null($val))
@@ -235,11 +230,11 @@ class Property {
 	}
 
 	/**
-	 * [unserialize description]
-	 * @param  [type] $str
-	 * @param  [type] $entity
-	 * @param  [type] $name
-	 * @return [type]
+	 * Unserialize a string.
+	 * @param  string $str
+	 * @param  Entity $entity
+	 * @param  string $name
+	 * @return mixed
 	 */
 	public function unserialize($str, $entity, $name) {
 		if($this->get('many')) {
@@ -256,9 +251,9 @@ class Property {
 	}
 
 	/**
-	 * [doUnserialize description]
-	 * @param  [type] $str
-	 * @return [type]
+	 * Actually perform unserialization for a single element.
+	 * @param  string $str
+	 * @return mixed
 	 */
 	protected function doUnserialize($str) {
 		$json = json_decode($str);
@@ -268,30 +263,33 @@ class Property {
 	}
 
 	/**
-	 * [set description]
-	 * @param [type] $val
-	 * @param [type] $entity
-	 * @param [type] $name
+	 * Pre-process value before passing it to entity.
+	 * @param mixed  $val
+	 * @param Entity $entity
+	 * @param string $name
+	 * @return mixed
 	 */
 	public function set($val, $entity, $name) {
 		if($this->get('many')) {
 			if($val instanceof ManyCollection)
 				return $val;
-			$res = new ManyCollection($this->definition, $entity, $name);
 			if(is_array($val)) {
+				$res = new ManyCollection($this->definition, $entity, $name);
 				foreach($val as $v)
 					$res[] = $this->doSet($v, $entity);
+				return $res;
 			}
-			return $res;
+			else
+				return $val;
 		}
 		else
 			return $this->doSet($val, $entity);
 	}
 
 	/**
-	 * [doSet description]
-	 * @param  [type] $val
-	 * @return [type]
+	 * Actually pre-process value for a single element.
+	 * @param  mixed $val
+	 * @return mixed
 	 */
 	public function doSet($val) {
 		return $val;

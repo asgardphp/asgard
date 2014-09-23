@@ -38,7 +38,7 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			if($request === null)
 				$request = $container['request'];
 			$entityFieldsSolver = clone $container['entityFieldsSolver'];
-			$form = new \Asgard\Entityform\EntityForm($entity, $params, $request, $entityFieldsSolver);
+			$form = new \Asgard\Entityform\EntityForm($entity, $params, $request, $entityFieldsSolver, $container['dataMapper']);
 			$form->setWidgetsManager(clone $container['widgetsManager']);
 			$form->setTranslator($container['translator']);
 			$form->setContainer($container);

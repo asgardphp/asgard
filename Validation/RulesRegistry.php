@@ -74,9 +74,9 @@ class RulesRegistry {
 
 	/**
 	 * Register a rule.
-	 * @param  string $rule   rule name
-	 * @param  \Closure|Rule $object
-	 * @return RulesRegistry          $this
+	 * @param  string $rule         rule name
+	 * @param  \Closure|string      $object
+	 * @return RulesRegistry        $this
 	 */
 	public function register($rule, $object) {
 		if($object instanceof \Closure) {
@@ -109,9 +109,8 @@ class RulesRegistry {
 		if($rule === 'required' || $rule === 'isNull')
 			return;
 
-		if(isset($this->rules[$rule])) {
+		if(isset($this->rules[$rule]))
 			$rule = $this->rules[$rule];
-		}
 		else {
 			foreach($this->namespaces as $namespace) {
 				$class = $namespace.ucfirst($rule);

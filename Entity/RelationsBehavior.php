@@ -14,22 +14,22 @@ interface RelationsBehavior {
 	/**
 	 * Article::relation('parent')
 	 * @param  string $name
-	 * @return [type]
+	 * @return mixed
 	 */
 	public function static_relation($name);
 
 	/**
 	 * Article::hasRelation('parent')
 	 * @param  string $name
-	 * @return [type]
+	 * @return boolean
 	 */
 	public function static_hasRelation($name);
 
 	/**
 	 * $article->relation('category')
 	 * @param  AsgardEntityEntity $entity
-	 * @param  [type]             $relation
-	 * @return [type]
+	 * @param  string             $relation
+	 * @return mixed
 	 */
-	public function call_relation(\Asgard\Entity\Entity $entity, $relation);
+	public function call_related(\Asgard\Entity\Entity $entity, $relation);
 }

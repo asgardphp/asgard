@@ -17,8 +17,6 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 		$container['db'] = new \Asgard\Db\DB($config);
 
 		$entitiesManager = $container['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($container);
-		#set the EntitiesManager static instance for activerecord-like entities (e.g. new Article or Article::find())
-		\Asgard\Entity\EntitiesManager::setInstance($entitiesManager);
 		$entitiesManager->setDefaultLocale('en');
 		
 		$container->register('datamapper', function($container) {
@@ -36,29 +34,33 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 
 	#get default
 	public function test1() {
-		$com = \Asgard\Orm\Tests\I18nentities\Comment::load(2);
-		$news = $com->news;
+		$com = static::$container['dataMapper']->load('Asgard\Orm\Tests\I18nentities\Comment', 2);
+		$news = static::$container['dataMapper']->getRelated($com, 'news');
 		$this->assertEquals('Hello', $news->test); #default language is english
 	}
 
 	#save french text
 	public function test2() {
-		$com = \Asgard\Orm\Tests\I18nentities\Comment::load(2);
-		$news = $com->news;
+		$com = static::$container['dataMapper']->load('Asgard\Orm\Tests\I18nentities\Comment', 2);
+		$news = static::$container['dataMapper']->getRelated($com, 'news');
+		static::$container['dataMapper']->getTranslations($news, 'fr');
 		$this->assertEquals('Bonjour', $news->get('test', 'fr'));
 	}
 
 	#get english text
 	public function test3() {
-		$com = \Asgard\Orm\Tests\I18nentities\Comment::load(2);
-		$news = $com->news;
+		$com = static::$container['dataMapper']->load('Asgard\Orm\Tests\I18nentities\Comment', 2);
+		$news = static::$container['dataMapper']->getRelated($com, 'news');
+		static::$container['dataMapper']->getTranslations($news, 'en');
 		$this->assertEquals('Hello', $news->get('test', 'en'));
 	}
 
 	#get all
 	public function test4() {
-		$com = \Asgard\Orm\Tests\I18nentities\Comment::load(2);
-		$news = $com->news;
+		$com = static::$container['dataMapper']->load('Asgard\Orm\Tests\I18nentities\Comment', 2);
+		$news = static::$container['dataMapper']->getRelated($com, 'news');
+		static::$container['dataMapper']->getTranslations($news, 'en');
+		static::$container['dataMapper']->getTranslations($news, 'fr');
 		$this->assertContains('Bonjour', $news->get('test', ['en', 'fr']));
 		$this->assertContains('Hello', $news->get('test', ['en', 'fr']));
 		$this->assertCount(2, $news->get('test', ['en', 'fr']));
@@ -66,9 +68,9 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 
 	#save english version
 	public function test5() {
-		$news = \Asgard\Orm\Tests\I18nentities\News::load(2);
+		$news = static::$container['dataMapper']->load('Asgard\Orm\Tests\I18nentities\News', 2);
 		$news->test = 'Hi';
-		$news->save(null, true);
+		static::$container['dataMapper']->save($news, null, true);
 		$dal = new \Asgard\Db\DAL(static::$container['db'], 'news_translation');
 		$r = $dal->where(['locale'=>'en', 'id'=>2])->first();
 		$this->assertEquals('Hi', $r['test']);

@@ -87,10 +87,10 @@ class ORM {
 	 * @param \Asgard\Container\Factory $paginatorFactory
 	 */
 	public function __construct(\Asgard\Entity\EntityDefinition $definition, $locale=null, $prefix=null, DataMapper $datamapper=null, \Asgard\Container\Factory $paginatorFactory=null) {
-		$this->definition     = $definition;
-		$this->locale     = $locale;
-		$this->prefix     = $prefix;
-		$this->dataMapper = $datamapper;
+		$this->definition       = $definition;
+		$this->locale           = $locale;
+		$this->prefix           = $prefix;
+		$this->dataMapper       = $datamapper;
 		$this->paginatorFactory = $paginatorFactory;
 
 		if($this->definition->order_by)
@@ -115,19 +115,16 @@ class ORM {
 	 * @return ORM A new ORM instance of the related entities.
 	*/
 	public function __call($relationName, array $args) {
-		if(!$this->definition->hasRelation($relationName))
+		if(!$this->dataMapper->hasRelation($this->definition, $relationName))
 			throw new \Exception('Relation '.$relationName.' does not exist.');
-		$relation = $this->definition->relations[$relationName];
-		$reverse_relation = $relation->reverse();
-		$reverse_relation_name = $reverse_relation['name'];
+		$relation = $this->dataMapper->relation($this->definition, $relationName);
+		$reverseRelation = $relation->reverse();
+		$reverseRelationName = $reverseRelation['name'];
 		$relation_entity = $relation['entity'];
 
-		$newOrm = $this->dataMapper->orm($relation_entity);
-		$newOrm->where($this->where);
-
-		$newOrm->join([$reverse_relation_name => $this->join]);
-
-		return $newOrm;
+		return $this->dataMapper->orm($relation_entity)
+			->where($this->where)
+			->join([$reverseRelationName => $this->join]);
 	}
 	
 	/**
@@ -149,15 +146,14 @@ class ORM {
 	/**
 	 * Limits the search to the entities related to the given entity.
 	 * 
-	 * @param string relation The name of the relation.
+	 * @param string|EntityRelation relation The name of the relation.
 	 * @param \Asgard\Entity\Entity entity The related entity.
 	 * 
 	 * @return ORM $this
 	*/
 	public function joinToEntity($relation, \Asgard\Entity\Entity $entity) {
-		if(is_string($relation)) {
-			$relation = $this->definition->relations[$relation];
-		}
+		if(is_string($relation))
+			$relation = $this->dataMapper->relation($this->definition, $relation);
 
 		if($relation['polymorphic']) {
 			$this->where([$relation['link_type'] => $entity->getDefinition()->getShortName()]);
@@ -188,7 +184,7 @@ class ORM {
 	 * @return string
 	*/
 	public function getTable() {
-		return $this->dataMapper->getTable($this->definition->getClass());
+		return $this->dataMapper->getTable($this->definition);
 	}
 	
 	/**
@@ -196,8 +192,8 @@ class ORM {
 	 * 
 	 * @return string
 	*/
-	public function geti18nTable() {
-		return $this->getTable().'_translation';
+	public function getTranslationTable() {
+		return $this->dataMapper->getTranslationTable($this->definition);
 	}
 	
 	/**
@@ -208,11 +204,11 @@ class ORM {
 	 * 
 	 * @return \Asgard\Entity\Entity
 	*/
-	public function toEntity(array $raw, \Asgard\Entity\EntityDefinition $definition=null) {
+	protected function toEntity(array $raw, \Asgard\Entity\EntityDefinition $definition=null) {
 		if(!$definition)
 			$definition = $this->definition;
 		$new = $definition->make([], $this->locale);
-		return static::unserializeSet($new, $raw);
+		return static::unserialize($new, $raw);
 	}
 	
 	/**
@@ -220,11 +216,11 @@ class ORM {
 	 * 
 	 * @param \Asgard\Entity\Entity entity
 	 * @param array data
-	 * @param NULL|string locale Only necessary if the data concerns a specific localeuage.
+	 * @param NULL|string locale Only necessary if the data concerns a specific locale.
 	 * 
 	 * @return \Asgard\Entity\Entity
 	*/
-	protected static function unserializeSet(\Asgard\Entity\Entity $entity, array $data, $locale=null) {
+	protected static function unserialize(\Asgard\Entity\Entity $entity, array $data, $locale=null) {
 		foreach($data as $k=>$v) {
 			if($entity->getDefinition()->hasProperty($k))
 				$data[$k] = $entity->getDefinition()->property($k)->unserialize($v, $entity, $k);
@@ -276,11 +272,9 @@ class ORM {
 	 * @return \Asgard\Entity\Entity
 	*/
 	public function first() {
-		$this->limit(1);
-		
-		$res = $this->get();
+		$res = $this->limit(1)->get();
 		if(!count($res))
-			return false;
+			return null;
 		return $res[0];
 	}
 	
@@ -309,7 +303,7 @@ class ORM {
 		$dal->where($this->processConditions($this->where));
 
 		if($this->definition->isI18N()) {
-			$translation_table = $this->geti18nTable();
+			$translation_table = $this->getTranslationTable();
 			$selects = [$table.'.*'];
 			foreach($this->definition->properties() as $name=>$property) {
 				if($property->i18n)
@@ -329,9 +323,7 @@ class ORM {
 			$dal->from($table);
 		}
 
-		$entityClass = $this->definition->getClass();;
-		$table = $this->dataMapper->getTable($entityClass);
-		$this->recursiveJointures($dal, $this->join, $this->definition, $table);
+		$this->recursiveJointures($dal, $this->join, $this->definition, $this->getTable());
 
 		return $dal;
 	}
@@ -344,7 +336,7 @@ class ORM {
 	 * @param stringcurrent_entity The entity class from which jointures are built.
 	 * @param string table The table from which to performs jointures.
 	*/
-	public function recursiveJointures(\Asgard\Db\DAL $dal, array $jointures, \Asgard\Entity\EntityDefinition $entityDefinition, $table) {
+	protected function recursiveJointures(\Asgard\Db\DAL $dal, array $jointures, \Asgard\Entity\EntityDefinition $entityDefinition, $table) {
 		$alias = null;
 		foreach($jointures as $relation) {
 			if(is_array($relation)) {
@@ -353,7 +345,7 @@ class ORM {
 						if(!$v instanceof EntityRelation) {
 							if(strpos($v, ' '))
 								list($v, $alias) = explode(' ', $v);
-							$relation = $entityDefinition->relations[$v];
+							$relation = $this->dataMapper->relation($entityDefinition, $v);
 						}
 						$this->jointure($dal, $relation, $alias, $table);
 					}
@@ -362,13 +354,12 @@ class ORM {
 						if(strpos($relationName, ' '))
 							list($relationName, $alias) = explode(' ', $relationName);
 						$recJoins = $v;
-						$relation = $entityDefinition->relations[$relationName];
-						$entity = $relation['entity'];
+						$relation = $this->dataMapper->relation($entityDefinition, $relationName);
 
 						$this->jointure($dal, $relation, $alias, $table);
 						if(!is_array($recJoins))
 							$recJoins = [$recJoins];
-						$this->recursiveJointures($dal, $recJoins, $entityDefinition->getEntitiesManager()->get($entity), $relation->name);
+						$this->recursiveJointures($dal, $recJoins, $relation->getTargetDefinition(), $relation->name);
 					}
 				}
 			}
@@ -376,7 +367,7 @@ class ORM {
 				if(!$relation instanceof EntityRelation) {
 					if(strpos($relation, ' '))
 						list($relation, $alias) = explode(' ', $relation);
-					$relation = $entityDefinition->relations[$relation];
+					$relation = $this->dataMapper->relation($entityDefinition, $relation);
 				}
 				$this->jointure($dal, $relation, $alias, $table);
 			}
@@ -387,16 +378,13 @@ class ORM {
 	 * Performs a single jointure.
 	 * 
 	 * @param \Asgard\Db\DAL dal
-	 * @param string relation The name of the relation.
+	 * @param EntityRelation relation The name of the relation.
 	 * @param string alias How the related table will be referenced in the SQL query.
 	 * @param string ref_table The table from which to performs the jointure.
 	*/
 	protected function jointure(\Asgard\Db\DAL $dal, $relation, $alias, $ref_table) {
-		if($relation['polymorphic'])
-			$relation_entity = $relation['real_entity'];
-		else
-			$relation_entity = $relation['entity'];
 		$relationName = $relation->name;
+		$relationEntityDefinition = $relation->getTargetDefinition();
 		if($alias === null)
 			$alias = $relationName;
 
@@ -404,7 +392,7 @@ class ORM {
 			case 'hasOne':
 			case 'belongsTo':
 				$link = $relation->getLink();
-				$table = $this->dataMapper->getTable($relation_entity);
+				$table = $this->dataMapper->getTable($relationEntityDefinition);
 				$dal->rightjoin([
 					$table.' '.$alias => $this->processConditions([
 						$ref_table.'.'.$link.' = '.$alias.'.id'
@@ -413,7 +401,7 @@ class ORM {
 				break;
 			case 'hasMany':
 				$link = $relation->getLink();
-				$table = $this->dataMapper->getTable($relation_entity);
+				$table = $this->dataMapper->getTable($relationEntityDefinition);
 				$dal->rightjoin([
 					$table.' '.$alias => $this->processConditions([
 						$ref_table.'.id'.' = '.$alias.'.'.$link
@@ -427,16 +415,15 @@ class ORM {
 					])
 				]);
 				$dal->rightjoin([
-					$this->dataMapper->getTable($relation_entity).' '.$alias => $this->processConditions([
+					$this->dataMapper->getTable($relationEntityDefinition).' '.$alias => $this->processConditions([
 						$relation->getTable($this->prefix).'.'.$relation->getLinkB().' = '.$alias.'.id',
 					])
 				]);
 				break;
 		}
 
-		if($this->definition->getEntitiesManager()->get($relation_entity)->isI18N()) {
-			$table = $this->dataMapper->getTable($relation_entity);
-			$translation_table = $table.'_translation';
+		if($relationEntityDefinition->isI18N()) {
+			$translation_table = $this->dataMapper->getTranslationTable($relationEntityDefinition);
 			$dal->leftjoin([
 				$translation_table.' '.$relationName.'_translation' => $this->processConditions([
 					$table.'.id = '.$relationName.'_translation.id',
@@ -468,11 +455,11 @@ class ORM {
 		}
 
 		if(count($entities) && count($this->with)) {
-			foreach($this->with as $relation_name=>$closure) {
-				$rel = $this->definition->relations[$relation_name];
+			foreach($this->with as $relationName=>$closure) {
+				$rel = $this->dataMapper->relation($this->definition, $relationName);
 				$relation_type = $rel->type();
 				$relation_entity = $rel['entity'];
-				$relation_definition = $this->definition->getEntitiesManager()->get($relation_entity);
+				$relationDefinition = $rel->getTargetDefinition();
 
 				switch($relation_type) {
 					case 'hasOne':
@@ -490,9 +477,9 @@ class ORM {
 							});
 							$filter = array_values($filter);
 							if(isset($filter[0]))
-								$entity->$relation_name = $filter[0];
+								$entity->$relationName = $filter[0];
 							else
-								$entity->$relation_name = null;
+								$entity->$relationName = null;
 						}
 						break;
 					case 'hasMany':
@@ -508,24 +495,24 @@ class ORM {
 								return ($id == $result->$link);
 							});
 							$filter = array_values($filter);
-							$entity->$relation_name = $filter;
+							$entity->$relationName = $filter;
 						}
 						break;
 					case 'HMABT':
-						$join_table = $rel->getTable();
-						$currentEntity_idfield = $rel->getLinkA();
+						$joinTable = $rel->getTable();
+						$currentEntityIdfield = $rel->getLinkA();
+						$reverseRelationName = $rel->reverse()['name'];
 
-						$reverse_relation = $rel->reverse();
-						$reverse_relation_name = $reverse_relation['name'];
-
-						$orm = $this->dataMapper->orm($relation_entity)->join($reverse_relation_name)
+						$orm = $this->dataMapper
+							->orm($relation_entity)
+							->join($reverseRelationName)
 							->where([
 								$this->getTable().'.id IN ('.implode(', ', $ids).')',
 							]);
 
 						if(is_callable($closure))
 							$closure($orm);
-						$res = $orm->getDAL()->addSelect($join_table.'.'.$currentEntity_idfield.' as __ormrelid')->groupBy(null)->get();
+						$res = $orm->getDAL()->addSelect($joinTable.'.'.$currentEntityIdfield.' as __ormrelid')->groupBy(null)->get();
 						foreach($entities as $entity) {
 							$id = $entity->id;
 							$filter = array_filter($res, function($result) use ($id) {
@@ -534,8 +521,8 @@ class ORM {
 							$filter = array_values($filter);
 							$mres = [];
 							foreach($filter as $m)
-								$mres[] = $this->toEntity($m, $relation_definition);
-							$entity->$relation_name = $mres;
+								$mres[] = $this->toEntity($m, $relationDefinition);
+							$entity->$relationName = $mres;
 						}
 						break;
 					default:
@@ -561,7 +548,7 @@ class ORM {
 		$dal = new \Asgard\Db\DAL($this->dataMapper->getDB());
 		$rows = $dal->query($sql, $args)->all();
 		foreach($rows as $row)
-			$entities[] = static::unserializeSet($this->definition->make(), $row);
+			$entities[] = static::unserialize($this->definition->make(), $row);
 			
 		return $entities;
 	}
@@ -623,7 +610,7 @@ class ORM {
 	*/
 	protected function replaceTable($sql) {
 		$table = $this->getTable();
-		$i18nTable = $this->geti18nTable();
+		$i18nTable = $this->getTranslationTable();
 		preg_match_all('/(?<![\.a-z0-9-_`\(\)])([a-z0-9-_]+)(?![\.a-z0-9-_`\(\)])/', $sql, $matches);
 		foreach($matches[0] as $property) {
 			if(!$this->definition->hasProperty($property))
@@ -646,7 +633,7 @@ class ORM {
 		foreach($conditions as $k=>$v) {
 			if(!is_array($v)) {
 				$newK = $this->replaceTable($k);
-				$conditions[$newK] = $this->replaceTable($v);
+				$conditions[$newK] = $v;
 				if($newK != $k)
 					unset($conditions[$k]);
 			}

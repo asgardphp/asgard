@@ -16,10 +16,10 @@ class EntityFieldsSolver {
 	 */
 	protected $callbacks = [];
 	/**
-	 * Array of callbacks to solve fields from "multiple" properties.
+	 * Array of callbacks to solve fields from "many" properties.
 	 * @var array
 	 */
-	protected $callbacksMultiple = [];
+	protected $callbacksMany = [];
 
 	/**
 	 * Constructor.
@@ -67,11 +67,11 @@ class EntityFieldsSolver {
 	}
 
 	/**
-	 * Add a "multiple" callback.
+	 * Add a "many" callback.
 	 * @param callback $cb
 	 */
-	public function addMultiple($cb) {
-		$this->callbacksMultiple[] = $cb;
+	public function addMany($cb) {
+		$this->callbacksMany[] = $cb;
 		return $this;
 	}
 
@@ -81,8 +81,8 @@ class EntityFieldsSolver {
 	 * @return \Asgard\Form\Field
 	 */
 	public function solve($property) {
-		if($property->get('multiple'))
-			return $this->doSolveMultiple($property);
+		if($property->get('many'))
+			return $this->doSolveMany($property);
 		else
 			return $this->doSolve($property);
 	}
@@ -106,17 +106,17 @@ class EntityFieldsSolver {
 	}
 
 	/**
-	 * Actually solve a "multiple" property.
+	 * Actually solve a "many" property.
 	 * @param  \Asgard\Entity\Property $property
 	 * @return \Asgard\Form\Field
 	 */
-	public function doSolveMultiple($property) {
-		foreach(array_reverse($this->callbacksMultiple) as $cb) {
+	public function doSolveMany($property) {
+		foreach(array_reverse($this->callbacksMany) as $cb) {
 			if(($res = $cb($property)) !== null)
 				return $res;
 		}
 		foreach(array_reverse($this->solvers) as $cb) {
-			if($cb instanceof static && ($res = $cb->doSolveMultiple($property)) !== null)
+			if($cb instanceof static && ($res = $cb->doSolveMany($property)) !== null)
 				return $res;
 		}
 

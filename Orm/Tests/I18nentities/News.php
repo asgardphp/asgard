@@ -17,9 +17,5 @@ class News extends \Asgard\Entity\Entity {
 				'many' => true,
 			],
 		];
-
-		$definition->behaviors = [
-			new \Asgard\Orm\ORMBehavior
-		];
 	}
 }

@@ -10,8 +10,13 @@ class Unique extends \Asgard\Validation\Rule {
 	 */
 	public function validate($input, $parentInput, $validator) {
 		$entity = $validator->get('entity');
+		$dataMapper = $validator->get('dataMapper');
 		$attr = $validator->getName();
-		return $entity::where(['and' => [$attr=>$input, 'id!=?'=>$entity->id]])->count() == 0;
+		$orm = $dataMapper->orm(get_class($entity))->where($attr, $input);
+		if($entity->id !== null)
+			$orm->where('id!=?', $entity->id);
+		$dal = $orm->getDAL();
+		return $orm->count() == 0;
 	}
 
 	/**

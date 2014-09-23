@@ -8,8 +8,14 @@ class Relationrequired extends \Asgard\Validation\Rule {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function validate($input) {
-		return $input->count() > 0;
+	public function validate($input, $parentInput, $validator) {
+		$entity = $validator->get('entity');
+		$dataMapper = $validator->get('dataMapper');
+		$relation = $validator->getName();
+		if($entity->data['properties'][$relation] instanceof \Asgard\Entity\ManyCollection)
+			return $entity->data['properties'][$relation]->count() > 0;
+		else
+			return $dataMapper->related($entity, $relation)->count() > 0;
 	}
 
 	/**

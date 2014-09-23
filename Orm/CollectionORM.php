@@ -30,7 +30,7 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 
 		$this->relation = $entity->getDefinition()->relations[$relation_name];
 
-		parent::__construct($entity->getDefinition()->getEntitiesManager()->get($this->relation['entity']), $locale, $prefix, $datamapper, $paginatorFactory);
+		parent::__construct($this->relation->getTargetDefinition(), $locale, $prefix, $datamapper, $paginatorFactory);
 
 		$this->joinToEntity($this->relation->reverse(), $entity);
 	}
@@ -47,7 +47,7 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 			$ids = [$ids];
 		foreach($ids as $k=>$v) {
 			if($v instanceof \Asgard\Entity\Entity) {
-				if($this->dataMapper->isNew($v))
+				if($v->isNew())
 					$this->dataMapper->save($v, null, $force);
 				$ids[$k] = (int)$v->id;
 			}
@@ -55,12 +55,12 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 	
 		switch($this->relation->type()) {
 			case 'hasMany':
-				$relation_entity = $this->relation['entity'];
+			$relationEntityDefinition = $this->relation->getTargetDefinition();
 				$link = $this->relation->getLink();
-				$dal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->dataMapper->getTable($relation_entity));
+				$dal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->dataMapper->getTable($relationEntityDefinition));
 				$dal->where([$link => $this->parent->id])->update([$link => 0]);
 				if($ids) {
-					$newDal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->dataMapper->getTable($relation_entity));
+					$newDal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->dataMapper->getTable($relationEntityDefinition));
 					$newDal->where(['id IN ('.implode(', ', $ids).')'])->update([$link => $this->parent->id]);
 				}
 				break;
@@ -96,8 +96,8 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 			
 		switch($this->relation['type']) {
 			case 'hasMany':
-				$relation_entity = $this->relation['entity'];
-				$dal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $relation_entity::getTable());
+				$relationEntityDefinition = $this->relation->getTargetDefinition();
+				$dal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->dataMapper->getTable($relationEntityDefinition));
 				foreach($ids as $id)
 					$dal->reset()->where(['id' => $id])->update([$this->relation->getLink() => $this->parent->id]);
 				break;
@@ -125,9 +125,8 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 	 * @return \Asgard\Entity\Entitiy
 	 */
 	public function create(array $params=[]) {
-		$relEntity = $this->relation['entity'];
-		$new = $this->definition->make();
-		switch($this->relation['type']) {
+		$new = $this->relation->getTargetDefinition()->make();
+		switch($this->relation->type()) {
 			case 'hasMany':
 				$params[$this->relation->getLink()] = $this->parent->id;
 				$new->save($params);
@@ -153,10 +152,10 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 				$ids[$k] = $id->id;
 		}
 			
-		switch($this->relation['type']) {
+		switch($this->relation->type()) {
 			case 'hasMany':
 				$relation_entity = $this->relation['entity'];
-				$dal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $relation_entity::getTable());
+				$dal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->dataMapper->getTable($relation_entity));
 				foreach($ids as $id)
 					$dal->reset()->where(['id' => $id])->update([$this->relation->getLink() => 0]);
 				break;

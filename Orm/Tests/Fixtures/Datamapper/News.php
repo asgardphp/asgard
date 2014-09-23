@@ -1,19 +1,18 @@
 <?php
-namespace Asgard\Orm\Tests\Entities;
+namespace Asgard\Orm\Tests\Fixtures\Datamapper;
 
 class News extends \Asgard\Entity\Entity {
 	public static function definition(\Asgard\Entity\EntityDefinition $definition) {
 		$definition->properties = [
 			'title',
 			'content',
-			'score' => 'integer',
 			'category' => [
 				'type' => 'entity',
-				'entity' => 'Asgard\Orm\Tests\Entities\Category',
+				'entity' => 'Asgard\Orm\Tests\Fixtures\Datamapper\Category',
 			],
 			'author' => [
 				'type' => 'entity',
-				'entity' => 'Asgard\Orm\Tests\Entities\Author',
+				'entity' => 'Asgard\Orm\Tests\Fixtures\Datamapper\Author',
 			],
 		];
 	}

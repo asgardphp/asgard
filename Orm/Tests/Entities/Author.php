@@ -12,8 +12,8 @@ class Author extends \Asgard\Entity\Entity {
 			],
 		];
 
-		$definition->behaviors = [
-			new \Asgard\Orm\ORMBehavior
-		];
+		// $definition->behaviors = [
+		// 	new \Asgard\Orm\ORMBehavior
+		// ];
 	}
 }

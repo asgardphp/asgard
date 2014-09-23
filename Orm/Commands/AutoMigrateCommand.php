@@ -25,10 +25,8 @@ class AutoMigrateCommand extends \Asgard\Console\Command {
 		$dm = $this->dataMapper;
 		$mm = $this->migrationsManager;
 		$om = new \Asgard\Orm\ORMMigrations($dm, $mm);
-
-		$entities = $this->entitiesManager->getEntities();
 		
-		$migration = $om->generateMigration($entities, $migration, $this->dataMapper);
+		$migration = $om->generateMigration($this->entitiesManager, $migration, $this->dataMapper);
 		if($mm->has($migration))
 			$this->info('The migration was successfully generated.');
 		else

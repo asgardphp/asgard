@@ -20,6 +20,11 @@ class EntityForm extends \Asgard\Form\Form {
 	 * @var EntityFieldsSolver
 	 */
 	protected $entityFieldsSolver;
+	/**
+	 * Datamapper dependency.
+	 * @var \Asgard\Orm\DataMapper
+	 */
+	protected $dataMapper;
 
 	
 	/**
@@ -30,17 +35,19 @@ class EntityForm extends \Asgard\Form\Form {
 	 * @param EntityFieldsSolver    $entityFieldsSolver
 	 */
 	public function __construct(
-		\Asgard\Entity\Entity $entity,
-		array $options                  = [],
-		\Asgard\Http\Request $request   = null,
-		$entityFieldsSolver             = null
+		\Asgard\Entity\Entity  $entity,
+		array                  $options            = [],
+		\Asgard\Http\Request   $request            = null,
+		EntityFieldsSolver     $entityFieldsSolver = null,
+		\Asgard\Orm\DataMapper $dataMapper         = null
 	) {
 		$this->entityFieldsSolver = $entityFieldsSolver;
+		$this->dataMapper         = $dataMapper;
 		$this->entity             = $entity;
 		$this->locales            = isset($options['locales']) ? $options['locales']:[];
 	
 		$fields = [];
-		foreach($entity::getStaticDefinition()->properties() as $name=>$property) {
+		foreach($entity->getDefinition()->properties() as $name=>$property) {
 			if(isset($options['only']) && !in_array($name, $options['only']))
 				continue;
 			if(isset($options['except']) && in_array($name, $options['except']))
@@ -59,7 +66,7 @@ class EntityForm extends \Asgard\Form\Form {
 		}
 
 		parent::__construct(
-			isset($options['name']) ? $options['name']:$entity::getStaticDefinition()->getShortName(),
+			isset($options['name']) ? $options['name']:$entity->getDefinition()->getShortName(),
 			$options,
 			$request,
 			$fields
@@ -69,9 +76,11 @@ class EntityForm extends \Asgard\Form\Form {
 	/**
 	 * Add another nested fields solver.
 	 * @param EntityFieldsSolver $entityFieldsSolver
+	 * @return EntityForm
 	 */
 	public function addEntityFieldsSolver($entityFieldsSolver) {
 		$this->entityFieldsSolver->addSolver($entityFieldsSolver);
+		return $this;
 	}
 
 	/**
@@ -86,6 +95,24 @@ class EntityForm extends \Asgard\Form\Form {
 	}
 
 	/**
+	 * Set DataMapper dependency.
+	 * @param  \Asgard\Orm\DataMapper $dataMapper
+	 * @return EntityForm
+	 */
+	public function setDataMapper(\Asgard\Orm\DataMapper $dataMapper) {
+		$this->dataMapper = $dataMapper;
+		return $this;
+	}
+
+	/**
+	 * Return DataMapper dependency.
+	 * @return \Asgard\Orm\DataMapper
+	 */
+	public function getDataMapper() {
+		return $this->dataMapper;
+	}
+
+	/**
 	 * Return the entity.
 	 * @return \Asgard\Entity\Entity
 	 */
@@ -93,45 +120,46 @@ class EntityForm extends \Asgard\Form\Form {
 		return $this->entity;
 	}
 
-	/* Entity fields */
 	/**
 	 * Embed an entity relation in the form.
 	 * @param string $name
 	 */
 	public function addRelation($name) {
 		$entity = $this->entity;
-		$relation = $entity::getStaticDefinition()->relation($name);
+		$dataMapper = $this->dataMapper;
+		if(!$dataMapper)
+			throw new \Exception('Entity form needs a dataMapper to add relations.');
+
+		$relation = $dataMapper->relation($entity->getDefinition(), $name);
 
 		$ids = [''=>$this->getTranslator()->trans('Choose')];
-		$orm = $relation['entity']::orm();
+		$orm = $dataMapper->orm($relation['entity']);
 		while($v = $orm->next())
 			$ids[$v->id] = (string)$v;
 		
-		if($relation['has'] == 'one') {
-			$this->add(new \Asgard\Form\Fields\SelectField([
-				'type'      =>	'integer',
-				'choices'   =>	$ids,
-				'default'   =>	($this->entity->isOld() && $this->entity->$name ? $this->entity->$name->id:null),
+		if($relation['many']) {
+			$this->add(new \Asgard\Form\Fields\MultipleSelectField([
+				'type'    => 'integer',
+				'choices' => $ids,
+				'default' => ($entity->isOld($entity) ? $dataMapper->related($entity, $name)->ids():[]),
 			]), $name);
 		}
-		elseif($relation['has'] == 'many') {
-			$this->add(new \Asgard\Form\Fields\MultipleSelectField([
-				'type'      =>	'integer',
-				'choices'   =>	$ids,
-				'default'   =>	($this->entity->isOld() ? $this->entity->$name()->ids():[]),
+		else {
+			$this->add(new \Asgard\Form\Fields\SelectField([
+				'type'    => 'integer',
+				'choices' => $ids,
+				'default' => ($entity->isOld($entity) && $entity->get($name) ? $entity->get($name)->id:null),
 			]), $name);
 		}
 	}
 	
-	/* Save & Validation */
 	/**
 	 * Save the entity.
 	 * @return boolean true for success
 	 */
 	public function doSave() {
-		$entity = $this->entity;
-		if($entity::getStaticDefinition()->hasBehavior('Asgard\Entity\PersistenceBehavior'))
-			$entity->save();
+		if($this->dataMapper)
+			$this->dataMapper->save($this->entity);
 		else
 			parent::doSave();
 	}

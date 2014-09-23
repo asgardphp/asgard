@@ -90,7 +90,7 @@ class ORMMigrations {
 
 				#relations
 				if($prop->get('type') == 'entity') {
-					$relation = $dataMapper->getRelation($definition, $name);
+					$relation = $dataMapper->relation($definition, $name);
 					#relations with one entity
 					if(!$relation['many']) {
 						$schema[$relation->getLink()] = [
@@ -148,8 +148,8 @@ class ORMMigrations {
 				$col['position'] = $prop->params['position'];
 
 				if($prop->i18n) {
-					if(!isset($schemas[$dataMapper->getTable($definition->getClass()).'_translation'])) {
-						$schemas[$dataMapper->getTable($definition->getClass()).'_translation'] = [
+					if(!isset($schemas[$dataMapper->getTranslationTable($definition)])) {
+						$schemas[$dataMapper->getTranslationTable($definition)] = [
 							'id' => [
 								'type'           => 'int(11)',
 								'nullable'       => false,
@@ -166,7 +166,7 @@ class ORMMigrations {
 							],
 						];
 					}
-					$schemas[$dataMapper->getTable($definition->getClass()).'_translation'][$name] = $col; #todo replace by getTranslationTable
+					$schemas[$dataMapper->getTranslationTable($definition)][$name] = $col;
 				}
 				else
 					$schema[$name] = $col;
@@ -186,7 +186,7 @@ class ORMMigrations {
 			foreach($schema as $k=>$col)
 				$schema[$k]['position'] = $i++;
 
-			$schemas[$dataMapper->getTable($definition->getClass())] = $schema;
+			$schemas[$dataMapper->getTable($definition)] = $schema;
 		}
 
 		return $schemas;

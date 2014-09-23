@@ -2,35 +2,35 @@
 namespace Asgard\Entity;
 
 /**
- * 
+ * Collection of many elements.
  */
 class ManyCollection implements \ArrayAccess, \Iterator, \Countable {
 	/**
-	 * [$elements description]
-	 * @var [type]
+	 * Elements.
+	 * @var array
 	 */
 	protected $elements = [];
 	/**
-	 * [$definition description]
-	 * @var [type]
+	 * Entity Definition.
+	 * @var EntityDefinition
 	 */
 	protected $definition;
 	/**
-	 * [$entity description]
-	 * @var [type]
+	 * Entity.
+	 * @var Entity
 	 */
 	protected $entity;
 	/**
-	 * [$name description]
-	 * @var [type]
+	 * Name.
+	 * @var string
 	 */
 	protected $name;
 
 	/**
-	 * [__construct description]
-	 * @param [type] $definition
-	 * @param [type] $entity
-	 * @param [type] $name
+	 * Constructor.
+	 * @param EntityDefinition $definition
+	 * @param Entity           $entity
+	 * @param string           $name
 	 */
 	public function __construct($definition, $entity, $name) {
 		$this->definition = $definition;
@@ -39,24 +39,24 @@ class ManyCollection implements \ArrayAccess, \Iterator, \Countable {
 	}
 
 	/**
-	 * [count description]
-	 * @return [type] [description]
+	 * Return number of elements.
+	 * @return integer
 	 */
 	public function count() {
 		return count($this->elements);
 	}
 
 	/**
-	 * [all description]
-	 * @return [type]
+	 * Return all elements.
+	 * @return array
 	 */
 	public function all() {
 		return $this->elements;
 	}
 
 	/**
-	 * [add description]
-	 * @param [type] $element
+	 * Add an element.
+	 * @param mixed $element
 	 */
 	public function add($element) {
 		if($element === null)
@@ -67,9 +67,8 @@ class ManyCollection implements \ArrayAccess, \Iterator, \Countable {
 	}
 
 	/**
-	 * [remove description]
-	 * @param  [type] $offset
-	 * @return [type]
+	 * Remove an element.
+	 * @param  integer $offset
 	 */
 	public function remove($offset) {
 		unset($this->elements[$offset]);
@@ -77,9 +76,9 @@ class ManyCollection implements \ArrayAccess, \Iterator, \Countable {
 	}
 
 	/**
-	 * [get description]
-	 * @param  [type] $offset
-	 * @return [type]
+	 * Return an element.
+	 * @param  integer $offset
+	 * @return mixed
 	 */
 	public function get($offset) {
 		if(!isset($this->elements[$offset]))
@@ -88,10 +87,10 @@ class ManyCollection implements \ArrayAccess, \Iterator, \Countable {
 	}
 
 	/**
-	 * [offsetSet description]
-	 * @param  [type] $offset
-	 * @param  [type] $value
-	 * @return [type]
+	 * Array set implementation.
+	 * @param  integer $offset
+	 * @param  mixed   $value
+	 * @throws \LogicException If $offset is null.
 	 */
 	public function offsetSet($offset, $value) {
 		if(!is_null($offset))
@@ -101,35 +100,34 @@ class ManyCollection implements \ArrayAccess, \Iterator, \Countable {
 	}
 
 	/**
-	 * [offsetExists description]
-	 * @param  [type] $offset
-	 * @return [type]
+	 * Array exists implementation.
+	 * @param  integer $offset
+	 * @return boolean
 	 */
 	public function offsetExists($offset) {
 		return isset($this->elements[$offset]);
 	}
 
 	/**
-	 * [offsetUnset description]
-	 * @param  [type] $offset
-	 * @return [type]
+	 * Array unset implementation.
+	 * @param  integer $offset
 	 */
 	public function offsetUnset($offset) {
-		return $this->remove($offset);
+		$this->remove($offset);
 	}
 
 	/**
-	 * [offsetGet description]
-	 * @param  [type] $offset
-	 * @return [type]
+	 * Array get implementation.
+	 * @param  integer $offset
+	 * @return mixed
 	 */
 	public function offsetGet($offset) {
 		return $this->get($offset);
 	}
 	
 	/**
-	 * [valid description]
-	 * @return [type]
+	 * Iterator valid implementation.
+	 * @return boolean
 	 */
 	public function valid() {
 		$key = key($this->elements);
@@ -137,32 +135,31 @@ class ManyCollection implements \ArrayAccess, \Iterator, \Countable {
 	}
 
 	/**
-	 * [rewind description]
-	 * @return [type]
+	 * Iterator rewind implementation.
 	 */
 	public function rewind() {
 		reset($this->elements);
 	}
 
 	/**
-	 * [current description]
-	 * @return [type]
+	 * Iterator current implementation.
+	 * @return mixed
 	 */
 	public function current() {
 		return current($this->elements);
 	}
 
 	/**
-	 * [key description]
-	 * @return [type]
+	 * Iterator key implementation.
+	 * @return integer
 	 */
 	public function key()  {
 		return key($this->elements);
 	}
 
 	/**
-	 * [next description]
-	 * @return function
+	 * Iterator next implementation.
+	 * @return mixed
 	 */
 	public function next()  {
 		return next($this->elements);

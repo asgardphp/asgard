@@ -2,43 +2,43 @@
 namespace Asgard\Entity;
 
 /**
- * 
+ * Entity.
  */
 abstract class Entity {
 	/**
-	 * [$data description]
-	 * @var [type]
+	 * Entity data.
+	 * @var array
 	 */
 	public $data = [ #public for behaviors
 		'properties'   => [],
 		'translations' => [],
 	];
 	/**
-	 * [$definition description]
-	 * @var [type]
+	 * Entity definition.
+	 * @var EntityDefinition
 	 */
 	protected $definition;
 	/**
-	 * [$locale description]
-	 * @var [type]
+	 * Default locale.
+	 * @var string
 	 */
 	protected $locale;
 
 	/**
-	 * [__construct description]
-	 * @param [type] $params
+	 * Constructor.
+	 * @param [type] $attrs
 	 * @param [type] $locale
 	 */
-	public function __construct(array $params=null, $locale=null) {
+	public function __construct(array $attrs=null, $locale=null) {
 		$this->setLocale($locale);
 		$this->loadDefault();
-		if(is_array($params))
-			$this->set($params);
+		if(is_array($attrs))
+			$this->set($attrs);
 	}
 
 	/**
-	 * [getLocale description]
-	 * @return [type]
+	 * Return the default locale.
+	 * @return string
 	 */
 	public function getLocale() {
 		if($this->locale === null)
@@ -47,8 +47,8 @@ abstract class Entity {
 	}
 
 	/**
-	 * [setDefinition description]
-	 * @param [type] $definition
+	 * Set the entity definition.
+	 * @param EntityDefinition $definition
 	 */
 	public function setDefinition($definition) {
 		$this->definition = $definition;
@@ -56,34 +56,34 @@ abstract class Entity {
 	}
 
 	/**
-	 * [setLocale description]
-	 * @param [type] $locale
+	 * Set the default locale.
+	 * @param string $locale
 	 */
 	public function setLocale($locale) {
 		$this->locale = $locale;
 	}
 	
 	/**
-	 * [__set description]
-	 * @param [type] $name
-	 * @param [type] $value
+	 * __set magic method.
+	 * @param string $name
+	 * @param mixed  $value
 	 */
 	public function __set($name, $value) {
 		$this->set($name, $value);
 	}
 
 	/**
-	 * [__get description]
-	 * @param  [type] $name
-	 * @return [type]
+	 * __get magic method.
+	 * @param  string $name
+	 * @return mixed
 	 */
 	public function __get($name) {
 		return $this->get($name);
 	}
 	
 	/**
-	 * [__isset description]
-	 * @param  [type]  $name
+	 * __isset magic method.
+	 * @param  string  $name
 	 * @return boolean
 	 */
 	public function __isset($name) {
@@ -91,43 +91,42 @@ abstract class Entity {
 	}
 	
 	/**
-	 * [__unset description]
-	 * @param [type] $name
+	 * __unset magic method.
+	 * @param string $name
 	 */
 	public function __unset($name) {
 		unset($this->data['properties'][$name]);
 	}
 
 	/**
-	 * __callStatic magic method. For active-record like entities only.
-	 * @param  [type] $name
+	 * __callStatic magic method. For active-record-like entities only.
+	 * @param  string $name
 	 * @param  array  $arguments
-	 * @return [type]
+	 * @return mixed
 	 */
 	public static function __callStatic($name, array $arguments) {
 		return static::getStaticDefinition()->callStatic($name, $arguments);
 	}
 
 	/**
-	 * [__call description]
-	 * @param  [type] $name
+	 * __call magic method. For active-record-like entities only.
+	 * @param  string $name
 	 * @param  array  $arguments
-	 * @return [type]
+	 * @return mixed
 	 */
 	public function __call($name, array $arguments) {
 		return $this->getDefinition()->call($this, $name, $arguments);
 	}
 	
 	/**
-	 * [definition description]
+	 * Initialize the configuration. To be overwritten in the entity class.
 	 * @param  EntityDefinition $entityDefinition
-	 * @return [type]
 	 */
 	public static function definition(EntityDefinition $entityDefinition) {}
 
 	/**
-	 * [getDefinition description]
-	 * @return [type]
+	 * Return the definition.
+	 * @return EntityDefinition
 	 */
 	public function getDefinition() {
 		if(isset($this->definition))
@@ -137,8 +136,8 @@ abstract class Entity {
 	}
 
 	/**
-	 * [getStaticDefinition description]
-	 * @return [type]
+	 * Return a static definition, if entity used like active-record.
+	 * @return EntityDefinition
 	 */
 	public static function getStaticDefinition() {
 		#only for entities without dependency injection, activerecord like, e.g. new Article or Article::find();
@@ -146,34 +145,60 @@ abstract class Entity {
 	}
 
 	/**
-	 * [loadDefault description]
-	 * @return [type]
+	 * Load default data.
+	 * @return Entity
 	 */
 	public function loadDefault() {
 		foreach($this->getDefinition()->properties() as $name=>$property)
 			$this->set($name, $property->getDefault($this, $name));
-				
 		return $this;
+	}
+
+	/**
+	 * Check if the entity has no id.
+	 * @return boolean true if entity has no id
+	 */
+	public function isNew() {
+		return $this->id === null;
+	}
+
+	/**
+	 * Check if the entity has an id.
+	 * @return boolean true if entity has an id
+	 */
+	public function isOld() {
+		return !$this->isNew();
 	}
 	
 	/**
-	 * [getValidator description]
-	 * @param  [type] $locales
-	 * @return [type]
+	 * Get a validator.
+	 * @param  array $locales
+	 * @return \Asgard\Validation\Validator
 	 */
 	public function getValidator(array $locales=[]) {
-		$messages = [];
 		$validator = $this->getDefinition()->getEntitiesManager()->createValidator();
+		return $this->prepareValidator($validator, $locales);
+	}
+
+	/**
+	 * Prepare the validator.
+	 * @param  \Asgard\Validation\Validator $validator
+	 * @return \Asgard\Validation\Validator
+	 */
+	public function prepareValidator(\Asgard\Validation\Validator $validator, array $locales=[]) {
+		$messages = [];
 
 		foreach($this->getDefinition()->properties() as $name=>$property) {
-			if($locales && $property->i18n) {
+			if($locales && $property->get('i18n')) {
 				foreach($locales as $locale) {
 					if($property->get('many')) {
-						foreach($this->get($name) as $k=>$v) {
-							$validator->attribute($name.'.'.$locale.'.'.$k, $property->getRules());
-							$validator->attribute($name.'.'.$locale.'.'.$k)->formatParameters(function(&$params) use($name) {
-								$params['attribute'] = $name;
-							});
+						if($this->get($name) instanceof ManyCollection) {
+							foreach($this->get($name) as $k=>$v) {
+								$validator->attribute($name.'.'.$locale.'.'.$k, $property->getRules());
+								$validator->attribute($name.'.'.$locale.'.'.$k)->formatParameters(function(&$params) use($name) {
+									$params['attribute'] = $name;
+								});
+							}
 						}
 					}
 					else {
@@ -186,11 +211,13 @@ abstract class Entity {
 			}
 			else {
 				if($property->get('many')) {
-					foreach($this->get($name) as $k=>$v) {
-						$validator->attribute($name.'.'.$k, $property->getRules());
-						$validator->attribute($name.'.'.$k)->formatParameters(function(&$params) use($name) {
-							$params['attribute'] = $name;
-						});
+					if($this->get($name) instanceof ManyCollection) {
+						foreach($this->get($name) as $k=>$v) {
+							$validator->attribute($name.'.'.$k, $property->getRules());
+							$validator->attribute($name.'.'.$k)->formatParameters(function(&$params) use($name) {
+								$params['attribute'] = $name;
+							});
+						}
 					}
 				}
 				else
@@ -209,8 +236,8 @@ abstract class Entity {
 	}
 	
 	/**
-	 * [valid description]
-	 * @return [type]
+	 * Check if entity is valid.
+	 * @return boolean
 	 */
 	public function valid() {
 		$data = $this->toArrayRaw();
@@ -221,8 +248,8 @@ abstract class Entity {
 	}
 	
 	/**
-	 * [errors description]
-	 * @return [type]
+	 * Return entity errors.
+	 * @return array
 	 */
 	public function errors() {
 		$data = $this->toArrayRaw();
@@ -241,10 +268,10 @@ abstract class Entity {
 	}
 
 	/**
-	 * [_set description]
-	 * @param [type] $name
-	 * @param [type] $value
-	 * @param [type] $locale
+	 * Hard set data. No pre-processing.
+	 * @param string $name
+	 * @param mixed  $value
+	 * @param string $locale
 	 */
 	public function _set($name, $value=null, $locale=null) {
 		if(is_array($name)) {
@@ -276,10 +303,10 @@ abstract class Entity {
 	}
 
 	/**
-	 * [set description]
-	 * @param [type]  $name
-	 * @param [type]  $value
-	 * @param [type]  $locale
+	 * Soft set data. With pre-processing.
+	 * @param string  $name
+	 * @param mixed   $value
+	 * @param string  $locale
 	 * @param boolean $hook
 	 */
 	public function set($name, $value=null, $locale=null, $hook=true) {
@@ -317,10 +344,10 @@ abstract class Entity {
 	}
 
 	/**
-	 * [_get description]
-	 * @param  [type] $name
-	 * @param  [type] $locale
-	 * @return [type]
+	 * Hard get data. With no pre-processing.
+	 * @param  string $name
+	 * @param  string $locale
+	 * @return mixed
 	 */
 	public function _get($name, $locale=null) {
 		if(!$locale)
@@ -338,11 +365,7 @@ abstract class Entity {
 				elseif(isset($this->data['translations'][$locale][$name]))
 					return $this->data['translations'][$locale][$name];
 				else {
-					$i18n = $this->getDefinition()->trigger('getI18N', [$this, $name, $locale]);
-					if($i18n === null)
-						$i18n = [];
-					foreach($i18n as $k=>$v)
-						$this->_set($k, $v, $locale);
+					$this->getDefinition()->trigger('getTranslations', [$this, $name, $locale]);
 					if(!isset($this->data['translations'][$locale][$name]))
 						return null;
 					return $this->data['translations'][$locale][$name];
@@ -356,10 +379,10 @@ abstract class Entity {
 	}
 	
 	/**
-	 * [get description]
-	 * @param  [type] $name
-	 * @param  [type] $locale
-	 * @return [type]
+	 * Hard get data. With pre-processing.
+	 * @param  string $name
+	 * @param  string $locale
+	 * @return mixed
 	 */
 	public function get($name, $locale=null) {
 		if(!$locale)
@@ -372,8 +395,8 @@ abstract class Entity {
 	}
 	
 	/**
-	 * [toArrayRaw description]
-	 * @return [type]
+	 * Convert entity to a raw array.
+	 * @return array
 	 */
 	public function toArrayRaw() {
 		$res = [];
@@ -391,8 +414,8 @@ abstract class Entity {
 	}
 	
 	/**
-	 * [toArray description]
-	 * @return [type]
+	 * Convert entity to a formatted array.
+	 * @return array
 	 */
 	public function toArray() {
 		$res = [];
@@ -413,17 +436,17 @@ abstract class Entity {
 	}
 
 	/**
-	 * [toJSON description]
-	 * @return [type]
+	 * Convert entity to json.
+	 * @return string
 	 */
 	public function toJSON() {
 		return json_encode($this->toArray());
 	}
 
 	/**
-	 * [arrayToJSON description]
+	 * Convert an array of entities to json.
 	 * @param  array  $entities
-	 * @return [type]
+	 * @return string
 	 */
 	public static function arrayToJSON(array $entities) {
 		foreach($entities as $k=>$entity)
@@ -432,10 +455,10 @@ abstract class Entity {
 	}
 
 	/**
-	 * [propertyToArray description]
-	 * @param  [type] $v
-	 * @param  [type] $property
-	 * @return [type]
+	 * Convert a property to a strig or an array.
+	 * @param  mixed    $v
+	 * @param  Property $property
+	 * @return string|array
 	 */
 	private function propertyToArray($v, $property) {
 		if(is_null($v))
@@ -456,9 +479,9 @@ abstract class Entity {
 	}
 
 	/**
-	 * [translate description]
-	 * @param  [type] $locale
-	 * @return [type]
+	 * Return entity in another language.
+	 * @param  string $locale
+	 * @return Entity
 	 */
 	public function translate($locale) {
 		$localeEntity = clone $this;
@@ -472,17 +495,17 @@ abstract class Entity {
 	}
 
 	/**
-	 * [getLocales description]
-	 * @return [type]
+	 * Get entity locales.
+	 * @return array
 	 */
 	public function getLocales() {
 		return array_merge([$this->getLocale()], array_keys($this->data['translations']));
 	}
 
 	/**
-	 * [toArrayRawI18N description]
-	 * @param  [type] $locales
-	 * @return [type]
+	 * Convert entity to a raw array with translations.
+	 * @param  array $locales
+	 * @return array
 	 */
 	public function toArrayRawI18N(array $locales=[]) {
 		if(!$locales)
@@ -508,9 +531,9 @@ abstract class Entity {
 	}
 
 	/**
-	 * [toArrayI18N description]
-	 * @param  [type] $locales
-	 * @return [type]
+	 * Convert entity to a formatted array with translations.
+	 * @param  array $locales
+	 * @return array
 	 */
 	public function toArrayI18N(array $locales=[]) {
 		if(!$locales)
@@ -541,9 +564,9 @@ abstract class Entity {
 	}
 
 	/**
-	 * [toJSONI18N description]
-	 * @param  [type] $locales
-	 * @return [type]
+	 * Convert entity to JSON with translations.
+	 * @param  array $locales
+	 * @return string
 	 */
 	public function toJSONI18N(array $locales=[]) {
 		if(!$locales)
@@ -552,10 +575,10 @@ abstract class Entity {
 	}
 
 	/**
-	 * [arrayToJSONI18N description]
+	 * Convert many entities to JSON with translations.
 	 * @param  array  $entities
-	 * @param  [type] $locales
-	 * @return [type]
+	 * @param  array $locales
+	 * @return string
 	 */
 	public static function arrayToJSONI18N(array $entities, array $locales=[]) {
 		foreach($entities as $k=>$entity)
@@ -564,9 +587,9 @@ abstract class Entity {
 	}
 	
 	/**
-	 * [validI18N description]
-	 * @param  [type] $locales
-	 * @return [type]
+	 * Check if entity and translations are valid.
+	 * @param  array $locales
+	 * @return boolean
 	 */
 	public function validI18N(array $locales=[]) {
 		if(!$locales)
@@ -579,9 +602,9 @@ abstract class Entity {
 	}
 	
 	/**
-	 * [errorsI18N description]
-	 * @param  [type] $locales
-	 * @return [type]
+	 * Return errors for entity and translations.
+	 * @param  array $locales
+	 * @return array
 	 */
 	public function errorsI18N(array $locales=[]) {
 		if(!$locales)

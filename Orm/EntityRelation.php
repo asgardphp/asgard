@@ -75,8 +75,7 @@ class EntityRelation implements \ArrayAccess {
 	 * @return string
 	 */
 	public function getLinkB() {
-		$entityClass = $this->params['entity'];
-		return $this->entityDefinition->getEntitiesManager()->get($entityClass)->getShortName().'_id';
+		return $this->getTargetDefinition()->getShortName().'_id';
 	}
 
 	/**
@@ -85,14 +84,26 @@ class EntityRelation implements \ArrayAccess {
 	 * @return string
 	 */
 	public function getTable($prefix=null) {
-		$relationEntityClass = $this->params['entity'];
 		$entityShortName = $this->entityDefinition->getShortName();
-		$relationEntityShortName = $this->entityDefinition->getEntitiesManager()->get($relationEntityClass)->getShortName();
+		$relationEntityShortName = $this->getTargetDefinition()->getShortName();
 
 		if($entityShortName < $relationEntityShortName)
 			return $prefix.$entityShortName.'_'.$relationEntityShortName;
 		else
 			return $prefix.$relationEntityShortName.'_'.$entityShortName;
+	}
+
+	/**
+	 * Return the target entity definition.
+	 * @return \Asgard\Entity\EntityDefinition
+	 */
+	public function getTargetDefinition() {
+		#todo polymorphism, only for entities with one related entity
+		// if($relation['polymorphic'])
+		// 	$relation_entity = $relation['real_entity'];
+		// else
+		// 	$relation_entity = $relation['entity'];
+		return $this->entityDefinition->getEntitiesManager()->get($this->params['entity']);
 	}
 
 	/**
@@ -127,8 +138,7 @@ class EntityRelation implements \ArrayAccess {
 		$origEntityName = strtolower($this->entityClass);
 		$entityName = preg_replace('/^\\\/', '', $origEntityName);
 
-		$relation_entity = $this->params['entity'];
-		$relationEntityDefinition = $this->entityDefinition->getEntitiesManager()->get($relation_entity);
+		$relationEntityDefinition = $this->getTargetDefinition();
 		$name = $this->name;
 
 		$rev_relations = [];
@@ -164,10 +174,8 @@ class EntityRelation implements \ArrayAccess {
 	 */
 	public function reverse() {
 		$reverse_rel = $this->reverseRelationParams();
-		$relation_entity = $this->params['entity'];
-		$relationEntityDefinition = $this->entityDefinition->getEntitiesManager()->get($relation_entity);
 		$rel_name = $reverse_rel['name'];
-		return $this->dataMapper->getRelation($relationEntityDefinition, $rel_name);
+		return $this->dataMapper->relation($this->getTargetDefinition(), $rel_name);
 	}
 
 	/**

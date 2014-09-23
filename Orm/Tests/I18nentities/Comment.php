@@ -10,9 +10,5 @@ class Comment extends \Asgard\Entity\Entity {
 				'entity'	=>	'\Asgard\Orm\Tests\I18nentities\News',
 			],
 		];
-
-		$definition->behaviors = [
-			new \Asgard\Orm\ORMBehavior
-		];
 	}
 }

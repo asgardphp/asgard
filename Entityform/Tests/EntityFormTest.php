@@ -2,30 +2,53 @@
 namespace Asgard\Entityform\Tests;
 
 class EntityFormTest extends \PHPUnit_Framework_TestCase {
-	protected static $container;
-
-	#for entities
-	public static function setUpBeforeClass() {
-		$container = new \Asgard\Container\Container;
-		$container['config'] = new \Asgard\Config\Config;
-		$container['hooks'] = new \Asgard\Hook\HooksManager($container);
-		$container['cache'] = new \Asgard\Cache\NullCache;
-		$container['translator'] = new \Symfony\Component\Translation\Translator('en');
-		$container['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($container);
-		static::$container = $container;
-	}
-
 	public function testEntityForm() {
-		$user = new Entities\User;
-		$form = new \Asgard\Entityform\EntityForm($user, [], null);
-		$form->setTranslator(static::$container['translator']);
+		#Dependencies
+		$db = new \Asgard\Db\DB([
+			'host' => 'localhost',
+			'user' => 'root',
+			'password' => '',
+			'database' => 'asgard_test',
+		]);
+		$em = new \Asgard\Entity\EntitiesManager;
+		$dataMapper = new \Asgard\Orm\DataMapper($em, $db);
+
+		#Fixtures
+		$schema = new \Asgard\Db\Schema($db);
+		$schema->drop('user');
+		$schema->drop('comment');
+		(new \Asgard\Orm\ORMMigrations($dataMapper))->doAutoMigrate([
+			$em->get('Asgard\Entityform\Tests\Entities\User'),
+			$em->get('Asgard\Entityform\Tests\Entities\Comment')
+		], $schema);
+
+		$dataMapper->save($em->make('Asgard\Entityform\Tests\Entities\Comment', ['id'=>1, 'content'=>'Foo']));
+		$dataMapper->save($em->make('Asgard\Entityform\Tests\Entities\Comment', ['id'=>2, 'content'=>'Bar']));
+		$dataMapper->save($thirdComment = $em->make('Asgard\Entityform\Tests\Entities\Comment', ['id'=>3, 'content'=>'Zoo']));
+
+		$dataMapper->save($user = $em->make('Asgard\Entityform\Tests\Entities\User', [
+			'name' => 'bob',
+			'comments' => [
+				$thirdComment
+			]
+		]));
+
+		#Init form
+		$form = new \Asgard\Entityform\EntityForm($user, [], null, null, $dataMapper);
+		$form->setTranslator(new \Symfony\Component\Translation\Translator('en'));
 		$request = new \Asgard\Http\Request;
 		$request->setMethod('post')->post->set('user', ['name' => 'Bob']);
 		$form->setRequest($request);
 
+		#Tests
 		$this->assertEquals($user, $form->getEntity());
 
 		$form->addRelation('comments');
+		$this->assertInstanceOf('Asgard\Form\Fields\MultipleSelectField', $form['comments']);
+		$this->assertEquals($form['comments']->options['choices'][1], 'Foo');
+		$this->assertEquals($form['comments']->options['choices'][2], 'Bar');
+		$this->assertEquals($form['comments']->options['choices'][3], 'Zoo');
+		$this->assertTrue(in_array(3, $form['comments']->options['default']));
 		return;
 /*
 		$this->assertEquals([], $form->errors());

@@ -751,7 +751,7 @@ class Schema {
 	 * @param  string $table
 	 */
 	public function drop($table) {
-		$sql = 'DROP TABLE `'.$table.'`';
+		$sql = 'DROP TABLE IF EXISTS `'.$table.'`';
 		$this->db->query($sql);
 	}
 	

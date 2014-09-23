@@ -22,8 +22,14 @@ class Lessthan extends \Asgard\Validation\Rule {
 	/**
 	 * {@inheritdoc}
 	 */
-	public function validate($input) {
-		return $input->count() < $this->less;
+	public function validate($input, $parentInput, $validator) {
+		$entity = $validator->get('entity');
+		$dataMapper = $validator->get('dataMapper');
+		$relation = $validator->getName();
+		if($entity->data['properties'][$relation] instanceof \Asgard\Entity\ManyCollection)
+			return $entity->data['properties'][$relation]->count() < $this->less;
+		else
+			return $dataMapper->related($entity, $relation)->count() < $this->less;
 	}
 
 	/**
