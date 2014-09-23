@@ -25,7 +25,7 @@ abstract class Test extends \PHPUnit_Framework_TestCase {
 	 * Get a browser instance.
 	 * @return Browser\Browser
 	 */
-	protected function getBrowser() {
+	protected function createBrowser() {
 		return new Browser\Browser(static::getContainer());
 	}
 }

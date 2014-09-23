@@ -193,10 +193,10 @@ class HttpKernel {
 	 * @param  string      $controllerClass
 	 * @param  string      $action
 	 * @param  Request     $request
-	 * @param  null|Route  $route        Route prefix to match.
+	 * @param  Route  $route        Route prefix to match.
 	 * @return mixed
 	 */
-	public function runController($controllerClass, $action, Request $request, $route=null) {
+	public function runController($controllerClass, $action, Request $request, Route $route=null) {
 		$controller = new $controllerClass();
 		$controller->setContainer($this->container);
 
@@ -323,9 +323,9 @@ class HttpKernel {
 	 * @param Controller   $controller
 	 * @param string       $action
 	 * @param Request      $request
-	 * @param null|Route   $route       Route prefix to match.
+	 * @param Route   $route       Route prefix to match.
 	 */
-	protected function addFilters(Controller $controller, $action, Request $request, $route=null) {
+	protected function addFilters(Controller $controller, $action, Request $request, Route $route=null) {
 		$controllerClass = get_class($controller);
 
 		foreach($this->filters as $_filter) {

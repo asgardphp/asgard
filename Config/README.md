@@ -36,11 +36,11 @@ Config inherits [\Asgard\Common\Bag](http://asgardphp.com/docs/bag) to access it
 
 Besides, you can load a configuration with:
 
-	$config->loadConfigFile('file.yml');
+	$config->loadFile('file.yml');
 
 Or a whole directory:
 
-	$config->loadConfigDir('config/');
+	$config->loadDir('config/');
 
 <a name="structure"></a>
 ##Configuration file structure

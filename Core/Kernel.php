@@ -72,7 +72,7 @@ class Kernel implements \ArrayAccess {
 	public function getConfig() {
 		if(!$this->config) {
 			$this->config = $config = new \Asgard\Config\Config();
-			$config->loadConfigDir($this['root'].'/config', $this->getEnv());
+			$config->loadDir($this['root'].'/config', $this->getEnv());
 		}
 		return $this->config;
 	}

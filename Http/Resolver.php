@@ -259,7 +259,7 @@ class Resolver {
 	 * @throws \Exception    If route not found.
 	 * @return string
 	 */
-	public function url_for($what, array $params=[]) {
+	public function url($what, array $params=[]) {
 		#controller/action
 		if(is_array($what)) {
 			$controller = strtolower($what[0]);

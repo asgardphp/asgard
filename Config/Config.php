@@ -11,16 +11,16 @@ class Config extends \Asgard\Common\Bag {
 	 * @param  string $env
 	 * @return Config      $this
 	 */
-	public function loadConfigDir($dir, $env=null) {
+	public function loadDir($dir, $env=null) {
 		foreach(glob($dir.'/*.yml') as $filename) {
 			if(is_dir($filename))
-				$this->loadConfigDir($filename);
+				$this->loadDir($filename);
 			else {
 				$basename = basename($filename);
 				if(preg_match('/^[^_]+.[^.]+$/', $basename))
-					$this->loadConfigFile($filename);
+					$this->loadFile($filename);
 				if($env !== null && preg_match('/^.+_'.$env.'.[^.]+$/', $basename))
-					$this->loadConfigFile($filename);
+					$this->loadFile($filename);
 			}
 		}
 		return $this;
@@ -31,7 +31,7 @@ class Config extends \Asgard\Common\Bag {
 	 * @param  string $filename
 	 * @return Confug $this
 	 */
-	public function loadConfigFile($filename) {
+	public function loadFile($filename) {
 		$yaml = new \Symfony\Component\Yaml\Parser();
 		if(($r = file_get_contents($filename))) {
 			if(is_array($res = $yaml->parse($r)))

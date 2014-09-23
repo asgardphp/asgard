@@ -137,7 +137,7 @@ class GenerateCommand extends \Asgard\Console\Command {
 						if($bundle['tests']) {
 							$indexRoute = $class::routeFor('index')->getRoute();
 							$tests[$indexRoute] = '
-		$browser = $this->getBrowser();
+		$browser = $this->createBrowser();
 		$this->assertTrue($browser->get(\''.$indexRoute.'\')->isOK(), \'GET '.$indexRoute.'\');';
 						}
 					}
@@ -149,7 +149,7 @@ class GenerateCommand extends \Asgard\Console\Command {
 						if($bundle['tests']) {
 							$showRoute = $class::routeFor('show')->getRoute();
 							$tests[$showRoute] = '
-		$browser = $this->getBrowser();
+		$browser = $this->createBrowser();
 		$this->assertTrue($browser->get(\''.$showRoute.'\')->isOK(), \'GET '.$showRoute.'\');';
 						}
 					}
@@ -172,7 +172,7 @@ class GenerateCommand extends \Asgard\Console\Command {
 						else
 							$actionRoute = $actionRoute->getRoute();
 						$tests[$actionRoute] = '
-		$browser = $this->getBrowser();
+		$browser = $this->createBrowser();
 		$this->assertTrue($browser->get(\''.$actionRoute.'\')->isOK(), \'GET '.$actionRoute.'\');';
 					}
 					if($params['template'])

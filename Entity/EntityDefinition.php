@@ -94,6 +94,8 @@ class EntityDefinition {
 
 		$entityClass::definition($this);
 
+		$generalHooksManager->trigger('Asgard.Entity.Definition', [$this]);
+
 		$behaviors = $this->behaviors;
 		$this->behaviors = [];
 		$this->loadBehaviors($behaviors);

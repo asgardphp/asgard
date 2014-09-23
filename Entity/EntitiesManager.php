@@ -172,9 +172,8 @@ class EntitiesManager {
 			return $this->definitions[$entityClass];
 		
 		$hooksManager = $this->getHooksManager();
-		$definition = $this->getCache()->fetch('entitiesmanager/'.$entityClass.'/definition', function() use($entityClass, $hooksManager) {
-			$definition = new EntityDefinition($entityClass, $this, $hooksManager);
-			return $definition;
+		$definition = $this->getCache()->fetch('entitiesmanager.'.$entityClass.'.definition', function() use($entityClass, $hooksManager) {
+			return new EntityDefinition($entityClass, $this, $hooksManager);
 		});
 		$definition->setEntitiesManager($this);
 		$definition->setGeneralHooksManager($hooksManager);

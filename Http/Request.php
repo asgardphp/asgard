@@ -351,7 +351,7 @@ class Request implements \ArrayAccess {
 				$error = $this->convertTo('error', $raw['error']);
 				$size = $this->convertTo('size', $raw['size']);
 				
-				$files = $this->merge_all($name, $type, $tmp_name, $error, $size);
+				$files = $this->mergeAll($name, $type, $tmp_name, $error, $size);
 
 				foreach($files as $k=>$v)
 					$files[$k] = \Asgard\Http\HttpFile::createFromArray($v);
@@ -395,12 +395,12 @@ class Request implements \ArrayAccess {
 	 * @param  array  $size
 	 * @return array
 	 */
-	protected function merge_all(array $name, array $type, array $tmp_name, array $error, array $size) {
+	protected function mergeAll(array $name, array $type, array $tmp_name, array $error, array $size) {
 		foreach($name as $k=>$v) {
 			if(isset($v['name']) && !is_array($v['name']))
 				$name[$k] = array_merge($v, $type[$k], $tmp_name[$k], $error[$k], $size[$k]);
 			else 
-				$name[$k] = $this->merge_all($name[$k], $type[$k], $tmp_name[$k], $error[$k], $size[$k]);
+				$name[$k] = $this->mergeAll($name[$k], $type[$k], $tmp_name[$k], $error[$k], $size[$k]);
 		}
 		
 		return $name;

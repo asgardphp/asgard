@@ -87,14 +87,14 @@ class TestsGenerator {
 					#get params
 					$res[] = '
 		/*
-		$browser = $this->getBrowser();
+		$browser = $this->createBrowser();
 		$this->assertTrue($browser->'.$method.'(\''.$route->getRoute().'\')->isOK(), \''.strtoupper($method).' '.$route->getRoute().'\');
 		*/
 		';
 				}
 				else {
 					$res[] = '
-		$browser = $this->getBrowser();
+		$browser = $this->createBrowser();
 		$this->assertTrue($browser->'.$method.'(\''.$route->getRoute().'\')->isOK(), \''.strtoupper($method).' '.$route->getRoute().'\');
 		';
 				}
@@ -103,7 +103,7 @@ class TestsGenerator {
 				#post/put params
 				$res[] = '
 		/*
-		$browser = $this->getBrowser();
+		$browser = $this->createBrowser();
 		$this->assertTrue($browser->'.$method.'(\''.strtoupper($method).' '.$route->getRoute().'\',
 			[],
 			[],

@@ -76,7 +76,7 @@ class BuildCol {
 	/**
 	 * Set default value.
 	 * @param  mixed  $def
-	 * @return  $this $this
+	 * @return  BuildCol $this
 	 */
 	public function def($def) {
 		$this->def = $def;
@@ -85,23 +85,29 @@ class BuildCol {
 	
 	/**
 	 * Set column as primary.
+	 * @return  BuildCol $this
 	 */
 	public function primary() {
 		$this->table->addPrimary($this->name);
+		return $this;
 	}
 	
 	/**
 	 * Set column as unique.
+	 * @return  BuildCol $this
 	 */
 	public function unique() {
 		$this->table->addUnique($this->name);
+		return $this;
 	}
 	
 	/**
 	 * Set column as index.
+	 * @return  BuildCol $this
 	 */
 	public function index() {
 		$this->table->addIndex($this->name);
+		return $this;
 	}
 	
 	/**

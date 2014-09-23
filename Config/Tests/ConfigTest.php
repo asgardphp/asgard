@@ -2,10 +2,10 @@
 namespace Asgard\Config\Tests;
 
 class ConfigTest extends \PHPUnit_Framework_TestCase {
-	public function testLoadConfigDir() {
+	public function testloadDir() {
 		$config = new \Asgard\Config\Config;
 
-		$config->loadConfigDir(__DIR__.'/fixtures/config/');
+		$config->loadDir(__DIR__.'/fixtures/config/');
 
 		$this->assertEquals(123, $config['a']['b']['c']);
 	}
