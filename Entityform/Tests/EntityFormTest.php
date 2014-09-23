@@ -8,7 +8,7 @@ class EntityFormTest extends \PHPUnit_Framework_TestCase {
 			'host' => 'localhost',
 			'user' => 'root',
 			'password' => '',
-			'database' => 'asgard_test',
+			'database' => 'asgard',
 		]);
 		$em = new \Asgard\Entity\EntitiesManager;
 		$dataMapper = new \Asgard\Orm\DataMapper($em, $db);
@@ -17,7 +17,7 @@ class EntityFormTest extends \PHPUnit_Framework_TestCase {
 		$schema = new \Asgard\Db\Schema($db);
 		$schema->drop('user');
 		$schema->drop('comment');
-		(new \Asgard\Orm\ORMMigrations($dataMapper))->doAutoMigrate([
+		(new \Asgard\Orm\ORMMigrations($dataMapper))->autoMigrate([
 			$em->get('Asgard\Entityform\Tests\Entities\User'),
 			$em->get('Asgard\Entityform\Tests\Entities\Comment')
 		], $schema);

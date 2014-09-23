@@ -26,30 +26,11 @@ class ORMMigrations {
 	}
 
 	/**
-	 * Automatically migrate entities tables.
-	 * @param  \Asgard\Entity\EntitiesManager $entitiesManager
-	 * @param  \Asgard\Db\Schema              $schema
-	 */
-	public function autoMigrate(\Asgard\Entity\EntitiesManager $entitiesManager, \Asgard\Db\Schema $schema) {
-		$this->doAutoMigrate($entitiesManager->getDefinitions(), $schema);
-	}
-
-	/**
-	 * Generate a migration from entities.
-	 * @param  \Asgard\Entity\EntitiesManager $entitiesManager
-	 * @param  string     $migrationName
-	 * @return string     name of migration
-	 */
-	public function generateMigration(\Asgard\Entity\EntitiesManager $entitiesManager, $migrationName) {
-		return $this->doGenerateMigration($entitiesManager->getDefinitions(), $migrationName);
-	}
-
-	/**
 	 * Automatically migrate given entity definitions.
 	 * @param  array|\Asgard\Entity\EntityDefinition $definitions
 	 * @param  \Asgard\Db\Schema                     schema
 	 */
-	public function doAutoMigrate($definitions, \Asgard\Db\Schema $schema) {
+	public function autoMigrate($definitions, \Asgard\Db\Schema $schema) {
 		if(!is_array($definitions))
 			$definitions = [$definitions];
 		$this->processSchemas($this->getEntitiesSchemas($definitions), $schema);
@@ -61,7 +42,7 @@ class ORMMigrations {
 	 * @param  string                                $migrationName
 	 * @return string                                name of migration
 	 */
-	public function doGenerateMigration($definitions, $migrationName) {
+	public function generateMigration($definitions, $migrationName) {
 		if(!is_array($definitions))
 			$definitions = [$definitions];
 		$entitiesSchemas = $this->getEntitiesSchemas($definitions);

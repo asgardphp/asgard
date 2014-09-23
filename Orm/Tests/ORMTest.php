@@ -75,7 +75,7 @@ class ORMTest extends \PHPUnit_Framework_TestCase {
 		$schema->drop('category');
 		$schema->drop('news');
 		$schema->drop('author');
-		(new \Asgard\Orm\ORMMigrations($dataMapper))->doAutoMigrate([
+		(new \Asgard\Orm\ORMMigrations($dataMapper))->autoMigrate([
 			$em->get('Asgard\Orm\Tests\Entities\Category'),
 			$em->get('Asgard\Orm\Tests\Entities\News'),
 			$em->get('Asgard\Orm\Tests\Entities\Author'),
