@@ -31,6 +31,14 @@ class DB {
 	}
 
 	/**
+	 * Return a DAL instance.
+	 * @return DAL
+	 */
+	public function getDAL() {
+		return new DAL($this);
+	}
+
+	/**
 	 * Get the PDO instance.
 	 * @param  array $config
 	 * @return \PDO
