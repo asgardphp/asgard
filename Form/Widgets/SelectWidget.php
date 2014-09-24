@@ -1,7 +1,13 @@
 <?php
 namespace Asgard\Form\Widgets;
 
+/**
+ * Select widget.
+ */
 class SelectWidget extends \Asgard\Form\Widget {
+	/**
+	 * {@inheritDoc}
+	 */
 	public function render(array $options=[]) {
 		$options = $this->options+$options;
 

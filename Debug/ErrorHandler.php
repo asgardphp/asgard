@@ -5,10 +5,30 @@ namespace Asgard\Debug;
  * Error handler.
  */
 class ErrorHandler {
+	/**
+	 * Reserved memory.
+	 * @var string
+	 */
 	protected static $reservedMemory;
+	/**
+	 * Error at startup.
+	 * @var array
+	 */
 	protected static $errorAtStart;
+	/**
+	 * Ignore directories.
+	 * @var array
+	 */
 	protected $ignoreDirs = [];
+	/**
+	 * Log PHP errors flag.
+	 * @var boolean
+	 */
 	protected $logPHPErrors = false;
+	/**
+	 * Logger
+	 * @var \Psr\Log\LoggerInterface
+	 */
 	protected $logger;
 
 	/**

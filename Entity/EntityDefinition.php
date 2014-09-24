@@ -402,7 +402,7 @@ class EntityDefinition {
 
 	/**
 	 * Return a meta data.
-	 * @param  string $k
+	 * @param  string $name
 	 * @return mixed
 	 */
 	public function get($name) {

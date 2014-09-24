@@ -30,7 +30,10 @@ class Cache implements \Doctrine\Common\Cache\Cache, \ArrayAccess {
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * Fetch a value.
+	 * @param  string  $id
+	 * @param  mixed  $default
+	 * @return mixed
 	 */
 	public function fetch($id, $default=false) {
 		$res = $this->driver->fetch($id);
@@ -49,28 +52,37 @@ class Cache implements \Doctrine\Common\Cache\Cache, \ArrayAccess {
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * Check if contains a key.
+	 * @param  string $id
+	 * @return boolean
 	 */
 	public function contains($id) {
 		return $this->driver->contains($id);
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * Save a key-value.
+	 * @param  string  $id
+	 * @param  mixed   $data
+	 * @param  integer $lifeTime
+	 * @return boolean
 	 */
 	public function save($id, $data, $lifeTime=0) {
 		return $this->driver->save($id, $data, $lifeTime);
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * Delete a key.
+	 * @param  string $id
+	 * @return boolean
 	 */
 	public function delete($id) {
 		return $this->driver->delete($id);
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * Return cache statistics.
+	 * @return array
 	 */
 	public function getStats() {
 		return $this->driver->getStats();

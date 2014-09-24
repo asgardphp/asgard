@@ -51,8 +51,8 @@ interface TemplateInterface {
 
 	/**
 	 * Render a template file.
-	 * @param  string $template template name
-	 * @param  array  $params   template parameters
+	 * @param  string $file   file path
+	 * @param  array  $params template parameters
 	 * @return string
 	 */
 	public static function renderFile($file, array $params=[]);

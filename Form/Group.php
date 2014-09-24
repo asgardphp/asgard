@@ -171,7 +171,7 @@ class Group implements \ArrayAccess, \Iterator {
 
 	/**
 	 * Set the widgets manager.
-	 * @param WidgetsManager $wm
+	 * @param WidgetsManager $widgetsManager
 	 */
 	public function setWidgetsManager(WidgetsManager $widgetsManager) {
 		$this->widgetsManager = $widgetsManager;

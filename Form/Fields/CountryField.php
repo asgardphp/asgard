@@ -1,7 +1,13 @@
 <?php
 namespace Asgard\Form\Fields;
 
+/**
+ * Country field.
+ */
 class CountryField extends SelectField {
+	/**
+	 * {@inheritDoc}
+	 */
 	public function setParent($parent) {
 		parent::setParent($parent);
 

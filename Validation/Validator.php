@@ -3,6 +3,7 @@ namespace Asgard\Validation;
 use Symfony\Component\Translation\TranslatorInterface;
 
  /**
+  * Validator.
   * @method static attribute($attribute, $rules=null)
   * @method $this attributes(array $attributes)
   * @method $this rules(array $rules, $each=false)

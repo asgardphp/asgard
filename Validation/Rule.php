@@ -17,6 +17,15 @@ abstract class Rule {
 	public function __construct() {}
 
 	/**
+	 * Perform the validation.
+	 * @param  mixed     $input
+	 * @param  InputBag  $parentInput
+	 * @param  Validator $validator
+	 * @return boolean
+	 */
+	abstract public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\Validator $validator);
+
+	/**
 	 * Format parameters before being passed to the error message.
 	 * @param  array  $params rule parameters
 	 * @return null

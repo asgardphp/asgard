@@ -1,7 +1,13 @@
 <?php
 namespace Asgard\Form\Widgets;
 
+/**
+ * Dage widget.
+ */
 class DateWidget extends \Asgard\Form\Widget {
+	/**
+	 * {@inheritDoc}
+	 */
 	public function render(array $options=[]) {
 		$options = $this->options+$options;
 

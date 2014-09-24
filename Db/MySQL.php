@@ -21,7 +21,7 @@ class MySQL {
 
 	/**
 	 * Import an SQL file.
-	 * @param string $file SQL file path.
+	 * @param string $src SQL file path.
 	 * @throws \Exception When file is not accessible.
 	 * @return integer 1 for success, 0 for failure.
 	*/

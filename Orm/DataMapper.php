@@ -38,11 +38,12 @@ class DataMapper {
 
 	/**
 	 * Constructor.
-	 * @param \Asgard\Db\DB $db
-	 * @param string                    $locale    Default locale.
-	 * @param string                    $prefix    Tables prefix.
-	 * @param \Asgard\Container\Factory $ormFactory
-	 * @param \Asgard\Container\Factory $collectionOrmFactory
+	 * @param \Asgard\Entity\EntitiesManager $entitiesManager
+	 * @param \Asgard\Db\DB                  $db
+	 * @param string                         $locale    Default locale.
+	 * @param string                         $prefix    Tables prefix.
+	 * @param \Asgard\Container\Factory      $ormFactory
+	 * @param \Asgard\Container\Factory      $collectionOrmFactory
 	 */
 	public function __construct(\Asgard\Entity\EntitiesManager $entitiesManager, \Asgard\Db\DB $db, $locale='en', $prefix=null, \Asgard\Container\Factory $ormFactory=null, \Asgard\Container\Factory $collectionOrmFactory=null) {
 		$this->entitiesManager      = $entitiesManager;
@@ -190,6 +191,11 @@ class DataMapper {
 		return $validator;
 	}
 
+	/**
+	 * Prepare the validator.
+	 * @param  \Asgard\Entity\Entity        $entity
+	 * @param  \Asgard\Validation\Validator $validator
+	 */
 	public function prepareValidator($entity, $validator) {
 		foreach($entity->getDefinition()->properties() as $name=>$property) {
 			if($rules = $property->get('ormValidation'))
@@ -392,6 +398,12 @@ class DataMapper {
 		}
 	}
 
+	/**
+	 * Get related entities.
+	 * @param  \Asgard\Entity\Entity $entity
+	 * @param  string                $name
+	 * @return \Asgard\Entity\Entity|array
+	 */
 	public function getRelated(\Asgard\Entity\Entity $entity, $name) {
 		$orm = $this->related($entity, $name);
 		$rel = $this->relation($entity->getDefinition(), $name);
@@ -474,7 +486,7 @@ class DataMapper {
 
 	/**
 	 * Get a relation object.
-	 * @param  \Asgard\Entity\EntityDefinition entityClass
+	 * @param  \Asgard\Entity\EntityDefinition $definition
 	 * @param  string                          $name       relation name
 	 * @return EntityRelation
 	 */
@@ -482,6 +494,12 @@ class DataMapper {
 		return $this->relations($definition)[$name];
 	}
 
+	/**
+	 * Check if the definition has the relaton/
+	 * @param  \Asgard\Entity\EntityDefinition $definition
+	 * @param  string                          $name
+	 * @return boolean
+	 */
 	public function hasRelation(\Asgard\Entity\EntityDefinition $definition, $name) {
 		return isset($this->relations($definition)[$name]);
 	}

@@ -6,7 +6,7 @@ namespace Asgard\Entity\Properties;
  */
 class TextProperty extends \Asgard\Entity\Property {
 	/**
-	 * {@inheritdoc}
+	 * {@inheritDoc}
 	 */
 	public function getSQLType() {
 		if($this->get('length'))

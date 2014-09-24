@@ -18,8 +18,8 @@ class DB {
 	
 	/**
 	 * Constructor.
-	 * @param array config database configuration
-	 * @param \PDO db database connection
+	 * @param array $config database configuration
+	 * @param \PDO  $db database connection
 	*/
 	public function __construct(array $config, \PDO $db=null) {
 		$this->config = $config;

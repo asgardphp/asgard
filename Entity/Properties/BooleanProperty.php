@@ -6,7 +6,7 @@ namespace Asgard\Entity\Properties;
  */
 class BooleanProperty extends \Asgard\Entity\Property {
 	/**
-	 * {@inheritdoc}
+	 * {@inheritDoc}
 	 */
 	public function getRules() {
 		$rules = parent::getRules();
@@ -15,21 +15,21 @@ class BooleanProperty extends \Asgard\Entity\Property {
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * {@inheritDoc}
 	 */
 	public function getSQLType() {
 		return 'int(1)';
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * {@inheritDoc}
 	 */
 	public function _getDefault() {
 		return false;
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * {@inheritDoc}
 	 */
 	public function getFormField() {
 		return 'Asgard\Form\Fields\BooleanField';

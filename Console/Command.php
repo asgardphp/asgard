@@ -79,7 +79,10 @@ class Command extends \Symfony\Component\Console\Command\Command {
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * Run the command.
+	 * @param  InputInterface  $input  [description]
+	 * @param  OutputInterface $output [description]
+	 * @return integer
 	 */
 	public function run(InputInterface $input, OutputInterface $output) {
 		$this->input = $input;

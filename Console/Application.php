@@ -12,7 +12,9 @@ class Application extends \Symfony\Component\Console\Application {
 	
 	/**
 	 * Constructor.
-	 * @param \Asgard\Container\Container container The application container
+	 * @param string                      $name
+	 * @param string                      $version
+	 * @param \Asgard\Container\Container $container The application container
 	*/
 	public function __construct($name, $version=null, $container=null) {
 		$this->container = $container;

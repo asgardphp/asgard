@@ -1,7 +1,13 @@
 <?php
 namespace Asgard\Form\Fields;
 
+/**
+ * CSRF field.
+ */
 class CSRFField extends \Asgard\Form\Fields\HiddenField {
+	/**
+	 * {@inheritDoc}
+	 */
 	public function __construct(array $options=[]) {
 		parent::__construct($options);
 		$this->options['validation']['required'] = true;
@@ -15,6 +21,10 @@ class CSRFField extends \Asgard\Form\Fields\HiddenField {
 		};
 	}
 
+	/**
+	 * Generate a new token.
+	 * @return string
+	 */
 	protected function generateToken() {
 		if($this->parent->getRequest()->session->has('_csrf_token'))
 			return $this->parent->getRequest()->session['_csrf_token'];
@@ -24,6 +34,10 @@ class CSRFField extends \Asgard\Form\Fields\HiddenField {
 		}
 	}
 
+	/**
+	 * Validation callback.
+	 * @return boolean
+	 */
 	public function valid() {
 		return $this->value == $this->parent->getRequest()->session['_csrf_token'];
 	}

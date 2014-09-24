@@ -85,4 +85,11 @@ abstract class Widget {
 	public function setLabel($label) {
 		$this->label = $label;
 	}
+
+	/**
+	 * Render the widget.
+	 * @param  array $options
+	 * @return string
+	 */
+	abstract public function render(array $options=[]);
 }

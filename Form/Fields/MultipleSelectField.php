@@ -1,15 +1,39 @@
 <?php
 namespace Asgard\Form\Fields;
 
+/**
+ * Multiple select field.
+ */
 class MultipleSelectField extends \Asgard\Form\Field {
+	/**
+	 * {@inheritDoc}
+	 */
 	protected $widget = 'checkboxes';
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	public function value() {
+		if(!$this->value)
+			return [];
+		return $this->value;
+	}
 
+	/**
+	 * Return choices.
+	 * @return array
+	 */
 	public function getChoices() {
 		if(isset($this->options['choices']))
 			return $this->options['choices'];
 		return [];
 	}
 
+	/**
+	 * Return checkboxes.
+	 * @param  array $options
+	 * @return array
+	 */
 	public function getCheckboxes(array $options=[]) {
 		if(isset($options['choices']))
 			$choices = $options['choices'];
@@ -26,6 +50,12 @@ class MultipleSelectField extends \Asgard\Form\Field {
 		return $checkboxes;
 	}
 
+	/**
+	 * Return a checkbox widget.
+	 * @param  string $name
+	 * @param  array  $options
+	 * @return Widget
+	 */
 	public function getCheckbox($name, array $options=[]) {
 		$choices = $this->getChoices();
 		$default = $this->value;
@@ -48,11 +78,5 @@ class MultipleSelectField extends \Asgard\Form\Field {
 
 		$class = $this->getParent()->getWidgetsManager()->getWidget('checkbox');
 		return $this->getTopForm()->getWidget($class, $this->name.'[]', $value, $options);
-	}
-	
-	public function getValue() {
-		if(!$this->value)
-			return [];
-		return $this->value;
 	}
 }

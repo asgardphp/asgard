@@ -6,7 +6,7 @@ namespace Asgard\Entity\Properties;
  */
 class DatetimeProperty extends \Asgard\Entity\Property {
 	/**
-	 * {@inheritdoc}
+	 * {@inheritDoc}
 	 */
 	public function getRules() {
 		$rules = parent::getRules();
@@ -16,7 +16,7 @@ class DatetimeProperty extends \Asgard\Entity\Property {
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * {@inheritDoc}
 	 */
 	public function getMessages() {
 		$messages = parent::getMessages();
@@ -26,30 +26,30 @@ class DatetimeProperty extends \Asgard\Entity\Property {
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * {@inheritDoc}
 	 */
 	public function _getDefault() {
 		return \Carbon\Carbon::now();
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * {@inheritDoc}
 	 */
-	protected function doSerialize($obj) {
-		if($obj == null)
+	protected function doSerialize($val) {
+		if($val == null)
 			return '';
-		return $obj->format('Y-m-d H:i:s');
+		return $val->format('Y-m-d H:i:s');
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * {@inheritDoc}
 	 */
 	protected function doUnserialize($str) {
 		return \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $str);
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * {@inheritDoc}
 	 */
 	public function doSet($val) {
 		if($val instanceof \Carbon\Carbon)
@@ -65,14 +65,14 @@ class DatetimeProperty extends \Asgard\Entity\Property {
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * {@inheritDoc}
 	 */
 	public function getSQLType() {
 		return 'datetime';
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * {@inheritDoc}
 	 */
 	public function getFormField() {
 		return 'Asgard\Form\Fields\DatetimeField';

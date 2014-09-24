@@ -1,15 +1,31 @@
 <?php
 namespace Asgard\Form\Fields;
 
+/**
+ * Select field.
+ */
 class SelectField extends \Asgard\Form\Field {
+	/**
+	 * {@inheritDoc}
+	 */
 	protected $widget = 'select';
 
+	/**
+	 * Return choices.
+	 * @return array
+	 */
 	public function getChoices() {
 		if(isset($this->options['choices']))
 			return $this->options['choices'];
 		return [];
 	}
 
+	/**
+	 * Return a radio widget.
+	 * @param  string $name
+	 * @param  array $options
+	 * @return Widget
+	 */
 	public function getRadio($name, array $options=[]) {
 		$choices = $this->getChoices();
 		$default = $this->value;
@@ -34,6 +50,11 @@ class SelectField extends \Asgard\Form\Field {
 		return $this->getParent()->getWidget($class, $this->name(), $value, $options);
 	}
 
+	/**
+	 * Return radios widgets.
+	 * @param  array $options
+	 * @return array
+	 */
 	public function getRadios(array $options=[]) {
 		if(isset($options['choices']))
 			$choices = $options['choices'];

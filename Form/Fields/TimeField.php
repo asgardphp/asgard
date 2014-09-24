@@ -1,10 +1,22 @@
 <?php
 namespace Asgard\Form\Fields;
 
+/**
+ * Time field.
+ */
 class TimeField extends \Asgard\Form\Field {
+	/**
+	 * {@inheritDoc}
+	 */
 	protected $widget = 'time';
+	/**
+	 * {@inheritDoc}
+	 */
 	protected $data_type = 'date';
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function setValue($value) {
 		if(is_array($value) && isset($value['hour']) && isset($value['minute']) && isset($value['second']))
 			$this->value = \Carbon\Carbon::createFromTime($value['hour'], $value['minute'], $value['second']);
@@ -12,6 +24,9 @@ class TimeField extends \Asgard\Form\Field {
 			$this->value = \Carbon\Carbon::createFromFormat('Y-m-d', $value);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function value() {
 		if(isset($this->options['data_type'])) {
 			if($this->options['data_type'] == 'date')
@@ -22,18 +37,30 @@ class TimeField extends \Asgard\Form\Field {
 		return $this->value;
 	}
 
+	/**
+	 * Return the hours.
+	 * @return integer
+	 */
 	public function getHour() {
 		if(!$this->value)
 			return null;
 		return $this->value->format('H');
 	}
 
+	/**
+	 * Return the minutes.
+	 * @return integer
+	 */
 	public function getMinute() {
 		if(!$this->value)
 			return null;
 		return $this->value->format('i');
 	}
 
+	/**
+	 * Return the seconds.
+	 * @return integer
+	 */
 	public function getSecond() {
 		if(!$this->value)
 			return null;

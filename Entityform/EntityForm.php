@@ -29,10 +29,11 @@ class EntityForm extends \Asgard\Form\Form {
 	
 	/**
 	 * Constructor.
-	 * @param \Asgard\Entity\Entity $entity
-	 * @param array                 $options
-	 * @param \Asgard\Http\Request  $request
-	 * @param EntityFieldsSolver    $entityFieldsSolver
+	 * @param \Asgard\Entity\Entity  $entity
+	 * @param array                  $options
+	 * @param \Asgard\Http\Request   $request
+	 * @param EntityFieldsSolver     $entityFieldsSolver
+	 * @param \Asgard\Orm\DataMapper $dataMapper
 	 */
 	public function __construct(
 		\Asgard\Entity\Entity  $entity,
@@ -166,7 +167,7 @@ class EntityForm extends \Asgard\Form\Form {
 
 	/**
 	 * Return the errors of a nested-group if provided, or all.
-	 * @param  null|\Asgard\Form\Group $field
+	 * @param  null|\Asgard\Form\Group $group
 	 * @return array
 	 */
 	public function errors($group=null) {

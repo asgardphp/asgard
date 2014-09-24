@@ -108,7 +108,7 @@ class SwiftMessage extends \Swift_Message {
 	/**
 	 * Attach a file to the email.
 	 * @param  string $file
-	 * @param  array  $data
+	 * @param  array  $options
 	 * @return SwiftMessage $this
 	 */
 	public function attachFile($file, $options=[]) {

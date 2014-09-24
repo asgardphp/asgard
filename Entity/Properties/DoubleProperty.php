@@ -6,7 +6,7 @@ namespace Asgard\Entity\Properties;
  */
 class DoubleProperty extends \Asgard\Entity\Property {
 	/**
-	 * {@inheritdoc}
+	 * {@inheritDoc}
 	 */
 	public function getSQLType() {
 		return 'double';

@@ -22,6 +22,7 @@ class AnnotationsReader {
 
 	/**
 	 * Return the hooks of a container.
+	 * @param string $class HooksContainer class.
 	 * @return array
 	*/
 	public function fetchHooks($class) {

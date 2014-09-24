@@ -2,8 +2,8 @@
 namespace Asgard\Http\Annotations;
 
 /**
-* @Annotation
-* @Target({"METHOD"})
+ * @Annotation
+ * @Target({"METHOD"})
 */
 class Route {
 	public $host;

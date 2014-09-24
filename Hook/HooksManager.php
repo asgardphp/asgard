@@ -33,7 +33,7 @@ class HooksManager {
 
 	/**
 	 * Constructor.
-	 * @param \Asgard\Container\Container app Application container.
+	 * @param \Asgard\Container\Container $container Application container.
 	*/
 	public function __construct($container=null) {
 		$this->container = $container;
@@ -41,9 +41,10 @@ class HooksManager {
 
 	/**
 	 * Trigger a hook.
-	 * @param string name
-	 * @param array args
-	 * @param Callback cb Default callback.
+	 * @param string    $name
+	 * @param array     $args
+	 * @param Callable  $cb Default callback.
+	 * @param HookChain $chain
 	 * @param HooksChain
 	*/
 	public function trigger($name, array $args=[], $cb=null, &$chain=null) {
@@ -63,7 +64,7 @@ class HooksManager {
 	
 	/**
 	 * Check if a hook is present.
-	 * @param string identifier
+	 * @param string   $identifier
 	 * @return boolean
 	*/
 	public function has($identifier) {
@@ -82,9 +83,9 @@ class HooksManager {
 	
 	/**
 	 * Set a hook.
-	 * @param string identifier Hook identifier.
-	 * @param Callback cb
-	 * @param integer priority Hook priority in the list.
+	 * @param string   $identifier Hook identifier.
+	 * @param Callable $cb
+	 * @param integer  $priority Hook priority in the list.
 	*/
 	protected function set($identifier, $cb, $priority=0) {
 		if(is_string($identifier))
@@ -102,7 +103,7 @@ class HooksManager {
 	
 	/**
 	 * Return hooks.
-	 * @param string identifier Hook identifier.
+	 * @param string $identifier Hook identifier.
 	 * @return array Callbacks.
 	*/
 	public function get($identifier) {
@@ -125,9 +126,9 @@ class HooksManager {
 	
 	/**
 	 * Create a hook.
-	 * @param string identifier
-	 * @param Callback. cb
-	 * @param before|on|after type
+	 * @param string   $identifier
+	 * @param Callable $cb
+	 * @param string   $type   on|before|after
 	*/
 	protected function createhook($identifier, $cb, $type='on') {
 		if(is_string($identifier))
@@ -139,8 +140,8 @@ class HooksManager {
 	
 	/**
 	 * Set a hook.
-	 * @param string identifier
-	 * @param Callback cb
+	 * @param string   $identifier
+	 * @param Callable $cb
 	*/
 	public function hook($identifier, $cb) {
 		$this->createhook($identifier, $cb, 'on');
@@ -148,9 +149,8 @@ class HooksManager {
 	
 	/**
 	 * Set a "before" hook.
-	 * @param string identifier
-	 * @param Callback cb
-	 * @param integer priority Hook priority in the list.
+	 * @param string   $identifier
+	 * @param Callable $cb
 	*/
 	public function hookBefore($identifier, $cb) {
 		$this->createhook($identifier, $cb, 'before');
@@ -158,8 +158,8 @@ class HooksManager {
 	
 	/**
 	 * Set an "after" hook.
-	 * @param string identifier
-	 * @param Callback cb
+	 * @param string   $identifier
+	 * @param Callable $cb
 	*/
 	public function hookAfter($identifier, $cb) {
 		$this->createhook($identifier, $cb, 'after');
@@ -167,11 +167,11 @@ class HooksManager {
 	
 	/**
 	 * Set multiple hooks.
-	 * @param array
+	 * @param array $hooks
 	*/
-	public function hooks(array $allhooks) {
-		foreach($allhooks as $name=>$hooks) {
-			foreach($hooks as $cb)
+	public function hooks(array $hooks) {
+		foreach($hooks as $name=>$_hooks) {
+			foreach($_hooks as $cb)
 				$this->createhook($name, $cb);
 		}
 	}

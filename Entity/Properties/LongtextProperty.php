@@ -6,7 +6,7 @@ namespace Asgard\Entity\Properties;
  */
 class LongtextProperty extends \Asgard\Entity\Property {
 	/**
-	 * {@inheritdoc}
+	 * {@inheritDoc}
 	 */
 	public function getSQLType() {
 		return 'text';

@@ -115,7 +115,7 @@ class Browser {
 	 * @param  string $url
 	 * @param  string $method
 	 * @param  array  $post
-	 * @param  arra   $files
+	 * @param  arra   $file
 	 * @param  string $body
 	 * @param  array  $headers
 	 * @param  array  $server
@@ -180,7 +180,9 @@ class Browser {
 
 	/**
 	 * Submit a form.
-	 * @param  string $xpath  path to submit button.
+	 * @param  string $xpath   path to submit button.
+	 * @param  string $to      destination url.
+	 * @param  array $override override post attributes.
 	 * @return Response
 	 */
 	public function submit($xpath='//form', $to=null, array $override=[]) {

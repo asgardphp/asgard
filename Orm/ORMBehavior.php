@@ -5,7 +5,15 @@ namespace Asgard\Orm;
  * ORM Behavior.
  */
 class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\PersistenceBehavior, \Asgard\Entity\RelationsBehavior {
+	/**
+	 * DataMapper dependency.
+	 * @var DataMapper
+	 */
 	protected $dataMapper;
+	/**
+	 * Entity class.
+	 * @var string
+	 */
 	protected $entityClass;
 
 	/**

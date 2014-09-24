@@ -1,9 +1,13 @@
 <?php
 namespace Asgard\Validation\Rules;
 
+/**
+ * Check that the input has a date format.
+ */
 class Date extends \Asgard\Validation\Rule {
-	protected $handleEach = true;
-
+	/**
+	 * {@inheritDoc}
+	 */
 	public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\Validator $validator) {
 		if($input instanceof \Carbon\Carbon)
 			return true;
@@ -12,6 +16,9 @@ class Date extends \Asgard\Validation\Rule {
 		return false;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function getMessage() {
 		return ':attribute must be a date (yyyy-mm-dd).';
 	}

@@ -6,7 +6,7 @@ namespace Asgard\Entity\Properties;
  */
 class EmailProperty extends TextProperty {
 	/**
-	 * {@inheritdoc}
+	 * {@inheritDoc}
 	 */
 	public function getSQLType() {
 		return 'varchar(250)';

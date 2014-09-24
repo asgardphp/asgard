@@ -23,6 +23,7 @@ class AnnotationsReader {
 
 	/**
 	 * Return the routes of a controller.
+	 * @param string $class
 	 * @return array
 	*/
 	public function fetchRoutes($class) {

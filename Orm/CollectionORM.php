@@ -37,8 +37,9 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 	
 	/**
 	 * Update the related entities.
-	 * @param  array           $ids  array of entity ids
-	 * @return CollectionORM         $this
+	 * @param  array           $ids   array of entity ids
+	 * @param boolean          $force true to skip validation
+	 * @return CollectionORM          $this
 	 */
 	public function sync($ids, $force=false) {
 		if(!$ids)
@@ -141,7 +142,7 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 	
 	/**
 	 * Remove entities from the relation.
-	 * @param  array $id
+	 * @param  array $ids
 	 * @return CollectionORM $this
 	 */
 	public function remove($ids) {

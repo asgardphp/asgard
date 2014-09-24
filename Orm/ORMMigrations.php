@@ -18,9 +18,10 @@ class ORMMigrations {
 
 	/**
 	 * Constructor.
+	 * @param DataMapper                          $dataMapper
 	 * @param \Asgard\Migration\MigrationsManager $migrationsManager
 	 */
-	public function __construct($dataMapper, $migrationsManager=null) {
+	public function __construct(DataMapper $dataMapper, \Asgard\Migration\MigrationsManager $migrationsManager=null) {
 		$this->dataMapper = $dataMapper;
 		$this->migrationsManager = $migrationsManager;
 	}
@@ -28,7 +29,7 @@ class ORMMigrations {
 	/**
 	 * Automatically migrate given entity definitions.
 	 * @param  array|\Asgard\Entity\EntityDefinition $definitions
-	 * @param  \Asgard\Db\Schema                     schema
+	 * @param  \Asgard\Db\Schema                     $schema
 	 */
 	public function autoMigrate($definitions, \Asgard\Db\Schema $schema) {
 		if(!is_array($definitions))

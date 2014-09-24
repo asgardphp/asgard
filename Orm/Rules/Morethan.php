@@ -20,9 +20,9 @@ class Morethan extends \Asgard\Validation\Rule {
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * {@inheritDoc}
 	 */
-	public function validate($input, $parentInput, $validator) {
+	public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\Validator $validator) {
 		$entity = $validator->get('entity');
 		$dataMapper = $validator->get('dataMapper');
 		$relation = $validator->getName();
@@ -33,7 +33,7 @@ class Morethan extends \Asgard\Validation\Rule {
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * {@inheritDoc}
 	 */
 	public function getMessage() {
 		return ':attribute must have more than :more elements.';

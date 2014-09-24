@@ -39,6 +39,7 @@ class EntityRelation implements \ArrayAccess {
 	/**
 	 * Constructor.
 	 * @param \Asgard\Entity\EntityDefinition $entityDefinition
+	 * @param DataMapper                      $dataMapper
 	 * @param string                          $name
 	 * @param array                           $params
 	 */

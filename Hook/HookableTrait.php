@@ -6,11 +6,15 @@ namespace Asgard\Hook;
  * @author Michel Hognerud <michel@hognerud.net>
 */
 trait HookableTrait {
+	/**
+	 * HooksManager dependency.
+	 * @var HooksManager
+	 */
 	protected $hooksManager;
 	
 	/**
 	 * Check if has a hook.
-	 * @param string name
+	 * @param string $name
 	 * @return boolean
 	*/
 	public function hasHook($name) {
@@ -21,8 +25,10 @@ trait HookableTrait {
 	
 	/**
 	 * Trigger a hook.
-	 * @param string name
-	 * @param Callback cb
+	 * @param string    $name
+	 * @param array     $args
+	 * @param callable  $cb
+	 * @param HookChain $chain
 	 * @return mixed
 	*/
 	public function trigger($name, array $args=[], $cb=null, &$chain=null) {
@@ -33,8 +39,8 @@ trait HookableTrait {
 	
 	/**
 	 * Set a hook.
-	 * @param string hookName
-	 * @param Callback cb
+	 * @param string   $hookName
+	 * @param callable $cb
 	 * @return mixed
 	*/
 	public function hook($hookName, $cb) {
@@ -44,8 +50,8 @@ trait HookableTrait {
 	
 	/**
 	 * Set a "before" hook.
-	 * @param string hookName
-	 * @param Callback cb
+	 * @param string   $hookName
+	 * @param Callable $cb
 	 * @return mixed
 	*/
 	public function hookBefore($hookName, $cb) {
@@ -56,7 +62,8 @@ trait HookableTrait {
 	/**
 	 * Set an "after" hook.
 	 * 
-	 * @param Callback cb
+	 * @param string   $hookName
+	 * @param callable $cb
 	 * @return mixed
 	*/
 	public function hookAfter($hookName, $cb) {
@@ -76,7 +83,7 @@ trait HookableTrait {
 	
 	/**
 	 * Set the hooks manager.
-	 * @param HooksManager hooksManager
+	 * @param HooksManager $hooksManager
 	*/
 	public function setHooksManager(HooksManager $hooksManager) {
 		$this->hooksManager = $hooksManager;

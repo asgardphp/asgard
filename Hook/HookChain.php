@@ -29,7 +29,7 @@ class HookChain {
 	
 	/**
 	 * Constructor.
-	 * @param \Asgard\Container\Container app Application container.
+	 * @param \Asgard\Container\Container $container Application container.
 	*/
 	public function __construct($container=null) {
 		$this->container = $container;
@@ -37,6 +37,7 @@ class HookChain {
 	
 	/**
 	 * Execute the chain.
+	 * @param array $args
 	 * @return mixed
 	*/
 	public function run(array $args) {

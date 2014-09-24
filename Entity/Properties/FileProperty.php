@@ -12,7 +12,7 @@ class FileProperty extends \Asgard\Entity\Property {
 	protected static $defaultExtensions = ['pdf', 'doc', 'jpg', 'jpeg', 'png', 'docx', 'gif', 'rtf', 'ppt', 'xls', 'zip', 'txt'];
 
 	/**
-	 * {@inheritdoc}
+	 * {@inheritDoc}
 	 */
 	public function __construct($params) {
 		$params['extensions'] = static::$defaultExtensions;
@@ -20,7 +20,7 @@ class FileProperty extends \Asgard\Entity\Property {
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * {@inheritDoc}
 	 */
 	public function getRules() {
 		$rules = parent::getRules();
@@ -34,14 +34,14 @@ class FileProperty extends \Asgard\Entity\Property {
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * {@inheritDoc}
 	 */
 	public function getSQLType() {
 		return 'varchar(255)';
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * {@inheritDoc}
 	 */
 	protected function _getDefault() {
 		return null;
@@ -53,7 +53,7 @@ class FileProperty extends \Asgard\Entity\Property {
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * {@inheritDoc}
 	 */
 	protected function doUnserialize($str) {
 		if(!$str || !file_exists($str))
@@ -70,7 +70,7 @@ class FileProperty extends \Asgard\Entity\Property {
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * {@inheritDoc}
 	 */
 	public function doSet($val) {
 		if(is_string($val) && $val !== null)
@@ -90,7 +90,7 @@ class FileProperty extends \Asgard\Entity\Property {
 	}
 
 	/**
-	 * {@inheritdoc}
+	 * {@inheritDoc}
 	 */
 	public function getFormField() {
 		return 'Asgard\Form\Fields\FileField';

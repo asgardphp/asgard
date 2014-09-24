@@ -111,7 +111,7 @@ class Container implements \ArrayAccess {
 
 	/**
 	 * Create a facade.
-	 * @param  string service $name
+	 * @param string $name Service name.
 	 */
 	protected function createFacade($name) {
 		if(preg_match('/^[a-zA-Z_][a-zA-Z0-9_]+$/', $name) && !class_exists(ucfirst($name)))

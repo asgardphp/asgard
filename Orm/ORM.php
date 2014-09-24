@@ -80,11 +80,11 @@ class ORM {
 	
 	/**
 	 * Constructor.
-	 * @param string                    $entityClass
-	 * @param string                    $locale           default locale
-	 * @param string                    $prefix           tables prefix
-	 * @param DataMapper                $datamapper
-	 * @param \Asgard\Container\Factory $paginatorFactory
+	 * @param \Asgard\Entity\EntityDefinition $definition
+	 * @param string                          $locale           default locale
+	 * @param string                          $prefix           tables prefix
+	 * @param DataMapper                      $datamapper
+	 * @param \Asgard\Container\Factory       $paginatorFactory
 	 */
 	public function __construct(\Asgard\Entity\EntityDefinition $definition, $locale=null, $prefix=null, DataMapper $datamapper=null, \Asgard\Container\Factory $paginatorFactory=null) {
 		$this->definition       = $definition;
@@ -107,8 +107,8 @@ class ORM {
 	 * $orm = new ORM('News');
 	 * $orm->categories()->all();
 	 * 
-	 * @param string relationName The name of the relation.
-	 * @param array args Not used.
+	 * @param string $relationName The name of the relation.
+	 * @param array  $args Not used.
 	 * 
 	 * @throws \Exception If the relation does not exist.
 	 * 
@@ -135,7 +135,7 @@ class ORM {
 	 * $orm = new ORM('News');
 	 * $categories = $orm->categories;
 	 * 
-	 * @param string name The name of the relation.
+	 * @param string $name The name of the relation.
 	 * 
 	 * @return array Array of entities.
 	*/
@@ -146,8 +146,8 @@ class ORM {
 	/**
 	 * Limits the search to the entities related to the given entity.
 	 * 
-	 * @param string|EntityRelation relation The name of the relation.
-	 * @param \Asgard\Entity\Entity entity The related entity.
+	 * @param string|EntityRelation $relation The name of the relation.
+	 * @param \Asgard\Entity\Entity $entity The related entity.
 	 * 
 	 * @return ORM $this
 	*/
@@ -169,7 +169,7 @@ class ORM {
 	/**
 	 * Joins a relation to the search. Useful when having conditions involving relations.
 	 * 
-	 * @param string|array relations The name of the relation or an array of relations.
+	 * @param string|array $relations The name of the relation or an array of relations.
 	 * 
 	 * @return ORM $this
 	*/
@@ -199,8 +199,8 @@ class ORM {
 	/**
 	 * Converts a raw array to an entity.
 	 * 
-	 * @param array raw
-	 * @param string entityClass The class of the entity to be instantiated.
+	 * @param array                           $raw
+	 * @param \Asgard\Entity\EntityDefinition $definition The definition of the entity to be instantiated.
 	 * 
 	 * @return \Asgard\Entity\Entity
 	*/
@@ -214,9 +214,9 @@ class ORM {
 	/**
 	 * Fills up an entity with a raw array of data.
 	 * 
-	 * @param \Asgard\Entity\Entity entity
-	 * @param array data
-	 * @param NULL|string locale Only necessary if the data concerns a specific locale.
+	 * @param \Asgard\Entity\Entity $entity
+	 * @param array                 $data
+	 * @param NULL|string           $locale Only necessary if the data concerns a specific locale.
 	 * 
 	 * @return \Asgard\Entity\Entity
 	*/
@@ -255,7 +255,7 @@ class ORM {
 	/**
 	 * Returns an array with all the values of a specific property from the selected entities.
 	 * 
-	 * @param string property
+	 * @param string $property
 	 * 
 	 * @return array
 	*/
@@ -331,10 +331,10 @@ class ORM {
 	/**
 	 * Performs jointures on the DAL object.
 	 * 
-	 * @param \Asgard\Db\DAL dal
-	 * @param array jointures Array of relations.
-	 * @param stringcurrent_entity The entity class from which jointures are built.
-	 * @param string table The table from which to performs jointures.
+	 * @param \Asgard\Db\DAL                  $dal
+	 * @param array                           $jointures Array of relations.
+	 * @param \Asgard\Entity\EntityDefinition $entityDefinition The entity class from which jointures are built.
+	 * @param string                          $table The table from which to performs jointures.
 	*/
 	protected function recursiveJointures(\Asgard\Db\DAL $dal, array $jointures, \Asgard\Entity\EntityDefinition $entityDefinition, $table) {
 		$alias = null;
@@ -377,10 +377,10 @@ class ORM {
 	/**
 	 * Performs a single jointure.
 	 * 
-	 * @param \Asgard\Db\DAL dal
-	 * @param EntityRelation relation The name of the relation.
-	 * @param string alias How the related table will be referenced in the SQL query.
-	 * @param string ref_table The table from which to performs the jointure.
+	 * @param \Asgard\Db\DAL $dal
+	 * @param EntityRelation $relation The name of the relation.
+	 * @param string         $alias How the related table will be referenced in the SQL query.
+	 * @param string         $ref_table The table from which to performs the jointure.
 	*/
 	protected function jointure(\Asgard\Db\DAL $dal, $relation, $alias, $ref_table) {
 		$relationName = $relation->name;
@@ -537,8 +537,8 @@ class ORM {
 	/**
 	 * Performs an SQL query and returns the entities.
 	 * 
-	 * @param string sql SQL query
-	 * @param array args SQL parameters
+	 * @param string $sql SQL query
+	 * @param array  $args SQL parameters
 	 * 
 	 * @return array Array of \Asgard\Entity\Entity
 	*/
@@ -556,8 +556,8 @@ class ORM {
 	/**
 	 * Paginates the search list.
 	 * 
-	 * @param integer page Current page.
-	 * @param integer per_page Number of elements per page.
+	 * @param integer $page Current page.
+	 * @param integer $per_page Number of elements per page.
 	 * 
 	 * @return \Asgard\Orm\ORM $this
 	*/
@@ -590,8 +590,8 @@ class ORM {
 	/**
 	 * Retrieves the related entities along with the selected entities.
 	 * 
-	 * @param array|string with Array of relation names or the name of the relation.
-	 * @param \Closure closure Code to be executed on the relation's ORM.
+	 * @param array|string $with Array of relation names or the name of the relation.
+	 * @param \Closure     $closure Code to be executed on the relation's ORM.
 	 * 
 	 * @return \Asgard\Orm\ORM $this
 	*/
@@ -604,7 +604,7 @@ class ORM {
 	/**
 	 * Replace the tables by their i18n equivalent.
 	 * 
-	 * @param string sql SQL query.
+	 * @param string $sql SQL query.
 	 * 
 	 * @return string The modified SQL query.
 	*/
@@ -625,7 +625,7 @@ class ORM {
 	/**
 	 * Format the conditions before being used in SQL.
 	 * 
-	 * @param array conditions
+	 * @param array $conditions
 	 * 
 	 * @return array Formatted conditions.
 	*/
@@ -647,8 +647,8 @@ class ORM {
 	/**
 	 * Add new conditions to the query.
 	 * 
-	 * @param array|string conditions Array of conditions or name of a property.
-	 * @param null|string val Value of the property.
+	 * @param array|string $conditions Array of conditions or name of a property.
+	 * @param null|string  $val Value of the property.
 	 * 
 	 * @return \Asgard\Orm\ORM $this
 	*/
@@ -664,7 +664,7 @@ class ORM {
 	/**
 	 * Sets the offset.
 	 * 
-	 * @param integer offset
+	 * @param integer $offset
 	 * 
 	 * @return \Asgard\Orm\ORM $this
 	*/
@@ -676,7 +676,7 @@ class ORM {
 	/**
 	 * Sets the limit.
 	 * 
-	 * @param integer limit
+	 * @param integer $limit
 	 * 
 	 * @return \Asgard\Orm\ORM $this
 	*/
@@ -688,7 +688,7 @@ class ORM {
 	/**
 	 * Sets the order.
 	 * 
-	 * @param string orderBy e.g. position ASC
+	 * @param string $orderBy e.g. position ASC
 	 * 
 	 * @return \Asgard\Orm\ORM $this
 	*/
@@ -713,7 +713,7 @@ class ORM {
 	/**
 	 * Updates entities properties.
 	 * 
-	 * @param array values Array of properties.
+	 * @param array $values Array of properties.
 	 * 
 	 * @return \Asgard\Orm\ORM $this
 	*/
@@ -727,7 +727,7 @@ class ORM {
 	/**
 	 * Counts the number of selected entities.
 	 * 
-	 * @param string group_by To split the result according to a specific property.
+	 * @param string $group_by To split the result according to a specific property.
 	 * 
 	 * @return integer|array The total or an array of total per value.
 	*/
@@ -738,8 +738,8 @@ class ORM {
 	/**
 	 * Returns the minimum value of a property.
 	 * 
-	 * @param string what The property to count from.
-	 * @param string group_by To split the result according to a specific property.
+	 * @param string $what The property to count from.
+	 * @param string $group_by To split the result according to a specific property.
 	 * 
 	 * @return integer|array The total or an array of total per value.
 	*/
@@ -750,8 +750,8 @@ class ORM {
 	/**
 	 * Returns the maximum value of a property.
 	 * 
-	 * @param string what The property to count from.
-	 * @param string group_by To split the result according to a specific property.
+	 * @param string $what The property to count from.
+	 * @param string $group_by To split the result according to a specific property.
 	 * 
 	 * @return integer|array The total or an array of total per value.
 	*/
@@ -762,8 +762,8 @@ class ORM {
 	/**
 	 * Returns the average value of a property.
 	 * 
-	 * @param string what The property to count from.
-	 * @param string group_by To split the result according to a specific property.
+	 * @param string $what The property to count from.
+	 * @param string $group_by To split the result according to a specific property.
 	 * 
 	 * @return integer|array The total or an array of total per value.
 	*/
@@ -774,8 +774,8 @@ class ORM {
 	/**
 	 * Returns the sum of a property.
 	 * 
-	 * @param string what The property to count from.
-	 * @param string group_by To split the result according to a specific property.
+	 * @param string $what The property to count from.
+	 * @param string $group_by To split the result according to a specific property.
 	 * 
 	 * @return integer|array The total or an array of total per value.
 	*/

@@ -1,7 +1,13 @@
 <?php
 namespace Asgard\Form\Fields;
 
+/**
+ * Month field.
+ */
 class MonthField extends \Asgard\Form\Fields\SelectField {
+	/**
+	 * {@inheritDoc}
+	 */
 	public function __construct(array $options=[]) {
 		$options['validation']['type'] = 'integer';
 		$options['choices'] = ['Month'];

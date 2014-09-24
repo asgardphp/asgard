@@ -12,14 +12,14 @@ class FakeEmail implements DriverInterface {
 	protected $file;
 
 	/**
-     * {@inheritdoc}
+	 * {@inheritDoc}
 	 */
 	public function transport($file) {
 		$this->file = $file;
 	}
 
 	/**
-     * {@inheritdoc}
+	 * {@inheritDoc}
 	 */
 	public function send($cb) {
 		$message = new SwiftMessage;

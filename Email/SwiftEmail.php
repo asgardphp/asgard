@@ -12,7 +12,7 @@ class SwiftEmail implements DriverInterface {
 	protected $transport;
 
 	/**
-     * {@inheritdoc}
+	 * {@inheritDoc}
 	 */
 	public function transport($transport) {
 		if(isset($transport['transport']) && $transport['transport'] == 'smtp') {
@@ -36,7 +36,7 @@ class SwiftEmail implements DriverInterface {
 	}
 
 	/**
-     * {@inheritdoc}
+	 * {@inheritDoc}
 	 */
 	public function send($cb) {
 		$mailer = \Swift_Mailer::newInstance($this->transport);

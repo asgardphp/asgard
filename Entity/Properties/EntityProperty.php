@@ -6,7 +6,7 @@ namespace Asgard\Entity\Properties;
  */
 class EntityProperty extends \Asgard\Entity\Property {
 	/**
-	 * {@inheritdoc}
+	 * {@inheritDoc}
 	 */
 	public function getDefault($entity, $name) {
 		return null;
