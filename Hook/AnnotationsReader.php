@@ -11,7 +11,7 @@ require_once __DIR__.'/Annotations/Hook.php';
 class AnnotationsReader {
 	/**
 	 * Cache instance.
-	 * @var \Doctrine\Cache\Cache
+	 * @var \Doctrine\Common\Cache\Cache
 	 */
 	protected $cache;
 	/**

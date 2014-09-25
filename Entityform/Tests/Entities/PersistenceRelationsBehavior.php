@@ -86,4 +86,8 @@ class PersistenceRelationsBehavior extends \Asgard\Entity\Behavior implements \A
 	#$article->relation('category')
 	public function call_relation(\Asgard\Entity\Entity $entity, $relation) {
 	}
+
+	#$article->related('category')
+	public function call_related(\Asgard\Entity\Entity $entity, $relation) {
+	}
 }

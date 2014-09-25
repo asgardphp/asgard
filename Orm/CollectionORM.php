@@ -133,7 +133,7 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 				$this->dataMapper->save($new, $params);
 				break;
 			case 'HMABT':
-				$new->save($params);
+				$this->dataMapper->save($new, $params);
 				$this->add($new->id);
 				break;
 		}

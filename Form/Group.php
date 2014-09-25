@@ -520,12 +520,8 @@ class Group implements \ArrayAccess, \Iterator {
 		else
 			throw new \Exception('Invalid widget.');
 
-		if($widget instanceof Widget) {
-			if($field instanceof Field)
-				$widget->field = $field;
-			elseif($field instanceof self)
-				$widget->group = $field;
-		}
+		if($widget instanceof Widget)
+			$widget->field = $field;
 
 		return $widget;
 	}

@@ -218,24 +218,6 @@ class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\Pers
 	}
 
 	/**
-	 * $article->isNew()
-	 * @param  \Asgard\Entity\Entity $entity
-	 * @return boolean true if entity is not stored yet
-	 */
-	public function call_isNew(\Asgard\Entity\Entity $entity) {
-		return $this->getDataMapper()->isNew($entity);
-	}
-
-	/**
-	 * $article->isOld()
-	 * @param  \Asgard\Entity\Entity $entity
-	 * @return boolean true if entity is already stored
-	 */
-	public function call_isOld(\Asgard\Entity\Entity $entity) {
-		return $this->getDataMapper()->isOld($entity);
-	}
-
-	/**
 	 * $article->related('category')
 	 * @param  \Asgard\Entity\Entity $entity
 	 * @param  string             $relation   relation name

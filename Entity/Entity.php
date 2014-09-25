@@ -333,7 +333,7 @@ abstract class Entity {
 			if(!$locale)
 				$locale = $this->getLocale();
 
-			if($this->getDefinition()->property($name)->i18n && $locale !== $this->getLocale())
+			if($this->getDefinition()->property($name)->get('i18n') && $locale !== $this->getLocale())
 				$this->data['translations'][$locale][$name] = $value;
 			else
 				$this->data['properties'][$name] = $value;
@@ -346,8 +346,8 @@ abstract class Entity {
 
 	/**
 	 * Hard get data. With no pre-processing.
-	 * @param  string $name
-	 * @param  string $locale
+	 * @param  string       $name
+	 * @param  string|array $locale
 	 * @return mixed
 	 */
 	public function _get($name, $locale=null) {
@@ -355,7 +355,7 @@ abstract class Entity {
 			$locale = $this->getLocale();
 		
 		if($this->getDefinition()->hasProperty($name)) {
-			if($this->getDefinition()->property($name)->i18n && $locale !== $this->getLocale()) {
+			if($this->getDefinition()->property($name)->get('i18n') && $locale !== $this->getLocale()) {
 				#multiple locales at once
 				if(is_array($locale)) {
 					$res = [];
@@ -382,7 +382,7 @@ abstract class Entity {
 	/**
 	 * Hard get data. With pre-processing.
 	 * @param  string $name
-	 * @param  string $locale
+	 * @param  string|array $locale
 	 * @return mixed
 	 */
 	public function get($name, $locale=null) {

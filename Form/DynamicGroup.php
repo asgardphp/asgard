@@ -68,10 +68,10 @@ class DynamicGroup extends Group {
 	 */
 	public function field($field=null) {
 		$default_render = $this->default_render;
-		if($default_render === null)
-			return $field->def();
-		else
+		if($default_render !== null)
 			return $default_render($field);
+		elseif($field instanceof Field)
+			return $field->def();
 	}
 
 	/**
@@ -82,7 +82,7 @@ class DynamicGroup extends Group {
 	public function renderTemplate($offset='') {
 		$randstr = \Asgard\Common\Tools::randstr(10);
 		$jq = $this->renderNew('{{'.$randstr.'}}');
-		$jq = addcslashes($jq, "'");
+		$jq = addcslashes((string)$jq, "'");
 		$jq = str_replace("\r\n", "\n", $jq);
 		$jq = str_replace("\n", "\\\n", $jq);
 		$jq = str_replace('{{'.$randstr.'}}', $offset, $jq);

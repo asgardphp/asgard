@@ -345,9 +345,9 @@ class ORM {
 						if(!$v instanceof EntityRelation) {
 							if(strpos($v, ' '))
 								list($v, $alias) = explode(' ', $v);
-							$relation = $this->dataMapper->relation($entityDefinition, $v);
+							$v = $this->dataMapper->relation($entityDefinition, $v);
 						}
-						$this->jointure($dal, $relation, $alias, $table);
+						$this->jointure($dal, $v, $alias, $table);
 					}
 					else {
 						$relationName = $k;
@@ -426,7 +426,7 @@ class ORM {
 			$translation_table = $this->dataMapper->getTranslationTable($relationEntityDefinition);
 			$dal->leftjoin([
 				$translation_table.' '.$relationName.'_translation' => $this->processConditions([
-					$table.'.id = '.$relationName.'_translation.id',
+					$ref_table.'.id = '.$relationName.'_translation.id',
 					$relationName.'_translation.locale' => $this->locale
 				])
 			]);

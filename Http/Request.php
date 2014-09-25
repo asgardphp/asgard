@@ -357,7 +357,7 @@ class Request implements \ArrayAccess {
 					$files[$k] = \Asgard\Http\HttpFile::createFromArray($v);
 			}
 			else
-				$files = \Asgard\Http\HttpFile::createFromArray($raw);
+				$files = [\Asgard\Http\HttpFile::createFromArray($raw)];
 		}
 		else {
 			foreach($raw as $k=>$v)

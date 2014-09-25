@@ -12,7 +12,7 @@ abstract class Widget {
 	protected $label;
 	/**
 	 * Field
-	 * @var Field
+	 * @var Field|Group
 	 */
 	public $field;
 	/**

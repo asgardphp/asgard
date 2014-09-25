@@ -291,7 +291,7 @@ class DataMapper {
 		#process data
 		foreach($entity->getDefinition()->properties() as $name=>$prop) {
 			#i18n properties
-			if($prop->i18n) {
+			if($prop->get('i18n')) {
 				$values = $entity->get($name, $entity->getLocales());
 				foreach($values as $locale=>$v)
 					$i18n[$locale][$name] = $entity->getDefinition()->property($name)->serialize($v);
