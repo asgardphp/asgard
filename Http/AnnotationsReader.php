@@ -68,9 +68,9 @@ class AnnotationsReader {
 
 	/**
 	 * Set the cache dependency.
-	 * @param \Doctrine\Cache\Cache $cache
+	 * @param \Doctrine\Common\Cache\Cache $cache
 	 */
-	public function setCache(\Doctrine\Cache\Cache $cache) {
+	public function setCache(\Doctrine\Common\Cache\Cache $cache) {
 		$this->cache = $cache;
 		return $this;
 	}

@@ -450,7 +450,7 @@ class EntityDefinition {
 				$value = call_user_func_array($hook, [$value]);
 			}
 
-			if($this->property($name)->i18n) {
+			if($this->property($name)->get('i18n')) {
 				if($locale == 'all') {
 					$val = [];
 					foreach($value as $one => $v)
@@ -477,8 +477,8 @@ class EntityDefinition {
 		if($hook)
 			$this->trigger('set', [$entity, $name, &$value, $locale]);
 	
-		if($this->property($name)->setHook) {
-			$hook  = $this->property($name)->setHook;
+		if($this->property($name)->get('setHook')) {
+			$hook  = $this->property($name)->get('setHook');
 			$value = call_user_func_array($hook, [$value]);
 		}
 
