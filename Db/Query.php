@@ -7,12 +7,12 @@ namespace Asgard\Db;
 class Query {
 	/**
 	 * Database instance.
-	 * @var DB
+	 * @var \PDO
 	 */
 	protected $db;
 	/**
 	 * Query's ressource.
-	 * @var resource
+	 * @var \PDOStatement
 	 */
 	protected $rsc;
 

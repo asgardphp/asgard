@@ -82,9 +82,9 @@ class DataMapper {
 	public function orm($entityClass) {
 		$definition = $this->entitiesManager->get($entityClass);
 		if($this->ormFactory)
-			return $this->ormFactory->create([$definition, $this->locale, $this->prefix, $this]);
+			return $this->ormFactory->create([$definition, $this, $this->locale, $this->prefix]);
 		else
-			return new ORM($definition, $this->locale, $this->prefix, $this);
+			return new ORM($definition, $this, $this->locale, $this->prefix);
 	}
 
 	/**
@@ -211,7 +211,7 @@ class DataMapper {
 	public function valid(\Asgard\Entity\Entity $entity) {
 		$data = $entity->toArrayRaw();
 		$validator = $this->getValidator($entity);
-		foreach($entity->getDefinition()->relations() as $name=>$relation) {
+		foreach($this->relations($entity->getDefinition()) as $name=>$relation) {
 			$data[$name] = $this->related($entity, $name);
 			$validator->attribute($name, $relation->getRules());
 		}
@@ -250,7 +250,7 @@ class DataMapper {
 	 * @param  \Asgard\Entity\Entity $entity
 	 * @param  array                 $values entity attributes
 	 * @param  boolean               $force  skip validation
-	 * @return true for successful storage, false otherwise
+	 * @return boolean               true for successful storage, false otherwise
 	 */
 	public function save(\Asgard\Entity\Entity $entity, $values=null, $force=false) {
 		#set $values if any
@@ -292,8 +292,8 @@ class DataMapper {
 		foreach($entity->getDefinition()->properties() as $name=>$prop) {
 			#i18n properties
 			if($prop->i18n) {
-				$value = $entity->get($name, $entity->getLocales());
-				foreach($value as $locale=>$v)
+				$values = $entity->get($name, $entity->getLocales());
+				foreach($values as $locale=>$v)
 					$i18n[$locale][$name] = $entity->getDefinition()->property($name)->serialize($v);
 			}
 			#relations with a single entity
@@ -390,9 +390,9 @@ class DataMapper {
 			case 'hasMany':
 			case 'HMABT':
 				if($this->collectionOrmFactory)
-					return $this->collectionOrmFactory->create([$entity, $name, $this->locale, $this->prefix, $this]);
+					return $this->collectionOrmFactory->create([$entity, $this, $name, $this->locale, $this->prefix]);
 				else
-					return new CollectionORM($entity, $name, $this->locale, $this->prefix, $this);
+					return new CollectionORM($entity, $name, $this, $this->locale, $this->prefix);
 			default:
 				throw new \Exception('Relation '.$rel->type().' does not exist.');
 		}
@@ -440,8 +440,8 @@ class DataMapper {
 	 * @return string
 	 */
 	public function getTable(\Asgard\Entity\EntityDefinition $definition) {
-		if(isset($definition->table) && $definition->table)
-			return $this->prefix.$definition->table;
+		if($definition->get('table'))
+			return $this->prefix.$definition->get('table');
 		else
 			return $this->prefix.$definition->getShortName();
 	}

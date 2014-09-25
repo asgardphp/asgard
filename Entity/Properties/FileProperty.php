@@ -72,7 +72,7 @@ class FileProperty extends \Asgard\Entity\Property {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function doSet($val) {
+	public function doSet($val, \Asgard\Entity\Entity $entity, $name) {
 		if(is_string($val) && $val !== null)
 			$val = new \Asgard\Entity\File($val);
 		if(is_object($val)) {

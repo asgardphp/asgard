@@ -83,14 +83,6 @@ class PersistenceRelationsBehavior extends \Asgard\Entity\Behavior implements \A
 	public function call_destroy(\Asgard\Entity\Entity $entity) {
 	}
 
-	#$article->isNew()
-	public function call_isNew(\Asgard\Entity\Entity $entity) {
-	}
-
-	#$article->isOld()
-	public function call_isOld(\Asgard\Entity\Entity $entity) {
-	}
-
 	#$article->relation('category')
 	public function call_relation(\Asgard\Entity\Entity $entity, $relation) {
 	}

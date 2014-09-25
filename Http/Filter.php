@@ -6,11 +6,6 @@ namespace Asgard\Http;
  */
 class Filter {
 	/**
-	 * Controller class.
-	 * @var string
-	 */
-	protected $controller;
-	/**
 	 * Filter parameters.
 	 * @var array
 	 */
@@ -19,19 +14,9 @@ class Filter {
 	/**
 	 * Constructor.
 	 * @param array $params
-	 * @param string $controller
 	 */
-	public function __construct(array $params=[], $controller=null) {
-		$this->controller = $controller;
+	public function __construct(array $params=[]) {
 		$this->params = $params;
-	}
-
-	/**
-	 * Set the controller class.
-	 * @param string $controller
-	 */
-	public function setController($controller) {
-		$this->controller = $controller;
 	}
 
 	/**

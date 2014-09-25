@@ -64,7 +64,7 @@ class HooksManager {
 	
 	/**
 	 * Check if a hook is present.
-	 * @param string   $identifier
+	 * @param array|string   $identifier
 	 * @return boolean
 	*/
 	public function has($identifier) {
@@ -83,7 +83,7 @@ class HooksManager {
 	
 	/**
 	 * Set a hook.
-	 * @param string   $identifier Hook identifier.
+	 * @param array|string   $identifier Hook identifier.
 	 * @param Callable $cb
 	 * @param integer  $priority Hook priority in the list.
 	*/
@@ -103,7 +103,7 @@ class HooksManager {
 	
 	/**
 	 * Return hooks.
-	 * @param string $identifier Hook identifier.
+	 * @param array|string $identifier Hook identifier.
 	 * @return array Callbacks.
 	*/
 	public function get($identifier) {
@@ -126,7 +126,7 @@ class HooksManager {
 	
 	/**
 	 * Create a hook.
-	 * @param string   $identifier
+	 * @param array|string   $identifier
 	 * @param Callable $cb
 	 * @param string   $type   on|before|after
 	*/
@@ -140,7 +140,7 @@ class HooksManager {
 	
 	/**
 	 * Set a hook.
-	 * @param string   $identifier
+	 * @param array|string   $identifier
 	 * @param Callable $cb
 	*/
 	public function hook($identifier, $cb) {
@@ -149,7 +149,7 @@ class HooksManager {
 	
 	/**
 	 * Set a "before" hook.
-	 * @param string   $identifier
+	 * @param array|string   $identifier
 	 * @param Callable $cb
 	*/
 	public function hookBefore($identifier, $cb) {
@@ -158,7 +158,7 @@ class HooksManager {
 	
 	/**
 	 * Set an "after" hook.
-	 * @param string   $identifier
+	 * @param array|string   $identifier
 	 * @param Callable $cb
 	*/
 	public function hookAfter($identifier, $cb) {

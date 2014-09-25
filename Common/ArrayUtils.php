@@ -51,9 +51,9 @@ class ArrayUtils {
 
 	/**
 	 * Set element in array.
-	 * @param  array  $arr
-	 * @param  string $path  list of nested keys.
-	 * @param  mixed $value
+	 * @param  array        $arr
+	 * @param  string|array $path  list of nested keys.
+	 * @param  mixed        $value
 	 */
 	public static function array_set(&$arr, $path, $value) {
 		if(!is_array($path))
@@ -66,9 +66,9 @@ class ArrayUtils {
 	
 	/**
 	 * Get element in array.
-	 * @param  array  $arr
-	 * @param  string $path  list of nested keys.
-	 * @param  mixed  $default
+	 * @param  array        $arr
+	 * @param  string|array $path  list of nested keys.
+	 * @param  mixed        $default
 	 * @return mixed
 	 */
 	public static function array_get($arr, $path, $default=null) {
@@ -85,15 +85,15 @@ class ArrayUtils {
 	
 	/**
 	 * Check if element exists in array.
-	 * @param  array  $arr
-	 * @param  string $path  list of nested keys.
+	 * @param  array        $arr
+	 * @param  string|array $path  list of nested keys.
 	 * @return boolean
 	 */
 	public static function array_isset($arr, $path) {
 		if(!$path)
 			return;
 		if(!is_array($path))
-			$keys = [$path];
+			$path = [$path];
 		foreach($path as $key) {
 			if(!isset($arr[$key]))
 				return false;
@@ -105,8 +105,8 @@ class ArrayUtils {
 	
 	/**
 	 * Unset element in array.
-	 * @param  array  $arr
-	 * @param  string $path  list of nested keys.
+	 * @param  array        $arr
+	 * @param  string|array $path  list of nested keys.
 	 */
 	public static function array_unset(&$arr, $path) {
 		if(!$path)

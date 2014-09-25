@@ -31,7 +31,7 @@ class GenerateMigrationCommand extends \Asgard\Console\Command {
 			if($definition->get('ormMigrate'))
 				$definitions[] = $definition;
 		}
-		$migration = $om->generateMigration($definitions, $migration, $this->dataMapper);
+		$migration = $om->generateMigration($definitions, $migration);
 		if($mm->has($migration))
 			$this->info('The migration was successfully generated.');
 		else

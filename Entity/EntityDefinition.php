@@ -9,17 +9,17 @@ class EntityDefinition {
 	
 	/**
 	 * Entities manager dependency.
-	 * @var [type]
+	 * @var EntitiesManager
 	 */
 	protected $entitiesManager;
 	/**
 	 * General hooks manager dependency.
-	 * @var [type]
+	 * @var \Asgard\Hook\HooksManager
 	 */
 	protected $generalHooksManager;
 	/**
 	 * Entity class.
-	 * @var [type]
+	 * @var string
 	 */
 	protected $entityClass;
 	/**
@@ -94,7 +94,8 @@ class EntityDefinition {
 
 		$entityClass::definition($this);
 
-		$generalHooksManager->trigger('Asgard.Entity.Definition', [$this]);
+		if($generalHooksManager !== null)
+			$generalHooksManager->trigger('Asgard.Entity.Definition', [$this]);
 
 		$behaviors = $this->behaviors;
 		$this->behaviors = [];
@@ -256,7 +257,8 @@ class EntityDefinition {
 	 * @param  array $behaviors
 	 */
 	public function loadBehaviors($behaviors) {
-		$this->generalHooksManager->trigger('Asgard.Entity.LoadBehaviors', [&$behaviors]);
+		if($this->generalHooksManager !== null)
+			$this->generalHooksManager->trigger('Asgard.Entity.LoadBehaviors', [&$behaviors]);
 
 		foreach($behaviors as $behavior)
 			$this->loadBehavior($behavior);
@@ -299,8 +301,8 @@ class EntityDefinition {
 
 	/**
 	 * Add a property.
-	 * @param string   $name
-	 * @param Property $property
+	 * @param string                $name
+	 * @param string|array|Property $property
 	 */
 	public function addProperty($name, $property=null) {
 		if($property === null)
@@ -452,11 +454,11 @@ class EntityDefinition {
 				if($locale == 'all') {
 					$val = [];
 					foreach($value as $one => $v)
-						$val[$one] = $this->property($name)->set($v, $this, $name);
+						$val[$one] = $this->property($name)->set($v, $entity, $name);
 					$value = $val;
 				}
 				else
-					$value = $this->property($name)->set($value, $this, $name);
+					$value = $this->property($name)->set($value, $entity, $name);
 			}
 			else
 				$value = $this->property($name)->set($value, $entity, $name);

@@ -53,7 +53,7 @@ class DateProperty extends \Asgard\Entity\Property {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function doSet($val) {
+	public function doSet($val, \Asgard\Entity\Entity $entity, $name) {
 		if($val instanceof \Carbon\Carbon)
 			return $val;
 		elseif(is_string($val)) {

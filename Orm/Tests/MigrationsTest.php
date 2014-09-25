@@ -171,7 +171,7 @@ class MigrationsTest extends \PHPUnit_Framework_TestCase {
 			$entitiesManager->get('Asgard\Orm\Tests\Fixtures\Post'),
 			$entitiesManager->get('Asgard\Orm\Tests\Fixtures\Author'),
 			$entitiesManager->get('Asgard\Orm\Tests\Fixtures\Category')
-		], 'Post', $db);
+		], 'Post');
 
 		$this->assertRegExp('/\{'."\n".
 '    "Post": \{'."\n".

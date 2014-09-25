@@ -81,20 +81,20 @@ class ORM {
 	/**
 	 * Constructor.
 	 * @param \Asgard\Entity\EntityDefinition $definition
+	 * @param DataMapper                      $datamapper
 	 * @param string                          $locale           default locale
 	 * @param string                          $prefix           tables prefix
-	 * @param DataMapper                      $datamapper
 	 * @param \Asgard\Container\Factory       $paginatorFactory
 	 */
-	public function __construct(\Asgard\Entity\EntityDefinition $definition, $locale=null, $prefix=null, DataMapper $datamapper=null, \Asgard\Container\Factory $paginatorFactory=null) {
+	public function __construct(\Asgard\Entity\EntityDefinition $definition, DataMapper $datamapper, $locale=null, $prefix=null, \Asgard\Container\Factory $paginatorFactory=null) {
 		$this->definition       = $definition;
+		$this->dataMapper       = $datamapper;
 		$this->locale           = $locale;
 		$this->prefix           = $prefix;
-		$this->dataMapper       = $datamapper;
 		$this->paginatorFactory = $paginatorFactory;
 
-		if($this->definition->order_by)
-			$this->orderBy($this->definition->order_by);
+		if($this->definition->get('order_by'))
+			$this->orderBy($this->definition->get('order_by'));
 		else
 			$this->orderBy('id DESC');
 	}
@@ -169,7 +169,7 @@ class ORM {
 	/**
 	 * Joins a relation to the search. Useful when having conditions involving relations.
 	 * 
-	 * @param string|array $relations The name of the relation or an array of relations.
+	 * @param string|EntityRelation|array $relations The name of the relation or an array of relations.
 	 * 
 	 * @return ORM $this
 	*/

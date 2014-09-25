@@ -91,11 +91,11 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		$container->register('rulesregistry', function() { return new \Asgard\Validation\RulesRegistry; } );
 
 		#ORM
-		$container->register('orm', function($container, $entityClass, $locale, $prefix, $dataMapper) {
-			return new \Asgard\Orm\ORM($entityClass, $locale, $prefix, $dataMapper, $container->createFactory('paginator'));
+		$container->register('orm', function($container, $entityClass, $dataMapper, $locale, $prefix) {
+			return new \Asgard\Orm\ORM($entityClass, $dataMapper, $locale, $prefix, $container->createFactory('paginator'));
 		});
-		$container->register('collectionOrm', function($container, $entityClass, $name, $locale, $prefix, $dataMapper) {
-			return new \Asgard\Orm\CollectionORM($entityClass, $name, $locale, $prefix, $dataMapper, $container->createFactory('paginator'));
+		$container->register('collectionOrm', function($container, $entityClass, $name, $dataMapper, $locale, $prefix) {
+			return new \Asgard\Orm\CollectionORM($entityClass, $name, $dataMapper, $locale, $prefix, $container->createFactory('paginator'));
 		});
 		$container->register('datamapper', function($container) {
 			return new \Asgard\Orm\DataMapper(

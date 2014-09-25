@@ -142,14 +142,14 @@ class EntityForm extends \Asgard\Form\Form {
 			$this->add(new \Asgard\Form\Fields\MultipleSelectField([
 				'type'    => 'integer',
 				'choices' => $ids,
-				'default' => ($entity->isOld($entity) ? $dataMapper->related($entity, $name)->ids():[]),
+				'default' => ($entity->isOld() ? $dataMapper->related($entity, $name)->ids():[]),
 			]), $name);
 		}
 		else {
 			$this->add(new \Asgard\Form\Fields\SelectField([
 				'type'    => 'integer',
 				'choices' => $ids,
-				'default' => ($entity->isOld($entity) && $entity->get($name) ? $entity->get($name)->id:null),
+				'default' => ($entity->isOld() && $entity->get($name) ? $entity->get($name)->id:null),
 			]), $name);
 		}
 	}
@@ -275,8 +275,12 @@ class EntityForm extends \Asgard\Form\Form {
 				return false;
 			return $v !== null;
 		});
-		if($this->locales)
-			$this->entity->set($data, $this->locales);
+		if($this->locales) {
+			foreach($data as $name=>$value) {
+				foreach($this->locales as $locale)
+					$this->entity->set($name, $value, $locale);
+			}
+		}
 		else
 			$this->entity->set($data);
 

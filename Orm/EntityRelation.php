@@ -12,7 +12,7 @@ class EntityRelation implements \ArrayAccess {
 	protected $entityClass;
 	/**
 	 * Entity definition.
-	 * @var \Asgard\Entity\Definition
+	 * @var \Asgard\Entity\EntityDefinition
 	 */
 	protected $entityDefinition;
 	/**

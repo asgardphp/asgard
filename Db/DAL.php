@@ -169,10 +169,10 @@ class DAL {
 
 	/**
 	 * Create a jointure.
-	 * @param  string $type
-	 * @param  string $table
-	 * @param  array  $conditions
-	 * @return DAL    $this
+	 * @param  string       $type
+	 * @param  string|array $table
+	 * @param  string|array $conditions
+	 * @return DAL          $this
 	 */
 	protected function join($type, $table, $conditions=null) {
 		if(is_array($table)) {
@@ -193,7 +193,7 @@ class DAL {
 	/**
 	 * Add a LEFT jointure.
 	 * @param  string|array $table
-	 * @param  array  $conditions
+	 * @param  string|array $conditions
 	 * @return DAL    $this
 	 */
 	public function leftjoin($table, $conditions=null) {
@@ -203,7 +203,7 @@ class DAL {
 	/**
 	 * Add a RIGHT jointure.
 	 * @param  string|array $table
-	 * @param  array  $conditions
+	 * @param  string|array $conditions
 	 * @return DAL    $this
 	 */
 	public function rightjoin($table, $conditions=null) {
@@ -213,7 +213,7 @@ class DAL {
 	/**
 	 * Add an INNER jointure.
 	 * @param  string|array $table
-	 * @param  array  $conditions
+	 * @param  string|array $conditions
 	 * @return DAL    $this
 	 */
 	public function innerjoin($table, $conditions=null) {

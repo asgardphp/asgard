@@ -269,29 +269,31 @@ class Property {
 	 * @param string $name
 	 * @return mixed
 	 */
-	public function set($val, $entity, $name) {
+	public function set($val, Entity $entity, $name) {
 		if($this->get('many')) {
 			if($val instanceof ManyCollection)
 				return $val;
 			if(is_array($val)) {
 				$res = new ManyCollection($this->definition, $entity, $name);
 				foreach($val as $v)
-					$res[] = $this->doSet($v, $entity);
+					$res[] = $this->doSet($v, $entity, $name);
 				return $res;
 			}
 			else
 				return $val;
 		}
 		else
-			return $this->doSet($val, $entity);
+			return $this->doSet($val, $entity, $name);
 	}
 
 	/**
 	 * Actually pre-process value for a single element.
-	 * @param  mixed $val
+	 * @param  mixed  $val
+	 * @param  Entity $entity
+	 * @param  string $name
 	 * @return mixed
 	 */
-	public function doSet($val) {
+	public function doSet($val, Entity $entity, $name) {
 		return $val;
 	}
 }

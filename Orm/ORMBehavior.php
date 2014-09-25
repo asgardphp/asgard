@@ -101,7 +101,7 @@ class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\Pers
 		#$article->authors()
 		if($this->getDataMapper()->hasRelation($this->definition, $name)) {
 			$processed = true;
-			return $entity->related($name);
+			return $this->getDataMapper()->related($entity, $name);
 		}
 	}
 
@@ -157,7 +157,7 @@ class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\Pers
 	 * @return string
 	 */
 	public function static_getTable() {
-		return $this->getDataMapper()->getTable($this->entityClass);
+		return $this->getDataMapper()->getTable($this->definition);
 	}
 
 	/**

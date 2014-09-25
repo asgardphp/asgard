@@ -12,7 +12,7 @@ class DynamicGroup extends Group {
 	protected $cb;
 	/**
 	 * Callback to render fields.
-	 * @var callbable
+	 * @var callable
 	 */
 	protected $default_render;
 

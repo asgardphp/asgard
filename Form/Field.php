@@ -37,7 +37,7 @@ abstract class Field {
 	protected $widget    = 'text';
 	/**
 	 * Errors.
-	 * @var arrays
+	 * @var array
 	 */
 	protected $errors    = [];
 
@@ -245,7 +245,7 @@ abstract class Field {
 	 * Set the errors.
 	 * @param array $errors
 	 */
-	public function setErrors($errors) {
+	public function setErrors(array $errors) {
 		$this->errors = $errors;
 	}
 

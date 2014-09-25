@@ -15,7 +15,6 @@ class Unique extends \Asgard\Validation\Rule {
 		$orm = $dataMapper->orm(get_class($entity))->where($attr, $input);
 		if($entity->id !== null)
 			$orm->where('id!=?', $entity->id);
-		$dal = $orm->getDAL();
 		return $orm->count() == 0;
 	}
 

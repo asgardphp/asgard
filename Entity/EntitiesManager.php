@@ -101,7 +101,7 @@ class EntitiesManager {
 	 */
 	public function getCache() {
 		if(!$this->cache)
-			$this->cache = new \Asgard\Cache\NullCache;
+			$this->cache = new \Asgard\Cache\Cache(new \Asgard\Cache\NullCache);
 		return $this->cache;
 	}
 

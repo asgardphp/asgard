@@ -178,7 +178,8 @@ class Kernel implements \ArrayAccess {
 	protected function buildContainer($cache=null) {
 		if($cache) {
 			$c = $this->getCache($cache);
-			if(($this->container = $c->fetch('app')) !== false) {
+			if(($container = $c->fetch('container')) instanceof \Asgard\Container\Container) {
+				$this->container = $container;
 				#make $this->container the default instance of Container, in case someones uses it
 				\Asgard\Container\Container::setInstance($this->container);
 				return $this->container;
@@ -193,7 +194,7 @@ class Kernel implements \ArrayAccess {
 			$bundle->buildContainer($container);
 
 		if($cache)
-			$c->save('app', $container);
+			$c->save('container', $container);
 
 		return $container;
 	}

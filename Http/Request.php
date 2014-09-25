@@ -32,7 +32,7 @@ class Request implements \ArrayAccess {
 	public $server;
 	/**
 	 * COOKIE input.
-	 * @var SessionManager|\Asgard\Common\Bag
+	 * @var CookieManager|\Asgard\Common\Bag
 	 */
 	public $cookie;
 	/**

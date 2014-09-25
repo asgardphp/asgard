@@ -26,8 +26,8 @@ abstract class Entity {
 
 	/**
 	 * Constructor.
-	 * @param [type] $attrs
-	 * @param [type] $locale
+	 * @param array  $attrs
+	 * @param string $locale
 	 */
 	public function __construct(array $attrs=null, $locale=null) {
 		$this->setLocale($locale);
@@ -159,7 +159,7 @@ abstract class Entity {
 	 * @return boolean true if entity has no id
 	 */
 	public function isNew() {
-		return $this->id === null;
+		return $this->get('id') === null;
 	}
 
 	/**
@@ -270,9 +270,9 @@ abstract class Entity {
 
 	/**
 	 * Hard set data. No pre-processing.
-	 * @param string $name
-	 * @param mixed  $value
-	 * @param string $locale
+	 * @param array|string $name
+	 * @param mixed        $value
+	 * @param string       $locale
 	 */
 	public function _set($name, $value=null, $locale=null) {
 		if(is_array($name)) {
@@ -286,7 +286,7 @@ abstract class Entity {
 		if($this->getDefinition()->hasProperty($name)) {
 			if(!$locale)
 				$locale = $this->getLocale();
-			if($this->getDefinition()->property($name)->i18n && $locale !== $this->getLocale()) {
+			if($this->getDefinition()->property($name)->get('i18n') && $locale !== $this->getLocale()) {
 				if($locale == 'all') {
 					foreach($value as $locale => $v)
 						$this->data['translations'][$locale][$name] = $v;
@@ -305,10 +305,10 @@ abstract class Entity {
 
 	/**
 	 * Soft set data. With pre-processing.
-	 * @param string  $name
-	 * @param mixed   $value
-	 * @param string  $locale
-	 * @param boolean $hook
+	 * @param array|string $name
+	 * @param mixed        $value
+	 * @param string       $locale
+	 * @param boolean      $hook
 	 */
 	public function set($name, $value=null, $locale=null, $hook=true) {
 		#setting multiple properties at once

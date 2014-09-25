@@ -20,17 +20,17 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 	 * Constructor.
 	 * @param \Asgar\dEntity\Entity $entity   \Asgard\Entity\Entity
 	 * @param string                          $relation_name
+	 * @param DataMapper                      $datamapper
 	 * @param string                          $locale        default locale
 	 * @param string                          $prefix        tables prefix
-	 * @param DataMapper                      $datamapper
 	 * @param \Asgard\Container\Factory       $paginatorFactory
 	 */
-	public function __construct(\Asgard\Entity\Entity $entity, $relation_name, $locale=null, $prefix=null, DataMapper $datamapper=null, \Asgard\Container\Factory $paginatorFactory=null) {
+	public function __construct(\Asgard\Entity\Entity $entity, $relationName, DataMapper $dataMapper, $locale=null, $prefix=null, \Asgard\Container\Factory $paginatorFactory=null) {
 		$this->parent = $entity;
 
-		$this->relation = $entity->getDefinition()->relations[$relation_name];
+		$this->relation = $dataMapper->relation($entity->getDefinition(), $relationName);
 
-		parent::__construct($this->relation->getTargetDefinition(), $locale, $prefix, $datamapper, $paginatorFactory);
+		parent::__construct($this->relation->getTargetDefinition(), $dataMapper, $locale, $prefix, $paginatorFactory);
 
 		$this->joinToEntity($this->relation->reverse(), $entity);
 	}
@@ -130,7 +130,7 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 		switch($this->relation->type()) {
 			case 'hasMany':
 				$params[$this->relation->getLink()] = $this->parent->id;
-				$new->save($params);
+				$this->dataMapper->save($new, $params);
 				break;
 			case 'HMABT':
 				$new->save($params);
