@@ -135,7 +135,7 @@ class DAL {
 		foreach($tables as $tablestr) {
 			$tablestr = trim($tablestr);
 
-			preg_match('/(.*?) ([a-z_][a-z0-9_]*)?$/i', $tablestr, $matches);
+			preg_match('/(.*?) ([a-z_][a-zA-Z0-9_]*)?$/i', $tablestr, $matches);
 			if(isset($matches[2])) {
 				$alias = $matches[2];
 				$table = $matches[1];
@@ -340,7 +340,7 @@ class DAL {
 		foreach($columns as $columnstr) {
 			$columnstr = trim($columnstr);
 
-			preg_match('/(.*?) ([a-z_][a-z0-9_]*)?$/i', $columnstr, $matches);
+			preg_match('/(.*?) ([a-z_][a-zA-Z0-9_]*)?$/i', $columnstr, $matches);
 			if(isset($matches[2])) {
 				$alias = $matches[2];
 				$column = $matches[1];
@@ -509,7 +509,7 @@ class DAL {
 	 * @return string
 	 */
 	protected function replace($condition) {
-		$condition = preg_replace_callback('/[a-z_][a-z0-9._]*(?![^\(]*\))/', function($matches) {
+		$condition = preg_replace_callback('/[a-z_][a-zA-Z0-9._]*(?![^\(]*\))/', function($matches) {
 			if(strpos($matches[0], '.')===false && count($this->joins) > 0 && count($this->tables)===1)
 				$matches[0] = array_keys($this->tables)[0].'.'.$matches[0];
 
@@ -525,7 +525,7 @@ class DAL {
 	 * @return boolean
 	 */
 	protected static function isIdentifier($str) {
-		return preg_match('/^[a-z_][a-z0-9._]*$/', $str);
+		return preg_match('/^[a-z_][a-zA-Z0-9._]*$/', $str);
 	}
 
 	/**
@@ -534,7 +534,7 @@ class DAL {
 	 * @return string
 	 */
 	protected function identifierQuotes($str) {
-		return preg_replace_callback('/[a-z_][a-z0-9._]*/', function($matches) {
+		return preg_replace_callback('/[a-z_][a-zA-Z0-9._]*/', function($matches) {
 			$res = [];
 			foreach(explode('.', $matches[0]) as $substr)
 				$res[] = '`'.$substr.'`';
@@ -694,7 +694,7 @@ class DAL {
 
 		if($alias !== null)
 			$table = $table.' '.$alias;
-		$table = preg_replace_callback('/(^[a-z_][a-z0-9._]*)| ([a-z_][a-z0-9._]*$)/', function($matches) {
+		$table = preg_replace_callback('/(^[a-z_][a-zA-Z0-9._]*)| ([a-z_][a-zA-Z0-9._]*$)/', function($matches) {
 				return $this->identifierQuotes($matches[0]);
 		}, $table);
 
