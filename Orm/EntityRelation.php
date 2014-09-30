@@ -4,7 +4,7 @@ namespace Asgard\Orm;
 /**
  * Define relation between entities.
  */
-class EntityRelation implements \ArrayAccess {
+class EntityRelation {
 	/**
 	 * Entity class.
 	 * @var string
@@ -34,7 +34,7 @@ class EntityRelation implements \ArrayAccess {
 	 * Parameters.
 	 * @var array
 	 */
-	public $params = [];
+	protected $params = [];
 
 	/**
 	 * Constructor.
@@ -58,7 +58,7 @@ class EntityRelation implements \ArrayAccess {
 	 */
 	public function getLink() {
 		if($this->type() == 'hasMany')
-			return $this->reverseRelationParams()['name'].'_id';
+			return $this->reverseRelationParams()->get('name').'_id';
 		elseif($this->type() == 'belongsTo' || $this->type() == 'hasOne')
 			return $this->name.'_id';
 	}
@@ -103,7 +103,7 @@ class EntityRelation implements \ArrayAccess {
 		// if($relation['polymorphic'])
 		// 	$relation_entity = $relation['real_entity'];
 		// else
-		// 	$relation_entity = $relation['entity'];
+		// 	$relation_entity = $relation->get('entity');
 		return $this->entityDefinition->getEntitiesManager()->get($this->params['entity']);
 	}
 
@@ -114,14 +114,14 @@ class EntityRelation implements \ArrayAccess {
 	public function type() {
 		$rev = $this->reverseRelationParams();
 
-		if($this['many']) {
-			if($rev['many'])
+		if($this->get('many')) {
+			if($rev->get('many'))
 				return 'HMABT';
 			else
 				return 'hasMany';
 		}
 		else {
-			if($rev['many'])
+			if($rev->get('many'))
 				return 'belongsTo';
 			else
 				return 'hasOne';
@@ -144,16 +144,16 @@ class EntityRelation implements \ArrayAccess {
 
 		$rev_relations = [];
 		foreach($this->dataMapper->relations($relationEntityDefinition) as $rev_rel_name=>$rev_rel) {
-			$relEntityClass = preg_replace('/^\\\/', '', strtolower($rev_rel['entity']));
+			$relEntityClass = preg_replace('/^\\\/', '', strtolower($rev_rel->get('entity')));
 
 			if($relEntityClass == $entityName
-				|| $this['as'] && $this['as'] == $rev_rel['entity']
+				|| $this->get('as') == $rev_rel->get('entity')
 				) {
 				if($rev_rel_name == $name)
 					continue;
-				if(isset($relation['for']) && $relation['for']!=$rev_rel_name)
+				if($this->get('for')!==null && $this->get('for')!==$rev_rel_name)
 					continue;
-				if(isset($rev_rel['for']) && $rev_rel['for']!=$name)
+				if($rev_rel->get('for')!==null && $rev_rel->get('for')!==$name)
 					continue;
 				$rev_relations[] = $rev_rel;
 			}
@@ -175,42 +175,8 @@ class EntityRelation implements \ArrayAccess {
 	 */
 	public function reverse() {
 		$reverse_rel = $this->reverseRelationParams();
-		$rel_name = $reverse_rel['name'];
+		$rel_name = $reverse_rel->get('name');
 		return $this->dataMapper->relation($this->getTargetDefinition(), $rel_name);
-	}
-
-	/**
-	 * Array set implementation.
-	 * @param  string $offset
-	 * @param  mixed  $value
-	 */
-	public function offsetSet($offset, $value) {
-		$this->params[$offset] = $value;
-	}
-
-	/**
-	 * Array exists implementation.
-	 * @param  string $offset
-	 */
-	public function offsetExists($offset) {
-		return isset($this->params[$offset]);
-	}
-
-	/**
-	 * Array unset implementation.
-	 * @param  string $offset
-	 */
-	public function offsetUnset($offset) {
-		unset($this->params[$offset]);
-	}
-
-	/**
-	 * Array get implementation.
-	 * @param  string $offset
-	 * @return mixed
-	 */
-	public function offsetGet($offset) {
-		return isset($this->params[$offset]) ? $this->params[$offset] : null;
 	}
 
 	/**
@@ -225,5 +191,27 @@ class EntityRelation implements \ArrayAccess {
 			$res['relationrequired'] = $this->params['required'];
 
 		return $res;
+	}
+
+	/**
+	 * Return a parameter.
+	 * @param  string $name
+	 * @return mixed
+	 */
+	public function get($name) {
+		if(!isset($this->params[$name]))
+			return;
+		return $this->params[$name];
+	}
+
+	/**
+	 * Set a parameter.
+	 * @param string $name
+	 * @param mixed  $value
+	 * @return EntityRelation $this
+	 */
+	public function set($name, $value) {
+		$this->params[$name] = $value;
+		return $this;
 	}
 }

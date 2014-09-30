@@ -74,7 +74,7 @@ class ORMMigrations {
 				if($prop->get('type') == 'entity') {
 					$relation = $dataMapper->relation($definition, $name);
 					#relations with one entity
-					if(!$relation['many']) {
+					if(!$relation->get('many')) {
 						$schema[$relation->getLink()] = [
 							'type'           => 'int(11)',
 							'nullable'       => true,

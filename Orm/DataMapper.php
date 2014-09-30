@@ -355,12 +355,12 @@ class DataMapper {
 			$type = $rel->type();
 
 			if($type == 'hasOne') {
-				$relation_entity = $rel['entity'];
+				$relation_entity = $rel->get('entity');
 				$link = $reverse_rel->getLink();
 				$this->orm($relation_entity)->where([$link => $entity->id])->getDAL()->update([$link => 0]);
 				$this->orm($relation_entity)->where(['id' => $entity->data[$relation]->id])->getDAL()->update([$link => $entity->id]);
 			}
-			elseif($rel['many'])
+			elseif($rel->get('many'))
 				$this->related($entity, $relation)->sync($entity->data['properties'][$relation]->all());
 		}
 
@@ -375,14 +375,14 @@ class DataMapper {
 	 */
 	public function related(\Asgard\Entity\Entity $entity, $name) {
 		$rel = $this->relation($entity->getDefinition(), $name);
-		$relEntity = $rel['entity'];
+		$relEntity = $rel->get('entity');
 		
 		switch($rel->type()) {
 			case 'hasOne':
 			case 'belongsTo':
 				$link = $rel->getLink();
-				if($rel['polymorphic']) {
-					$relEntity = $entity->get($rel['link_type']);
+				if($rel->get('polymorphic')) {
+					$relEntity = $entity->get($rel->get('link_type'));
 					if(!$relEntity)
 						return;
 				}
@@ -407,7 +407,7 @@ class DataMapper {
 	public function getRelated(\Asgard\Entity\Entity $entity, $name) {
 		$orm = $this->related($entity, $name);
 		$rel = $this->relation($entity->getDefinition(), $name);
-		if($rel['many'])
+		if($rel->get('many'))
 			return $orm->get();
 		else
 			return $orm->first();

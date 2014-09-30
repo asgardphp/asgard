@@ -134,11 +134,11 @@ class EntityForm extends \Asgard\Form\Form {
 		$relation = $dataMapper->relation($entity->getDefinition(), $name);
 
 		$ids = [''=>$this->getTranslator()->trans('Choose')];
-		$orm = $dataMapper->orm($relation['entity']);
+		$orm = $dataMapper->orm($relation->get('entity'));
 		while($v = $orm->next())
 			$ids[$v->id] = (string)$v;
 		
-		if($relation['many']) {
+		if($relation->get('many')) {
 			$this->add(new \Asgard\Form\Fields\MultipleSelectField([
 				'type'    => 'integer',
 				'choices' => $ids,

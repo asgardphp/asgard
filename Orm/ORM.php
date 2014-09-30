@@ -119,8 +119,8 @@ class ORM {
 			throw new \Exception('Relation '.$relationName.' does not exist.');
 		$relation = $this->dataMapper->relation($this->definition, $relationName);
 		$reverseRelation = $relation->reverse();
-		$reverseRelationName = $reverseRelation['name'];
-		$relation_entity = $relation['entity'];
+		$reverseRelationName = $reverseRelation->get('name');
+		$relation_entity = $relation->get('entity');
 
 		return $this->dataMapper->orm($relation_entity)
 			->where($this->where)
@@ -155,9 +155,9 @@ class ORM {
 		if(is_string($relation))
 			$relation = $this->dataMapper->relation($this->definition, $relation);
 
-		if($relation['polymorphic']) {
-			$this->where([$relation['link_type'] => $entity->getDefinition()->getShortName()]);
-			$relation['real_entity'] = $entity->getDefinition()->getShortName();
+		if($relation->get('polymorphic')) {
+			$this->where([$relation->get('link_type') => $entity->getDefinition()->getShortName()]);
+			$relation->set('real_entity', $entity->getDefinition()->getShortName()); #todo don't record it in the relation
 		}
 		$this->join($relation);
 
@@ -458,7 +458,7 @@ class ORM {
 			foreach($this->with as $relationName=>$closure) {
 				$rel = $this->dataMapper->relation($this->definition, $relationName);
 				$relation_type = $rel->type();
-				$relation_entity = $rel['entity'];
+				$relation_entity = $rel->get('entity');
 				$relationDefinition = $rel->getTargetDefinition();
 
 				switch($relation_type) {
@@ -501,7 +501,7 @@ class ORM {
 					case 'HMABT':
 						$joinTable = $rel->getTable();
 						$currentEntityIdfield = $rel->getLinkA();
-						$reverseRelationName = $rel->reverse()['name'];
+						$reverseRelationName = $rel->reverse()->get('name');
 
 						$orm = $this->dataMapper
 							->orm($relation_entity)
