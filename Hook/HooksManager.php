@@ -49,14 +49,12 @@ class HooksManager {
 	*/
 	public function trigger($name, array $args=[], $cb=null, &$chain=null) {
 		$chain = new HookChain($this->container);
-		if(is_string($name))
-			$name = explode('.', $name);
 
 		$chain->calls = array_merge(
-			$this->get(array_merge($name, ['before'])),
-			$this->get(array_merge($name, ['on'])),
+			$this->get($name.'.before'),
+			$this->get($name.'.on'),
 			$cb !== null ? [$cb]:[],
-			$this->get(array_merge($name, ['after']))
+			$this->get($name.'.after')
 		);
 
 		return $chain->run($args);
@@ -64,12 +62,11 @@ class HooksManager {
 	
 	/**
 	 * Check if a hook is present.
-	 * @param array|string   $identifier
+	 * @param string   $identifier
 	 * @return boolean
 	*/
 	public function has($identifier) {
-		if(is_string($identifier))
-			$identifier = explode('.', $identifier);
+		$identifier = explode('.', $identifier);
 		$result = $this->registry;
 		foreach($identifier as $key) {
 			if(!isset($result[$key]))
@@ -83,13 +80,12 @@ class HooksManager {
 	
 	/**
 	 * Set a hook.
-	 * @param array|string   $identifier Hook identifier.
+	 * @param string   $identifier Hook identifier.
 	 * @param Callable $cb
 	 * @param integer  $priority Hook priority in the list.
 	*/
 	protected function set($identifier, $cb, $priority=0) {
-		if(is_string($identifier))
-			$identifier = explode('.', $identifier);
+		$identifier = explode('.', $identifier);
 		$arr =& $this->registry;
 		$key = array_pop($identifier);
 		foreach($identifier as $next)
@@ -103,12 +99,11 @@ class HooksManager {
 	
 	/**
 	 * Return hooks.
-	 * @param array|string $identifier Hook identifier.
+	 * @param string $identifier Hook identifier.
 	 * @return array Callbacks.
 	*/
 	public function get($identifier) {
-		if(is_string($identifier))
-			$identifier = explode('.', $identifier);
+		$identifier = explode('.', $identifier);
 		$last = array_pop($identifier);
 		$result =& $this->registry;
 		foreach($identifier as $key) {
@@ -126,21 +121,19 @@ class HooksManager {
 	
 	/**
 	 * Create a hook.
-	 * @param array|string   $identifier
+	 * @param string   $identifier
 	 * @param Callable $cb
 	 * @param string   $type   on|before|after
 	*/
 	protected function createhook($identifier, $cb, $type='on') {
-		if(is_string($identifier))
-			$identifier = explode('.', $identifier);
-		$identifier[] = $type;
+		$identifier .= '.'.$type;
 
 		$this->set($identifier, $cb);
 	}
 	
 	/**
 	 * Set a hook.
-	 * @param array|string   $identifier
+	 * @param string   $identifier
 	 * @param Callable $cb
 	*/
 	public function hook($identifier, $cb) {
@@ -149,7 +142,7 @@ class HooksManager {
 	
 	/**
 	 * Set a "before" hook.
-	 * @param array|string   $identifier
+	 * @param string   $identifier
 	 * @param Callable $cb
 	*/
 	public function hookBefore($identifier, $cb) {
@@ -158,7 +151,7 @@ class HooksManager {
 	
 	/**
 	 * Set an "after" hook.
-	 * @param array|string   $identifier
+	 * @param string   $identifier
 	 * @param Callable $cb
 	*/
 	public function hookAfter($identifier, $cb) {
