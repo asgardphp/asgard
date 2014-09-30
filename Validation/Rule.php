@@ -23,7 +23,7 @@ abstract class Rule {
 	 * @param  Validator $validator
 	 * @return boolean
 	 */
-	abstract public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\Validator $validator);
+	abstract public function validate($input, InputBag $parentInput, Validator $validator);
 
 	/**
 	 * Format parameters before being passed to the error message.

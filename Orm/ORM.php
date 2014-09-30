@@ -615,7 +615,7 @@ class ORM {
 		foreach($matches[0] as $property) {
 			if(!$this->definition->hasProperty($property))
 				continue;
-			$table = $this->definition->property($property)->i18n ? $i18nTable:$table;
+			$table = $this->definition->property($property)->get('i18n') ? $i18nTable:$table;
 			$sql = preg_replace('/(?<![\.a-z0-9-_`\(\)])('.$property.')(?![\.a-z0-9-_`\(\)])/', $table.'.$1', $sql);
 		}
 
