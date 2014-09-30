@@ -3,6 +3,7 @@ namespace Asgard\Entity;
 
 /**
  * Entity.
+ * @property integer $id
  */
 abstract class Entity {
 	/**
