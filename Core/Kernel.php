@@ -72,7 +72,7 @@ class Kernel implements \ArrayAccess {
 	public function getConfig() {
 		if(!$this->config) {
 			$this->config = $config = new \Asgard\Config\Config();
-			$config->loadDir($this['root'].'/config', $this->getEnv());
+			$config->loadDir($this->params['root'].'/config', $this->getEnv());
 		}
 		return $this->config;
 	}
@@ -112,20 +112,20 @@ class Kernel implements \ArrayAccess {
 		if($this->loaded)
 			return;
 
-		if($this->getEnv() == 'prod' && file_exists($this['root'].'/storage/compiled.php'))
-			include_once $this['root'].'/storage/compiled.php';
+		if($this->getEnv() == 'prod' && file_exists($this->params['root'].'/storage/compiled.php'))
+			include_once $this->params['root'].'/storage/compiled.php';
 
 		$this->bundles = $this->doGetBundles($this->getConfig()['cache']);
 		$container = $this->getContainer();
 
 		$container['config'] = $this->getConfig();
 
-		if($this['env']) {
-			if(file_exists($this['root'].'/app/bootstrap_'.strtolower($this['env']).'.php'))
-				include $this['root'].'/app/bootstrap_'.strtolower($this['env']).'.php';
+		if($this->params['env']) {
+			if(file_exists($this->params['root'].'/app/bootstrap_'.strtolower($this->params['env']).'.php'))
+				include $this->params['root'].'/app/bootstrap_'.strtolower($this->params['env']).'.php';
 		}
-		if(file_exists($this['root'].'/app/bootstrap_all.php'))
-			include $this['root'].'/app/bootstrap_all.php';
+		if(file_exists($this->params['root'].'/app/bootstrap_all.php'))
+			include $this->params['root'].'/app/bootstrap_all.php';
 
 		$this->runBundles();
 
@@ -141,23 +141,23 @@ class Kernel implements \ArrayAccess {
 		#Using _ENV_ and $_SERVER only as the last chance to guess the environment.
 		#User can and should set the environment through constructor or setEnv($env).
 
-		if(isset($this['env']))
+		if(isset($this->params['env']))
 			return;
 		if(defined('_ENV_'))
-			$this['env'] = _ENV_;
-		elseif($this['consoleMode']) {
+			$this->params['env'] = _ENV_;
+		elseif($this->get('consoleMode')) {
 			foreach($_SERVER['argv'] as $k=>$v) {
 				if($v === '--env' && isset($_SERVER['argv'][$k+1])) {
-					$this['env'] = $_SERVER['argv'][$k+1];
+					$this->params['env'] = $_SERVER['argv'][$k+1];
 					return;
 				}
 			}
-			$this['env'] = 'dev';
+			$this->params['env'] = 'dev';
 		}
 		elseif(isset($_SERVER['HTTP_HOST']) && ($_SERVER['HTTP_HOST'] == '127.0.0.1' || $_SERVER['HTTP_HOST'] == 'localhost'))
-			$this['env'] = 'dev';
+			$this->params['env'] = 'dev';
 		else
-			$this['env'] = 'prod';
+			$this->params['env'] = 'prod';
 	}
 
 	/**
@@ -167,7 +167,7 @@ class Kernel implements \ArrayAccess {
 	 */
 	protected function getCache($cache) {
 		$reflector = new \ReflectionClass($cache);
-		return $reflector->newInstanceArgs([$this['root'].'/storage/cache/']);
+		return $reflector->newInstanceArgs([$this->params['root'].'/storage/cache/']);
 	}
 
 	/**
@@ -334,6 +334,28 @@ class Kernel implements \ArrayAccess {
 	 */
 	public static function getVersion() {
 		return static::VERSION;
+	}
+
+	/**
+	 * Get a parameter.
+	 * @param  string $name
+	 * @return mixed
+	 */
+	public function get($name) {
+		if(!isset($this->params[$name]))
+			return;
+		return $this->params[$name];
+	}
+
+	/**
+	 * Set a parameter.
+	 * @param  string $name
+	 * @param  mixed  $value
+	 * @return Kernel $this
+	 */
+	public function set($name, $value) {
+		$this->params[$name] = $value;
+		return $this;
 	}
 
 	/**

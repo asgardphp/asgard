@@ -5,7 +5,7 @@ class KernelTest extends \PHPUnit_Framework_TestCase {
 	public function testDefaultEnv() {
 
 		$kernel = new \Asgard\Core\Kernel();
-		$kernel['env'] = 'plpl';
+		$kernel->set('env', 'plpl');
 		$kernel->load();
 		$this->assertEquals('plpl', $kernel->getEnv());
 
