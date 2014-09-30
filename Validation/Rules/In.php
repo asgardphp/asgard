@@ -22,7 +22,7 @@ class In extends \Asgard\Validation\Rule {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function validate($input) {
+	public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\Validator $validator) {
 		return in_array($input, $this->in);
 	}
 
