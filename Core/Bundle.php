@@ -36,7 +36,7 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		$container->register('entityFieldsSolver', function() { return new \Asgard\Entityform\EntityFieldsSolver; });
 		$container->register('entityForm', function($container, $entity, $params=[], $request=null) {
 			if($request === null)
-				$request = $container['request'];
+				$request = $container['httpKernel']->getRequest();
 			$entityFieldsSolver = clone $container['entityFieldsSolver'];
 			$form = new \Asgard\Entityform\EntityForm($entity, $params, $request, $entityFieldsSolver, $container['dataMapper']);
 			$form->setWidgetsManager(clone $container['widgetsManager']);
@@ -46,7 +46,7 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		});
 		$container->register('form', function($container, $name=null, $params=[], $request=null, $fields=[]) {
 			if($request === null)
-				$request = $container['request'];
+				$request = $container['httpKernel']->getRequest();
 			$form = new \Asgard\Form\Form($name, $params, $request, $fields);
 			$form->setWidgetsManager(clone $container['widgetsManager']);
 			$form->setTranslator($container['translator']);
@@ -60,17 +60,26 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		#Http
 		$container->register('httpKernel', function($container) {
 			$httpKernel = new \Asgard\Http\HttpKernel($container);
+			$httpKernel->setDebug($container['config']['debug']);
+			if($container->registered('templateEngine'))
+				$httpKernel->setTemplateEngineFactory($container->createFactory('templateEngine'));
+			$httpKernel->setHooksManager($container['hooks']);
+			$httpKernel->setErrorHandler($container['errorHandler']);
+			$httpKernel->setTranslator($container['translator']);
+			$httpKernel->setResolver($container['resolver']);
+			$container['resolver']->setHttpKernel($httpKernel);
 			return $httpKernel;
 		});
 		$container->register('resolver', function($container) {
-			$resolver = new \Asgard\Http\Resolver($container['cache']);
-			$resolver->setHttpKernel($container['httpKernel']);
-			return $resolver;
+			return new \Asgard\Http\Resolver($container['cache']);
+		});
+		$container->register('browser', function($container) {
+			return new \Asgard\Http\Browser\Browser($container['httpKernel']);
 		});
 		$container->register('response', function() { return new \Asgard\Http\Response; } );
 		$container->register('cookieManager', function() { return new \Asgard\Http\CookieManager; } );
-		$container->register('html', function($container) { return new \Asgard\Http\Utils\HTML($container['request']); });
-		$container->register('url', function($container) { return $container['request']->url; });
+		$container->register('html', function($container) { return new \Asgard\Http\Utils\HTML($container['httpKernel']->getRequest()); });
+		$container->register('url', function($container) { return $container['httpKernel']->getRequest()->url; });
 
 		#Migration
 		$container->register('migrationsManager', function($container) {
@@ -79,7 +88,7 @@ class Bundle extends \Asgard\Core\BundleLoader {
 
 		#Common
 		$container->register('paginator', function($container, $count, $page, $per_page) {
-			return new \Asgard\Common\Paginator($count, $page, $per_page, $container['request']);
+			return new \Asgard\Common\Paginator($count, $page, $per_page, $container['httpKernel']->getRequest());
 		});
 
 		#Validation

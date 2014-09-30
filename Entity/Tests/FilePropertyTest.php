@@ -12,14 +12,16 @@ class FilePropertyTest extends \PHPUnit_Framework_TestCase {
 		$container['cache'] = new \Asgard\Cache\NullCache;
 		$container['rulesregistry'] = new \Asgard\Validation\RulesRegistry;
 		$container['rulesregistry']->registerNamespace('Asgard\File\Rules');
+		$container['httpKernel'] = new \Asgard\Http\HttpKernel;
 		$container->register('validator', function($container) {
 			$validator = new \Asgard\Validation\Validator;
 			$validator->setRegistry($container['rulesregistry']);
 			return $validator;
 		});
-		$request = $container['request'] = new \Asgard\Http\Request;
+		$request = new \Asgard\Http\Request;
 		$request->url->setHost('localhost');
 		$request->url->setRoot('folder');
+		$container['httpKernel']->addRequest($request);
 
 		$entitiesManager = $container['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($container);
 		$entitiesManager->setValidatorFactory($container->createFactory('validator'));

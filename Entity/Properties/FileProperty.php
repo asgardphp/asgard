@@ -62,8 +62,8 @@ class FileProperty extends \Asgard\Entity\Property {
 		$container = $this->definition->getContainer();
 		if($container->has('config') && isset($container['config']['webdir']))
 			$file->setWebDir($container['config']['webdir']);
-		if($container->has('request'))
-			$file->setUrl($container['request']->url);
+		if($container->has('httpKernel'))
+			$file->setUrl($container['httpKernel']->getRequest()->url);
 		$file->setDir($this->get('dir'));
 		$file->setWeb($this->get('web'));
 		return $file;
@@ -81,8 +81,8 @@ class FileProperty extends \Asgard\Entity\Property {
 			$container = $this->definition->getContainer();
 			if($container->has('config') && isset($container['config']['webdir']))
 				$val->setWebDir($container['config']['webdir']);
-			if($container->has('request'))
-				$val->setUrl($container['request']->url);
+			if($container->has('httpKernel'))
+				$val->setUrl($container['httpKernel']->getRequest()->url);
 			$val->setDir($this->get('dir'));
 			$val->setWeb($this->get('web'));
 		}

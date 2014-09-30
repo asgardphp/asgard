@@ -74,6 +74,7 @@ abstract class Controller {
 			$request = new Request;
 		$this->request = $request;
 		$this->response = new Response;
+		$this->response->setRequest($this->request);
 
 		#before filters
 		$result = null;

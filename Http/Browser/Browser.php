@@ -5,8 +5,6 @@ namespace Asgard\Http\Browser;
  * Browser.
  */
 class Browser {
-	use \Asgard\Container\ContainerAwareTrait;
-
 	/**
 	 * Cookies bag.
 	 * @var \Asgard\Common\Bag
@@ -27,13 +25,18 @@ class Browser {
 	 * @var boolean
 	 */
 	protected $catchException = false;
+	/**
+	 * Http Kernel dependency.
+	 * @var \Asgard\Http\HttpKernel
+	 */
+	protected $httpKernel;
 
 	/**
 	 * Constructor.
-	 * @param \Asgard\Container\Container $container
+	 * @param \Asgard\Http\HttpKernel $httpKernel
 	 */
-	public function __construct(\Asgard\Container\Container $container) {
-		$this->container = $container;
+	public function __construct(\Asgard\Http\HttpKernel $httpKernel) {
+		$this->httpKernel = $httpKernel;
 		$this->cookies = new \Asgard\Common\Bag;
 		$this->session = new \Asgard\Common\Bag;
 	}
@@ -160,8 +163,7 @@ class Browser {
 		$request->url->setHost('localhost');
 		$request->url->setRoot('');
 
-		$httpKernel = $this->container['httpKernel'];
-		$res = $httpKernel->process($request, $this->catchException);
+		$res = $this->httpKernel->process($request, $this->catchException);
 
 		$this->last = $res;
 		$this->cookies = $request->cookie;

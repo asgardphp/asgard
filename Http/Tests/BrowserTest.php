@@ -2,27 +2,15 @@
 namespace Asgard\Http\Tests;
 
 class BrowserTest extends \PHPUnit_Framework_TestCase {
-	protected static $container;
-
-	public static function setUpBeforeClass() {
-		if(!defined('_ENV_'))
-			define('_ENV_', 'test');
-
-		$container = new \Asgard\Container\Container;
-		$container['cache'] = new \Asgard\Cache\NullCache;
-		$container['resolver'] = new \Asgard\Http\Resolver($container['cache']);
-		$container['httpkernel'] = new \Asgard\Http\HttpKernel($container);
-		$container['hooks'] = new \Asgard\Hook\HooksManager($container);
-		$container['resolver'] = new \Asgard\Http\Resolver($container['cache']);
-		$container['resolver']->addRoute(new \Asgard\Http\Route('', 'Asgard\Http\Tests\Fixtures\HomeController', 'home'));
-		$container->register('paginator', function($container, $args) {
-			return new \Asgard\Common\Paginator($args[0], $args[1], $args[2]);
-		});
-		static::$container = $container;
-	}
-	
 	public function test1() {
-		$browser = new \Asgard\Http\Browser\Browser(static::$container);
+		$cache = new \Asgard\Cache\Cache(new \Asgard\Cache\NullCache);
+		$resolver = new \Asgard\Http\Resolver($cache);
+		$resolver->addRoute(new \Asgard\Http\Route('', 'Asgard\Http\Tests\Fixtures\HomeController', 'home'));
+		$hooks = new \Asgard\Hook\HooksManager;
+		$httpKernel = new \Asgard\Http\HttpKernel;
+		$httpKernel->setResolver($resolver);
+		$httpKernel->setHooksManager(new \Asgard\Hook\HooksManager);
+		$browser = new \Asgard\Http\Browser\Browser($httpKernel);
 		$this->assertEquals('<h1>Asgard</h1><p>Hello!</p>', $browser->get('')->getContent());
 	}
 }

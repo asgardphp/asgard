@@ -30,7 +30,9 @@ class Resolver {
 	 * Constructor.
 	 * @param \Asgard\Cache\Cache $cache
 	 */
-	public function __construct($cache) {
+	public function __construct(\Asgard\Cache\Cache $cache=null) {
+		if(!$cache)
+			$cache = new \Asgard\Cache\Cache(new \Asgard\Cache\NullCache);
 		$this->cache = $cache;
 	}
 
@@ -304,6 +306,6 @@ class Resolver {
 	 * @return URL
 	 */
 	public function getUrl() {
-		return $this->httpKernel->getLastRequest()->url;
+		return $this->httpKernel->getRequest()->url;
 	}
 }

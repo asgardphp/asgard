@@ -26,6 +26,6 @@ abstract class Test extends \PHPUnit_Framework_TestCase {
 	 * @return Browser\Browser
 	 */
 	protected function createBrowser() {
-		return new Browser\Browser(static::getContainer());
+		return static::getContainer()->make('browser');
 	}
 }

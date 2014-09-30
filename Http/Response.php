@@ -6,6 +6,11 @@ namespace Asgard\Http;
  */
 class Response {
 	/**
+	 * Request.
+	 * @var Request
+	 */
+	protected $request;
+	/**
 	 * Response content.
 	 * @var string
 	 */
@@ -103,13 +108,22 @@ class Response {
 	}
 
 	/**
+	 * Set Request.
+	 * @param Request $request
+	 */
+	public function setRequest(Request $request) {
+		$this->request = $request;
+		return $this;
+	}
+
+	/**
 	 * Set HTTP code.
 	 * @param integer $code
 	 */
 	public function setCode($code) {
 		$this->code = $code;
 		return $this;
-	} 
+	}
 
 	/**
 	 * Get HTTP code.
@@ -117,7 +131,15 @@ class Response {
 	 */
 	public function getCode() { 
 		return $this->code;
-	} 
+	}
+
+	/**
+	 * Get Request.
+	 * @return Request
+	 */
+	public function getRequest() { 
+		return $this->request;
+	}
 
 	/**
 	 * Set a header.
@@ -200,7 +222,7 @@ class Response {
 	 */
 	public function redirect($url='') {
 		if(!preg_match('/^http:\/\//', $url))
-			$url = \Asgard\Container\Container::singleton()['request']->url->to($url);
+			$url = $this->request->url->to($url);
 		$this->headers['Location'] = $url;
 		return $this;
 	}

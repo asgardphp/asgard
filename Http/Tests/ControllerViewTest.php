@@ -10,37 +10,33 @@ use \Asgard\Http\Request;
 
 class ControllerViewTest extends \PHPUnit_Framework_TestCase {
 	public function testReturnTemplate() {
-		$container = new \Asgard\Container\Container([
-			'hooks' => new \Asgard\Hook\HooksManager,
-		]);
-		$kernel = new HttpKernel($container);
-		$container->register('templateEngine', function($container, $controller) {
+		$kernel = new HttpKernel;
+		$kernel->setHooksManager(new \Asgard\Hook\HooksManager);
+		$kernel->setTemplateEngineFactory(new \Asgard\Container\Factory(function($container, $controller) {
 			$engine = new Fixtures\Templates\TemplateEngine;
 			$engine->setController($controller);
 			return $engine;
-		});
+		}));
 
-		$resolver = $this->getMock('Asgard\Http\Resolver', ['getRoute'], [new \Asgard\Cache\NullCache]);
+		$resolver = $this->getMock('Asgard\Http\Resolver', ['getRoute'], [new \Asgard\Cache\Cache(new \Asgard\Cache\NullCache)]);
 		$resolver->expects($this->once())->method('getRoute')->will($this->returnValue(new Route('', 'Asgard\Http\Tests\Fixtures\TemplateController', 'home')));
-		$container['resolver'] = $resolver;
+		$kernel->setResolver($resolver);
 		
 		$this->assertEquals('<div>home!</div>', $kernel->process(new Request, false)->getContent());
 	}
 
 	public function testTemplateEngine() {
-		$container = new \Asgard\Container\Container([
-			'hooks' => new \Asgard\Hook\HooksManager,
-		]);
-		$kernel = new HttpKernel($container);
-		$container->register('templateEngine', function($container, $controller) {
+		$kernel = new HttpKernel;
+		$kernel->setHooksManager(new \Asgard\Hook\HooksManager);
+		$kernel->setTemplateEngineFactory(new \Asgard\Container\Factory(function($container, $controller) {
 			$engine = new Fixtures\Templates\TemplateEngine;
 			$engine->setController($controller);
 			return $engine;
-		});
+		}));
 
-		$resolver = $this->getMock('Asgard\Http\Resolver', ['getRoute'], [new \Asgard\Cache\NullCache]);
+		$resolver = $this->getMock('Asgard\Http\Resolver', ['getRoute'], [new \Asgard\Cache\Cache(new \Asgard\Cache\NullCache)]);
 		$resolver->expects($this->once())->method('getRoute')->will($this->returnValue(new Route('', 'Asgard\Http\Tests\Fixtures\TemplateController', 'home2')));
-		$container['resolver'] = $resolver;
+		$kernel->setResolver($resolver);
 		
 		$this->assertEquals('<div>home!</div>', $kernel->process(new Request, false)->getContent());
 	}
