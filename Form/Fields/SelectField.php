@@ -46,8 +46,7 @@ class SelectField extends \Asgard\Form\Field {
 			$options['attrs']['checked'] = 'checked';
 		$options['label'] = $name;
 
-		$class = $this->getParent()->getWidgetsManager()->getWidget('radio');
-		return $this->getParent()->getWidget($class, $this->name(), $value, $options);
+		return $this->getTopForm()->getWidget('radio', $this->name(), $value, $options);
 	}
 
 	/**

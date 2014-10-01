@@ -144,16 +144,15 @@ class Group implements \ArrayAccess, \Iterator {
 	}
 
 	/**
-	 * Get a widget instance.
-	 * @param  string $class
-	 * @param  string $name
-	 * @param  mixed  $value
-	 * @param  array  $options
+	 * Return a new widget instance.
+	 * @param  string|callable $widget Widget class or callback.
+	 * @param  string          $name   string
+	 * @param  mixed           $value
+	 * @param  array           $options
 	 * @return Widget
 	 */
-	public function getWidget($class, $name, $value, array $options) {
-		$reflector = new \ReflectionClass($class);
-		return $reflector->newInstanceArgs([$name, $value, $options, $this]);
+	public function getWidget($widget, $name, $value, array $options=[]) {
+		return $this->getWidgetsManager()->getWidget($widget, $name, $value, $options, $this);
 	}
 
 	/**
@@ -183,7 +182,7 @@ class Group implements \ArrayAccess, \Iterator {
 	 * @param  string|callable $render_callback
 	 * @param  Field           $field
 	 * @param  array           $options
-	 * @return string|Widget
+	 * @return Widget
 	 */
 	public function render($render_callback, $field, array $options=[]) {
 		if($this->parent)
@@ -492,36 +491,24 @@ class Group implements \ArrayAccess, \Iterator {
 	 * @param  string|callable $render_callback
 	 * @param  Group|Field     $field
 	 * @param  array           $options
-	 * @return string|Widget
+	 * @return Widget
 	 */
 	protected function doRender($render_callback, $field, array &$options) {
-		if(!is_string($render_callback) && is_callable($render_callback))
-			$cb = $render_callback;
-		else
-			$cb = $this->getWidgetsManager()->getWidget($render_callback);
-
-		if($cb === null)
-			throw new \Exception('Invalid widget name: '.$render_callback);
-
+		$name = $field->name();
 		if($field instanceof Field) {
 			$options['field'] = $field;
 			$options = $field->options+$options;
 			$options['id'] = $field->getID();
+			$value = $field->value();
 		}
-		elseif($field instanceof self)
+		elseif($field instanceof self) {
 			$options['group'] = $field;
+			$value = null;
+		}
 
-		if(is_callable($cb))
-			$widget = $cb($field, $options);
-		elseif($field instanceof Field)
-			$widget = $this->getWidget($cb, $field->name(), $field->value(), $options);
-		elseif($field instanceof self)
-			$widget = $this->getWidget($cb, $field->name(), null, $options);
-		else
-			throw new \Exception('Invalid widget.');
-
-		if($widget instanceof Widget)
-			$widget->field = $field;
+		$widget = $this->getWidget($render_callback, $name, $value, $options);
+		if($widget === null)
+			throw new \Exception('Invalid widget name: '.$render_callback);
 
 		return $widget;
 	}

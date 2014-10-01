@@ -16,8 +16,8 @@ class CheckboxesWidget extends \Asgard\Form\Widget {
 			$options = [];
 			if(is_array($this->field->value()) && in_array($k, $this->field->value()) || $k==$this->field->value())
 				$options['attrs']['checked'] = 'checked';
-			$class = $this->field->getParent()->getWidgetsManager()->getWidget('checkbox');
-			$str .= $this->field->getParent()->getWidget($class, $this->field->name().'[]', $k, $options)->render().' '.ucfirst($v).' ';
+
+			$str .= $this->field->getParent()->getWidget('checkbox', $this->field->name().'[]', $k, $options).' '.ucfirst($v).' ';
 		}
 		return $str;
 	}

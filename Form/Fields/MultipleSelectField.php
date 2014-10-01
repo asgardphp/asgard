@@ -76,7 +76,6 @@ class MultipleSelectField extends \Asgard\Form\Field {
 			$options['attrs']['checked'] = 'checked';
 		$options['label'] = $name;
 
-		$class = $this->getParent()->getWidgetsManager()->getWidget('checkbox');
-		return $this->getTopForm()->getWidget($class, $this->name.'[]', $value, $options);
+		return $this->getTopForm()->getWidget('checkbox', $this->name.'[]', $value, $options);
 	}
 }
