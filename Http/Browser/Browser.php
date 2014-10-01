@@ -17,7 +17,7 @@ class Browser implements BrowserInterface {
 	protected $session;
 	/**
 	 * Last response.
-	 * @var Response
+	 * @var \Asgard\Http\Response
 	 */
 	protected $last;
 	/**

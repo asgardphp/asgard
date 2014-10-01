@@ -69,7 +69,7 @@ class Group implements GroupInterface {
 	 * {@inheritDoc}
 	 */
 	public function createValidator() {
-		return $this->parent->getTranslator();
+		return $this->parent->createValidator();
 	}
 
 	/**

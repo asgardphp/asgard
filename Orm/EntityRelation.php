@@ -22,7 +22,7 @@ class EntityRelation {
 	protected $dataMapper;
 	/**
 	 * Reverse relation parameters.
-	 * @var array
+	 * @var EntityRelation
 	 */
 	protected $reverseRelation;
 	/**

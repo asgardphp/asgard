@@ -407,10 +407,10 @@ class HttpKernel implements HttpKernelInterface {
 
 	/**
 	 * Add filters to the controller.
-	 * @param Controller   $controller
-	 * @param string       $action
-	 * @param Request      $request
-	 * @param Route   $route       Route prefix to match.
+	 * @param Controller      $controller
+	 * @param string|callable $action
+	 * @param Request         $request
+	 * @param Route           $route      Route prefix to match.
 	 */
 	protected function addFilters(Controller $controller, $action, Request $request, Route $route=null) {
 		$controllerClass = get_class($controller);
@@ -422,6 +422,8 @@ class HttpKernel implements HttpKernelInterface {
 			if(isset($criteria)) {
 				$criteria = $_filter['criteria'];
 				if(isset($criteria['actions'])) {
+					if(!is_string($action))
+						continue;
 					if($criteria['actions'] && strpos($controllerClass.':'.$action, $criteria['actions']) !== 0)
 						continue;
 				}
@@ -443,6 +445,8 @@ class HttpKernel implements HttpKernelInterface {
 			if(isset($criteria)) {
 				$criteria = $_filter['criteria'];
 				if(isset($criteria['actions'])) {
+					if(!is_string($action))
+						continue;
 					if($criteria['actions'] && strpos($controllerClass.':'.$action, $criteria['actions']) !== 0)
 						continue;
 				}

@@ -117,8 +117,8 @@ interface GroupInterface extends \ArrayAccess, \Iterator {
 	
 	/**
 	 * Add a field.
-	 * @param Field|GroupInterface  $field
-	 * @param string       $name
+	 * @param Field|GroupInterface $field
+	 * @param string               $name
 	 */
 	public function add($field, $name=null);
 	

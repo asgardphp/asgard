@@ -40,7 +40,7 @@ interface EntityFieldsSolverInterface {
 	/**
 	 * Actually solve a "many" property.
 	 * @param  \Asgard\Entity\Property $property
-	 * @return \Asgard\Form\Field
+	 * @return \Asgard\Form\GroupInterface
 	 */
 	public function doSolveMany(\Asgard\Entity\Property $property);
 }
