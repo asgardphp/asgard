@@ -26,7 +26,7 @@ interface EntityFieldsSolverInterface {
 	/**
 	 * Solve a property.
 	 * @param  \Asgard\Entity\Property $property
-	 * @return \Asgard\Form\Field
+	 * @return \Asgard\Form\Field|\Asgard\Form\GroupInterface
 	 */
 	public function solve(\Asgard\Entity\Property $property);
 
