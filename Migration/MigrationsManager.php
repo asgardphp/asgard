@@ -17,6 +17,16 @@ class MigrationsManager {
 	 * @var Tracker
 	 */
 	protected $tracker;
+	/**
+	 * DB dependency.
+	 * @var \Asgard\Db\DB
+	 */
+	protected $db;
+	/**
+	 * Schema dependency.
+	 * @var \Asgard\Db\Schema
+	 */
+	protected $schema;
 
 	/**
 	 * Constructor.
@@ -27,6 +37,26 @@ class MigrationsManager {
 		$this->directory = $directory;
 		$this->container = $container;
 		$this->tracker = new Tracker($directory);
+	}
+
+	/**
+	 * Set db dependency.
+	 * @param  \Asgard\Db\DB    $db
+	 * @return MigrationManager $this
+	 */
+	public function setDB(\Asgard\Db\DB $db) {
+		$this->db = $db;
+		return $this;
+	}
+
+	/**
+	 * Set schema dependency.
+	 * @param  \Asgard\Db\Schema $schema
+	 * @return MigrationManager  $this
+	 */
+	public function setSchema(\Asgard\Db\Schema $schema) {
+		$this->schema = $schema;
+		return $this;
 	}
 
 	/**
@@ -132,6 +162,10 @@ class '.$name.' extends '.$class.' {
 			throw new \Exception($file.' does not exists.');
 		$class = \Asgard\Common\Tools::loadClassFile($file);
 		$migration = new $class($this->container);
+		if($migration instanceof DBMigration) {
+			$migration->setDB($this->db);
+			$migration->setSchema($this->schema);
+		}
 
 		$migration->_up();
 	}
@@ -177,6 +211,10 @@ class '.$name.' extends '.$class.' {
 			return;
 		require_once $this->directory.'/'.$migrationName.'.php';
 		$migration = new $migrationName($this->container);
+		if($migration instanceof DBMigration) {
+			$migration->setDB($this->db);
+			$migration->setSchema($this->schema);
+		}
 
 		$migration->_down();
 		$this->tracker->unmigrate($migrationName);

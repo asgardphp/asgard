@@ -83,7 +83,12 @@ class Bundle extends \Asgard\Core\BundleLoader {
 
 		#Migration
 		$container->register('migrationsManager', function($container) {
-			return new \Asgard\Migration\MigrationsManager($container['kernel']['root'].'/migrations/', $container);
+			$mm = new \Asgard\Migration\MigrationsManager($container['kernel']['root'].'/migrations/', $container);
+			if($container->has('db'))
+				$mm->setDB($container['db']);
+			if($container->has('schema'))
+				$mm->setDB($container['schema']);
+			return $mm;
 		});
 
 		#Common
