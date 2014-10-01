@@ -11,10 +11,13 @@ class Bundle extends \Asgard\Core\BundleLoader {
 	 */
 	public function buildContainer(\Asgard\Container\Container $container) {
 		#Db
+		$container->setParentClass('schema', 'Asgard\Db\Schema');
 		$container->register('schema', function($container) { return new \Asgard\Db\Schema($container['db']); } );
+		$container->setParentClass('db', 'Asgard\Db\DB');
 		$container->register('db', function($container) { return new \Asgard\Db\DB($container['config']['database']); } );
 
 		#Email
+		$container->setParentClass('email', 'Asgard\Email\DriverInterface');
 		$container->register('email', function($container) {
 			$emailDriver = '\\'.trim($container['config']['email.driver'], '\\');
 			$email = new $emailDriver();
@@ -23,6 +26,7 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		});
 
 		#Entity
+		$container->setParentClass('entitiesmanager', 'Asgard\Entity\EntitiesManager');
 		$container->register('entitiesmanager', function($container) {
 			$entitiesManager = new \Asgard\Entity\EntitiesManager($container);
 			$entitiesManager->setHooksManager($container['hooks']);
@@ -32,8 +36,11 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		});
 		
 		#Form
+		$container->setParentClass('widgetsManager', 'Asgard\Form\WidgetsManager');
 		$container->register('widgetsManager', function() { return new \Asgard\Form\WidgetsManager; });
+		$container->setParentClass('entityFieldsSolver', 'Asgard\EntityForm\EntityFieldsSolver');
 		$container->register('entityFieldsSolver', function() { return new \Asgard\Entityform\EntityFieldsSolver; });
+		$container->setParentClass('entityForm', 'Asgard\EntityForm\EntityForm');
 		$container->register('entityForm', function($container, $entity, $params=[], $request=null) {
 			if($request === null)
 				$request = $container['httpKernel']->getRequest();
@@ -44,6 +51,7 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			$form->setContainer($container);
 			return $form;
 		});
+		$container->setParentClass('form', 'Asgard\Form\Form');
 		$container->register('form', function($container, $name=null, $params=[], $request=null, $fields=[]) {
 			if($request === null)
 				$request = $container['httpKernel']->getRequest();
@@ -55,9 +63,11 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		});
 
 		#Hook
+		$container->setParentClass('hooks', 'Asgard\Hook\HooksManager');
 		$container->register('hooks', function($container) { return new \Asgard\Hook\HooksManager($container); } );
 
 		#Http
+		$container->setParentClass('httpKernel', 'Asgard\Http\HttpKernel');
 		$container->register('httpKernel', function($container) {
 			$httpKernel = new \Asgard\Http\HttpKernel($container);
 			$httpKernel->setDebug($container['config']['debug']);
@@ -70,47 +80,62 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			$container['resolver']->setHttpKernel($httpKernel);
 			return $httpKernel;
 		});
+		$container->setParentClass('resolver', 'Asgard\Http\Resolver');
 		$container->register('resolver', function($container) {
 			return new \Asgard\Http\Resolver($container['cache']);
 		});
+		$container->setParentClass('browser', 'Asgard\Http\Browser\Browser');
 		$container->register('browser', function($container) {
 			return new \Asgard\Http\Browser\Browser($container['httpKernel']);
 		});
-		$container->register('response', function() { return new \Asgard\Http\Response; } );
-		$container->register('cookieManager', function() { return new \Asgard\Http\CookieManager; } );
+		// $container->setParentClass('schema', 'Asgard\Http\Response');
+		// $container->register('response', function() { return new \Asgard\Http\Response; } );
+		$container->setParentClass('cookieManager', 'Asgard\Http\CookieManager');
+		$container->register('cookieManager', function($container) {
+			return $container['httpKernel']->getRequest()->cookie;
+		});
+		$container->setParentClass('html', 'Asgard\Http\Utils\HTML');
 		$container->register('html', function($container) { return new \Asgard\Http\Utils\HTML($container['httpKernel']->getRequest()); });
+		$container->setParentClass('url', 'Asgard\Http\URL');
 		$container->register('url', function($container) { return $container['httpKernel']->getRequest()->url; });
 
 		#Migration
+		$container->setParentClass('migrationsManager', 'Asgard\Migration\MigrationsManager');
 		$container->register('migrationsManager', function($container) {
 			$mm = new \Asgard\Migration\MigrationsManager($container['kernel']['root'].'/migrations/', $container);
 			if($container->has('db'))
 				$mm->setDB($container['db']);
 			if($container->has('schema'))
-				$mm->setDB($container['schema']);
+				$mm->setSchema($container['schema']);
 			return $mm;
 		});
 
 		#Common
+		$container->setParentClass('paginator', 'Asgard\Common\Paginator');
 		$container->register('paginator', function($container, $count, $page, $per_page) {
 			return new \Asgard\Common\Paginator($count, $page, $per_page, $container['httpKernel']->getRequest());
 		});
 
 		#Validation
+		$container->setParentClass('validator', 'Asgard\Validation\Validator');
 		$container->register('validator', function($container) {
 			$validator = new \Asgard\Validation\Validator;
 			$validator->setRegistry($container['rulesregistry']);
 			return $validator;
 		});
+		$container->setParentClass('rulesregistry', 'Asgard\Validation\RulesRegistry');
 		$container->register('rulesregistry', function() { return new \Asgard\Validation\RulesRegistry; } );
 
 		#ORM
+		$container->setParentClass('orm', 'Asgard\Orm\ORM');
 		$container->register('orm', function($container, $entityClass, $dataMapper, $locale, $prefix) {
 			return new \Asgard\Orm\ORM($entityClass, $dataMapper, $locale, $prefix, $container->createFactory('paginator'));
 		});
+		$container->setParentClass('collectionOrm', 'Asgard\Orm\CollectionORM');
 		$container->register('collectionOrm', function($container, $entityClass, $name, $dataMapper, $locale, $prefix) {
 			return new \Asgard\Orm\CollectionORM($entityClass, $name, $dataMapper, $locale, $prefix, $container->createFactory('paginator'));
 		});
+		$container->setParentClass('datamapper', 'Asgard\Orm\DataMapper');
 		$container->register('datamapper', function($container) {
 			return new \Asgard\Orm\DataMapper(
 				$container['entitiesManager'],

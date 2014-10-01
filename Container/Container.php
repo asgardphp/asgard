@@ -27,6 +27,11 @@ class Container implements \ArrayAccess {
 	 * @var boolean
 	 */
 	protected $autofacade = false;
+	/**
+	 * Parent classes.
+	 * @var array
+	 */
+	protected $parents = [];
 
 	/**
 	 * Constructor.
@@ -35,6 +40,33 @@ class Container implements \ArrayAccess {
 	public function __construct(array $instances=[]) {
 		foreach($instances as $name=>$instance)
 			$this->set($name, $instance);
+	}
+
+	/**
+	 * Set a service parent class.
+	 * @param  string    $name
+	 * @param  string    $parent
+	 * @param  boolean   $force
+	 * @return Container $this
+	 */
+	public function setParentClass($name, $parent, $force=false) {
+		$name = strtolower($name);
+		if($force !== true && isset($this->parents[$name]))
+			throw new \Exception($name.' already has a parent class.');
+		$this->parents[$name] = $parent;
+		return $this;
+	}
+
+	/**
+	 * Return the parent class.
+	 * @param  string $name
+	 * @return string
+	 */
+	public function getParentClass($name) {
+		$name = strtolower($name);
+		if(!isset($this->parents[$name]))
+			return;
+		return $this->parents[$name];
 	}
 
 	/**
@@ -73,10 +105,12 @@ class Container implements \ArrayAccess {
 
 	/**
 	 * Set autofacade to true or false.
-	 * @param boolean $facade
+	 * @param  boolean   $facade
+	 * @return Cotnainer $this
 	 */
 	public function setAutofacade($facade) {
 		$this->autofacade = $facade;
+		return $this;
 	}
 
 	/**
@@ -90,16 +124,19 @@ class Container implements \ArrayAccess {
 			if(!isset($this->registry[$name]))
 				throw new \Exception($name.' has not been registered in container.');
 			$this->instances[$name] = $this->make($name);
-			return $this->instances[$name];
 		}
-		else
-			return $this->instances[$name];
+
+		if(isset($this->parents[$name]) && !$this->instances[$name] instanceof $this->parents[$name])
+			throw new \Exception('The service "'.$name.'" did not return a subclass of '.$this->parents[$name]);
+
+		return $this->instances[$name];
 	}
 
 	/**
 	 * Set a service.
-	 * @param string $name
-	 * @param mixed  $value
+	 * @param  string    $name
+	 * @param  mixed     $value
+	 * @return Container $this
 	 */
 	public function set($name, $value) {
 		$name = strtolower($name);
@@ -107,6 +144,7 @@ class Container implements \ArrayAccess {
 			$this->createFacade($name);
 
 		$this->instances[$name] = $value;
+		return $this;
 	}
 
 	/**
@@ -162,14 +200,19 @@ class Container implements \ArrayAccess {
 	public function make($name, array $params=[], $default=null) {
 		$name = strtolower($name);
 		if(isset($this->registry[$name]))
-			return call_user_func_array($this->registry[$name], array_merge([$this], $params));
+			$instance = call_user_func_array($this->registry[$name], array_merge([$this], $params));
 		else {
 			if(is_callable($default))
-				return call_user_func_array($default, $params);
-			elseif($default === null)
+				$instance = call_user_func_array($default, $params);
+			elseif($default !== null)
+				$instance = $default;
+			else
 				throw new \Exception('There is no constructor for "'.$name.'".');
-			return $default;
 		}
+
+		if(isset($this->parents[$name]) && !$instance instanceof $this->parents[$name])
+			throw new \Exception('The service "'.$name.'" did not return a subclass of '.$this->parents[$name]);
+		return $instance;
 	}
 
 	/**

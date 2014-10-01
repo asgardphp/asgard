@@ -17,7 +17,10 @@ class ListCommand extends \Asgard\Console\Command {
 
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$table = $this->getHelperSet()->get('table');
-		$headers = ['Name', 'Type', 'Class'];
+		$headers = ['Name', 'Type', 'Parent'];
+		$optClass = $this->input->getOption('class');
+		if($optClass)
+			$headers[] = 'Class';
 		$optRegistered = $this->input->getOption('registered');
 		if($optRegistered)
 			$headers[] = 'Registered at';
@@ -27,61 +30,60 @@ class ListCommand extends \Asgard\Console\Command {
 		$table->setHeaders($headers);
 
 		$root = $this->root;
-
+		$container = $this->getContainer();
 		$services = [];
-		foreach($this->getContainer()->getRegistry() as $name=>$service) {
+		foreach($container->getRegistry() as $name=>$service) {
+			$class = $defined = $registered = null;
+			$class = $this->guessServiceClass($name);
+			if($class !== null) {
+				$r = new \ReflectionClass($class);
+				$defined = \Asgard\File\FileSystem::relativeTo($root, $r->getFileName()).':'.$r->getStartLine();
+			}
+
 			if($service instanceof \Jeremeamia\SuperClosure\SerializableClosure)
 				$service = $service->getClosure();
 
 			$r = new \ReflectionFunction($service);
 			$registered = \Asgard\File\FileSystem::relativeTo($root, $r->getFileName()).':'.$r->getStartLine();
-			
-			$defined = '???';
-			$class = '???';
-			try {
-				$obj = $this->getContainer()->make($name);
-				$class = gettype($obj)=='object' ? '\\'.get_class($obj):gettype($obj);
-				
-				if(is_object($service)) {
-					$r = new \ReflectionClass($class);
-					$defined = \Asgard\File\FileSystem::relativeTo($root, $r->getFileName()).':'.$r->getStartLine();
-				}
-			} catch(\Exception $e) {} #defined = ??? / class = ???
 
 			$res = [
 				'name' => $name,
 				'type' => 'callback',
-				'class' => $class,
+				'parent' => $container->getParentClass($name) !== null ? $container->getParentClass($name):'???',
 			];
 			if($optDefined)
-				$res['defined'] = $defined;
+				$res['defined'] = $defined !== null ? $defined:'???';
 			if($optRegistered)
-				$res['registered'] = $registered;
+				$res['registered'] = $registered !== null ? $registered:'???';
+			if($optClass)
+				$res['class'] = $class !== null ? $class:'???';
 			$services[] = $res;
 
 		}
 		foreach($this->getContainer()->getInstances() as $name=>$service) {
+			$class = $defined = $registered = null;
 			foreach($services as $v) {
 				if($v['name'] === $name)
 					continue 2;
 			}
 
-			$class = gettype($service)=='object' ? '\\'.get_class($service):gettype($service);
-			$defined = '';
-			if(is_object($service)) {
+			$class = $this->guessServiceClass($name);
+			if($class !== null) {
 				$r = new \ReflectionClass($class);
-				$defined = \Asgard\File\FileSystem::relativeTo($root, $r->getFileName());
+				$defined = \Asgard\File\FileSystem::relativeTo($root, $r->getFileName()).':'.$r->getStartLine();
 			}
 
 			$res = [
 				'name' => $name,
 				'type' => 'instance',
-				'class' => $class,
+				'parent' => $container->getParentClass($name) !== null ? $container->getParentClass($name):'???',
 			];
 			if($optDefined)
-				$res['defined'] = $defined;
+				$res['defined'] = $defined !== null ? $defined:'???';
 			if($optRegistered)
 				$res['registered'] = '???';
+			if($optClass)
+				$res['class'] = $class !== null ? $class:'???';
 			$services[] = $res;
 		}
 
@@ -97,8 +99,16 @@ class ListCommand extends \Asgard\Console\Command {
 
 	protected function getOptions() {
 		return [
+			['class', null, InputOption::VALUE_NONE, 'Show the returned class.', null],
 			['defined', null, InputOption::VALUE_NONE, 'Show where the class is defined.', null],
 			['registered', null, InputOption::VALUE_NONE, 'Show where it was registered.', null],
 		];
+	}
+
+	protected function guessServiceClass($name) {
+		try {
+			$obj = $this->getContainer()->get($name);
+			return gettype($obj)=='object' ? get_class($obj):gettype($obj);
+		} catch(\Exception $e) {} #defined = ??? / class = ???
 	}
 }
