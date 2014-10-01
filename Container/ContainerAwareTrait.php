@@ -7,22 +7,22 @@ namespace Asgard\Container;
 trait ContainerAwareTrait {
 	/**
 	 * Container instance.
-	 * @var \Asgard\Container\Container
+	 * @var ContainerInterface
 	 */
 	protected $container;
 
 	/**
 	 * Set the container.
-	 * @param \Asgard\Container\Container $container
+	 * @param ContainerInterface $container
 	 */
-	public function setContainer(\Asgard\Container\Container $container=null) {
+	public function setContainer(ContainerInterface $container=null) {
 		$this->container = $container;
 		return $this;
 	}
 
 	/**
 	 * Get the container.
-	 * @return \Asgard\Container\Container
+	 * @return ContainerInterface
 	 */
 	public function getContainer() {
 		if(!$this->container)

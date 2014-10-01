@@ -15,7 +15,7 @@ class Publisher {
 
 	/**
 	 * Constructor.
-	 * @param \Asgard\Container\Container                       $container
+	 * @param \Asgard\Container\ContainerInterface                       $container
 	 * @param \Symfony\Component\Console\Output\OutputInterface $output
 	 */
 	public function __construct($container, $output) {

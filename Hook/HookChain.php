@@ -6,6 +6,8 @@ namespace Asgard\Hook;
  * @author Michel Hognerud <michel@hognerud.net>
 */
 class HookChain {
+	use \Asgard\Container\ContainerAwareTrait;
+
 	/**
 	 * All callbacks.
 	 * @var array
@@ -21,17 +23,12 @@ class HookChain {
 	 * @var integer
 	 */
 	public $executed = 0;
-	/**
-	 * Services container.
-	 * @var \Asgard\Container\Container
-	 */
-	public $container;
 	
 	/**
 	 * Constructor.
-	 * @param \Asgard\Container\Container $container Application container.
+	 * @param \Asgard\Container\ContainerInterface $container Application container.
 	*/
-	public function __construct($container=null) {
+	public function __construct(\Asgard\Container\ContainerInterface $container=null) {
 		$this->container = $container;
 	}
 	

@@ -4,7 +4,7 @@ namespace Asgard\Db;
 /**
  * Database.
  */
-class DB {
+class DB implements DBInterface {
 	/**
 	 * \PDO instance.
 	 * @var \PDO
@@ -31,8 +31,7 @@ class DB {
 	}
 
 	/**
-	 * Return a DAL instance.
-	 * @return DAL
+	 * {@inheritDoc}
 	 */
 	public function getDAL() {
 		return new DAL($this);
@@ -64,55 +63,49 @@ class DB {
 	}
 
 	/**
-	 * Return the configuration.
-	 * @return array
+	 * {@inheritDoc}
 	 */
 	public function getConfig() {
 		return $this->config;
 	}
 	
 	/**
-	 * Return the database instance.
-	 * @return \PDO
+	 * {@inheritDoc}
 	*/
 	public function getDB() {
 		return $this->db;
 	}
 	
 	/**
-	 * Execute an SQL query.
-	 * @param string $sql SQL query
-	 * @param array $args SQL parameters
-	 * @return Asgard\Db\Query Query object
+	 * {@inheritDoc}
 	*/
 	public function query($sql, array $args=[]) {
 		return new Query($this->db, $sql, $args);
 	}
 	
 	/**
-	 * Return the last inserted id.
-	 * @return integer Last inserted id
+	 * {@inheritDoc}
 	*/
 	public function id() {
 		return $this->db->lastInsertId();
 	}
 	
 	/**
-	 * Start a new SQL transaction.
+	 * {@inheritDoc}
 	*/
 	public function beginTransaction() {
 		$this->db->beginTransaction();
 	}
 	
 	/**
-	 * Commit the SQL transaction.
+	 * {@inheritDoc}
 	*/
 	public function commit() {
 		$this->db->commit();
 	}
 	
 	/**
-	 * Roll back the SQL transaction.
+	 * {@inheritDoc}
 	*/
 	public function rollback() {
 		$this->db->rollback();

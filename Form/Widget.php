@@ -32,18 +32,18 @@ abstract class Widget {
 	protected $options;
 	/**
 	 * Parent form.
-	 * @var Form
+	 * @var FormInterface
 	 */
 	protected $form;
 
 	/**
 	 * Constructor.
-	 * @param string $name
-	 * @param mixed  $value
-	 * @param array  $options
-	 * @param Form   $form
+	 * @param string        $name
+	 * @param mixed         $value
+	 * @param array         $options
+	 * @param FormInterface $form
 	 */
-	public function __construct($name, $value=null, array $options=[], $form=null) {
+	public function __construct($name, $value=null, array $options=[], FormInterface $form=null) {
 		$this->name = $name;
 		$this->value = $value;
 		$this->form = $form;

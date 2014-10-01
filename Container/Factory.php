@@ -12,16 +12,16 @@ class Factory {
 	protected $callback;
 	/**
 	 * Services container.
-	 * @var \Asgard\Container\Container
+	 * @var ContainerInterface
 	 */
 	protected $container;
 
 	/**
 	 * Constructor.
 	 * @param callable $callback
-	 * @param \Asgard\Container\Container $container
+	 * @param ContainerInterface $container
 	 */
-	public function __construct($callback, $container=null) {
+	public function __construct($callback, ContainerInterface $container=null) {
 		$this->callback = $callback;
 		$this->container = $container;
 	}

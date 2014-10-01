@@ -67,16 +67,16 @@ class BundleLoader {
 
 	/**
 	 * Register services.
-	 * @param  \Asgard\Container\Container $container
+	 * @param \Asgard\Container\ContainerInterface $container
 	 */
-	public function buildContainer(\Asgard\Container\Container $container) {
+	public function buildContainer(\Asgard\Container\ContainerInterface $container) {
 	}
 
 	/**
 	 * Run the bundle.
-	 * @param  \Asgard\Container\Container $container
+	 * @param  \Asgard\Container\ContainerInterface $container
 	 */
-	public function run(\Asgard\Container\Container $container) {
+	public function run(\Asgard\Container\ContainerInterface $container) {
 		$bundleData = $container['cache']->fetch('bundles/'.$this->getID());
 		if($bundleData !== false) {
 			$hooks = $bundleData['hooks'];
@@ -109,7 +109,7 @@ class BundleLoader {
 
 	/**
 	 * Load bundle's entities.
-	 * @param  \Asgard\Entity\EntitiesManager $entitiesManager
+	 * @param  \Asgard\Entity\EntitiesManagerInterface $entitiesManager
 	 */
 	protected function loadEntities($entitiesManager) {
 		foreach(glob($this->getPath().'/Entities/*.php') as $file) {

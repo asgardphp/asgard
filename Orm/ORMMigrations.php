@@ -7,21 +7,21 @@ namespace Asgard\Orm;
 class ORMMigrations {
 	/**
 	 * MigrationsManager dependency.
-	 * @var \Asgard\Migration\MigrationsManager
+	 * @var \Asgard\Migration\MigrationsManagerInterface
 	 */
 	protected $migrationsManager;
 	/**
 	 * DataMapper dependency.
-	 * @var DataMapper
+	 * @var DataMapperInterface
 	 */
 	protected $dataMapper;
 
 	/**
 	 * Constructor.
-	 * @param DataMapper                          $dataMapper
-	 * @param \Asgard\Migration\MigrationsManager $migrationsManager
+	 * @param DataMapperInterface                          $dataMapper
+	 * @param \Asgard\Migration\MigrationsManagerInterface $migrationsManager
 	 */
-	public function __construct(DataMapper $dataMapper, \Asgard\Migration\MigrationsManager $migrationsManager=null) {
+	public function __construct(DataMapperInterface $dataMapper, \Asgard\Migration\MigrationsManagerInterface $migrationsManager=null) {
 		$this->dataMapper = $dataMapper;
 		$this->migrationsManager = $migrationsManager;
 	}
@@ -29,9 +29,9 @@ class ORMMigrations {
 	/**
 	 * Automatically migrate given entity definitions.
 	 * @param  array|\Asgard\Entity\EntityDefinition $definitions
-	 * @param  \Asgard\Db\Schema                     $schema
+	 * @param  \Asgard\Db\SchemaInterface                     $schema
 	 */
-	public function autoMigrate($definitions, \Asgard\Db\Schema $schema) {
+	public function autoMigrate($definitions, \Asgard\Db\SchemaInterface $schema) {
 		if(!is_array($definitions))
 			$definitions = [$definitions];
 		$this->processSchemas($this->getEntitiesSchemas($definitions), $schema);
@@ -177,9 +177,9 @@ class ORMMigrations {
 	/**
 	 * Process the schemas.
 	 * @param  array             $schemas
-	 * @param  \Asgard\Db\Schema $s
+	 * @param  \Asgard\Db\SchemaInterface $s
 	 */
-	protected function processSchemas(array $schemas, \Asgard\Db\Schema $s) {
+	protected function processSchemas(array $schemas, \Asgard\Db\SchemaInterface $s) {
 		foreach($schemas as $tableName=>$cols) {
 			$s->create($tableName, function($table) use($cols) {
 				foreach($cols as $col=>$params) {
@@ -203,10 +203,10 @@ class ORMMigrations {
 
 	/**
 	 * Fetch the SQL schemas
-	 * @param  \Asgard\Db\DB $db
+	 * @param  \Asgard\Db\DBInterface $db
 	 * @return array
 	 */
-	protected function getSQLSchemas(\Asgard\Db\DB $db) {
+	protected function getSQLSchemas(\Asgard\Db\DBInterface $db) {
 		$tables = [];
 		foreach($db->query('SHOW TABLES')->all() as $v) {
 			$table = array_values($v)[0];

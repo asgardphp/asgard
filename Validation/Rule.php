@@ -20,10 +20,10 @@ abstract class Rule {
 	 * Perform the validation.
 	 * @param  mixed     $input
 	 * @param  InputBag  $parentInput
-	 * @param  Validator $validator
+	 * @param  ValidatorInterface $validator
 	 * @return boolean
 	 */
-	abstract public function validate($input, InputBag $parentInput, Validator $validator);
+	abstract public function validate($input, InputBag $parentInput, ValidatorInterface $validator);
 
 	/**
 	 * Format parameters before being passed to the error message.

@@ -4,7 +4,7 @@ namespace Asgard\Entityform;
 /**
  * Create form from an entity.
  */
-class EntityForm extends \Asgard\Form\Form {
+class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 	/**
 	 * Entity.
 	 * @var \Asgard\Entity\Entity
@@ -17,12 +17,12 @@ class EntityForm extends \Asgard\Form\Form {
 	protected $locales = [];
 	/**
 	 * Fields solver.
-	 * @var EntityFieldsSolver
+	 * @var EntityFieldsSolverInterface
 	 */
 	protected $entityFieldsSolver;
 	/**
 	 * Datamapper dependency.
-	 * @var \Asgard\Orm\DataMapper
+	 * @var \Asgard\Orm\DataMapperInterface
 	 */
 	protected $dataMapper;
 
@@ -32,15 +32,15 @@ class EntityForm extends \Asgard\Form\Form {
 	 * @param \Asgard\Entity\Entity  $entity
 	 * @param array                  $options
 	 * @param \Asgard\Http\Request   $request
-	 * @param EntityFieldsSolver     $entityFieldsSolver
-	 * @param \Asgard\Orm\DataMapper $dataMapper
+	 * @param EntityFieldsSolverInterface     $entityFieldsSolver
+	 * @param \Asgard\Orm\DataMapperInterface $dataMapper
 	 */
 	public function __construct(
 		\Asgard\Entity\Entity  $entity,
 		array                  $options            = [],
 		\Asgard\Http\Request   $request            = null,
-		EntityFieldsSolver     $entityFieldsSolver = null,
-		\Asgard\Orm\DataMapper $dataMapper         = null
+		EntityFieldsSolverInterface     $entityFieldsSolver = null,
+		\Asgard\Orm\DataMapperInterface $dataMapper         = null
 	) {
 		$this->entityFieldsSolver = $entityFieldsSolver;
 		$this->dataMapper         = $dataMapper;
@@ -75,9 +75,7 @@ class EntityForm extends \Asgard\Form\Form {
 	}
 
 	/**
-	 * Add another nested fields solver.
-	 * @param EntityFieldsSolver $entityFieldsSolver
-	 * @return EntityForm
+	 * {@inheritDoc}
 	 */
 	public function addEntityFieldsSolver($entityFieldsSolver) {
 		$this->entityFieldsSolver->addSolver($entityFieldsSolver);
@@ -85,8 +83,7 @@ class EntityForm extends \Asgard\Form\Form {
 	}
 
 	/**
-	 * Return the main fields solver.
-	 * @return EntityFieldsSolver
+	 * {@inheritDoc}
 	 */
 	public function getEntityFieldsSolver() {
 		if(!$this->entityFieldsSolver)
@@ -96,34 +93,29 @@ class EntityForm extends \Asgard\Form\Form {
 	}
 
 	/**
-	 * Set DataMapper dependency.
-	 * @param  \Asgard\Orm\DataMapper $dataMapper
-	 * @return EntityForm
+	 * {@inheritDoc}
 	 */
-	public function setDataMapper(\Asgard\Orm\DataMapper $dataMapper) {
+	public function setDataMapper(\Asgard\Orm\DataMapperInterface $dataMapper) {
 		$this->dataMapper = $dataMapper;
 		return $this;
 	}
 
 	/**
-	 * Return DataMapper dependency.
-	 * @return \Asgard\Orm\DataMapper
+	 * {@inheritDoc}
 	 */
 	public function getDataMapper() {
 		return $this->dataMapper;
 	}
 
 	/**
-	 * Return the entity.
-	 * @return \Asgard\Entity\Entity
+	 * {@inheritDoc}
 	 */
 	public function getEntity() {
 		return $this->entity;
 	}
 
 	/**
-	 * Embed an entity relation in the form.
-	 * @param string $name
+	 * {@inheritDoc}
 	 */
 	public function addRelation($name) {
 		$entity = $this->entity;
@@ -155,8 +147,7 @@ class EntityForm extends \Asgard\Form\Form {
 	}
 	
 	/**
-	 * Save the entity.
-	 * @return boolean true for success
+	 * {@inheritDoc}
 	 */
 	public function doSave() {
 		if($this->dataMapper)
@@ -166,9 +157,7 @@ class EntityForm extends \Asgard\Form\Form {
 	}
 
 	/**
-	 * Return the errors of a nested-group if provided, or all.
-	 * @param  null|\Asgard\Form\Group $group
-	 * @return array
+	 * {@inheritDoc}
 	 */
 	public function errors($group=null) {
 		if(!$this->sent())
@@ -208,7 +197,7 @@ class EntityForm extends \Asgard\Form\Form {
 	 * @param  string                  $name
 	 * @param  \Asgard\Entity\Property $property
 	 * @param  string                  $locale
-	 * @return \Asgard\Form\Field
+	 * @return \Asgard\FormInterface\Field
 	 */
 	protected function getPropertyField(\Asgard\Entity\Entity $entity, $name, \Asgard\Entity\Property $property, $locale=null) {
 		$field = $this->getEntityFieldsSolver()->solve($property);

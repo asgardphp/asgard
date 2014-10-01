@@ -8,7 +8,7 @@ class Image extends \Asgard\Validation\Rule {
 	/**
 	 * {@inherits}
 	 */
-	public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\Validator $validator) {
+	public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\ValidatorInterface $validator) {
 		if(!$input instanceof \Asgard\File\File)
 			return;
 		$finfo = \finfo_open(FILEINFO_MIME);

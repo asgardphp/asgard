@@ -11,7 +11,7 @@ use Symfony\Component\Translation\TranslatorInterface;
   * @method $this isNull($param=true)
   * @method $this required($param=true)
   */
-class Validator {
+class Validator implements ValidatorInterface {
 	/**
 	 * Validator parameters.
 	 * @var array
@@ -49,7 +49,7 @@ class Validator {
 	protected $isNull;
 	/**
 	 * Rules registry.
-	 * @var RulesRegistry
+	 * @var RulesRegistryInterface
 	 */
 	protected $registry;
 	/**
@@ -59,7 +59,7 @@ class Validator {
 	protected $input;
 	/**
 	 * Parent validator.
-	 * @var Validator
+	 * @var ValidatorInterface
 	 */
 	protected $parent;
 	/**
@@ -79,8 +79,7 @@ class Validator {
 	protected $formatParameters;
 
 	/**
-	 * Set the translator.
-	 * @param \Symfony\Component\Translation\TranslatorInterface $translator
+	 * {@inheritDoc}
 	 */
 	public function setTranslator(TranslatorInterface $translator) {
 		$this->translator = $translator;
@@ -88,8 +87,7 @@ class Validator {
 	}
 
 	/**
-	 * Get the translator.
-	 * @return \Symfony\Component\Translation\TranslatorInterface
+	 * {@inheritDoc}
 	 */
 	public function getTranslator() {
 		if($this->translator)
@@ -140,7 +138,7 @@ class Validator {
 	 * @param  string  $rule   rule name
 	 * @param  array   $params rule parameter
 	 * @param  boolean $each   to validate the rule against each input of an array.
-	 * @return Validator       $this
+	 * @return ValidatorInterface       $this
 	 */
 	protected function callRule($rule, $params=[], $each=false) {
 		if(!is_array($params))
@@ -172,7 +170,7 @@ class Validator {
 	 * Set multiple rules.
 	 * @param  array   $rules [description]
 	 * @param  boolean $each  [description]
-	 * @return Validator       $this
+	 * @return ValidatorInterface       $this
 	 */
 	protected function callRules(array $rules, $each=false) {
 		if(count($rules) === 2 && isset($rules['each']) && isset($rules['self'])) {
@@ -194,7 +192,7 @@ class Validator {
 	 * Set an attribute validator or only return the attribute validator if no rules given.
 	 * @param  string $attribute attribute name
 	 * @param  array  $rules     attribute rules
-	 * @return Validator         $this or the attribute validator.
+	 * @return ValidatorInterface         $this or the attribute validator.
 	 */
 	protected function callAttribute($attribute, $rules=null) {
 		if(!is_array($attribute))
@@ -232,7 +230,7 @@ class Validator {
 	/**
 	 * Set attributes rules.
 	 * @param  array  $attributes
-	 * @return Validator       $this
+	 * @return ValidatorInterface       $this
 	 */
 	public function callAttributes(array $attributes) {
 		foreach($attributes as $attribute=>$rules)
@@ -241,10 +239,7 @@ class Validator {
 	}
 
 	/**
-	 * Set the default message for an attribute.
-	 * @param string $attribute attribute name
-	 * @param string $message
-	 * @return Validator       $this
+	 * {@inheritDoc}
 	 */
 	public function setDefaultMessage($attribute, $message=null) {
 		if($message === null)
@@ -255,18 +250,14 @@ class Validator {
 	}
 
 	/**
-	 * Get the default error message.
-	 * @return string
+	 * {@inheritDoc}
 	 */
 	public function getDefaultMessage() {
 		return $this->defaultMessage;
 	}
 
 	/**
-	 * Set the default message for a rule.
-	 * @param  string $rule    rule name
-	 * @param  string $message
-	 * @return Validator       $this
+	 * {@inheritDoc}
 	 */
 	public function ruleMessage($rule, $message=null) {
 		$this->messages[$rule] = $message;
@@ -274,9 +265,7 @@ class Validator {
 	}
 
 	/**
-	 * Set multiple rules messages.
-	 * @param  array  $rules
-	 * @return Validator       $this
+	 * {@inheritDoc}
 	 */
 	public function ruleMessages(array $rules) {
 		foreach($rules as $rule=>$message)
@@ -285,9 +274,7 @@ class Validator {
 	}
 
 	/**
-	 * Set multiple attributes messages.
-	 * @param  array  $messages
-	 * @return Validator       $this
+	 * {@inheritDoc}
 	 */
 	public function attributesMessages(array $messages) {
 		foreach($messages as $attribute=>$attrMessages) {
@@ -298,9 +285,7 @@ class Validator {
 	}
 
 	/**
-	 * Set the default message for a rule.
-	 * @param  string $rule    rule name
-	 * @return string
+	 * {@inheritDoc}
 	 */
 	public function getRuleMessage($rule) {
 		if(isset($this->messages[$rule]))
@@ -310,10 +295,7 @@ class Validator {
 	}
 
 	/**
-	 * Get an instance of a rule.
-	 * @param  string $rule    rule name
-	 * @param  array  $params [description]
-	 * @return Rule
+	 * {@inheritDoc}
 	 */
 	public function getRule($rule, array $params) {
 		#validator
@@ -333,8 +315,7 @@ class Validator {
 	}
 
 	/**
-	 * Get the RulesRegistry instance.
-	 * @return RulesRegistry
+	 * {@inheritDoc}
 	 */
 	public function getRegistry() {
 		if($this->registry)
@@ -346,18 +327,15 @@ class Validator {
 	}
 
 	/**
-	 * Set the RulesRegistry instance.
-	 * @param RulesRegistry $registry
-	 * @return Validator       $this
+	 * {@inheritDoc}
 	 */
-	public function setRegistry(RulesRegistry $registry) {
+	public function setRegistry(RulesRegistryInterface $registry) {
 		$this->registry = $registry;
 		return $this;
 	}
 
 	/**
-	 * Set the input for validation.
-	 * @param mixed $input
+	 * {@inheritDoc}
 	 */
 	public function setInput($input) {
 		if(!$input instanceof InputBag)
@@ -366,8 +344,7 @@ class Validator {
 	}
 
 	/**
-	 * Get the input.
-	 * @return mixed
+	 * {@inheritDoc}
 	 */
 	public function getInput() {
 		if($this->input === null)
@@ -376,19 +353,15 @@ class Validator {
 	}
 
 	/**
-	 * Set the parent validator.
-	 * @param Validator $parent
-	 * @return Validator       $this
+	 * {@inheritDoc}
 	 */
-	public function setParent(Validator $parent) {
+	public function setParent(ValidatorInterface $parent) {
 		$this->parent = $parent;
 		return $this;
 	}
 
 	/**
-	 * Set the validator name.
-	 * @param string $name
-	 * @return Validator       $this
+	 * {@inheritDoc}
 	 */
 	public function setName($name) {
 		$this->name = $name;
@@ -396,10 +369,7 @@ class Validator {
 	}
 
 	/**
-	 * Raise an exception if there is an error for the given input.
-	 * @param  mixed $input
-	 * @throws ValidatorException If there is an error for the given input.
-	 * @return null
+	 * {@inheritDoc}
 	 */
 	public function assert($input) {
 		$report = $this->errors($input);
@@ -408,9 +378,7 @@ class Validator {
 	}
 
 	/**
-	 * Check if a rule validates the input.
-	 * @param  string $rule    rule name
-	 * @return boolean         true if the input is valid, otherwise false.
+	 * {@inheritDoc}
 	 */
 	public function validRule($rule) {
 		if($rule instanceof static) {
@@ -444,9 +412,7 @@ class Validator {
 	}
 
 	/**
-	 * Check the input is valid.
-	 * @param  mixed $input
-	 * @return boolean        true is the input is valid, false otherwise.
+	 * {@inheritDoc}
 	 */
 	public function valid($input=null) {
 		if($input === null)
@@ -475,9 +441,7 @@ class Validator {
 	}
 
 	/**
-	 * Return the errors report.
-	 * @param  mixed $input
-	 * @return Report
+	 * {@inheritDoc}
 	 */
 	public function errors($input=null) {
 		$errors = $this->_errors($input);
@@ -485,9 +449,7 @@ class Validator {
 	}
 
 	/**
-	 * Return the raw errors.
-	 * @param  mixed $input
-	 * @return array
+	 * {@inheritDoc}
 	 */
 	public function _errors($input=null) {
 		if($input === null)
@@ -571,8 +533,7 @@ class Validator {
 	}
 
 	/**
-	 * Get the validator name.
-	 * @return string
+	 * {@inheritDoc}
 	 */
 	public function getName() {
 		if($this->name)
@@ -645,9 +606,7 @@ class Validator {
 	}
 
 	/**
-	 * Format parameters before passing them to the message.
-	 * @param  array        $formatParameters
-	 * @return Validator    $this
+	 * {@inheritDoc}
 	 */
 	public function formatParameters($formatParameters) {
 		$this->formatParameters = $formatParameters;
@@ -672,18 +631,14 @@ class Validator {
 	}
 
 	/**
-	 * Set a parameter.
-	 * @param string $key
-	 * @param mixed $value
+	 * {@inheritDoc}
 	 */
 	public function set($key, $value) {
 		$this->params[$key] = $value;
 	}
 
 	/**
-	 * Get a parameter.
-	 * @param  string $key
-	 * @return mixed
+	 * {@inheritDoc}
 	 */
 	public function get($key) {
 		if(!isset($this->params[$key])) {

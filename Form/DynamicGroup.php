@@ -38,7 +38,7 @@ class DynamicGroup extends Group {
 	/**
 	 * Set group data.
 	 * @param array $data
-	 * @return DynamicGroup $this
+	 * @return DynamicGroupInterface $this
 	 */
 	public function setData(array $data) {
 		$this->data = array_values($data);

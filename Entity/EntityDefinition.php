@@ -9,12 +9,12 @@ class EntityDefinition {
 	
 	/**
 	 * Entities manager dependency.
-	 * @var EntitiesManager
+	 * @var EntitiesManagerInterface
 	 */
 	protected $entitiesManager;
 	/**
 	 * General hooks manager dependency.
-	 * @var \Asgard\Hook\HooksManager
+	 * @var \Asgard\Hook\HooksManagerInterface
 	 */
 	protected $generalHooksManager;
 	/**
@@ -66,10 +66,10 @@ class EntityDefinition {
 	/**
 	 * Constructor.
 	 * @param string                    $entityClass
-	 * @param EntitiesManager           $entitiesManager
-	 * @param \Asgard\Hook\HooksManager $generalHooksManager
+	 * @param EntitiesManagerInterface           $entitiesManager
+	 * @param \Asgard\Hook\HooksManagerInterface $generalHooksManager
 	 */
-	public function __construct($entityClass, EntitiesManager $entitiesManager, \Asgard\Hook\HooksManager $generalHooksManager=null) {
+	public function __construct($entityClass, EntitiesManagerInterface $entitiesManager, \Asgard\Hook\HooksManagerInterface $generalHooksManager=null) {
 		$reflectionClass = new \ReflectionClass($entityClass);
 		if(!$reflectionClass->IsInstantiable())
 			return;
@@ -226,17 +226,17 @@ class EntityDefinition {
 
 	/**
 	 * Set the entitiesManager dependency.
-	 * @param EntitiesManager $entitiesManager
+	 * @param EntitiesManagerInterface $entitiesManager
 	 * @return EntityDefinition $this
 	 */
-	public function setEntitiesManager(EntitiesManager $entitiesManager) {
+	public function setEntitiesManager(EntitiesManagerInterface $entitiesManager) {
 		$this->entitiesManager = $entitiesManager;
 		return $this;
 	}
 
 	/**
 	 * Set the general hooks manager dependency.
-	 * @param \Asgard\Hook\HooksManager $generalHooksManager
+	 * @param \Asgard\Hook\HooksManagerInterface $generalHooksManager
 	 * @return EntityDefinition $this
 	 */
 	public function setGeneralHooksManager($generalHooksManager) {
@@ -246,7 +246,7 @@ class EntityDefinition {
 
 	/**
 	 * Return the entitiesManager dependency.
-	 * @return EntitiesManager
+	 * @return EntitiesManagerInterface
 	 */
 	public function getEntitiesManager() {
 		return $this->entitiesManager;

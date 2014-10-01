@@ -4,7 +4,7 @@ namespace Asgard\Common;
 /**
  * Bag to manipulate a set of data.
  */
-class Bag implements BagInterface, \ArrayAccess {
+class Bag implements BagInterface {
 	/**
 	 * Data.
 	 * @var array

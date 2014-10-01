@@ -4,7 +4,7 @@ namespace Asgard\Http\Utils;
 /**
  * HTML helper.
  */
-class HTML {
+class HTML implements HTMLInterface {
 	/**
 	 * HTTP Request.
 	 * @var \Asgard\Http\Request
@@ -60,14 +60,14 @@ class HTML {
 	}
 
 	/**
-	 * Start buffer to write code.
+	 * {@inheritDoc}
 	 */
 	public function codeStart() {
 		ob_start();
 	}
 	
 	/**
-	 * End buffer to write code.
+	 * {@inheritDoc}
 	 */
 	public function codeEnd() {
 		$r = ob_get_contents();
@@ -76,62 +76,56 @@ class HTML {
 	}
 
 	/**
-	 * Get page title.
-	 * @return string
+	 * {@inheritDoc}
 	 */
 	public function getTitle() {
 		return $this->title;
 	}
 
 	/**
-	 * Get page description.
-	 * @return string
+	 * {@inheritDoc}
 	 */
 	public function getDescription() {
 		return $this->description;
 	}
 
 	/**
-	 * Get page keywords
-	 * @return string
+	 * {@inheritDoc}
 	 */
 	public function getKeywords() {
 		return $this->keywords;
 	}
 	
 	/**
-	 * Set page title.
-	 * @param string $title
+	 * {@inheritDoc}
 	 */
 	public function setTitle($title) {
 		$this->title = $title;
 	}
 	
 	/**
-	 * Set page description.
-	 * @param string $description
+	 * {@inheritDoc}
 	 */
 	public function setDescription($description) {
 		$this->description = $description;
 	}
 	
 	/**
-	 * Set page keywords.
-	 * @param string $keywords
+	 * {@inheritDoc}
 	 */
 	public function setKeywords($keywords) {
 		$this->keywords = $keywords;
 	}
 	
 	/**
-	 * Print the title.
+	 * {@inheritDoc}
 	 */
 	public function printTitle() {
 		echo '<title>'.htmlentities($this->title, ENT_QUOTES, "UTF-8").'</title>';
 	}
 	
 	/**
-	 * Print the description.
+	 * {@inheritDoc}
 	 */
 	public function printDescription() {
 		if($this->description)
@@ -139,7 +133,7 @@ class HTML {
 	}
 	
 	/**
-	 * Print the keywords.
+	 * {@inheritDoc}
 	 */
 	public function printKeywords() {
 		if($this->keywords)
@@ -147,8 +141,7 @@ class HTML {
 	}
 	
 	/**
-	 * Include a JS file.
-	 * @param  string $js
+	 * {@inheritDoc}
 	 */
 	public function includeJS($js) {
 		if(!in_array($js, $this->include_js))
@@ -156,8 +149,7 @@ class HTML {
 	}
 	
 	/**
-	 * Include a CSS file.
-	 * @param  string $css
+	 * {@inheritDoc}
 	 */
 	public function includeCSS($css) {
 		if(!in_array($css, $this->include_css))
@@ -165,31 +157,28 @@ class HTML {
 	}
 	
 	/**
-	 * Include JS code.
-	 * @param  string $js
+	 * {@inheritDoc}
 	 */
 	public function codeJS($js) {
 		$this->code_js[] = $js;
 	}
 	
 	/**
-	 * Include CSS code.
-	 * @param  string $css
+	 * {@inheritDoc}
 	 */
 	public function codeCSS($css) {
 		$this->code_css[] = $css;
 	}
 	
 	/**
-	 * Include code.
-	 * @param  string $code
+	 * {@inheritDoc}
 	 */
 	public function code($code) {
 		$this->code[] = $code;
 	}
 	
 	/**
-	 * Print JS files.
+	 * {@inheritDoc}
 	 */
 	public function printJSInclude() {
 		foreach($this->include_js as $js) {
@@ -201,7 +190,7 @@ class HTML {
 	}
 	
 	/**
-	 * Print CSS files.
+	 * {@inheritDoc}
 	 */
 	public function printCSSInclude() {
 		foreach($this->include_css as $css) {
@@ -213,7 +202,7 @@ class HTML {
 	}
 	
 	/**
-	 * Print JS code.
+	 * {@inheritDoc}
 	 */
 	public function printJSCode() {
 		if(count($this->code_js)>0) {
@@ -228,7 +217,7 @@ class HTML {
 	}
 	
 	/**
-	 * Print CSS code.
+	 * {@inheritDoc}
 	 */
 	public function printCSSCode() {
 		if(count($this->code_css)>0) {
@@ -240,7 +229,7 @@ class HTML {
 	}
 	
 	/**
-	 * Pritn code.
+	 * {@inheritDoc}
 	 */
 	public function printCode() {
 		foreach($this->code as $code)
@@ -248,7 +237,7 @@ class HTML {
 	}
 	
 	/**
-	 * Print all.
+	 * {@inheritDoc}
 	 */
 	public function printAll() {
 		$this->printJSInclude();
@@ -263,7 +252,7 @@ class HTML {
 	 * @param  string $html
 	 * @return string
 	 */
-	static public function sanitize($html) {
+	public static function sanitize($html) {
 		return htmlentities($html, ENT_NOQUOTES, 'UTF-8');
 	}
 }

@@ -4,7 +4,7 @@ namespace Asgard\Http;
 /**
  * Resolve routes to actions.
  */
-class Resolver {
+class Resolver implements ResolverInterface {
 	/**
 	 * Routes
 	 * @var array
@@ -12,7 +12,7 @@ class Resolver {
 	protected $routes = [];
 	/**
 	 * Http kernel object.
-	 * @var HttpKernel
+	 * @var HttpKernelInterface
 	 */
 	protected $httpKernel;
 	/**
@@ -37,16 +37,14 @@ class Resolver {
 	}
 
 	/**
-	 * Set the routes.
-	 * @param array $routes
+	 * {@inheritDoc}
 	 */
 	public function setRoutes(array $routes) {
 		$this->routes = $routes;
 	}
 
 	/**
-	 * Add routes.
-	 * @param array $routes
+	 * {@inheritDoc}
 	 */
 	public function addRoutes(array $routes) {
 		foreach($routes as $route)
@@ -54,20 +52,14 @@ class Resolver {
 	}
 
 	/**
-	 * Add one route.
-	 * @param Route $route
+	 * {@inheritDoc}
 	 */
 	public function addRoute($route) {
 		$this->routes[] = $route;
 	}
 	
 	/**
-	 * Check if a request matches a route.
-	 * @param  Request     $request
-	 * @param  string      $route
-	 * @param  array|null  $requirements
-	 * @param  string|null $method
-	 * @return boolean
+	 * {@inheritDoc}
 	 */
 	public static function match(Request $request, $route, $requirements=null, $method=null) {
 		$with = trim($request->url->get(), '/');
@@ -75,13 +67,7 @@ class Resolver {
 	}
 	
 	/**
-	 * Actually check if url and route match.
-	 * @param  string       $route
-	 * @param  string       $with
-	 * @param  array|null   $requirements
-	 * @param  Request|null $request
-	 * @param  string|null  $method
-	 * @return boolean
+	 * {@inheritDoc}
 	 */
 	public static function matchWith($route, $with, $requirements=null, $request=null, $method=null) {
 		if($method !== null && $request!==null) {
@@ -116,10 +102,7 @@ class Resolver {
 	}
 	
 	/**
-	 * Get a regex from a route.
-	 * @param  string     $route
-	 * @param  array|null $requirements
-	 * @return string
+	 * {@inheritDoc}
 	 */
 	public static function getRegexFromRoute($route, $requirements) {
 		preg_match_all('/:([a-zA-Z0-9_]+)/', $route, $symbols);
@@ -146,9 +129,7 @@ class Resolver {
 	}
 
 	/**
-	 * Get the route matching a request.
-	 * @param  Request   $request
-	 * @return Route     null if not found.
+	 * {@inheritDoc}
 	 */
 	public function getRoute(Request $request) {
 		$request_key = sha1(serialize([$request->method(), $request->url->get()]));
@@ -175,7 +156,7 @@ class Resolver {
 	}
 
 	/**
-	 * Sort the routes by order of coverage. Routes covering less first.
+	 * {@inheritDoc}
 	 */
 	public function sortRoutes() {
 		usort($this->routes, function($r1, $r2) {
@@ -217,11 +198,7 @@ class Resolver {
 	}
 	
 	/**
-	 * [buildRoute description]
-	 * @param  string     $route
-	 * @param  array      $params
-	 * @throws \Exception If a parameter is missing for the route.
-	 * @return string
+	 * {@inheritDoc}
 	 */
 	public static function buildRoute($route, array $params=[]) {
 		foreach($params as $symbol=>$param) {
@@ -247,19 +224,14 @@ class Resolver {
 	}
 
 	/**
-	 * Return the routes.
-	 * @return array
+	 * {@inheritDoc}
 	 */
 	public function getRoutes() {
 		return $this->routes;
 	}
 
 	/**
-	 * Return the url for a route or a controller/action couple.
-	 * @param  array|string  $what
-	 * @param  array         $params
-	 * @throws \Exception    If route not found.
-	 * @return string
+	 * {@inheritDoc}
 	 */
 	public function url($what, array $params=[]) {
 		#controller/action
@@ -294,16 +266,14 @@ class Resolver {
 	}
 
 	/**
-	 * Set the HttpKernel dependency.
-	 * @param HttpKernel $httpKernel
+	 * {@inheritDoc}
 	 */
-	public function setHttpKernel(HttpKernel $httpKernel) {
+	public function setHttpKernel(HttpKernelInterface $httpKernel) {
 		$this->httpKernel = $httpKernel;
 	}
 
 	/**
-	 * Get the url instance.
-	 * @return URL
+	 * {@inheritDoc}
 	 */
 	public function getUrl() {
 		return $this->httpKernel->getRequest()->url;

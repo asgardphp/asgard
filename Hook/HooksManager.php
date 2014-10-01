@@ -7,12 +7,12 @@ use Jeremeamia\SuperClosure\SerializableClosure;
  * The hooks manager.
  * @author Michel Hognerud <michel@hognerud.net>
 */
-class HooksManager {
+class HooksManager implements HooksManagerInterface {
 	use \Asgard\Container\ContainerAwareTrait;
 
 	/**
 	 * Static instance.
-	 * @var HooksManager
+	 * @var HooksManagerInterface
 	 */
 	protected static $instance;
 	/**
@@ -23,7 +23,7 @@ class HooksManager {
 	
 	/**
 	 * Return a static instance.
-	 * @return HooksManager
+	 * @return HooksManagerInterface
 	 */
 	public static function singleton() {
 		if(!static::$instance)
@@ -33,19 +33,14 @@ class HooksManager {
 
 	/**
 	 * Constructor.
-	 * @param \Asgard\Container\Container $container Application container.
+	 * @param \Asgard\Container\ContainerInterface $container Application container.
 	*/
-	public function __construct($container=null) {
+	public function __construct(\Asgard\Container\ContainerInterface $container=null) {
 		$this->container = $container;
 	}
 
 	/**
-	 * Trigger a hook.
-	 * @param string    $name
-	 * @param array     $args
-	 * @param Callable  $cb Default callback.
-	 * @param HookChain $chain
-	 * @param HooksChain
+	 * {@inheritDoc}
 	*/
 	public function trigger($name, array $args=[], $cb=null, &$chain=null) {
 		$chain = new HookChain($this->container);
@@ -61,9 +56,7 @@ class HooksManager {
 	}
 	
 	/**
-	 * Check if a hook is present.
-	 * @param string   $identifier
-	 * @return boolean
+	 * {@inheritDoc}
 	*/
 	public function has($identifier) {
 		$identifier = explode('.', $identifier);
@@ -81,7 +74,7 @@ class HooksManager {
 	/**
 	 * Set a hook.
 	 * @param string   $identifier Hook identifier.
-	 * @param Callable $cb
+	 * @param callable $cb
 	 * @param integer  $priority Hook priority in the list.
 	*/
 	protected function set($identifier, $cb, $priority=0) {
@@ -98,9 +91,7 @@ class HooksManager {
 	}
 	
 	/**
-	 * Return hooks.
-	 * @param string $identifier Hook identifier.
-	 * @return array Callbacks.
+	 * {@inheritDoc}
 	*/
 	public function get($identifier) {
 		$identifier = explode('.', $identifier);
@@ -122,7 +113,7 @@ class HooksManager {
 	/**
 	 * Create a hook.
 	 * @param string   $identifier
-	 * @param Callable $cb
+	 * @param callable $cb
 	 * @param string   $type   on|before|after
 	*/
 	protected function createhook($identifier, $cb, $type='on') {
@@ -132,35 +123,28 @@ class HooksManager {
 	}
 	
 	/**
-	 * Set a hook.
-	 * @param string   $identifier
-	 * @param Callable $cb
+	 * {@inheritDoc}
 	*/
 	public function hook($identifier, $cb) {
 		$this->createhook($identifier, $cb, 'on');
 	}
 	
 	/**
-	 * Set a "before" hook.
-	 * @param string   $identifier
-	 * @param Callable $cb
+	 * {@inheritDoc}
 	*/
 	public function hookBefore($identifier, $cb) {
 		$this->createhook($identifier, $cb, 'before');
 	}
 	
 	/**
-	 * Set an "after" hook.
-	 * @param string   $identifier
-	 * @param Callable $cb
+	 * {@inheritDoc}
 	*/
 	public function hookAfter($identifier, $cb) {
 		$this->createhook($identifier, $cb, 'after');
 	}
 	
 	/**
-	 * Set multiple hooks.
-	 * @param array $hooks
+	 * {@inheritDoc}
 	*/
 	public function hooks(array $hooks) {
 		foreach($hooks as $name=>$_hooks) {

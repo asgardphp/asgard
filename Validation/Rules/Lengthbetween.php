@@ -29,7 +29,7 @@ class Lengthbetween extends \Asgard\Validation\Rule {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\Validator $validator) {
+	public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\ValidatorInterface $validator) {
 		if($this->min !== null && strlen($input) <= $this->min)
 			return false;
 		if($this->max !== null && strlen($input) >= $this->max)

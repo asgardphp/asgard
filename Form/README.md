@@ -84,7 +84,7 @@ Here you will have to provide the dependencies yourself (see the next section):
 
 	$form->setTranslator(new \Symfony\Component\Translation\Translator('en'));
 
-###Services container
+###Services ContainerInterface
 
 	$form->setContainer(new \Asgard\Container\Container);
 
@@ -509,7 +509,7 @@ When using an unknown widget, the widgets manager will try to look for the widge
 	$form['title'] = new \Asgard\Fields\TextField;
 	echo $form['title']->text();
 
-###Example in standalone form
+###Example in standalone fORMInterface
 
 	$form = new \Asgard\Form\Form;
 	$form->getWidgetsManager()->setWidget('text', 'MyClasses\Widgets\TextWidget');

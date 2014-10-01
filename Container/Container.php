@@ -6,10 +6,10 @@ use Jeremeamia\SuperClosure\SerializableClosure;
 /**
  * Services container.
  */
-class Container implements \ArrayAccess {
+class Container implements ContainerInterface {
 	/**
 	 * Default instance.
-	 * @var Container
+	 * @var ContainerInterface
 	 */
 	protected static $instance;
 	/**
@@ -43,11 +43,7 @@ class Container implements \ArrayAccess {
 	}
 
 	/**
-	 * Set a service parent class.
-	 * @param  string    $name
-	 * @param  string    $parent
-	 * @param  boolean   $force
-	 * @return Container $this
+	 * {@inheritDoc}
 	 */
 	public function setParentClass($name, $parent, $force=false) {
 		$name = strtolower($name);
@@ -58,9 +54,7 @@ class Container implements \ArrayAccess {
 	}
 
 	/**
-	 * Return the parent class.
-	 * @param  string $name
-	 * @return string
+	 * {@inheritDoc}
 	 */
 	public function getParentClass($name) {
 		$name = strtolower($name);
@@ -70,16 +64,14 @@ class Container implements \ArrayAccess {
 	}
 
 	/**
-	 * Get the registry.
-	 * @return array
+	 * {@inheritDoc}
 	 */
 	public function getRegistry() {
 		return $this->registry;
 	}
 
 	/**
-	 * Get the instances.
-	 * @return array
+	 * {@inheritDoc}
 	 */
 	public function getInstances() {
 		return $this->instances;
@@ -87,7 +79,7 @@ class Container implements \ArrayAccess {
 
 	/**
 	 * Get the default instance.
-	 * @return Container
+	 * @return ContainerInterface
 	 */
 	public static function singleton() {
 		if(!isset(static::$instance))
@@ -97,16 +89,14 @@ class Container implements \ArrayAccess {
 
 	/**
 	 * Set the default instance.
-	 * @param Container $instance
+	 * @param ContainerInterface $instance
 	 */
 	public static function setInstance($instance) {
 		static::$instance = $instance;
 	}
 
 	/**
-	 * Set autofacade to true or false.
-	 * @param  boolean   $facade
-	 * @return Cotnainer $this
+	 * {@inheritDoc}
 	 */
 	public function setAutofacade($facade) {
 		$this->autofacade = $facade;
@@ -114,9 +104,7 @@ class Container implements \ArrayAccess {
 	}
 
 	/**
-	 * Get a service.
-	 * @param  string $name
-	 * @return mixed
+	 * {@inheritDoc}
 	 */
 	public function get($name) {
 		$name = strtolower($name);
@@ -133,10 +121,7 @@ class Container implements \ArrayAccess {
 	}
 
 	/**
-	 * Set a service.
-	 * @param  string    $name
-	 * @param  mixed     $value
-	 * @return Container $this
+	 * {@inheritDoc}
 	 */
 	public function set($name, $value) {
 		$name = strtolower($name);
@@ -157,9 +142,7 @@ class Container implements \ArrayAccess {
 	}
 
 	/**
-	 * Check if has a service.
-	 * @param  string  $name
-	 * @return boolean       true if service exists.
+	 * {@inheritDoc}
 	 */
 	public function has($name) {
 		$name = strtolower($name);
@@ -167,8 +150,7 @@ class Container implements \ArrayAccess {
 	}
 
 	/**
-	 * Remove a service.
-	 * @param  string $name
+	 * {@inheritDoc}
 	 */
 	public function remove($name) {
 		$name = strtolower($name);
@@ -176,9 +158,7 @@ class Container implements \ArrayAccess {
 	}
 
 	/**
-	 * Register a service.
-	 * @param  string $name    
-	 * @param  callable $callback
+	 * {@inheritDoc}
 	 */
 	public function register($name, $callback) {
 		$name = strtolower($name);
@@ -191,11 +171,7 @@ class Container implements \ArrayAccess {
 	}
 	
 	/**
-	 * Make a service.
-	 * @param  string $name  
-	 * @param  array  $params
-	 * @param  mixed $default
-	 * @return mixed
+	 * {@inheritDoc}
 	 */
 	public function make($name, array $params=[], $default=null) {
 		$name = strtolower($name);
@@ -216,9 +192,7 @@ class Container implements \ArrayAccess {
 	}
 
 	/**
-	 * Check if a service was registered.
-	 * @param  string $name
-	 * @return boolean      true if registered
+	 * {@inheritDoc}
 	 */
 	public function registered($name) {
 		$name = strtolower($name);
@@ -226,9 +200,7 @@ class Container implements \ArrayAccess {
 	}
 
 	/**
-	 * Create a factory.
-	 * @param  string|callable $what
-	 * @return Factory
+	 * {@inheritDoc}
 	 */
 	public function createFactory($what) {
 		if(is_string($what)) {
@@ -244,10 +216,7 @@ class Container implements \ArrayAccess {
 	}
 
 	/**
-	 * Array set implementation.
-	 * @param  integer $offset
-	 * @param  mixed $value
-	 * @throws LogicException If offset is null
+	 * {@inheritDoc}
 	 */
 	public function offsetSet($offset, $value) {
 		if(is_null($offset))
@@ -257,33 +226,28 @@ class Container implements \ArrayAccess {
 	}
 
 	/**
-	 * Array exists implementation.
-	 * @param  integer $offset
-	 * @return boolean true if it exists.
+	 * {@inheritDoc}
 	 */
 	public function offsetExists($offset) {
 		return $this->has($offset);
 	}
 
 	/**
-	 * Array unset implementation.
-	 * @param  integer $offset
+	 * {@inheritDoc}
 	 */
 	public function offsetUnset($offset) {
 		$this->remove($offset);
 	}
 
 	/**
-	 * Array get implementation.
-	 * @param  integer $offset
-	 * @return mixed
+	 * {@inheritDoc}
 	 */
 	public function offsetGet($offset) {
 		return $this->get($offset);
 	}
 
 	/**
-	 * __wakeup magic method
+	 * {@inheritDoc}
 	 */
 	public function __wakeup() {
 		if($this->autofacade) {

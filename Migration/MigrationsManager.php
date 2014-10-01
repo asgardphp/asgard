@@ -4,7 +4,7 @@ namespace Asgard\Migration;
 /**
  * Manage the migrations.
  */
-class MigrationsManager {
+class MigrationsManager implements MigrationsManagerInterface {
 	use \Asgard\Container\ContainerAwareTrait;
 
 	/**
@@ -19,57 +19,51 @@ class MigrationsManager {
 	protected $tracker;
 	/**
 	 * DB dependency.
-	 * @var \Asgard\Db\DB
+	 * @var \Asgard\Db\DBInterface
 	 */
 	protected $db;
 	/**
 	 * Schema dependency.
-	 * @var \Asgard\Db\Schema
+	 * @var \Asgard\Db\SchemaInterface
 	 */
 	protected $schema;
 
 	/**
 	 * Constructor.
 	 * @param string $directory
-	 * @param \Asgard\Container\Container $container 
+	 * @param \Asgard\Container\ContainerInterface $container 
 	 */
-	public function __construct($directory, $container=null) {
+	public function __construct($directory, \Asgard\Container\ContainerInterface $container=null) {
 		$this->directory = $directory;
 		$this->container = $container;
 		$this->tracker = new Tracker($directory);
 	}
 
 	/**
-	 * Set db dependency.
-	 * @param  \Asgard\Db\DB    $db
-	 * @return MigrationManager $this
+	 * {@inheritDoc}
 	 */
-	public function setDB(\Asgard\Db\DB $db) {
+	public function setDB(\Asgard\Db\DBInterface $db) {
 		$this->db = $db;
 		return $this;
 	}
 
 	/**
-	 * Set schema dependency.
-	 * @param  \Asgard\Db\Schema $schema
-	 * @return MigrationManager  $this
+	 * {@inheritDoc}
 	 */
-	public function setSchema(\Asgard\Db\Schema $schema) {
+	public function setSchema(\Asgard\Db\SchemaInterface $schema) {
 		$this->schema = $schema;
 		return $this;
 	}
 
 	/**
-	 * Return the tracker instance.
-	 * @return Tracker
+	 * {@inheritDoc}
 	 */
 	public function getTracker() {
 		return $this->tracker;
 	}
 
 	/**
-	 * Add a migration file.
-	 * @param string $file file path
+	 * {@inheritDoc}
 	 */
 	public function add($file) {
 		$dst = $this->directory.'/'.basename($file);
@@ -81,12 +75,7 @@ class MigrationsManager {
 	}
 
 	/**
-	 * Create a new migration from given code.
-	 * @param  string $up    
-	 * @param  string $down  
-	 * @param  string $name  migration name
-	 * @param  string $class entity class
-	 * @return string        final migration name
+	 * {@inheritDoc}
 	 */
 	public function create($up, $down, $name, $class='\Asgard\Migration\Migration') {
 		$up = implode("\n\t\t", explode("\n", $up));
@@ -117,17 +106,14 @@ class '.$name.' extends '.$class.' {
 	}
 
 	/**
-	 * Check if it contains a migration.
-	 * @param  string  $migrationName 
-	 * @return boolean                true if migration exists, false otherwise
+	 * {@inheritDoc}
 	 */
 	public function has($migrationName) {
 		return $this->tracker->has($migrationName);
 	}
 
 	/**
-	 * Remove a migration.
-	 * @param  string $migrationName
+	 * {@inheritDoc}
 	 */
 	public function remove($migrationName) {
 		if($this->tracker->isUp($migrationName))
@@ -137,10 +123,7 @@ class '.$name.' extends '.$class.' {
 	}
 
 	/**
-	 * Execute a migration.
-	 * @param  string  $migrationName
-	 * @param  boolean $tracking      true to track the migration status
-	 * @return boolean                true for success, otherwise false
+	 * {@inheritDoc}
 	 */
 	public function migrate($migrationName, $tracking=false) {
 		if($tracking && $this->tracker->isUp($migrationName))
@@ -154,8 +137,7 @@ class '.$name.' extends '.$class.' {
 	}
 
 	/**
-	 * Execute a migration file directly.
-	 * @param  string $file file path
+	 * {@inheritDoc}
 	 */
 	public function migrateFile($file) {
 		if(!file_exists($file))
@@ -171,9 +153,7 @@ class '.$name.' extends '.$class.' {
 	}
 
 	/**
-	 * Execute all migrations.
-	 * @param  boolean $tracking true to track the migration status
-	 * @return boolean                true for success, otherwise false
+	 * {@inheritDoc}
 	 */
 	public function migrateAll($tracking=false) {
 		if($tracking)
@@ -188,8 +168,7 @@ class '.$name.' extends '.$class.' {
 	}
 
 	/**
-	 * Rollback and re-execute all migrations.
-	 * @return boolean                true for success, otherwise false
+	 * {@inheritDoc}
 	 */
 	public function reset() {
 		foreach($this->tracker->getUpList() as $migrationName=>$params) {
@@ -200,9 +179,7 @@ class '.$name.' extends '.$class.' {
 	}
 
 	/**
-	 * Rollback a migration.
-	 * @param  string $migrationName 
-	 * @return boolean                true for success, otherwise false
+	 * {@inheritDoc}
 	 */
 	public function unmigrate($migrationName) {
 		if(!$this->tracker->isUp($migrationName))
@@ -222,15 +199,14 @@ class '.$name.' extends '.$class.' {
 	}
 
 	/**
-	 * Rollback the last migration.
+	 * {@inheritDoc}
 	 */
 	public function rollback() {
 		return $this->unmigrate($this->tracker->getLast());
 	}
 
 	/**
-	 * Rollback until a given migration name.
-	 * @param  string $migrationName 
+	 * {@inheritDoc}
 	 */
 	public function rollbackUntil($migrationName) {
 		foreach($this->tracker->getUntil($migrationName) as $_migrationName)

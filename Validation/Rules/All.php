@@ -21,7 +21,7 @@ class All extends \Asgard\Validation\Rule {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\Validator $validator) {
+	public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\ValidatorInterface $validator) {
 		foreach($this->rules as $rule) {
 			if($rule instanceof \Asgard\Validation\Validator) {
 				if($rule->valid($input) === false)

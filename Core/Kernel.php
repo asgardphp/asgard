@@ -15,7 +15,7 @@ class Kernel implements \ArrayAccess {
 	protected $params = [];
 	/**
 	 * Config instance.
-	 * @var \Asgard\Config\Config
+	 * @var \Asgard\Config\ConfigInterface
 	 */
 	protected $config;
 	/**
@@ -58,16 +58,16 @@ class Kernel implements \ArrayAccess {
 
 	/**
 	 * Set the config dependency.
-	 * @param \Asgard\Config\Config $config
+	 * @param \Asgard\Config\ConfigInterface $config
 	 */
-	public function setConfig($config) {
+	public function setConfig(\Asgard\Config\ConfigInterface $config) {
 		$this->config = $config;
 		return $this;
 	}
 
 	/**
 	 * Get the config dependency.
-	 * @return \Asgard\Config\Config
+	 * @return \Asgard\Config\ConfigInterface
 	 */
 	public function getConfig() {
 		if(!$this->config) {

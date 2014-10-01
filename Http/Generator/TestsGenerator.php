@@ -9,9 +9,9 @@ class TestsGenerator {
 
 	/**
 	 * Constructor.
-	 * @param \Asgard\Container\Container $container
+	 * @param \Asgard\Container\ContainerInterface $container
 	 */
-	public function __construct(\Asgard\Container\Container $container) {
+	public function __construct(\Asgard\Container\ContainerInterface $container) {
 		$this->container = $container;
 	}
 

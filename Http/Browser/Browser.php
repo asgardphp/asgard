@@ -4,7 +4,7 @@ namespace Asgard\Http\Browser;
 /**
  * Browser.
  */
-class Browser {
+class Browser implements BrowserInterface {
 	/**
 	 * Cookies bag.
 	 * @var \Asgard\Common\BagInterface
@@ -27,102 +27,71 @@ class Browser {
 	protected $catchException = false;
 	/**
 	 * Http Kernel dependency.
-	 * @var \Asgard\Http\HttpKernel
+	 * @var \Asgard\Http\HttpKernelInterface
 	 */
 	protected $httpKernel;
 
 	/**
 	 * Constructor.
-	 * @param \Asgard\Http\HttpKernel $httpKernel
+	 * @param \Asgard\Http\HttpKernelInterface $httpKernel
 	 */
-	public function __construct(\Asgard\Http\HttpKernel $httpKernel) {
+	public function __construct(\Asgard\Http\HttpKernelInterface $httpKernel) {
 		$this->httpKernel = $httpKernel;
 		$this->cookies = new \Asgard\Common\Bag;
 		$this->session = new \Asgard\Common\Bag;
 	}
 
 	/**
-	 * Return cookies.
-	 * @return \Asgard\Common\BagInterface
+	 * {@inheritDoc}
 	 */
 	public function getCookies() {
 		return $this->cookies;
 	}
 
 	/**
-	 * Return session.
-	 * @return \Asgard\Common\BagInterface
+	 * {@inheritDoc}
 	 */
 	public function getSession() {
 		return $this->session;
 	}
 
 	/**
-	 * Get last response.
-	 * @return Response
+	 * {@inheritDoc}
 	 */
 	public function getLast() {
 		return $this->last;
 	}
 
 	/**
-	 * Execute a GET request.
-	 * @param  string $url
-	 * @param  string $body
-	 * @param  array  $headers
-	 * @return Response
+	 * {@inheritDoc}
 	 */
 	public function get($url='', $body='', array $headers=[]) {
 		return $this->req($url, 'GET', [], [], $body, $headers);
 	}
 
 	/**
-	 * Execute a POST request.
-	 * @param  string $url
-	 * @param  array  $post
-	 * @param  arra   $files
-	 * @param  string $body
-	 * @param  array  $headers
-	 * @return Response
+	 * {@inheritDoc}
 	 */
 	public function post($url='', array $post=[], array $files=[], $body='', array $headers=[]) {
 		return $this->req($url, 'POST', $post, $files, $body, $headers);
 	}
 
 	/**
-	 * Execute a PUT request.
-	 * @param  string $url
-	 * @param  array  $post
-	 * @param  arra   $files
-	 * @param  string $body
-	 * @param  array  $headers
-	 * @return Response
+	 * {@inheritDoc}
 	 */
 	public function put($url='', array $post=[], array $files=[], $body='', array $headers=[]) {
 		return $this->req($url, 'PUT', $post, $files, $body, $headers);
 	}
 
 	/**
-	 * Execute a DELETE request.
-	 * @param  string $url
-	 * @param  string $body
-	 * @param  array  $headers
-	 * @return Response
+	 * {@inheritDoc}
 	 */
 	public function delete($url='', $body='', array $headers=[]) {
 		return $this->req($url, 'DELETE', [], [], $body, $headers);
 	}
 
 	/**
-	 * Execute a request.
-	 * @param  string $url
-	 * @param  string $method
-	 * @param  array  $post
-	 * @param  arra   $file
-	 * @param  string $body
-	 * @param  array  $headers
-	 * @param  array  $server
-	 * @return Response
+	 * {@inheritDoc}
 	 */
 	public function req(
 			$url='',
@@ -173,19 +142,14 @@ class Browser {
 	}
 
 	/**
-	 * Set the catchException parameter.
-	 * @param  boolean $catchException
+	 * {@inheritDoc}
 	 */
 	public function catchException($catchException) {
 		$this->catchException = $catchException;
 	}
 
 	/**
-	 * Submit a form.
-	 * @param  string $xpath   path to submit button.
-	 * @param  string $to      destination url.
-	 * @param  array $override override post attributes.
-	 * @return Response
+	 * {@inheritDoc}
 	 */
 	public function submit($xpath='//form', $to=null, array $override=[]) {
 		if($this->last === null)

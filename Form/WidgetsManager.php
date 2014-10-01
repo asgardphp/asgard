@@ -4,10 +4,10 @@ namespace Asgard\Form;
 /**
  * Manage widgets available for form fields.
  */
-class WidgetsManager {
+class WidgetsManager implements WidgetsManagerInterface {
 	/**
 	 * Default instance.
-	 * @var WidgetsManager
+	 * @var WidgetsManagerInterface
 	 */
 	protected static $instance;
 	/**
@@ -25,7 +25,7 @@ class WidgetsManager {
 
 	/**
 	 * Singleton.
-	 * @return WidgetsManager
+	 * @return WidgetsManagerInterface
 	 */
 	public static function singleton() {
 		if(!static::$instance)
@@ -34,20 +34,16 @@ class WidgetsManager {
 	}
 
 	/**
-	 * Register a widget.
-	 * @param string          $widget
-	 * @param string|callable $mixed  Widget class or callback
+	 * {@inheritDoc}
 	 */
 	public function setWidget($widget, $mixed) {
 		$this->widgets[$widget] = $mixed;
 	}
 
 	/**
-	 * Return a widget.
-	 * @param  string|callable $widget
-	 * @return Widget Widget class or callback
+	 * {@inheritDoc}
 	 */
-	public function getWidget($widget, $name, $value, array $options, Form $form) {
+	public function getWidget($widget, $name, $value, array $options, FormInterface $form) {
 		if(is_string($widget)) {
 			if(isset($this->widgets[$widget]))
 				$widget = $this->widgets[$widget];
@@ -68,14 +64,9 @@ class WidgetsManager {
 	}
 
 	/**
-	 * Get a widget instance.
-	 * @param  string|callable $widget
-	 * @param  string          $name
-	 * @param  mixed           $value
-	 * @param  array           $options
-	 * @return Widget
+	 * {@inheritDoc}
 	 */
-	public function getWidgetInstance($widget, $name, $value, array $options, Form $form) {
+	public function getWidgetInstance($widget, $name, $value, array $options, FormInterface $form) {
 		if(is_string($widget)) {
 			$reflector = new \ReflectionClass($widget);
 			return $reflector->newInstanceArgs([$name, $value, $options, $form]);
@@ -85,8 +76,7 @@ class WidgetsManager {
 	}
 
 	/**
-	 * Add a namespace.
-	 * @param string $namespace
+	 * {@inheritDoc}
 	 */
 	public function addNamespace($namespace) {
 		$this->namespaces[] = trim($namespace, '\\');

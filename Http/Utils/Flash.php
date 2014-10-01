@@ -12,7 +12,7 @@ class Flash {
 	protected $messages = [];
 	/**
 	 * Session dependency.
-	 * @var \Asgard\Http\SessionManager
+	 * @var \Asgard\Common\BagInterface
 	 */
 	protected $session;
 	/**
@@ -25,7 +25,7 @@ class Flash {
 	 * Constructor.
 	 * @param \Asgard\Http\SessionManager $session
 	 */
-	public function __construct($session) {
+	public function __construct(\Asgard\Common\BagInterface $session) {
 		$this->session = $session;
 		if($session->has('messages'))
 			$this->messages = $session['messages'];

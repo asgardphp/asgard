@@ -4,12 +4,12 @@ namespace Asgard\Entity;
 /**
  * Manage entities.
  */
-class EntitiesManager {
+class EntitiesManager implements EntitiesManagerInterface {
 	use \Asgard\Container\ContainerAwareTrait;
 
 	/**
 	 * Default instance.
-	 * @var EntitiesManager
+	 * @var EntitiesManagerInterface
 	 */
 	protected static $singleton;
 	/**
@@ -34,22 +34,21 @@ class EntitiesManager {
 	protected $validatorFactory;
 	/**
 	 * Hooks manager.
-	 * @var \Asgard\Hook\HooksManager
+	 * @var \Asgard\Hook\HooksManagerInterface
 	 */
 	protected $hooksManager;
 
 	/**
 	 * Constructor.
-	 * @param \Asgard\Container\Container $container
+	 * @param \Asgard\Container\ContainerInterface $container
 	 */
-	public function __construct(\Asgard\Container\Container $container=null) {
+	public function __construct(\Asgard\Container\ContainerInterface $container=null) {
 		#need services container for entity behaviors only
 		$this->setContainer($container);
 	}
 
 	/**
-	 * Return the hooks manager.
-	 * @return \Asgard\Hook\HooksManager
+	 * {@inheritDoc}
 	 */
 	public function getHooksManager() {
 		if(!$this->hooksManager)
@@ -58,26 +57,23 @@ class EntitiesManager {
 	}
 
 	/**
-	 * Set the hooks manager.
-	 * @param \Asgard\Hook\HooksManager $hooksManager
+	 * {@inheritDoc}
 	 */
-	public function setHooksManager($hooksManager) {
+	public function setHooksManager(\Asgard\Hook\HooksManagerInterface $hooksManager) {
 		$this->hooksManager = $hooksManager;
 		return $this;
 	}
 
 	/**
-	 * Set the validator factory.
-	 * @param \Asgard\Container\Factory $validatorFactory
+	 * {@inheritDoc}
 	 */
-	public function setValidatorFactory($validatorFactory) {
+	public function setValidatorFactory(\Asgard\Container\Factory $validatorFactory) {
 		$this->validatorFactory = $validatorFactory;
 		return $this;
 	}
 
 	/**
-	 * Create a validator.
-	 * @return \Asgard\Validation\Validator
+	 * {@inheritDoc}
 	 */
 	public function createValidator() {
 		if(!$this->validatorFactory)
@@ -87,17 +83,15 @@ class EntitiesManager {
 	}
 
 	/**
-	 * Set the cache dependency.
-	 * @param \Asgard\Cache\Cache $cache
+	 * {@inheritDoc}
 	 */
-	public function setCache($cache) {
+	public function setCache(\Asgard\Cache\Cache $cache) {
 		$this->cache = $cache;
 		return $this;
 	}
 
 	/**
-	 * Get the cache dependency.
-	 * @return \Asgard\Cache\Cache
+	 * {@inheritDoc}
 	 */
 	public function getCache() {
 		if(!$this->cache)
@@ -107,7 +101,7 @@ class EntitiesManager {
 
 	/**
 	 * Return the default instance.
-	 * @return EntitiesManager
+	 * @return EntitiesManagerInterface
 	 */
 	public static function singleton() {
 		if(!static::$singleton)
@@ -117,7 +111,7 @@ class EntitiesManager {
 
 	/**
 	 * Set default instance.
-	 * @param EntitiesManager $instance
+	 * @param EntitiesManagerInterface $instance
 	 */
 	public static function setInstance($instance) {
 		static::$singleton = $instance;
@@ -125,8 +119,7 @@ class EntitiesManager {
 	}
 
 	/**
-	 * Set default locale.
-	 * @param string $defaultLocale
+	 * {@inheritDoc}
 	 */
 	public function setDefaultLocale($defaultLocale) {
 		$this->defaultLocale = $defaultLocale;
@@ -134,17 +127,14 @@ class EntitiesManager {
 	}
 
 	/**
-	 * Get default locale.
-	 * @return string
+	 * {@inheritDoc}
 	 */
 	public function getDefaultLocale() {
 		return $this->defaultLocale;
 	}
 
 	/**
-	 * Get an entity definition.
-	 * @param  string $entityClass
-	 * @return EntityDefinition
+	 * {@inheritDoc}
 	 */
 	public function get($entityClass) {
 		if(!$this->has($entityClass))
@@ -154,9 +144,7 @@ class EntitiesManager {
 	}
 
 	/**
-	 * Check if has an entity definition.
-	 * @param  string  $entityClass
-	 * @return boolean
+	 * {@inheritDoc}
 	 */
 	public function has($entityClass) {
 		return isset($this->definitions[$entityClass]);
@@ -184,19 +172,14 @@ class EntitiesManager {
 	}
 
 	/**
-	 * Return all definitions.
-	 * @return array
+	 * {@inheritDoc}
 	 */
 	public function getDefinitions() {
 		return $this->definitions;
 	}
 
 	/**
-	 * Make a new entity.
-	 * @param  string $entityClass
-	 * @param  array  $attrs      entity attributes.
-	 * @param  string $locale
-	 * @return Entity
+	 * {@inheritDoc}
 	 */
 	public function make($entityClass, array $attrs=null, $locale=null) {
 		return $this->get($entityClass)->make($attrs, $locale);

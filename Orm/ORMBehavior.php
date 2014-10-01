@@ -7,7 +7,7 @@ namespace Asgard\Orm;
 class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\PersistenceBehavior, \Asgard\Entity\RelationsBehavior {
 	/**
 	 * DataMapper dependency.
-	 * @var DataMapper
+	 * @var DataMapperInterface
 	 */
 	protected $dataMapper;
 	/**
@@ -33,7 +33,7 @@ class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\Pers
 
 	/**
 	 * Return the datamapper.
-	 * @return DataMapper
+	 * @return DataMapperInterface
 	 */
 	protected function getDataMapper() {
 		if(!$this->dataMapper)
@@ -67,10 +67,10 @@ class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\Pers
 	 * Hook for the entity validation.
 	 * @param  \Asgard\Hook\HookChain       $chain
 	 * @param  \Asgard\Entity\Entity        $entity
-	 * @param  AsgardValidationValidator    $validator
+	 * @param  AsgardValidationValidatorInterface    $validator
 	 * @param  array                        $data
 	 */
-	public function hookValidation(\Asgard\Hook\HookChain $chain, \Asgard\Entity\Entity $entity, \Asgard\Validation\Validator $validator, array &$data) {
+	public function hookValidation(\Asgard\Hook\HookChain $chain, \Asgard\Entity\Entity $entity, \Asgard\Validation\ValidatorInterface $validator, array &$data) {
 		$this->getDataMapper()->prepareValidator($entity, $validator);
 	}
 
@@ -162,7 +162,7 @@ class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\Pers
 
 	/**
 	 * Article::orm()
-	 * @return \Asgard\Orm\ORM
+	 * @return \Asgard\Orm\ORMInterface
 	 */
 	public function static_orm() {
 		return $this->getDataMapper()->orm($this->entityClass);

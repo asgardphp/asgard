@@ -52,7 +52,7 @@ class Request implements \ArrayAccess {
 	public $body = '';
 	/**
 	 * Request url.
-	 * @var URL
+	 * @var URLInterface
 	 */
 	public $url;
 	/**

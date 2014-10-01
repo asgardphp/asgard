@@ -6,10 +6,10 @@ namespace Asgard\Orm;
  * 
  * @author Michel Hognerud <michel@hognerud.net>
 */
-class ORM {
+class ORM implements ORMInterface {
 	/**
 	 * DataMapper instance.
-	 * @var DataMapper
+	 * @var DataMapperInterface
 	 */
 	protected $dataMapper;
 	/**
@@ -81,12 +81,12 @@ class ORM {
 	/**
 	 * Constructor.
 	 * @param \Asgard\Entity\EntityDefinition $definition
-	 * @param DataMapper                      $datamapper
+	 * @param DataMapperInterface                      $datamapper
 	 * @param string                          $locale           default locale
 	 * @param string                          $prefix           tables prefix
 	 * @param \Asgard\Container\Factory       $paginatorFactory
 	 */
-	public function __construct(\Asgard\Entity\EntityDefinition $definition, DataMapper $datamapper, $locale=null, $prefix=null, \Asgard\Container\Factory $paginatorFactory=null) {
+	public function __construct(\Asgard\Entity\EntityDefinition $definition, DataMapperInterface $datamapper, $locale=null, $prefix=null, \Asgard\Container\Factory $paginatorFactory=null) {
 		$this->definition       = $definition;
 		$this->dataMapper       = $datamapper;
 		$this->locale           = $locale;
@@ -100,19 +100,7 @@ class ORM {
 	}
 	
 	/**
-	 * Magic method.
-	 * 
-	 * Lets you access relations of the entity.
-	 * For example:
-	 * $orm = new ORM('News');
-	 * $orm->categories()->all();
-	 * 
-	 * @param string $relationName The name of the relation.
-	 * @param array  $args Not used.
-	 * 
-	 * @throws \Exception If the relation does not exist.
-	 * 
-	 * @return ORM A new ORM instance of the related entities.
+	 * {@inheritDoc}
 	*/
 	public function __call($relationName, array $args) {
 		if(!$this->dataMapper->hasRelation($this->definition, $relationName))
@@ -128,28 +116,14 @@ class ORM {
 	}
 	
 	/**
-	 * Magic Method.
-	 * 
-	 * Lets you retrieve related entities.
-	 * For example:
-	 * $orm = new ORM('News');
-	 * $categories = $orm->categories;
-	 * 
-	 * @param string $name The name of the relation.
-	 * 
-	 * @return array Array of entities.
+	 * {@inheritDoc}
 	*/
 	public function __get($name) {
 		return $this->$name()->get();
 	}
 	
 	/**
-	 * Limits the search to the entities related to the given entity.
-	 * 
-	 * @param string|EntityRelation $relation The name of the relation.
-	 * @param \Asgard\Entity\Entity $entity The related entity.
-	 * 
-	 * @return ORM $this
+	 * {@inheritDoc}
 	*/
 	public function joinToEntity($relation, \Asgard\Entity\Entity $entity) {
 		if(is_string($relation))
@@ -167,11 +141,7 @@ class ORM {
 	}
 	
 	/**
-	 * Joins a relation to the search. Useful when having conditions involving relations.
-	 * 
-	 * @param string|EntityRelation|array $relations The name of the relation or an array of relations.
-	 * 
-	 * @return ORM $this
+	 * {@inheritDoc}
 	*/
 	public function join($relations) {
 		$this->join[] = $relations;
@@ -179,18 +149,14 @@ class ORM {
 	}
 	
 	/**
-	 * Returns the name of the table.
-	 * 
-	 * @return string
+	 * {@inheritDoc}
 	*/
 	public function getTable() {
 		return $this->dataMapper->getTable($this->definition);
 	}
 	
 	/**
-	 * Returns the name of the i18n table.
-	 * 
-	 * @return string
+	 * {@inheritDoc}
 	*/
 	public function getTranslationTable() {
 		return $this->dataMapper->getTranslationTable($this->definition);
@@ -230,9 +196,7 @@ class ORM {
 	}
 	
 	/**
-	 * Returns the next entity in the search list.
-	 * 
-	 * @return \Asgard\Entity\Entity
+	 * {@inheritDoc}
 	*/
 	public function next() {
 		if(!$this->tmp_dal)
@@ -244,20 +208,14 @@ class ORM {
 	}
 	
 	/**
-	 * Returns all the ids of the selected entities.
-	 * 
-	 * @return array
+	 * {@inheritDoc}
 	*/
 	public function ids() {
 		return $this->values('id');
 	}
 	
 	/**
-	 * Returns an array with all the values of a specific property from the selected entities.
-	 * 
-	 * @param string $property
-	 * 
-	 * @return array
+	 * {@inheritDoc}
 	*/
 	public function values($property) {
 		$res = [];
@@ -267,9 +225,7 @@ class ORM {
 	}
 	
 	/**
-	 * Returns the first entity from the search list.
-	 * 
-	 * @return \Asgard\Entity\Entity
+	 * {@inheritDoc}
 	*/
 	public function first() {
 		$res = $this->limit(1)->get();
@@ -279,18 +235,14 @@ class ORM {
 	}
 	
 	/**
-	 * Returns all the entities from the search list.
-	 * 
-	 * @return array
+	 * {@inheritDoc}
 	*/
 	public function all() {
 		return $this->get();
 	}
 	
 	/**
-	 * Returns the DAL object used to build queries.
-	 * 
-	 * @return \Asgard\Db\DAL
+	 * {@inheritDoc}
 	*/
 	public function getDAL() {
 		$dal = new \Asgard\Db\DAL($this->dataMapper->getDB());
@@ -434,11 +386,7 @@ class ORM {
 	}
 	
 	/**
-	 * Returns the array of entities from the search list.
-	 * 
-	 * @throws \Exception If one the "with" relations does not exist.
-	 * 
-	 * @return array Array of \Asgard\Entity\Entity
+	 * {@inheritDoc}
 	*/
 	public function get() {
 		$entities = [];
@@ -535,12 +483,7 @@ class ORM {
 	}
 	
 	/**
-	 * Performs an SQL query and returns the entities.
-	 * 
-	 * @param string $sql SQL query
-	 * @param array  $args SQL parameters
-	 * 
-	 * @return array Array of \Asgard\Entity\Entity
+	 * {@inheritDoc}
 	*/
 	public function selectQuery($sql, array $args=[]) {
 		$entities = [];
@@ -554,12 +497,7 @@ class ORM {
 	}
 	
 	/**
-	 * Paginates the search list.
-	 * 
-	 * @param integer $page Current page.
-	 * @param integer $per_page Number of elements per page.
-	 * 
-	 * @return \Asgard\Orm\ORM $this
+	 * {@inheritDoc}
 	*/
 	public function paginate($page, $per_page=10) {
 		$page = $page ? $page:1;
@@ -573,9 +511,7 @@ class ORM {
 	}
 	
 	/**
-	 * Returns the paginator tool.
-	 * 
-	 * @return \Asgard\Common\Paginator
+	 * {@inheritDoc}
 	*/
 	public function getPaginator() {
 		$page = $this->page !== null ? $this->page : 1;
@@ -588,12 +524,7 @@ class ORM {
 	}
 	
 	/**
-	 * Retrieves the related entities along with the selected entities.
-	 * 
-	 * @param array|string $with Array of relation names or the name of the relation.
-	 * @param \Closure     $closure Code to be executed on the relation's ORM.
-	 * 
-	 * @return \Asgard\Orm\ORM $this
+	 * {@inheritDoc}
 	*/
 	public function with($with, \Closure $closure=null) {
 		$this->with[$with] = $closure;
@@ -627,7 +558,7 @@ class ORM {
 	 * 
 	 * @param array $conditions
 	 * 
-	 * @return array Formatted conditions.
+	 * @return array FormInterfaceatted conditions.
 	*/
 	protected function processConditions(array $conditions) {
 		foreach($conditions as $k=>$v) {
@@ -645,12 +576,7 @@ class ORM {
 	}
 	
 	/**
-	 * Add new conditions to the query.
-	 * 
-	 * @param array|string $conditions Array of conditions or name of a property.
-	 * @param null|string  $val Value of the property.
-	 * 
-	 * @return \Asgard\Orm\ORM $this
+	 * {@inheritDoc}
 	*/
 	public function where($conditions, $val=null) {
 		if(is_array($conditions))
@@ -662,11 +588,7 @@ class ORM {
 	}
 	
 	/**
-	 * Sets the offset.
-	 * 
-	 * @param integer $offset
-	 * 
-	 * @return \Asgard\Orm\ORM $this
+	 * {@inheritDoc}
 	*/
 	public function offset($offset) {
 		$this->offset = $offset;
@@ -674,11 +596,7 @@ class ORM {
 	}
 	
 	/**
-	 * Sets the limit.
-	 * 
-	 * @param integer $limit
-	 * 
-	 * @return \Asgard\Orm\ORM $this
+	 * {@inheritDoc}
 	*/
 	public function limit($limit) {
 		$this->limit = $limit;
@@ -686,11 +604,7 @@ class ORM {
 	}
 	
 	/**
-	 * Sets the order.
-	 * 
-	 * @param string $orderBy e.g. position ASC
-	 * 
-	 * @return \Asgard\Orm\ORM $this
+	 * {@inheritDoc}
 	*/
 	public function orderBy($orderBy) {
 		$this->orderBy = $orderBy;
@@ -698,9 +612,7 @@ class ORM {
 	}
 	
 	/**
-	 * Deletes all the selected entities.
-	 * 
-	 * @return integer The number of deleted entities.
+	 * {@inheritDoc}
 	*/
 	public function delete() {
 		$count = 0;
@@ -711,11 +623,7 @@ class ORM {
 	}
 	
 	/**
-	 * Updates entities properties.
-	 * 
-	 * @param array $values Array of properties.
-	 * 
-	 * @return \Asgard\Orm\ORM $this
+	 * {@inheritDoc}
 	*/
 	public function update(array $values) {
 		while($entity = $this->next())
@@ -725,68 +633,42 @@ class ORM {
 	}
 	
 	/**
-	 * Counts the number of selected entities.
-	 * 
-	 * @param string $group_by To split the result according to a specific property.
-	 * 
-	 * @return integer|array The total or an array of total per value.
+	 * {@inheritDoc}
 	*/
 	public function count($group_by=null) {
 		return $this->getDAL()->count($group_by);
 	}
 	
 	/**
-	 * Returns the minimum value of a property.
-	 * 
-	 * @param string $what The property to count from.
-	 * @param string $group_by To split the result according to a specific property.
-	 * 
-	 * @return integer|array The total or an array of total per value.
+	 * {@inheritDoc}
 	*/
 	public function min($what, $group_by=null) {
 		return $this->getDAL()->min($what, $group_by);
 	}
 	
 	/**
-	 * Returns the maximum value of a property.
-	 * 
-	 * @param string $what The property to count from.
-	 * @param string $group_by To split the result according to a specific property.
-	 * 
-	 * @return integer|array The total or an array of total per value.
+	 * {@inheritDoc}
 	*/
 	public function max($what, $group_by=null) {
 		return $this->getDAL()->max($what, $group_by);
 	}
 	
 	/**
-	 * Returns the average value of a property.
-	 * 
-	 * @param string $what The property to count from.
-	 * @param string $group_by To split the result according to a specific property.
-	 * 
-	 * @return integer|array The total or an array of total per value.
+	 * {@inheritDoc}
 	*/
 	public function avg($what, $group_by=null) {
 		return $this->getDAL()->avg($what, $group_by);
 	}
 	
 	/**
-	 * Returns the sum of a property.
-	 * 
-	 * @param string $what The property to count from.
-	 * @param string $group_by To split the result according to a specific property.
-	 * 
-	 * @return integer|array The total or an array of total per value.
+	 * {@inheritDoc}
 	*/
 	public function sum($what, $group_by=null) {
 		return $this->getDAL()->sum($what, $group_by);
 	}
 	
 	/**
-	 * Resets all conditions, order, offset, and limit.
-	 * 
-	 * @return \Asgard\Orm\ORM $this
+	 * {@inheritDoc}
 	*/
 	public function reset() {
 		$this->where = [];

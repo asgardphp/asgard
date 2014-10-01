@@ -13,7 +13,7 @@ interface DriverInterface {
 
 	/**
 	 * Send an email.
-	 * @param  callback $cb to forge the email
+	 * @param  callable $cb to forge the email
 	 * @return boolean      true for success, false otherwise
 	 */
 	public function send($cb);

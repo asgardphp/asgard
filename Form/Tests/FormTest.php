@@ -44,7 +44,7 @@ class FormTest extends \PHPUnit_Framework_TestCase {
 		$template = $group->renderTemplate();
 		$this->assertEquals('<input type="text" name="group[]" value="" id="group-">', $template);
 
-		#Form
+		#FORMInterface
 		$form = new \Asgard\Form\Form('test', [], $request);
 		$form['title'] = new \Asgard\Form\Fields\TextField;
 		$childForm = new \Asgard\Form\Form('test', []);

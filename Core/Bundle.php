@@ -7,13 +7,16 @@ namespace Asgard\Core;
 class Bundle extends \Asgard\Core\BundleLoader {
 	/**
 	 * Register services.
-	 * @param  \Asgard\Container\Container $container
+	 * @param \Asgard\Container\ContainerInterface $container
 	 */
-	public function buildContainer(\Asgard\Container\Container $container) {
+	public function buildContainer(\Asgard\Container\ContainerInterface $container) {
+		#Config
+		$container->setParentClass('config', 'Asgard\Config\ConfigInterface');
+
 		#Db
-		$container->setParentClass('schema', 'Asgard\Db\Schema');
+		$container->setParentClass('schema', 'Asgard\Db\SchemaInterface');
 		$container->register('schema', function($container) { return new \Asgard\Db\Schema($container['db']); } );
-		$container->setParentClass('db', 'Asgard\Db\DB');
+		$container->setParentClass('db', 'Asgard\Db\DBInterface');
 		$container->register('db', function($container) { return new \Asgard\Db\DB($container['config']['database']); } );
 
 		#Email
@@ -26,7 +29,7 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		});
 
 		#Entity
-		$container->setParentClass('entitiesmanager', 'Asgard\Entity\EntitiesManager');
+		$container->setParentClass('entitiesmanager', 'Asgard\Entity\EntitiesManagerInterface');
 		$container->register('entitiesmanager', function($container) {
 			$entitiesManager = new \Asgard\Entity\EntitiesManager($container);
 			$entitiesManager->setHooksManager($container['hooks']);
@@ -35,12 +38,12 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			return $entitiesManager;
 		});
 		
-		#Form
-		$container->setParentClass('widgetsManager', 'Asgard\Form\WidgetsManager');
+		#FORMInterface
+		$container->setParentClass('widgetsManager', 'Asgard\Form\WidgetsManagerInterface');
 		$container->register('widgetsManager', function() { return new \Asgard\Form\WidgetsManager; });
-		$container->setParentClass('entityFieldsSolver', 'Asgard\EntityForm\EntityFieldsSolver');
+		$container->setParentClass('entityFieldsSolver', 'Asgard\EntityForm\EntityFieldsSolverInterface');
 		$container->register('entityFieldsSolver', function() { return new \Asgard\Entityform\EntityFieldsSolver; });
-		$container->setParentClass('entityForm', 'Asgard\EntityForm\EntityForm');
+		$container->setParentClass('entityForm', 'Asgard\EntityForm\EntityFormInterface');
 		$container->register('entityForm', function($container, $entity, $params=[], $request=null) {
 			if($request === null)
 				$request = $container['httpKernel']->getRequest();
@@ -51,7 +54,7 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			$form->setContainer($container);
 			return $form;
 		});
-		$container->setParentClass('form', 'Asgard\Form\Form');
+		$container->setParentClass('form', 'Asgard\Form\FormInterface');
 		$container->register('form', function($container, $name=null, $params=[], $request=null, $fields=[]) {
 			if($request === null)
 				$request = $container['httpKernel']->getRequest();
@@ -63,11 +66,11 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		});
 
 		#Hook
-		$container->setParentClass('hooks', 'Asgard\Hook\HooksManager');
+		$container->setParentClass('hooks', 'Asgard\Hook\HooksManagerInterface');
 		$container->register('hooks', function($container) { return new \Asgard\Hook\HooksManager($container); } );
 
 		#Http
-		$container->setParentClass('httpKernel', 'Asgard\Http\HttpKernel');
+		$container->setParentClass('httpKernel', 'Asgard\Http\HttpKernelInterface');
 		$container->register('httpKernel', function($container) {
 			$httpKernel = new \Asgard\Http\HttpKernel($container);
 			$httpKernel->setDebug($container['config']['debug']);
@@ -80,11 +83,11 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			$container['resolver']->setHttpKernel($httpKernel);
 			return $httpKernel;
 		});
-		$container->setParentClass('resolver', 'Asgard\Http\Resolver');
+		$container->setParentClass('resolver', 'Asgard\Http\ResolverInterface');
 		$container->register('resolver', function($container) {
 			return new \Asgard\Http\Resolver($container['cache']);
 		});
-		$container->setParentClass('browser', 'Asgard\Http\Browser\Browser');
+		$container->setParentClass('browser', 'Asgard\Http\Browser\BrowserInterface');
 		$container->register('browser', function($container) {
 			return new \Asgard\Http\Browser\Browser($container['httpKernel']);
 		});
@@ -96,17 +99,17 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		$container->register('sessionManager', function($container) {
 			return $container['httpKernel']->getRequest()->session;
 		});
-		$container->setParentClass('html', 'Asgard\Http\Utils\HTML');
+		$container->setParentClass('html', 'Asgard\Http\Utils\HTMLInterface');
 		$container->register('html', function($container) {
 			return new \Asgard\Http\Utils\HTML($container['httpKernel']->getRequest());
 		});
-		$container->setParentClass('url', 'Asgard\Http\URL');
+		$container->setParentClass('url', 'Asgard\Http\URLInterface');
 		$container->register('url', function($container) {
 			return $container['httpKernel']->getRequest()->url;
 		});
 
 		#Migration
-		$container->setParentClass('migrationsManager', 'Asgard\Migration\MigrationsManager');
+		$container->setParentClass('migrationsManager', 'Asgard\Migration\MigrationsManagerInterface');
 		$container->register('migrationsManager', function($container) {
 			$mm = new \Asgard\Migration\MigrationsManager($container['kernel']['root'].'/migrations/', $container);
 			if($container->has('db'))
@@ -117,31 +120,31 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		});
 
 		#Common
-		$container->setParentClass('paginator', 'Asgard\Common\Paginator');
+		$container->setParentClass('paginator', 'Asgard\Common\PaginatorInterface');
 		$container->register('paginator', function($container, $count, $page, $per_page) {
 			return new \Asgard\Common\Paginator($count, $page, $per_page, $container['httpKernel']->getRequest());
 		});
 
 		#Validation
-		$container->setParentClass('validator', 'Asgard\Validation\Validator');
+		$container->setParentClass('validator', 'Asgard\Validation\ValidatorInterface');
 		$container->register('validator', function($container) {
 			$validator = new \Asgard\Validation\Validator;
 			$validator->setRegistry($container['rulesregistry']);
 			return $validator;
 		});
-		$container->setParentClass('rulesregistry', 'Asgard\Validation\RulesRegistry');
+		$container->setParentClass('rulesregistry', 'Asgard\Validation\RulesRegistryInterface');
 		$container->register('rulesregistry', function() { return new \Asgard\Validation\RulesRegistry; } );
 
-		#ORM
-		$container->setParentClass('orm', 'Asgard\Orm\ORM');
+		#ORMInterface
+		$container->setParentClass('orm', 'Asgard\Orm\ORMInterface');
 		$container->register('orm', function($container, $entityClass, $dataMapper, $locale, $prefix) {
 			return new \Asgard\Orm\ORM($entityClass, $dataMapper, $locale, $prefix, $container->createFactory('paginator'));
 		});
-		$container->setParentClass('collectionOrm', 'Asgard\Orm\CollectionORM');
+		$container->setParentClass('collectionOrm', 'Asgard\Orm\CollectionORMInterface');
 		$container->register('collectionOrm', function($container, $entityClass, $name, $dataMapper, $locale, $prefix) {
 			return new \Asgard\Orm\CollectionORM($entityClass, $name, $dataMapper, $locale, $prefix, $container->createFactory('paginator'));
 		});
-		$container->setParentClass('datamapper', 'Asgard\Orm\DataMapper');
+		$container->setParentClass('datamapper', 'Asgard\Orm\DataMapperInterface');
 		$container->register('datamapper', function($container) {
 			return new \Asgard\Orm\DataMapper(
 				$container['entitiesManager'],
@@ -156,15 +159,15 @@ class Bundle extends \Asgard\Core\BundleLoader {
 
 	/**
 	 * Run the bundle.
-	 * @param  \Asgard\Container\Container $container
+	 * @param \Asgard\Container\ContainerInterface $container
 	 */
-	public function run(\Asgard\Container\Container $container) {
+	public function run(\Asgard\Container\ContainerInterface $container) {
 		parent::run($container);
 
 		#Files
 		$container['rulesregistry']->registerNamespace('Asgard\File\Rules');
 
-		#ORM
+		#ORMInterface
 		$container['rulesregistry']->registerNamespace('Asgard\Orm\Rules');
 
 		#Controllers Templates

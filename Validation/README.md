@@ -139,14 +139,14 @@ Sometimes the requirement depends on conditions. For example, a payment may be r
 
 	$report = Validator::min(5)->errors(3); #returns a report (Asgard\Validation\ValidatorException)
 
-###Adding parameters to the validator
+###Adding parameters to the ValidatorInterface
 
 	$v->set('form', $form);
 
 You can access the parameter in the rule function:
 
 	//...
-		public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\Validator $validator) {
+		public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\ValidatorInterface $validator) {
 			$form = $validator->get('form');
 			//...
 		}
@@ -257,7 +257,7 @@ Then comes rules specific parameters. Any rule with member variables, can use th
 All rules receive the raw input and the parent input bag. You can use the input bag object to navigate through the whole input:
 
 	//...
-		public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\Validator $validator) {
+		public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\ValidatorInterface $validator) {
 			return $input == $parentInput->attribute('^.confirm')->input();
 		}
 	//..

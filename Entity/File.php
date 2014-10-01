@@ -12,7 +12,7 @@ class File extends \Asgard\File\File {
 	protected $web = false;
 	/**
 	 * URL dependency.
-	 * @var \Asgard\Http\URL
+	 * @var \Asgard\Http\URLInterface
 	 */
 	protected $url;
 	/**
@@ -87,7 +87,7 @@ class File extends \Asgard\File\File {
 
 	/**
 	 * Set URL dependency.
-	 * @param \Asgard\Http\URL $url
+	 * @param \Asgard\Http\URLInterface $url
 	 */
 	public function setUrl($url) {
 		$this->url = $url;

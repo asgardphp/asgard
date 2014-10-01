@@ -22,7 +22,7 @@ class Same extends \Asgard\Validation\Rule {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\Validator $validator) {
+	public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\ValidatorInterface $validator) {
 		return $input == $parentInput->attribute($this->as)->input();
 	}
 

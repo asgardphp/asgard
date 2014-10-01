@@ -4,7 +4,7 @@ namespace Asgard\Http;
 /**
  * URL class.
  */
-class URL {
+class URL implements URLInterface {
 	/**
 	 * Request instance.
 	 * @var Request
@@ -41,49 +41,42 @@ class URL {
 	}
 
 	/**
-	 * Return the url.
-	 * @return string
+	 * {@inheritDoc}
 	 */
 	public function get() {
 		return $this->url;
 	}
 	
 	/**
-	 * Set the url.
-	 * @param string $url
+	 * {@inheritDoc}
 	 */
 	public function setURL($url) {
 		return $this->url = $url;
 	}
 	
 	/**
-	 * Set the host address.
-	 * @param string $host
+	 * {@inheritDoc}
 	 */
 	public function setHost($host) {
 		return $this->host = $host;
 	}
 	
 	/**
-	 * Set the root path.
-	 * @param string $root
+	 * {@inheritDoc}
 	 */
 	public function setRoot($root) {
 		return $this->root = $root;
 	}
 	
 	/**
-	 * Return the current url.
-	 * @return string
+	 * {@inheritDoc}
 	 */
 	public function current() {
 		return $this->base().$this->get();
 	}
 
 	/**
-	 * Return the url parameters.
-	 * @param  array $params To override existing parameters.
-	 * @return string
+	 * {@inheritDoc}
 	 */
 	public function getParams(array $params=[]) {
 		if($params = array_merge($this->request->get->all(), $params))
@@ -91,9 +84,7 @@ class URL {
 	}
 	
 	/**
-	 * Return the full url.
-	 * @param  arrray $params To override existing parameters.
-	 * @return string
+	 * {@inheritDoc}
 	 */
 	public function full(array $params=[]) {
 		$r = $this->current();
@@ -102,8 +93,7 @@ class URL {
 	}
 	
 	/**
-	 * Return the base url.
-	 * @return string
+	 * {@inheritDoc}
 	 */
 	public function base() {
 		$res = $this->protocol().$this->host().'/';
@@ -113,8 +103,7 @@ class URL {
 	}
 	
 	/**
-	 * Set the base url.
-	 * @param string $base
+	 * {@inheritDoc}
 	 */
 	public function setBase($base) {
 		$parse = parse_url($base);
@@ -125,17 +114,14 @@ class URL {
 	}
 	
 	/**
-	 * Create the absolute url to a relative one.
-	 * @param  string $url relative url
-	 * @return string
+	 * {@inheritDoc}
 	 */
 	public function to($url) {
 		return $this->base().$url;
 	}
 	
 	/**
-	 * Return the root path.
-	 * @return string
+	 * {@inheritDoc}
 	 */
 	public function root() {
 		$result = $this->root;
@@ -148,8 +134,7 @@ class URL {
 	}
 	
 	/**
-	 * Return the host address.
-	 * @return string
+	 * {@inheritDoc}
 	 */
 	public function host() {
 		if($this->host !== null)
@@ -159,8 +144,7 @@ class URL {
 	}
 
 	/**
-	 * Return the protocol.
-	 * @return string
+	 * {@inheritDoc}
 	 */
 	public function protocol() {
 		#only http supported as for now.
@@ -168,9 +152,7 @@ class URL {
 	}
 
 	/**
-	 * Check if the url starts with a given string.
-	 * @param  string $what
-	 * @return boolean
+	 * {@inheritDoc}
 	 */
 	public function startsWith($what) {
 		return strpos($this->get(), $what) === 0;

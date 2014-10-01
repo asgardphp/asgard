@@ -20,6 +20,6 @@ class KernelTest extends \PHPUnit_Framework_TestCase {
 		$container = $kernel->getContainer();
 
 		$kernel->load();
-		$this->assertInstanceOf('Asgard\Config\Config', $container['config']);
+		$this->assertInstanceOf('Asgard\Config\ConfigInterface', $container['config']);
 	}
 }

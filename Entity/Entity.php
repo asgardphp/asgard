@@ -174,7 +174,7 @@ abstract class Entity {
 	/**
 	 * Get a validator.
 	 * @param  array $locales
-	 * @return \Asgard\Validation\Validator
+	 * @return \Asgard\Validation\ValidatorInterface
 	 */
 	public function getValidator(array $locales=[]) {
 		$validator = $this->getDefinition()->getEntitiesManager()->createValidator();
@@ -183,11 +183,11 @@ abstract class Entity {
 
 	/**
 	 * Prepare the validator.
-	 * @param  \Asgard\Validation\Validator $validator
+	 * @param  \Asgard\Validation\ValidatorInterface $validator
 	 * @param  array                        $locales
-	 * @return \Asgard\Validation\Validator
+	 * @return \Asgard\Validation\ValidatorInterface
 	 */
-	public function prepareValidator(\Asgard\Validation\Validator $validator, array $locales=[]) {
+	public function prepareValidator(\Asgard\Validation\ValidatorInterface $validator, array $locales=[]) {
 		$messages = [];
 
 		foreach($this->getDefinition()->properties() as $name=>$property) {

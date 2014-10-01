@@ -7,7 +7,7 @@ namespace Asgard\Form;
 class Group implements \ArrayAccess, \Iterator {
 	/**
 	 * Widgets manager.
-	 * @var WidgetsManager
+	 * @var WidgetsManagerInterface
 	 */
 	protected $widgetsManager;
 	/**
@@ -17,7 +17,7 @@ class Group implements \ArrayAccess, \Iterator {
 	protected $name = null;
 	/**
 	 * Parent.
-	 * @var Group
+	 * @var GroupInterface
 	 */
 	protected $parent;
 	/**
@@ -51,7 +51,7 @@ class Group implements \ArrayAccess, \Iterator {
 	 * @param array  $fields
 	 * @param string $name
 	 * @param array  $data
-	 * @param Group  $parent
+	 * @param GroupInterface  $parent
 	 */
 	public function __construct(
 		array $fields,
@@ -66,24 +66,21 @@ class Group implements \ArrayAccess, \Iterator {
 	}
 
 	/**
-	 * Create a validator.
-	 * @return \Asgard\Validation\Validator
+	 * {@inheritDoc}
 	 */
 	public function createValidator() {
 		return $this->parent->getTranslator();
 	}
 
 	/**
-	 * Get the translator.
-	 * @return \Symfony\Component\Translation\TranslatorInterface
+	 * {@inheritDoc}
 	 */
 	public function getTranslator() {
 		return $this->parent->getTranslator();
 	}
 
 	/**
-	 * Get the request from group or a parent.
-	 * @return \Asgard\Http\Request
+	 * {@inheritDoc}
 	 */
 	public function getRequest() {
 		if($this->parent !== null)
@@ -93,40 +90,35 @@ class Group implements \ArrayAccess, \Iterator {
 	}
 
 	/**
-	 * Get the parent container.
-	 * @return \Asgard\Container\Container
+	 * {@inheritDoc}
 	 */
 	public function getContainer() {
 		return $this->parent->getContainer();
 	}
 
 	/**
-	 * Return the name.
-	 * @return string
+	 * {@inheritDoc}
 	 */
 	public function name() {
 		return $this->name;
 	}
 	
 	/**
-	 * Set the name.
-	 * @param string $name
+	 * {@inheritDoc}
 	 */
 	public function setName($name) {
 		$this->name = $name;
 	}
 
 	/**
-	 * Return the number of fields.
-	 * @return integer
+	 * {@inheritDoc}
 	 */
 	public function size() {
 		return count($this->fields);
 	}
 	
 	/**
-	 * Check if group has a file.
-	 * @return boolean true if has file
+	 * {@inheritDoc}
 	 */
 	public function hasFile() {
 		if($this->hasfile === true)
@@ -144,20 +136,14 @@ class Group implements \ArrayAccess, \Iterator {
 	}
 
 	/**
-	 * Return a new widget instance.
-	 * @param  string|callable $widget Widget class or callback.
-	 * @param  string          $name   string
-	 * @param  mixed           $value
-	 * @param  array           $options
-	 * @return Widget
+	 * {@inheritDoc}
 	 */
 	public function getWidget($widget, $name, $value, array $options=[]) {
 		return $this->getWidgetsManager()->getWidget($widget, $name, $value, $options, $this);
 	}
 
 	/**
-	 * Return the widgets manager.
-	 * @return WidgetsManager
+	 * {@inheritDoc}
 	 */
 	public function getWidgetsManager() {
 		if($this->parent)
@@ -169,8 +155,7 @@ class Group implements \ArrayAccess, \Iterator {
 	}
 
 	/**
-	 * Set the widgets manager.
-	 * @param WidgetsManager $widgetsManager
+	 * {@inheritDoc}
 	 */
 	public function setWidgetsManager(WidgetsManager $widgetsManager) {
 		$this->widgetsManager = $widgetsManager;
@@ -178,11 +163,7 @@ class Group implements \ArrayAccess, \Iterator {
 	}
 
 	/**
-	 * Render a field.
-	 * @param  string|callable $render_callback
-	 * @param  Field           $field
-	 * @param  array           $options
-	 * @return Widget
+	 * {@inheritDoc}
 	 */
 	public function render($render_callback, $field, array $options=[]) {
 		if($this->parent)
@@ -192,24 +173,21 @@ class Group implements \ArrayAccess, \Iterator {
 	}
 
 	/**
-	 * Check if group is valid.
-	 * @return boolean true if valid
+	 * {@inheritDoc}
 	 */
 	public function isValid() {
 		return $this->getValidator()->valid();
 	}
 
 	/**
-	 * Check if group's form was sent.
-	 * @return boolean true if sent
+	 * {@inheritDoc}
 	 */
 	public function sent() {
 		return $this->parent->sent();
 	}
 	
 	/**
-	 * Return errors.
-	 * @return array
+	 * {@inheritDoc}
 	 */
 	public function errors() {
 		if(!$this->sent())
@@ -233,26 +211,21 @@ class Group implements \ArrayAccess, \Iterator {
 	}
 
 	/**
-	 * Remove a field.
-	 * @param  string $name
+	 * {@inheritDoc}
 	 */
 	public function remove($name) {
 		unset($this->fields[$name]);
 	}
 
 	/**
-	 * Return a field.
-	 * @param  string $name
-	 * @return Field|Group
+	 * {@inheritDoc}
 	 */
 	public function get($name) {
 		return $this->fields[$name];
 	}
 	
 	/**
-	 * Add a field.
-	 * @param Field|Group  $field
-	 * @param string       $name
+	 * {@inheritDoc}
 	 */
 	public function add($field, $name=null) {
 		if($name !== null)
@@ -264,17 +237,14 @@ class Group implements \ArrayAccess, \Iterator {
 	}
 	
 	/**
-	 * Check if has a field.
-	 * @param  string  $field_name
-	 * @return boolean
+	 * {@inheritDoc}
 	 */
 	public function has($field_name) {
 		return isset($this->fields[$field_name]);
 	}
 
 	/**
-	 * Reset fields.
-	 * @return Group $this
+	 * {@inheritDoc}
 	 */
 	public function resetFields() {
 		$this->fields = [];
@@ -282,16 +252,14 @@ class Group implements \ArrayAccess, \Iterator {
 	}
 
 	/**
-	 * Return all fields.
-	 * @return array
+	 * {@inheritDoc}
 	 */
 	public function fields() {
 		return $this->fields;
 	}
 	
 	/**
-	 * Add fields.
-	 * @param array $fields
+	 * {@inheritDoc}
 	 */
 	public function addFields(array $fields) {
 		foreach($fields as $name=>$sub_fields)
@@ -300,8 +268,7 @@ class Group implements \ArrayAccess, \Iterator {
 	}
 	
 	/**
-	 * Reset data.
-	 * @return Group $this
+	 * {@inheritDoc}
 	 */
 	public function reset() {
 		$this->setData([]);
@@ -309,8 +276,7 @@ class Group implements \ArrayAccess, \Iterator {
 	}
 	
 	/**
-	 * Set data.
-	 * @param array $data
+	 * {@inheritDoc}
 	 */
 	public function setData(array $data) {
 		$this->data = $data;
@@ -319,8 +285,7 @@ class Group implements \ArrayAccess, \Iterator {
 	}
 	
 	/**
-	 * Return data.
-	 * @return array
+	 * {@inheritDoc}
 	 */
 	public function data() {
 		$res = [];
@@ -414,18 +379,15 @@ class Group implements \ArrayAccess, \Iterator {
 	}
 
 	/**
-	 * Set parent.
-	 * @param  Group $parent
-	 * @return Group $thi
+	 * {@inheritDoc}
 	 */
-	public function setParent(Group $parent) {
+	public function setParent(GroupInterface $parent) {
 		$this->parent = $parent;
 		return $this;
 	}
 
 	/**
-	 * Get top parent form.
-	 * @return Group
+	 * {@inheritDoc}
 	 */
 	public function getTopForm() {
 		if($this->parent)
@@ -434,8 +396,7 @@ class Group implements \ArrayAccess, \Iterator {
 	}
 	
 	/**
-	 * Set fields.
-	 * @param array $fields
+	 * {@inheritDoc}
 	 */
 	public function setFields(array $fields) {
 		$this->fields = [];
@@ -443,8 +404,7 @@ class Group implements \ArrayAccess, \Iterator {
 	}
 
 	/**
-	 * Get all parents.
-	 * @return array
+	 * {@inheritDoc}
 	 */
 	public function getParents() {
 		if($this->parent)
@@ -460,7 +420,7 @@ class Group implements \ArrayAccess, \Iterator {
 
 	/**
 	 * Return a validator.
-	 * @return \Asgard\Validation\Validator
+	 * @return \Asgard\Validation\ValidatorInterface
 	 */
 	protected function getValidator() {
 		$validator = $this->createValidator();
@@ -526,9 +486,9 @@ class Group implements \ArrayAccess, \Iterator {
 
 	/**
 	 * Parse new fields.
-	 * @param  array|Field|Group $fields
+	 * @param  array|Field|GroupInterface $fields
 	 * @param  string $name
-	 * @return Group|Field
+	 * @return GroupInterface|Field
 	 */
 	protected function parseFields($fields, $name) {
 		if(is_array($fields)) {
@@ -567,14 +527,14 @@ class Group implements \ArrayAccess, \Iterator {
 	}
 
 	/**
-	 * Actually perform the group saving. Empty by default but can be overriden.
+	 * {@inheritDoc}
 	 */
 	public function doSave() {
 	}
 	
 	/**
 	 * Save the group and its children.
-	 * @param  Group $group
+	 * @param  GroupInterface $group
 	 */
 	protected function _save($group=null) {
 		if(!$group)

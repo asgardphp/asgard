@@ -4,15 +4,15 @@ namespace Asgard\Orm;
 /**
  * Handle database storage of entities.
  */
-class DataMapper {
+class DataMapper implements DataMapperInterface {
 	/**
 	 * Entities Manager.
-	 * @var \Asgard\Entity\EntitiesManager
+	 * @var \Asgard\Entity\EntitiesManagerInterface
 	 */
 	protected $entitiesManager;
 	/**
 	 * Database access.
-	 * @var \Asgard\Db\DB
+	 * @var \Asgard\Db\DBInterface
 	 */
 	protected $db;
 	/**
@@ -38,14 +38,14 @@ class DataMapper {
 
 	/**
 	 * Constructor.
-	 * @param \Asgard\Entity\EntitiesManager $entitiesManager
-	 * @param \Asgard\Db\DB                  $db
+	 * @param \Asgard\Entity\EntitiesManagerInterface $entitiesManager
+	 * @param \Asgard\Db\DBInterface                  $db
 	 * @param string                         $locale    Default locale.
 	 * @param string                         $prefix    Tables prefix.
 	 * @param \Asgard\Container\Factory      $ormFactory
 	 * @param \Asgard\Container\Factory      $collectionOrmFactory
 	 */
-	public function __construct(\Asgard\Entity\EntitiesManager $entitiesManager, \Asgard\Db\DB $db, $locale='en', $prefix=null, \Asgard\Container\Factory $ormFactory=null, \Asgard\Container\Factory $collectionOrmFactory=null) {
+	public function __construct(\Asgard\Entity\EntitiesManagerInterface $entitiesManager, \Asgard\Db\DBInterface $db, $locale='en', $prefix=null, \Asgard\Container\Factory $ormFactory=null, \Asgard\Container\Factory $collectionOrmFactory=null) {
 		$this->entitiesManager      = $entitiesManager;
 		$this->db                   = $db;
 		$this->locale               = $locale;
@@ -55,10 +55,7 @@ class DataMapper {
 	}
 
 	/**
-	 * Load an entity from database.
-	 * @param  string                $entityClass entity class
-	 * @param  integer               $id          entity id
-	 * @return \Asgard\Entity\Entity
+	 * {@inheritDoc}
 	 */
 	public function load($entityClass, $id) {
 		if(!ctype_digit($id) && !is_int($id))
@@ -75,9 +72,7 @@ class DataMapper {
 	}
 	
 	/**
-	 * Create an ORM instance.
-	 * @param  string          $entityClass 
-	 * @return \Asgard\Orm\ORM
+	 * {@inheritDoc}
 	 */
 	public function orm($entityClass) {
 		$definition = $this->entitiesManager->get($entityClass);
@@ -88,18 +83,14 @@ class DataMapper {
 	}
 
 	/**
-	 * Return all entities of a class.
-	 * @param  string $entityClass
-	 * @return array
+	 * {@inheritDoc}
 	 */
 	public function all($entityClass) {
 		return $this->orm($entityClass)->all();
 	}
 	
 	/**
-	 * Destroy all entities of a clas.
-	 * @param  string     $entityClass 
-	 * @return DataMapper $this
+	 * {@inheritDoc}
 	 */
 	public function destroyAll($entityClass) {
 		foreach($this->all($entityClass) as $entity)
@@ -108,10 +99,7 @@ class DataMapper {
 	}
 	
 	/**
-	 * Destroy a specific entity.
-	 * @param  string  $entityClass entity class
-	 * @param  integer $id          entity id
-	 * @return boolean true if success, false otherwise
+	 * {@inheritDoc}
 	 */
 	public function destroyOne($entityClass, $id) {
 		if($entity = $this->load($entityClass, $id)) {
@@ -122,9 +110,7 @@ class DataMapper {
 	}
 
 	/**
-	 * Destroy an entity.
-	 * @param  \Asgard\Entity\Entity $entity
-	 * @return true for success, otherwise false
+	 * {@inheritDoc}
 	 */
 	public function destroy(\Asgard\Entity\Entity $entity) {
 		return $entity->getDefinition()->trigger('destroy', [$entity], function($chain, $entity) {
@@ -167,11 +153,7 @@ class DataMapper {
 	}
 
 	/**
-	 * Create and store an entity.
-	 * @param  string  $entityClass 
-	 * @param  array   $values        default entity attributes
-	 * @param  boolean $force         skip validation
-	 * @return \Asgard\Entity\Entity
+	 * {@inheritDoc}
 	 */
 	public function create($entityClass, $values=null, $force=false) {
 		$m = $this->entitiesManager->get($entityClass)->make();
@@ -179,9 +161,7 @@ class DataMapper {
 	}
 
 	/**
-	 * Get DataMapper validator for entities.
-	 * @param  \Asgard\Entity\Entity $entity
-	 * @return \Asgard\Validation\Validator
+	 * {@inheritDoc}
 	 */
 	public function getValidator(\Asgard\Entity\Entity $entity) {
 		$validator = $entity->getDefinition()->getEntitiesManager()->createValidator();
@@ -192,9 +172,7 @@ class DataMapper {
 	}
 
 	/**
-	 * Prepare the validator.
-	 * @param  \Asgard\Entity\Entity        $entity
-	 * @param  \Asgard\Validation\Validator $validator
+	 * {@inheritDoc}
 	 */
 	public function prepareValidator($entity, $validator) {
 		foreach($entity->getDefinition()->properties() as $name=>$property) {
@@ -204,9 +182,7 @@ class DataMapper {
 	}
 	
 	/**
-	 * Validate an entity.
-	 * @param  \Asgard\Entity\Entity $entity
-	 * @return true for valid, otherwise false
+	 * {@inheritDoc}
 	 */
 	public function valid(\Asgard\Entity\Entity $entity) {
 		$data = $entity->toArrayRaw();
@@ -221,9 +197,7 @@ class DataMapper {
 	}
 
 	/**
-	 * Return entity errors.
-	 * @param  \Asgard\Entity\Entity $entity
-	 * @return array
+	 * {@inheritDoc}
 	 */
 	public function errors(\Asgard\Entity\Entity $entity) {
 		$data = $entity->toArrayRaw();
@@ -246,11 +220,7 @@ class DataMapper {
 	}
 
 	/**
-	 * Store an entity.
-	 * @param  \Asgard\Entity\Entity $entity
-	 * @param  array                 $values entity attributes
-	 * @param  boolean               $force  skip validation
-	 * @return boolean               true for successful storage, false otherwise
+	 * {@inheritDoc}
 	 */
 	public function save(\Asgard\Entity\Entity $entity, $values=null, $force=false) {
 		#set $values if any
@@ -368,10 +338,7 @@ class DataMapper {
 	}
 
 	/**
-	 * Return the related entities of an entity.
-	 * @param  \Asgard\Entity\Entity $entity
-	 * @param  string                $name   relation name
-	 * @return \Asgrd\Entity\Entity|CollectionORM
+	 * {@inheritDoc}
 	 */
 	public function related(\Asgard\Entity\Entity $entity, $name) {
 		$rel = $this->relation($entity->getDefinition(), $name);
@@ -399,10 +366,7 @@ class DataMapper {
 	}
 
 	/**
-	 * Get related entities.
-	 * @param  \Asgard\Entity\Entity $entity
-	 * @param  string                $name
-	 * @return \Asgard\Entity\Entity|array
+	 * {@inheritDoc}
 	 */
 	public function getRelated(\Asgard\Entity\Entity $entity, $name) {
 		$orm = $this->related($entity, $name);
@@ -416,7 +380,7 @@ class DataMapper {
 	/**
 	 * Create an ORM instance for a specific entity.
 	 * @param  \Asgard\Entity\Entity $entity
-	 * @return \Asgard\Orm\ORM
+	 * @return \Asgard\Orm\ORMInterface
 	 */
 	protected function entityORM(\Asgard\Entity\Entity $entity) {
 		if($entity->isNew())
@@ -426,18 +390,14 @@ class DataMapper {
 	}
 	
 	/**
-	 * Get the translations table of an entity class.
-	 * @param  \Asgard\Entity\EntityDefinition $definition
-	 * @return string
+	 * {@inheritDoc}
 	 */
 	public function getTranslationTable(\Asgard\Entity\EntityDefinition $definition) {
 		return $this->getTable($definition).'_translation';
 	}
 
 	/**
-	 * Get the table of an entity class.
-	 * @param  \Asgard\Entity\EntityDefinition $definition
-	 * @return string
+	 * {@inheritDoc}
 	 */
 	public function getTable(\Asgard\Entity\EntityDefinition $definition) {
 		if($definition->get('table'))
@@ -447,10 +407,7 @@ class DataMapper {
 	}
 	
 	/**
-	 * Return an entity with translations.
-	 * @param  \Asgard\Entity\Entity $entity
-	 * @param  string                $locale
-	 * @return \Asgard\Entity\Entity
+	 * {@inheritDoc}
 	 */
 	public function getTranslations(\Asgard\Entity\Entity $entity, $locale=null) {
 		$dal = new \Asgard\Db\DAL($this->db, $this->getTranslationTable($entity->getDefinition()));
@@ -466,9 +423,7 @@ class DataMapper {
 	}
 
 	/**
-	 * Return the entity relations objects.
-	 * @param  \Asgard\Entity\EntityDefinition $definition
-	 * @return array
+	 * {@inheritDoc}
 	 */
 	public function relations(\Asgard\Entity\EntityDefinition $definition) {
 		if($relations = $definition->get('relations'))
@@ -485,20 +440,14 @@ class DataMapper {
 	}
 
 	/**
-	 * Get a relation object.
-	 * @param  \Asgard\Entity\EntityDefinition $definition
-	 * @param  string                          $name       relation name
-	 * @return EntityRelation
+	 * {@inheritDoc}
 	 */
 	public function relation(\Asgard\Entity\EntityDefinition $definition, $name) {
 		return $this->relations($definition)[$name];
 	}
 
 	/**
-	 * Check if the definition has the relaton/
-	 * @param  \Asgard\Entity\EntityDefinition $definition
-	 * @param  string                          $name
-	 * @return boolean
+	 * {@inheritDoc}
 	 */
 	public function hasRelation(\Asgard\Entity\EntityDefinition $definition, $name) {
 		return isset($this->relations($definition)[$name]);
@@ -520,8 +469,7 @@ class DataMapper {
 	}
 
 	/**
-	 * Return the database instance.
-	 * @return \Asgard\Db\DB
+	 * {@inheritDoc}
 	 */
 	public function getDB() {
 		return $this->db;

@@ -4,12 +4,9 @@ namespace Asgard\Config;
 /**
  * Configuration bag.
  */
-class Config extends \Asgard\Common\Bag {
+class Config extends \Asgard\Common\Bag implements ConfigInterface {
 	/**
-	 * Load a directory.
-	 * @param  string $dir
-	 * @param  string $env
-	 * @return Config      $this
+	 * {@inheritDoc}
 	 */
 	public function loadDir($dir, $env=null) {
 		foreach(glob($dir.'/*.yml') as $filename) {
@@ -27,9 +24,7 @@ class Config extends \Asgard\Common\Bag {
 	}
 	
 	/**
-	 * Load a file.
-	 * @param  string $filename
-	 * @return Confug $this
+	 * {@inheritDoc}
 	 */
 	public function loadFile($filename) {
 		$yaml = new \Symfony\Component\Yaml\Parser();

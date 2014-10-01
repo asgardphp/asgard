@@ -4,7 +4,7 @@ namespace Asgard\Http;
 /**
  * HTTP Kernel.
  */
-class HttpKernel {
+class HttpKernel implements HttpKernelInterface {
 	use \Asgard\Container\ContainerAwareTrait;
 
 	/**
@@ -49,7 +49,7 @@ class HttpKernel {
 	protected $afterFilters = [];
 	/**
 	 * Hooks manager dependency.
-	 * @var \Asgard\Hook\HooksManager
+	 * @var \Asgard\Hook\HooksManagerInterface
 	 */
 	protected $hooksManager;
 	/**
@@ -74,22 +74,20 @@ class HttpKernel {
 	protected $templateEngineFactory;
 	/**
 	 * Resolver dependency.
-	 * @var Resolver
+	 * @var ResolverInterface
 	 */
 	protected $resolver;
 
 	/**
 	 * Constructor.
-	 * @param \Asgard\Container\Container $container
+	 * @param \Asgard\Container\ContainerInterface $container
 	 */
-	public function __construct(\Asgard\Container\Container $container=null) {
+	public function __construct(\Asgard\Container\ContainerInterface $container=null) {
 		$this->container = $container;
 	}
 
 	/**
-	 * Set debug flag.
-	 * @param boolean $debug
-	 * @return HttpKernel $this
+	 * {@inheritDoc}
 	 */
 	public function setDebug($debug) {
 		$this->debug = $debug;
@@ -97,9 +95,7 @@ class HttpKernel {
 	}
 
 	/**
-	 * Set translator dependency.
-	 * @param \Symfony\Component\Translation\TranslatorInterface $translator
-	 * @return HttpKernel $this
+	 * {@inheritDoc}
 	 */
 	public function setTranslator(\Symfony\Component\Translation\TranslatorInterface $translator) {
 		$this->translator = $translator;
@@ -107,19 +103,15 @@ class HttpKernel {
 	}
 
 	/**
-	 * Set Resolver dependency.
-	 * @param Resolver $resolver
-	 * @return HttpKernel $this
+	 * {@inheritDoc}
 	 */
-	public function setResolver(Resolver $resolver) {
+	public function setResolver(ResolverInterface $resolver) {
 		$this->resolver = $resolver;
 		return $this;
 	}
 
 	/**
-	 * Set Error handler dependency.
-	 * @param \Asgard\Debug\ErrorHandler $errorHandler
-	 * @return HttpKernel $this
+	 * {@inheritDoc}
 	 */
 	public function setErrorHandler(\Asgard\Debug\ErrorHandler $errorHandler) {
 		$this->errorHandler = $errorHandler;
@@ -127,19 +119,15 @@ class HttpKernel {
 	}
 
 	/**
-	 * Set Hooks manager dependency.
-	 * @param \Asgard\Hook\HooksManager $hooksManager
-	 * @return HttpKernel $this
+	 * {@inheritDoc}
 	 */
-	public function setHooksManager(\Asgard\Hook\HooksManager $hooksManager) {
+	public function setHooksManager(\Asgard\Hook\HooksManagerInterface $hooksManager) {
 		$this->hooksManager = $hooksManager;
 		return $this;
 	}
 
 	/**
-	 * Set template engine factory.
-	 * @param \Asgard\Container\Factory $templateEngineFactory
-	 * @return HttpKernel $this
+	 * {@inheritDoc}
 	 */
 	public function setTemplateEngineFactory(\Asgard\Container\Factory $templateEngineFactory) {
 		$this->templateEngineFactory = $templateEngineFactory;
@@ -147,16 +135,14 @@ class HttpKernel {
 	}
 
 	/**
-	 * Return the HooksManager.
-	 * @return \Asgard\Hook\HooksManager
+	 * {@inheritDoc}
 	 */
 	public function getHooksManager() {
 		return $this->hooksManager;
 	}
 
 	/**
-	 * Return the resolver.
-	 * @return HooksManager
+	 * {@inheritDoc}
 	 */
 	public function getResolver() {
 		if(!$this->resolver)
@@ -165,56 +151,49 @@ class HttpKernel {
 	}
 
 	/**
-	 * Return the debug flag.
-	 * @return boolean
+	 * {@inheritDoc}
 	 */
 	public function getDebug() {
 		return $this->hooksManager;
 	}
 
 	/**
-	 * Return the translator
-	 * @return \Symfony\Component\Translation\TranslatorInterface
+	 * {@inheritDoc}
 	 */
 	public function getTranslator() {
 		return $this->translator;
 	}
 
 	/**
-	 * Return the error handler.
-	 * @return \Asgard\Debug\ErrorHandler
+	 * {@inheritDoc}
 	 */
 	public function getErrorHandler() {
 		return $this->errorHandler;
 	}
 
 	/**
-	 * Return the HooksManager
-	 * @return \Asgard\Container\Factory
+	 * {@inheritDoc}
 	 */
 	public function getTemplateEngineFactory() {
 		return $this->templateEngineFactory;
 	}
 
 	/**
-	 * Set the start file.
-	 * @param  string $start
+	 * {@inheritDoc}
 	 */
 	public function start($start) {
 		$this->start = $start;
 	}
 
 	/**
-	 * Set the end file.
-	 * @param  string $end
+	 * {@inheritDoc}
 	 */
 	public function end($end) {
 		$this->end = $end;
 	}
 
 	/**
-	 * Run the kernel and return a response.
-	 * @return Response
+	 * {@inheritDoc}
 	 */
 	public function run() {
 		$request = Request::singleton();
@@ -227,9 +206,7 @@ class HttpKernel {
 	}
 
 	/**
-	 * Set the HTTP request.
-	 * @param  Request $request
-	 * @return HttpKernel $this
+	 * {@inheritDoc}
 	 */
 	public function addRequest(Request $request) {
 		$this->requests[] = $request;
@@ -237,10 +214,7 @@ class HttpKernel {
 	}
 
 	/**
-	 * Process the request.
-	 * @param  Request $request
-	 * @param  boolean $catch   true to catch exceptions.
-	 * @return Response
+	 * {@inheritDoc}
 	 */
 	public function process(Request $request, $catch=true) {
 		$this->addRequest($request);
@@ -287,8 +261,7 @@ class HttpKernel {
 	}
 
 	/**
-	 * Get the last given request.
-	 * @return Request|null
+	 * {@inheritDoc}
 	 */
 	public function getRequest() {
 		if(!isset($this->requests[count($this->requests)-1]))
@@ -326,12 +299,7 @@ class HttpKernel {
 	}
 
 	/**
-	 * Run the controller and action.
-	 * @param  string         $controllerClass
-	 * @param  string         $action
-	 * @param  Request        $request
-	 * @param  Route   $route Route prefix to match.
-	 * @return mixed
+	 * {@inheritDoc}
 	 */
 	public function runController($controllerClass, $action, Request $request, Route $route=null) {
 		$controller = new $controllerClass();
@@ -350,8 +318,7 @@ class HttpKernel {
 	}
 
 	/**
-	 * Add a template path solver.
-	 * @param callable $cb
+	 * {@inheritDoc}
 	 */
 	public function addTemplatePathSolver($cb) {
 		$this->templatePathSolvers[] = $cb;
@@ -391,10 +358,7 @@ class HttpKernel {
 	}
 
 	/**
-	 * Filter all controllers and actions.
-	 * @param  string $filter
-	 * @param  array $args
-	 * @return HttpKernel  $this
+	 * {@inheritDoc}
 	 */
 	public function filterAll($filter, $args=[]) {
 		$this->filters[] = ['filter'=>$filter, 'args'=>$args];
@@ -402,11 +366,7 @@ class HttpKernel {
 	}
 
 	/**
-	 * Fillter controllers and actions with criteria.
-	 * @param  array  $criteria
-	 * @param  string $filter
-	 * @param  array  $args
-	 * @return HttpKernel  $this
+	 * {@inheritDoc}
 	 */
 	public function filter($criteria, $filter, $args=[]) {
 		$this->filters[] = ['criteria'=>$criteria, 'filter'=>$filter, 'args'=>$args];
@@ -414,9 +374,7 @@ class HttpKernel {
 	}
 
 	/**
-	 * Filter before all controllers and actions.
-	 * @param  callable $filter
-	 * @return HttpKernel  $this
+	 * {@inheritDoc}
 	 */
 	public function filterBeforeAll($filter) {
 		$this->beforeFilters[] = ['filter'=>$filter];
@@ -424,10 +382,7 @@ class HttpKernel {
 	}
 
 	/**
-	 * Filter before controllers and actions with criteria.
-	 * @param  array    $criteria
-	 * @param  callable $filter
-	 * @return HttpKernel  $this
+	 * {@inheritDoc}
 	 */
 	public function filterBefore($criteria, $filter) {
 		$this->beforeFilters[] = ['criteria'=>$criteria, 'filter'=>$filter];
@@ -435,9 +390,7 @@ class HttpKernel {
 	}
 
 	/**
-	 * Filter after all controllers and actions.
-	 * @param  callable $filter
-	 * @return HttpKernel  $this
+	 * {@inheritDoc}
 	 */
 	public function filterAfterAll($filter) {
 		$this->afterFilters[] = ['filter'=>$filter];
@@ -445,10 +398,7 @@ class HttpKernel {
 	}
 
 	/**
-	 * Filter after controllers and actions with criteria.
-	 * @param  array    $criteria
-	 * @param  callable $filter
-	 * @return HttpKernel  $this
+	 * {@inheritDoc}
 	 */
 	public function filterAfter($criteria, $filter) {
 		$this->afterFilters[] = ['criteria'=>$criteria, 'filter'=>$filter];

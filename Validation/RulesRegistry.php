@@ -4,10 +4,10 @@ namespace Asgard\Validation;
 /**
  * Contains the rules for validation.
  */
-class RulesRegistry {
+class RulesRegistry implements RulesRegistryInterface {
 	/**
 	 * Singleton instance.
-	 * @var RulesRegistry
+	 * @var RulesRegistryInterface
 	 */
 	protected static $instance;
 	/**
@@ -30,7 +30,7 @@ class RulesRegistry {
 
 	/**
 	 * Return the singleton.
-	 * @return RulesRegistry
+	 * @return RulesRegistryInterface
 	 */
 	public static function singleton() {
 		if(!static::$instance)
@@ -39,10 +39,7 @@ class RulesRegistry {
 	}
 
 	/**
-	 * Set the default message of a rule.
-	 * @param  string $rule    rule name
-	 * @param  string $message
-	 * @return RulesRegistry          $this
+	 * {@inheritDoc}
 	 */
 	public function message($rule, $message) {
 		$rule = strtolower($rule);
@@ -51,9 +48,7 @@ class RulesRegistry {
 	}
 
 	/**
-	 * Set an array of rules messages.
-	 * @param  array  $rules
-	 * @return RulesRegistry          $this
+	 * {@inheritDoc}
 	 */
 	public function messages(array $rules) {
 		foreach($rules as $rule=>$message)
@@ -62,9 +57,7 @@ class RulesRegistry {
 	}
 
 	/**
-	 * Get the default message of a rule.
-	 * @param  string $rule rule name
-	 * @return string
+	 * {@inheritDoc}
 	 */
 	public function getMessage($rule) {
 		$rule = strtolower($rule);
@@ -73,10 +66,7 @@ class RulesRegistry {
 	}
 
 	/**
-	 * Register a rule.
-	 * @param  string $rule         rule name
-	 * @param  \Closure|string      $object
-	 * @return RulesRegistry        $this
+	 * {@inheritDoc}
 	 */
 	public function register($rule, $object) {
 		if($object instanceof \Closure) {
@@ -88,9 +78,7 @@ class RulesRegistry {
 	}
 
 	/**
-	 * Register a namespace.
-	 * @param  string $namespace
-	 * @return RulesRegistry          $this
+	 * {@inheritDoc}
 	 */
 	public function registerNamespace($namespace) {
 		$namespace = '\\'.trim($namespace, '\\').'\\';
@@ -100,10 +88,7 @@ class RulesRegistry {
 	}
 
 	/**
-	 * Get a rule instance.
-	 * @param  string $rule   rule name
-	 * @param  array $params rule parameters
-	 * @return Rule
+	 * {@inheritDoc}
 	 */
 	public function getRule($rule, $params=[]) {
 		if($rule === 'required' || $rule === 'isNull')
@@ -133,9 +118,7 @@ class RulesRegistry {
 	}
 
 	/**
-	 * Get the name of a rule.
-	 * @param  Rule $rule rule object
-	 * @return string       rule name
+	 * {@inheritDoc}
 	 */
 	public function getRuleName($rule) {
 		foreach($this->rules as $name=>$class) {

@@ -7,7 +7,7 @@ namespace Asgard\Db;
 class DAL {
 	/**
 	 * Database instance.
-	 * @var DB
+	 * @var DBInterface
 	 */
 	public $db;
 	/**
@@ -86,10 +86,10 @@ class DAL {
 
 	/**
 	 * Constructor.
-	 * @param DB     $db
+	 * @param DBInterface  $db
 	 * @param string|null  $tables
 	 */
-	public function __construct(DB $db, $tables=null) {
+	public function __construct(DBInterface $db, $tables=null) {
 		$this->db = $db;
 		$this->addFrom($tables);
 	}
@@ -307,7 +307,7 @@ class DAL {
 
 	/**
 	 * Get a paginator instance.
-	 * @return \Asgard\Common\Paginator
+	 * @return \Asgard\Common\PaginatorInterface
 	 */
 	public function getPaginator() {
 		if($this->page === null || $this->per_page === null)

@@ -7,22 +7,22 @@ namespace Asgard\Validation\Rules;
 class Each extends \Asgard\Validation\Rule {
 	/**
 	 * Validator.
-	 * @var \Asgard\Validation\Validator
+	 * @var \Asgard\Validation\ValidatorInterface
 	 */
 	public $validator;
 
 	/**
 	 * Constructor.
-	 * @param \Asgard\Validation\Validator $validator
+	 * @param \Asgard\Validation\ValidatorInterface $validator
 	 */
-	public function __construct(\Asgard\Validation\Validator $validator) {
+	public function __construct(\Asgard\Validation\ValidatorInterface $validator) {
 		$this->validator = $validator;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\Validator $validator) {
+	public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\ValidatorInterface $validator) {
 		foreach($input as $k=>$v) {
 			if($this->validator->valid($v) === false)
 				return false;

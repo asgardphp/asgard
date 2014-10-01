@@ -9,9 +9,9 @@ class Migration {
 
 	/**
 	 * Constructor.
-	 * @param \Asgard\Container\Container $container
+	 * @param \Asgard\Container\ContainerInterface $container
 	 */
-	public function __construct($container) {
+	public function __construct(\Asgard\Container\ContainerInterface $container=null) {
 		$this->container = $container;
 	}
 

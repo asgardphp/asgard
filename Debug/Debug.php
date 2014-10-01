@@ -9,7 +9,7 @@ namespace Asgard\Debug;
 class Debug {
 	/**
 	 * Url object to link to javascript files.
-	 * @var \Asgard\Http\URL
+	 * @var \Asgard\Http\URLInterface
 	 */
 	protected static $url;
 
@@ -42,7 +42,7 @@ class Debug {
 
 	/**
 	 * Set the URL dependency.
-	 * @param \Asgard\Http\URL $url
+	 * @param \Asgard\Http\URLInterface $url
 	 */
 	public static function setURL($url) {
 		static::$url = $url;

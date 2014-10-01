@@ -20,12 +20,12 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 	 * Constructor.
 	 * @param \Asgar\dEntity\Entity $entity   \Asgard\Entity\Entity
 	 * @param string                          $relation_name
-	 * @param DataMapper                      $datamapper
+	 * @param DataMapperInterface                      $datamapper
 	 * @param string                          $locale        default locale
 	 * @param string                          $prefix        tables prefix
 	 * @param \Asgard\Container\Factory       $paginatorFactory
 	 */
-	public function __construct(\Asgard\Entity\Entity $entity, $relationName, DataMapper $dataMapper, $locale=null, $prefix=null, \Asgard\Container\Factory $paginatorFactory=null) {
+	public function __construct(\Asgard\Entity\Entity $entity, $relationName, DataMapperInterface $dataMapper, $locale=null, $prefix=null, \Asgard\Container\Factory $paginatorFactory=null) {
 		$this->parent = $entity;
 
 		$this->relation = $dataMapper->relation($entity->getDefinition(), $relationName);
@@ -39,7 +39,7 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 	 * Update the related entities.
 	 * @param  array           $ids   array of entity ids
 	 * @param boolean          $force true to skip validation
-	 * @return CollectionORM          $this
+	 * @return CollectionORMInterface          $this
 	 */
 	public function sync($ids, $force=false) {
 		if(!$ids)
@@ -143,7 +143,7 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 	/**
 	 * Remove entities from the relation.
 	 * @param  array $ids
-	 * @return CollectionORM $this
+	 * @return CollectionORMInterface $this
 	 */
 	public function remove($ids) {
 		if(!is_array($ids))

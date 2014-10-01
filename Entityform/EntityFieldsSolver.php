@@ -4,7 +4,7 @@ namespace Asgard\Entityform;
 /**
  * Solve form fields from entity properties.
  */
-class EntityFieldsSolver {
+class EntityFieldsSolver implements EntityFieldsSolverInterface {
 	/**
 	 * Array of nested solvers.
 	 * @var array
@@ -49,38 +49,33 @@ class EntityFieldsSolver {
 	}
 
 	/**
-	 * Add a nested solver.
-	 * @param EntityFieldsSolver $solver
+	 * {@inheritDoc}
 	 */
-	public function addSolver($solver) {
+	public function addSolver(EntityFieldsSolverInterface $solver) {
 		$this->solvers[] = $solver;
 		return $this;
 	}
 
 	/**
-	 * Add a callback.
-	 * @param callback $cb
+	 * {@inheritDoc}
 	 */
-	public function add($cb) {
+	public function add(callable $cb) {
 		$this->callbacks[] = $cb;
 		return $this;
 	}
 
 	/**
-	 * Add a "many" callback.
-	 * @param callback $cb
+	 * {@inheritDoc}
 	 */
-	public function addMany($cb) {
+	public function addMany(callable $cb) {
 		$this->callbacksMany[] = $cb;
 		return $this;
 	}
 
 	/**
-	 * Solve a property.
-	 * @param  \Asgard\Entity\Property $property
-	 * @return \Asgard\Form\Field
+	 * {@inheritDoc}
 	 */
-	public function solve($property) {
+	public function solve(\Asgard\Entity\Property $property) {
 		if($property->get('many'))
 			return $this->doSolveMany($property);
 		else
@@ -88,11 +83,9 @@ class EntityFieldsSolver {
 	}
 
 	/**
-	 * Actually solve a "single" property.
-	 * @param  \Asgard\Entity\Property $property
-	 * @return \Asgard\Form\Field
+	 * {@inheritDoc}
 	 */
-	public function doSolve($property) {
+	public function doSolve(\Asgard\Entity\Property $property) {
 		foreach(array_reverse($this->callbacks) as $cb) {
 			if(($res = $cb($property)) !== null)
 				return $res;
@@ -106,11 +99,9 @@ class EntityFieldsSolver {
 	}
 
 	/**
-	 * Actually solve a "many" property.
-	 * @param  \Asgard\Entity\Property $property
-	 * @return \Asgard\Form\Field
+	 * {@inheritDoc}
 	 */
-	public function doSolveMany($property) {
+	public function doSolveMany(\Asgard\Entity\Property $property) {
 		foreach(array_reverse($this->callbacksMany) as $cb) {
 			if(($res = $cb($property)) !== null)
 				return $res;

@@ -4,7 +4,7 @@ namespace Asgard\Http;
 /**
  * Session manager.
  */
-class SessionManager implements \Asgard\Common\BagInterface, \ArrayAccess {
+class SessionManager implements \Asgard\Common\BagInterface {
 	/**
 	 * Constructor.
 	 */

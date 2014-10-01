@@ -18,7 +18,7 @@ class Extension extends \Asgard\Validation\Rule {
 	/**
 	 * {@inherits}
 	 */
-	public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\Validator $validator) {
+	public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\ValidatorInterface $validator) {
 		return in_array($input->extension(), $this->extension);
 	}
 

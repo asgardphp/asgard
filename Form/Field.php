@@ -17,7 +17,7 @@ abstract class Field {
 	protected $data_type = 'string';
 	/**
 	 * Parent.
-	 * @var Group
+	 * @var GroupInterface
 	 */
 	protected $parent;
 	/**
@@ -67,7 +67,7 @@ abstract class Field {
 
 	/**
 	 * Get the top parent form.
-	 * @return Form
+	 * @return FormInterface
 	 */
 	public function getTopForm() {
 		return $this->parent->getTopForm();
@@ -167,7 +167,7 @@ abstract class Field {
 	
 	/**
 	 * Set the parent.
-	 * @param Group $parent
+	 * @param GroupInterface $parent
 	 */
 	public function setParent($parent) {
 		$this->parent = $parent;
@@ -175,7 +175,7 @@ abstract class Field {
 
 	/**
 	 * Get the parent.
-	 * @return Group
+	 * @return GroupInterface
 	 */
 	public function getParent() {
 		return $this->parent;

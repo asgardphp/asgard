@@ -4,7 +4,7 @@ namespace Asgard\Common;
 /**
  * Paginator.
  */
-class Paginator {
+class Paginator implements PaginatorInterface {
 	/**
 	 * Number of elements per page.
 	 * @var integer
@@ -41,32 +41,28 @@ class Paginator {
 	}
 	
 	/**
-	 * Get start position.
-	 * @return integer
+	 * {@inheritDoc}
 	 */
 	public function getStart() {
 		return ($this->page-1)*$this->per_page;
 	}
 	
 	/**
-	 * Get limit.
-	 * @return integer
+	 * {@inheritDoc}
 	 */
 	public function getLimit() {
 		return $this->per_page;
 	}
 	
 	/**
-	 * Get number of pages.
-	 * @return integer
+	 * {@inheritDoc}
 	 */
 	public function getPages() {
 		return ceil($this->total/$this->per_page);
 	}
 	
 	/**
-	 * Get first element position.
-	 * @return integer
+	 * {@inheritDoc}
 	 */
 	public function getFirstNbr() {
 		$first = $this->getStart()+1;
@@ -77,8 +73,7 @@ class Paginator {
 	}
 	
 	/**
-	 * Get last element position.
-	 * @return integer
+	 * {@inheritDoc}
 	 */
 	public function getLastNbr() {
 		$last = $this->getStart()+$this->getLimit();
@@ -89,8 +84,7 @@ class Paginator {
 	}
 	
 	/**
-	 * Render the pagination.
-	 * @return string
+	 * {@inheritDoc}
 	 */
 	public function render() {
 		$r = '';
@@ -104,32 +98,28 @@ class Paginator {
 	}
 	
 	/**
-	 * Check if has previous page.
-	 * @return boolean
+	 * {@inheritDoc}
 	 */
 	public function hasPrev() {
 		return ($this->page > 1);
 	}
 	
 	/**
-	 * Check if has next page.
-	 * @return boolean
+	 * {@inheritDoc}
 	 */
 	public function hasNext() {
 		return ($this->page < $this->getPages());
 	}
 	
 	/**
-	 * Get the previous page url.
-	 * @return string
+	 * {@inheritDoc}
 	 */
 	public function getPrev() {
 		return $this->request->url->full(['page'=>$this->page-1]);
 	}
 	
 	/**
-	 * Get the next page url.
-	 * @return string
+	 * {@inheritDoc}
 	 */
 	public function getNext() {
 		return $this->request->url->full(['page'=>$this->page+1]);

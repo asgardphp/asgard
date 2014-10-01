@@ -209,7 +209,7 @@ class Test extends \PHPUnit_Framework_TestCase {
 			'min' => 'Must be over min!'
 		])->getRuleMessage('min'));
 
-		#a supprimer? l.151/152 de Validator
+		#a supprimer? l.151/152 de ValidatorInterface
 		$this->assertFalse(v::rule(new \Asgard\Validation\Rules\Min(5))->valid(4));
 
 		#custom registry
@@ -227,7 +227,7 @@ class Test extends \PHPUnit_Framework_TestCase {
 			'contains-1' => '"c" must contain "b".',
 		], v::contains('a')->contains('b')->errors('c')->errors());
 
-		#2 times the same rule in an attribute validator
+		#2 times the same rule in an attribute ValidatorInterface
 		$this->assertEquals([
 			'contains' => '"c" must contain "a".',
 			'contains-1' => '"c" must contain "b".',

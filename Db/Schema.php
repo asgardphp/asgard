@@ -305,7 +305,7 @@ class BuildTable {
 class Table {
 	/**
 	 * Database instance.
-	 * @var DB
+	 * @var DBInterface
 	 */
 	protected $db;
 	/**
@@ -316,10 +316,10 @@ class Table {
 	
 	/**
 	 * Constructor.
-	 * @param DB     $db
+	 * @param DBInterface     $db
 	 * @param string $name
 	 */
-	public function __construct(DB $db, $name) {
+	public function __construct(DBInterface $db, $name) {
 		$this->db = $db;
 		$this->name = $name;
 	}
@@ -406,19 +406,19 @@ class Column {
 	protected $length;
 	/**
 	 * Database instance.
-	 * @var DB
+	 * @var DBInterface
 	 */
 	protected $db;
 	
 	/**
 	 * Constructor.
-	 * @param DB      $db
+	 * @param DBInterface      $db
 	 * @param string  $table
 	 * @param string  $name
 	 * @param string  $type
 	 * @param integer $length
 	 */
-	public function __construct(DB $db, $table, $name, $type=null, $length=null) {
+	public function __construct(DBInterface $db, $table, $name, $type=null, $length=null) {
 		$this->db = $db;
 		$this->table = $table;
 		$this->name = $name;
@@ -697,23 +697,23 @@ class Column {
 /**
  * Schema builder.
  */
-class Schema {
+class Schema implements SchemaInterface {
 	/**
 	 * Database instance.
-	 * @var DB
+	 * @var DBInterface
 	 */
 	protected $db;
 
 	/**
 	 * Constructor.
-	 * @param DB $db
+	 * @param DBInterface $db
 	 */
-	public function __construct(DB $db) {
+	public function __construct(DBInterface $db) {
 		$this->db = $db;
 	}
 
 	/**
-	 * Drop all tables.
+	 * {@inheritDoc}
 	 */
 	public function dropAll() {
 		$tables = \Asgard\Common\ArrayUtils::flateArray($this->db->query('SHOW TABLES')->all());
@@ -722,9 +722,7 @@ class Schema {
 	}
 
 	/**
-	 * Create a table.
-	 * @param  string   $tableName
-	 * @param  callable $cb
+	 * {@inheritDoc}
 	 */
 	public function create($tableName, $cb) {
 		$table = new BuildTable($tableName);
@@ -734,8 +732,7 @@ class Schema {
 	}
 	
 	/**
-	 * Empty a table.
-	 * @param  string $tableName
+	 * {@inheritDoc}
 	 */
 	public function emptyTable($tableName) {
 		$sql = 'TRUNCATE TABLE  `'.$tableName.'`';
@@ -743,9 +740,7 @@ class Schema {
 	}
 	
 	/**
-	 * Drop a column.
-	 * @param  string $table
-	 * @param  string $col
+	 * {@inheritDoc}
 	 */
 	public function dropColumn($table, $col) {
 		$sql = 'alter table `'.$table.'` drop column `'.$col.'`';
@@ -753,8 +748,7 @@ class Schema {
 	}
 	
 	/**
-	 * Drop a table.
-	 * @param  string $table
+	 * {@inheritDoc}
 	 */
 	public function drop($table) {
 		$sql = 'DROP TABLE IF EXISTS `'.$table.'`';
@@ -762,9 +756,7 @@ class Schema {
 	}
 	
 	/**
-	 * Rename a table.
-	 * @param  string $from
-	 * @param  string $to
+	 * {@inheritDoc}
 	 */
 	public function rename($from, $to) {
 		$sql = 'RENAME TABLE `'.$from.'` TO `'.$to.'`';
@@ -772,9 +764,7 @@ class Schema {
 	}
 	
 	/**
-	 * Get a table.
-	 * @param  string   $tableName
-	 * @param  callable $cb
+	 * {@inheritDoc}
 	 */
 	public function table($tableName, $cb) {
 		$table = new Table($this->db, $tableName);
@@ -782,11 +772,7 @@ class Schema {
 	}
 	
 	/**
-	 * Rename a column.
-	 * @param  string $table
-	 * @param  string $old
-	 * @param  string $new
-	 * @param  string $type
+	 * {@inheritDoc}
 	 */
 	public function renameColumn($table, $old, $new, $type=null) {
 		$table = new Table($this->db, $table);

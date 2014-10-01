@@ -4,7 +4,7 @@ namespace Asgard\Form;
 /**
  * Form.
  */
-class Form extends Group {
+class Form extends Group implements FormInterface {
 	use \Asgard\Container\ContainerAwareTrait;
 
 	/**
@@ -69,8 +69,7 @@ class Form extends Group {
 	}
 
 	/**
-	 * Set validator factory dependency.
-	 * @param \Asgard\Container\Factory $validatorFactory
+	 * {@inheritDoc}
 	 */
 	public function setValidatorFactory($validatorFactory) {
 		$this->validatorFactory = $validatorFactory;
@@ -78,8 +77,7 @@ class Form extends Group {
 	}
 
 	/**
-	 * Create a validator.
-	 * @return \Asgard\Validation\Validator
+	 * {@inheritDoc}
 	 */
 	public function createValidator() {
 		if($this->validatorFactory)
@@ -91,8 +89,7 @@ class Form extends Group {
 	}
 
 	/**
-	 * Set the translator.
-	 * @param \Symfony\Component\Translation\TranslatorInterface $translator
+	 * {@inheritDoc}
 	 */
 	public function setTranslator($translator) {
 		$this->translator = $translator;
@@ -100,8 +97,7 @@ class Form extends Group {
 	}
 
 	/**
-	 * Get a translator, from this form or a parent.
-	 * @return \Symfony\Component\Translation\TranslatorInterface
+	 * {@inheritDoc}
 	 */
 	public function getTranslator() {
 		if($this->translator)
@@ -113,8 +109,7 @@ class Form extends Group {
 	}
 
 	/**
-	 * Get container from this form or parent.
-	 * @return \Asgard\Container\Container
+	 * {@inheritDoc}
 	 */
 	public function getContainer() {
 		if($this->container)
@@ -124,8 +119,7 @@ class Form extends Group {
 	}
 
 	/**
-	 * Set the request.
-	 * @param \Asgard\Http\Request $request
+	 * {@inheritDoc}
 	 */
 	public function setRequest(\Asgard\Http\Request $request) {
 		$this->request = $request;
@@ -134,8 +128,7 @@ class Form extends Group {
 	}
 
 	/**
-	 * Get the request from this form or parent.
-	 * @return \Asgard\Http\Request
+	 * {@inheritDoc}
 	 */
 	public function getRequest() {
 		$r = parent::getRequest();
@@ -145,8 +138,7 @@ class Form extends Group {
 	}
 
 	/**
-	 * Set the HTTP method.
-	 * @param string $method
+	 * {@inheritDoc}
 	 */
 	public function setMethod($method) {
 		$this->method = $method;
@@ -154,17 +146,14 @@ class Form extends Group {
 	}
 
 	/**
-	 * Get the HTTP method.
-	 * @return string
+	 * {@inheritDoc}
 	 */
 	public function getMethod() {
 		return strtoupper($this->method);
 	}
 
 	/**
-	 * Set an option.
-	 * @param string $option
-	 * @param mixed $value
+	 * {@inheritDoc}
 	 */
 	public function setOption($option, $value) {
 		$this->options[$option] = $value;
@@ -172,9 +161,7 @@ class Form extends Group {
 	}
 
 	/**
-	 * Get an option.
-	 * @param  string $option
-	 * @return mixed
+	 * {@inheritDoc}
 	 */
 	public function getOption($option) {
 		if(!isset($this->options[$option]))
@@ -183,9 +170,7 @@ class Form extends Group {
 	}
 
 	/**
-	 * Activate CSRF protection.
-	 * @param  boolean $active
-	 * @return Form    $this
+	 * {@inheritDoc}
 	 */
 	public function csrf($active=true) {
 		if($active)
@@ -196,8 +181,7 @@ class Form extends Group {
 	}
 
 	/**
-	 * Set the save callback.
-	 * @param callable $saveCallback
+	 * {@inheritDoc}
 	 */
 	public function setSaveCallback($saveCallback) {
 		$this->saveCallback = $saveCallback;
@@ -205,8 +189,7 @@ class Form extends Group {
 	}
 
 	/**
-	 * Set the pre-save callback.
-	 * @param callable $preSaveCallback
+	 * {@inheritDoc}
 	 */
 	public function setPreSaveCallback($preSaveCallback) {
 		$this->preSaveCallback = $preSaveCallback;
@@ -214,8 +197,7 @@ class Form extends Group {
 	}
 
 	/**
-	 * Save the form and its children.
-	 * @return boolean  true for success
+	 * {@inheritDoc}
 	 */
 	public function save() {
 		if($errors = $this->errors()) {
@@ -233,7 +215,7 @@ class Form extends Group {
 	}
 
 	/**
-	 * Actually perform the save. Does nothing by default but calls the save callback and can be overriden.
+	 * {@inheritDoc}
 	 */
 	public function doSave() {
 		if($cb = $this->saveCallback)
@@ -241,8 +223,7 @@ class Form extends Group {
 	}
 
 	/**
-	 * Check if form was sent.
-	 * @return boolean
+	 * {@inheritDoc}
 	 */
 	public function sent() {
 		if($this->parent)
@@ -277,8 +258,7 @@ class Form extends Group {
 	}
 
 	/**
-	 * Get errors not belonging to a specific field or hidden ones.
-	 * @return array
+	 * {@inheritDoc}
 	 */
 	public function getGeneralErrors() {
 		if(!$this->errors)
@@ -292,25 +272,21 @@ class Form extends Group {
 	}
 
 	/**
-	 * Check if form is valid.
-	 * @return boolean true for success
+	 * {@inheritDoc}
 	 */
 	public function isValid() {
 		return $this->sent() && !$this->errors();
 	}
 
 	/**
-	 * Check if content was uploaded successfully.
-	 * @return boolean true for success
+	 * {@inheritDoc}
 	 */
 	public function uploadSuccess() {
 		return $this->getRequest()->server['CONTENT_LENGTH'] <= (int)ini_get('post_max_size')*1024*1024;
 	}
 	
 	/**
-	 * Return the opening form tag.
-	 * @param  array $options
-	 * @return string
+	 * {@inheritDoc}
 	 */
 	public function open(array $options=[]) {
 		$options = array_merge($this->options, $options);
@@ -326,8 +302,7 @@ class Form extends Group {
 	}
 	
 	/**
-	 * Return the closing form tag.
-	 * @return string
+	 * {@inheritDoc}
 	 */
 	public function close() {
 		$str = '';
@@ -339,10 +314,7 @@ class Form extends Group {
 	}
 	
 	/**
-	 * Return the submit button.
-	 * @param  mixed $value
-	 * @param  array $options
-	 * @return string
+	 * {@inheritDoc}
 	 */
 	public function submit($value, array $options=[]) {
 		return HTMLHelper::tag('input', array_merge([
@@ -352,18 +324,16 @@ class Form extends Group {
 	}
 
 	/**
-	 * Set the parent.
-	 * @param Group $parent
+	 * {@inheritDoc}
 	 */
-	public function setParent(Group $parent) {
+	public function setParent(GroupInterface $parent) {
 		#disable CSRF when form belongs to another
 		$this->csrf(false);
 		return parent::setParent($parent);
 	}
 
 	/**
-	 * Fetch data.
-	 * @return Form $this
+	 * {@inheritDoc}
 	 */
 	public function fetch() {
 		if($this->name) {

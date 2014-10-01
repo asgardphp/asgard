@@ -4,7 +4,7 @@ namespace Asgard\Http;
 /**
  * To manage cookies.
  */
-class CookieManager implements \Asgard\Common\BagInterface, \ArrayAccess {
+class CookieManager implements \Asgard\Common\BagInterface {
 	/**
 	 * Return all cookies.
 	 * @return array

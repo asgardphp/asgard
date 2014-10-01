@@ -17,7 +17,7 @@ class EntityRelation {
 	protected $entityDefinition;
 	/**
 	 * DataMapper.
-	 * @var DataMapper
+	 * @var DataMapperInterface
 	 */
 	protected $dataMapper;
 	/**
@@ -39,11 +39,11 @@ class EntityRelation {
 	/**
 	 * Constructor.
 	 * @param \Asgard\Entity\EntityDefinition $entityDefinition
-	 * @param DataMapper                      $dataMapper
+	 * @param DataMapperInterface                      $dataMapper
 	 * @param string                          $name
 	 * @param array                           $params
 	 */
-	public function __construct(\Asgard\Entity\EntityDefinition $entityDefinition, DataMapper $dataMapper, $name, array $params) {
+	public function __construct(\Asgard\Entity\EntityDefinition $entityDefinition, DataMapperInterface $dataMapper, $name, array $params) {
 		$entityClass = $entityDefinition->getClass();
 		$this->entityClass = $entityClass;
 		$this->entityDefinition = $entityDefinition;

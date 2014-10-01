@@ -33,7 +33,7 @@ class EntityFormTest extends \PHPUnit_Framework_TestCase {
 			]
 		]));
 
-		#Init form
+		#Init fORMInterface
 		$form = new \Asgard\Entityform\EntityForm($user, [], null, null, $dataMapper);
 		$form->setTranslator(new \Symfony\Component\Translation\Translator('en'));
 		$request = new \Asgard\Http\Request;

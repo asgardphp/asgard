@@ -8,7 +8,7 @@ namespace Asgard\Hook;
 trait HookableTrait {
 	/**
 	 * HooksManager dependency.
-	 * @var HooksManager
+	 * @var HooksManagerInterface
 	 */
 	protected $hooksManager;
 	
@@ -73,7 +73,7 @@ trait HookableTrait {
 	
 	/**
 	 * Get the hooks manager.
-	 * @return HooksManager
+	 * @return HooksManagerInterface
 	*/
 	public function getHooksManager() {
 		if(!$this->hooksManager)
@@ -83,9 +83,9 @@ trait HookableTrait {
 	
 	/**
 	 * Set the hooks manager.
-	 * @param HooksManager $hooksManager
+	 * @param HooksManagerInterface $hooksManager
 	*/
-	public function setHooksManager(HooksManager $hooksManager) {
+	public function setHooksManager(HooksManagerInterface $hooksManager) {
 		$this->hooksManager = $hooksManager;
 	}
 }
