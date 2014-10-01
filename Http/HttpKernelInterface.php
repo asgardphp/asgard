@@ -55,7 +55,7 @@ interface HttpKernelInterface {
 
 	/**
 	 * Return the resolver.
-	 * @return HooksManagerInterface
+	 * @return ResolverInterface
 	 */
 	public function getResolver();
 
@@ -124,10 +124,10 @@ interface HttpKernelInterface {
 
 	/**
 	 * Run the controller and action.
-	 * @param  string         $controllerClass
-	 * @param  string         $action
-	 * @param  Request        $request
-	 * @param  Route   $route Route prefix to match.
+	 * @param  string          $controllerClass
+	 * @param  string|callable $action
+	 * @param  Request         $request
+	 * @param  Route           $route     Route prefix to match.
 	 * @return mixed
 	 */
 	public function runController($controllerClass, $action, Request $request, Route $route=null);

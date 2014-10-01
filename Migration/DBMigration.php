@@ -6,6 +6,35 @@ namespace Asgard\Migration;
  */
 abstract class DBMigration extends Migration {
 	/**
+	 * DB dependency.
+	 * @var \Asgard\Db\DBInterface
+	 */
+	protected $db;
+	/**
+	 * Schema dependency.
+	 * @var \Asgard\Db\SchemaInterface
+	 */
+	protected $schema;
+
+	/**
+	 * Set the DB dependency.
+	 * @param \Asgard\Db\DBInterface $db
+	 */
+	public function setDB(\Asgard\Db\DBInterface $db) {
+		$this->db = $db;
+		return $this;
+	}
+
+	/**
+	 * Set the Schema dependency.
+	 * @param \Asgard\Db\SchemaInterface $schema
+	 */
+	public function setSchema(\Asgard\Db\SchemaInterface $schema) {
+		$this->schema = $schema;
+		return $this;
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public function _up() {

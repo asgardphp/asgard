@@ -12,7 +12,6 @@ class FiltersTest extends \PHPUnit_Framework_TestCase {
 	public function testFilterAll() {
 		$cache = new \Asgard\Cache\Cache(new \Asgard\Cache\NullCache);
 		$resolver = new \Asgard\Http\Resolver($cache);
-		$hooks = new \Asgard\Hook\HooksManager;
 		$httpKernel = new HttpKernel;
 		$httpKernel->setResolver($resolver);
 		$httpKernel->setHooksManager(new \Asgard\Hook\HooksManager);
@@ -20,7 +19,7 @@ class FiltersTest extends \PHPUnit_Framework_TestCase {
 		$httpKernel->filterAll('Asgard\Http\Tests\Fixtures\Filter');
 		$resolver->addRoute(new Route('home', 'Asgard\Http\Tests\Fixtures\HomeController', 'home'));
 		$request = new \Asgard\Http\Request();
-		$request->url->url = 'home';
+		$request->url->setURL('home');
 		$this->assertEquals('foo!', $httpKernel->process($request)->getContent());
 	}
 
@@ -35,14 +34,13 @@ class FiltersTest extends \PHPUnit_Framework_TestCase {
 		$httpKernel->filter(['route'=>'home'], 'Asgard\Http\Tests\Fixtures\Filter');
 		$resolver->addRoute(new Route('home', 'Asgard\Http\Tests\Fixtures\HomeController', 'home'));
 		$request = new \Asgard\Http\Request();
-		$request->url->url = 'home';
+		$request->url->setURL('home');
 		$this->assertEquals('foo!', $httpKernel->process($request, false)->getContent());
 	}
 
 	public function testBeforeAll() {
 		$cache = new \Asgard\Cache\Cache(new \Asgard\Cache\NullCache);
 		$resolver = new \Asgard\Http\Resolver($cache);
-		$hooks = new \Asgard\Hook\HooksManager;
 		$httpKernel = new HttpKernel;
 		$httpKernel->setResolver($resolver);
 		$httpKernel->setHooksManager(new \Asgard\Hook\HooksManager);
@@ -50,14 +48,13 @@ class FiltersTest extends \PHPUnit_Framework_TestCase {
 		$httpKernel->filterBeforeAll(function(){return 'foo!';});
 		$resolver->addRoute(new Route('home', 'Asgard\Http\Tests\Fixtures\HomeController', 'home'));
 		$request = new \Asgard\Http\Request();
-		$request->url->url = 'home';
+		$request->url->setURL('home');
 		$this->assertEquals('foo!', $httpKernel->process($request, false)->getContent());
 	}
 
 	public function testBefore() {
 		$cache = new \Asgard\Cache\Cache(new \Asgard\Cache\NullCache);
 		$resolver = new \Asgard\Http\Resolver($cache);
-		$hooks = new \Asgard\Hook\HooksManager;
 		$httpKernel = new HttpKernel;
 		$httpKernel->setResolver($resolver);
 		$httpKernel->setHooksManager(new \Asgard\Hook\HooksManager);
@@ -65,14 +62,13 @@ class FiltersTest extends \PHPUnit_Framework_TestCase {
 		$httpKernel->filterBefore(['Asgard\Http\Tests\Fixtures\HomeController::home'], function(){return 'foo!';});
 		$resolver->addRoute(new Route('home', 'Asgard\Http\Tests\Fixtures\HomeController', 'home'));
 		$request = new \Asgard\Http\Request();
-		$request->url->url = 'home';
+		$request->url->setURL('home');
 		$this->assertEquals('foo!', $httpKernel->process($request, false)->getContent());
 	}
 
 	public function testAfterAll() {
 		$cache = new \Asgard\Cache\Cache(new \Asgard\Cache\NullCache);
 		$resolver = new \Asgard\Http\Resolver($cache);
-		$hooks = new \Asgard\Hook\HooksManager;
 		$httpKernel = new HttpKernel;
 		$httpKernel->setResolver($resolver);
 		$httpKernel->setHooksManager(new \Asgard\Hook\HooksManager);
@@ -80,14 +76,13 @@ class FiltersTest extends \PHPUnit_Framework_TestCase {
 		$httpKernel->filterAfterAll(function($controller, $request, &$result){$result = 'foo!';});
 		$resolver->addRoute(new Route('home', 'Asgard\Http\Tests\Fixtures\HomeController', 'home'));
 		$request = new \Asgard\Http\Request();
-		$request->url->url = 'home';
+		$request->url->setURL('home');
 		$this->assertEquals('foo!', $httpKernel->process($request, false)->getContent());
 	}
 
 	public function testAfter() {
 		$cache = new \Asgard\Cache\Cache(new \Asgard\Cache\NullCache);
 		$resolver = new \Asgard\Http\Resolver($cache);
-		$hooks = new \Asgard\Hook\HooksManager;
 		$httpKernel = new HttpKernel;
 		$httpKernel->setResolver($resolver);
 		$httpKernel->setHooksManager(new \Asgard\Hook\HooksManager);
@@ -95,7 +90,7 @@ class FiltersTest extends \PHPUnit_Framework_TestCase {
 		$httpKernel->filterAfter(['actions'=>'Asgard\Http\Tests\Fixtures'], function($controller, $request, &$result){$result = 'foo!';});
 		$resolver->addRoute(new Route('home', 'Asgard\Http\Tests\Fixtures\HomeController', 'home'));
 		$request = new \Asgard\Http\Request();
-		$request->url->url = 'home';
+		$request->url->setURL('home');
 		$this->assertEquals('foo!', $httpKernel->process($request, false)->getContent());
 	}
 

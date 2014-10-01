@@ -219,7 +219,7 @@ interface ORMInterface {
 	 * 
 	 * @param string $group_by To split the result according to a specific property.
 	 * 
-	 * @return integer|array The total or an array of total per value.
+	 * @return string|array The total or an array of total per value.
 	*/
 	public function count($group_by=null);
 	
@@ -229,7 +229,7 @@ interface ORMInterface {
 	 * @param string $what The property to count from.
 	 * @param string $group_by To split the result according to a specific property.
 	 * 
-	 * @return integer|array The total or an array of total per value.
+	 * @return string|array The total or an array of total per value.
 	*/
 	public function min($what, $group_by=null);
 	
@@ -239,7 +239,7 @@ interface ORMInterface {
 	 * @param string $what The property to count from.
 	 * @param string $group_by To split the result according to a specific property.
 	 * 
-	 * @return integer|array The total or an array of total per value.
+	 * @return string|array The total or an array of total per value.
 	*/
 	public function max($what, $group_by=null);
 	
@@ -249,7 +249,7 @@ interface ORMInterface {
 	 * @param string $what The property to count from.
 	 * @param string $group_by To split the result according to a specific property.
 	 * 
-	 * @return integer|array The total or an array of total per value.
+	 * @return string|array The total or an array of total per value.
 	*/
 	public function avg($what, $group_by=null);
 	
@@ -259,7 +259,7 @@ interface ORMInterface {
 	 * @param string $what The property to count from.
 	 * @param string $group_by To split the result according to a specific property.
 	 * 
-	 * @return integer|array The total or an array of total per value.
+	 * @return string|array The total or an array of total per value.
 	*/
 	public function sum($what, $group_by=null);
 	

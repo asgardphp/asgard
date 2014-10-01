@@ -6,7 +6,6 @@ class BrowserTest extends \PHPUnit_Framework_TestCase {
 		$cache = new \Asgard\Cache\Cache(new \Asgard\Cache\NullCache);
 		$resolver = new \Asgard\Http\Resolver($cache);
 		$resolver->addRoute(new \Asgard\Http\Route('', 'Asgard\Http\Tests\Fixtures\HomeController', 'home'));
-		$hooks = new \Asgard\Hook\HooksManager;
 		$httpKernel = new \Asgard\Http\HttpKernel;
 		$httpKernel->setResolver($resolver);
 		$httpKernel->setHooksManager(new \Asgard\Hook\HooksManager);

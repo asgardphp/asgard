@@ -62,8 +62,8 @@ abstract class Controller {
 
 	/**
 	 * Run the action.
-	 * @param  string $action
-	 * @param  Request|null $request
+	 * @param  string  $action
+	 * @param  Request $request
 	 * @return mixed
 	 */
 	public function run($action, $request=null) {

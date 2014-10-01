@@ -19,7 +19,7 @@ interface BrowserInterface {
 
 	/**
 	 * Get last response.
-	 * @return Response
+	 * @return \Asgard\Http\Response
 	 */
 	public function getLast();
 
@@ -28,7 +28,7 @@ interface BrowserInterface {
 	 * @param  string $url
 	 * @param  string $body
 	 * @param  array  $headers
-	 * @return Response
+	 * @return \Asgard\Http\Response
 	 */
 	public function get($url='', $body='', array $headers=[]);
 
@@ -39,7 +39,7 @@ interface BrowserInterface {
 	 * @param  arra   $files
 	 * @param  string $body
 	 * @param  array  $headers
-	 * @return Response
+	 * @return \Asgard\Http\Response
 	 */
 	public function post($url='', array $post=[], array $files=[], $body='', array $headers=[]);
 
@@ -50,7 +50,7 @@ interface BrowserInterface {
 	 * @param  arra   $files
 	 * @param  string $body
 	 * @param  array  $headers
-	 * @return Response
+	 * @return \Asgard\Http\Response
 	 */
 	public function put($url='', array $post=[], array $files=[], $body='', array $headers=[]);
 
@@ -59,7 +59,7 @@ interface BrowserInterface {
 	 * @param  string $url
 	 * @param  string $body
 	 * @param  array  $headers
-	 * @return Response
+	 * @return \Asgard\Http\Response
 	 */
 	public function delete($url='', $body='', array $headers=[]);
 
@@ -72,7 +72,7 @@ interface BrowserInterface {
 	 * @param  string $body
 	 * @param  array  $headers
 	 * @param  array  $server
-	 * @return Response
+	 * @return \Asgard\Http\Response
 	 */
 	public function req(
 			$url='',
@@ -95,7 +95,7 @@ interface BrowserInterface {
 	 * @param  string $xpath   path to submit button.
 	 * @param  string $to      destination url.
 	 * @param  array $override override post attributes.
-	 * @return Response
+	 * @return \Asgard\Http\Response
 	 */
 	public function submit($xpath='//form', $to=null, array $override=[]);
 }

@@ -10,6 +10,12 @@ class BrowserCommand extends \Asgard\Console\Command {
 	protected $name = 'browser';
 	protected $description = 'Execute an HTTP request';
 
+	protected $httpKernel;
+
+	public function __construct(\Asgard\Http\HttpKernelInterface $httpKernel) {
+		$this->httpKernel = $httpKernel;
+	}
+
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$method = $this->input->getArgument('method');
 		$url = $this->input->getArgument('url');
@@ -22,7 +28,7 @@ class BrowserCommand extends \Asgard\Console\Command {
 		$body = $this->input->getOption('b');
 		$files = $this->input->getOption('f') ? json_decode($this->input->getOption('f'), true):[];
 
-		$browser = new \Asgard\Http\Browser\Browser($this->getContainer());
+		$browser = new \Asgard\Http\Browser\Browser($this->httpKernel);
 		$browser->getCookies()->setAll($cookies);
 		$browser->getSession()->setAll($session);
 		$response = $browser->req($url, $method, $post, $files, $body, $headers, $server);

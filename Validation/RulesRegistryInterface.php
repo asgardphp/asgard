@@ -30,7 +30,7 @@ interface RulesRegistryInterface {
 	/**
 	 * Register a rule.
 	 * @param  string $rule         rule name
-	 * @param  \Closure|string      $object
+	 * @param  callable|string      $object
 	 * @return RulesRegistryInterface        $this
 	 */
 	public function register($rule, $object);

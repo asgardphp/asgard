@@ -58,7 +58,7 @@ class EntityRelation {
 	 */
 	public function getLink() {
 		if($this->type() == 'hasMany')
-			return $this->reverseRelationParams()->get('name').'_id';
+			return $this->reverse()->get('name').'_id';
 		elseif($this->type() == 'belongsTo' || $this->type() == 'hasOne')
 			return $this->name.'_id';
 	}
@@ -112,7 +112,7 @@ class EntityRelation {
 	 * @return string   hasOne, belongsTo, hasMany or HMABT
 	 */
 	public function type() {
-		$rev = $this->reverseRelationParams();
+		$rev = $this->reverse();
 
 		if($this->get('many')) {
 			if($rev->get('many'))
@@ -129,10 +129,10 @@ class EntityRelation {
 	}
 
 	/**
-	 * Get the reverse relation parameters.
-	 * @return array
+	 * Get the reverse relation instance.
+	 * @return EntityRelation
 	 */
-	protected function reverseRelationParams() {
+	public function reverse() {
 		if($this->reverseRelation !== null)
 			return $this->reverseRelation;
 
@@ -167,16 +167,6 @@ class EntityRelation {
 			$this->reverseRelation = $rev_relations[0];
 			return $rev_relations[0];
 		}
-	}
-
-	/**
-	 * Get the reverse relation instance.
-	 * @return EntityRelation
-	 */
-	public function reverse() {
-		$reverse_rel = $this->reverseRelationParams();
-		$rel_name = $reverse_rel->get('name');
-		return $this->dataMapper->relation($this->getTargetDefinition(), $rel_name);
 	}
 
 	/**

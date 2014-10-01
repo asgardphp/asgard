@@ -202,7 +202,7 @@ class ORM implements ORMInterface {
 		if(!$this->tmp_dal)
 			$this->tmp_dal = $this->getDAL();
 		if(!($r = $this->tmp_dal->next()))
-			return false;
+			return null;
 		else
 			return $this->toEntity($r);
 	}

@@ -35,8 +35,8 @@ interface ContainerInterface extends \ArrayAccess {
 
 	/**
 	 * Set autofacade to true or false.
-	 * @param  boolean   $facade
-	 * @return Cotnainer $this
+	 * @param  boolean            $facade
+	 * @return ContainerInterface $this
 	 */
 	public function setAutofacade($facade);
 

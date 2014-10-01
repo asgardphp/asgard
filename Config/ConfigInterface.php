@@ -7,16 +7,16 @@ namespace Asgard\Config;
 interface ConfigInterface extends \Asgard\Common\BagInterface {
 	/**
 	 * Load a directory.
-	 * @param  string $dir
-	 * @param  string $env
-	 * @return Config      $this
+	 * @param  string          $dir
+	 * @param  string          $env
+	 * @return ConfigInterface $this
 	 */
 	public function loadDir($dir, $env=null);
 	
 	/**
 	 * Load a file.
-	 * @param  string $filename
-	 * @return Confug $this
+	 * @param  string          $filename
+	 * @return ConfigInterface $this
 	 */
 	public function loadFile($filename);
 }

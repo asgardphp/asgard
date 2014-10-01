@@ -13,7 +13,7 @@ interface BagInterface extends \ArrayAccess {
 
 	/**
 	 * Clear data.
-	 * @return Bag  $this
+	 * @return BagInterface  $this
 	 */
 	public function clear();
 
@@ -26,7 +26,7 @@ interface BagInterface extends \ArrayAccess {
 	/**
 	 * Set all elements.
 	 * @param array $data
-	 * @return Bag  $this
+	 * @return BagInterface  $this
 	 */
 	public function setAll($data);
 	
@@ -34,7 +34,7 @@ interface BagInterface extends \ArrayAccess {
 	 * Set a value.
 	 * @param string|array $path    nested keys separated by ".".
 	 * @param mixed        $value
-	 * @return Bag         $this
+	 * @return BagInterface         $this
 	 */
 	public function set($path, $value=null);
 	
@@ -56,7 +56,7 @@ interface BagInterface extends \ArrayAccess {
 	/**
 	 * Delete an element.
 	 * @param string $path    nested keys separated by ".".
-	 * @return Bag  $this
+	 * @return BagInterface  $this
 	 */
 	public function delete($path);
 }

@@ -26,21 +26,21 @@ interface EntityFieldsSolverInterface {
 	/**
 	 * Solve a property.
 	 * @param  \Asgard\Entity\Property $property
-	 * @return \Asgard\FormInterface\Field
+	 * @return \Asgard\Form\Field
 	 */
 	public function solve(\Asgard\Entity\Property $property);
 
 	/**
 	 * Actually solve a "single" property.
 	 * @param  \Asgard\Entity\Property $property
-	 * @return \Asgard\FormInterface\Field
+	 * @return \Asgard\Form\Field
 	 */
 	public function doSolve(\Asgard\Entity\Property $property);
 
 	/**
 	 * Actually solve a "many" property.
 	 * @param  \Asgard\Entity\Property $property
-	 * @return \Asgard\FormInterface\Field
+	 * @return \Asgard\Form\Field
 	 */
 	public function doSolveMany(\Asgard\Entity\Property $property);
 }

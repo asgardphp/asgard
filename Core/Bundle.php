@@ -263,7 +263,7 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			$httpTests = new \Asgard\Http\Commands\GenerateTestsCommand($container['kernel']['root'].'/tests');
 			$container['console']->add($httpTests);
 
-			$httpBrowser = new \Asgard\Http\Commands\BrowserCommand();
+			$httpBrowser = new \Asgard\Http\Commands\BrowserCommand($container['httpKernel']);
 			$container['console']->add($httpBrowser);
 		}
 	}

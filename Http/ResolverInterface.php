@@ -29,7 +29,7 @@ interface ResolverInterface {
 	 * @param  string  $route
 	 * @param  array   $requirements
 	 * @param  string  $method
-	 * @return boolean
+	 * @return boolean|array
 	 */
 	public static function match(Request $request, $route, $requirements=null, $method=null);
 	
@@ -40,7 +40,7 @@ interface ResolverInterface {
 	 * @param  array   $requirements
 	 * @param  Request $request
 	 * @param  string  $method
-	 * @return boolean
+	 * @return boolean|array
 	 */
 	public static function matchWith($route, $with, $requirements=null, $request=null, $method=null);
 	

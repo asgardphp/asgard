@@ -116,7 +116,7 @@ class Validator implements ValidatorInterface {
 
 	/**
 	 * Capture the static calls to rules. MAgic __callStatic method.
-	 * @param  [type] $name
+	 * @param  string $name
 	 * @param  array  $args
 	 * @return mixed
 	 */

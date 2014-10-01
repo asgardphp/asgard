@@ -87,7 +87,7 @@ class DAL {
 	/**
 	 * Constructor.
 	 * @param DBInterface  $db
-	 * @param string|null  $tables
+	 * @param string  $tables
 	 */
 	public function __construct(DBInterface $db, $tables=null) {
 		$this->db = $db;

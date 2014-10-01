@@ -4,7 +4,7 @@ namespace Asgard\Form;
 /**
  * Group of fieldsor sub-groups.
  */
-class Group implements \ArrayAccess, \Iterator {
+class Group implements GroupInterface {
 	/**
 	 * Widgets manager.
 	 * @var WidgetsManagerInterface
@@ -461,10 +461,12 @@ class Group implements \ArrayAccess, \Iterator {
 			$options['id'] = $field->getID();
 			$value = $field->value();
 		}
-		elseif($field instanceof self) {
+		elseif($field instanceof GroupInterface) {
 			$options['group'] = $field;
 			$value = null;
 		}
+		else
+			throw new \Exception('Invalid field type.');
 
 		$widget = $this->getWidget($render_callback, $name, $value, $options);
 		if($widget === null)

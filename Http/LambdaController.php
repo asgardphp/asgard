@@ -7,8 +7,8 @@ namespace Asgard\Http;
 class LambdaController extends Controller {
 	/**
 	 * Run the action method.
-	 * @param  string $method
-	 * @param  array  $args
+	 * @param  callable $method
+	 * @param  array    $args
 	 * @return mixed
 	 */
 	protected function doRun($method, array $args=[]) {

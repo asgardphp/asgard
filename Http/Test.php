@@ -7,13 +7,13 @@ namespace Asgard\Http;
 abstract class Test extends \PHPUnit_Framework_TestCase {
 	/**
 	 * Services container.
-	 * @var \Asgard\Container\Container
+	 * @var \Asgard\Container\ContainerInterface
 	 */
 	protected static $container;
 
 	/**
 	 * Get the container.
-	 * @return \Asgard\Container\Container
+	 * @return \Asgard\Container\ContainerInterface
 	 */
 	protected static function getContainer() {
 		if(!static::$container)

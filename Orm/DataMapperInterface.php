@@ -16,7 +16,7 @@ interface DataMapperInterface {
 	/**
 	 * Create an ORM instance.
 	 * @param  string          $entityClass 
-	 * @return \Asgard\Orm\ORMInterface
+	 * @return ORMInterface
 	 */
 	public function orm($entityClass);
 
@@ -91,7 +91,7 @@ interface DataMapperInterface {
 	 * @param  \Asgard\Entity\Entity $entity
 	 * @param  array                 $values entity attributes
 	 * @param  boolean               $force  skip validation
-	 * @return boolean               true for successful storage, false otherwise
+	 * @return DataMapperInterface   $this
 	 */
 	public function save(\Asgard\Entity\Entity $entity, $values=null, $force=false);
 

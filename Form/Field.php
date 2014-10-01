@@ -87,7 +87,7 @@ abstract class Field {
 
 	/**
 	 * Get field validation messages.
-	 * @return [type]
+	 * @return array
 	 */
 	public function getValidationMessages() {
 		$messages = isset($this->options['messages']) ? $this->options['messages']:[];
@@ -96,9 +96,9 @@ abstract class Field {
 
 	/**
 	 * __call magic method.
-	 * @param  [type] $name
+	 * @param  string $name
 	 * @param  array  $args
-	 * @return [type]
+	 * @return string
 	 */
 	public function __call($name, array $args) {
 		return $this->render($name, isset($args[0]) ? $args[0]:[]);
@@ -106,7 +106,7 @@ abstract class Field {
 
 	/**
 	 * Set default widget renderer.
-	 * @param sting|callable $widget
+	 * @param string|callable $widget
 	 */
 	public function setDefaultWidget($widget) {
 		$this->widget = $widget;
@@ -122,7 +122,7 @@ abstract class Field {
 
 	/**
 	 * Get field's HTML label tag.
-	 * @return [type]
+	 * @return string
 	 */
 	public function labelTag() {
 		return '<label for="'.$this->getID().'">'.$this->label().'</label>';

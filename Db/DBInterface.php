@@ -25,9 +25,9 @@ interface DBInterface {
 	
 	/**
 	 * Execute an SQL query.
-	 * @param string $sql SQL query
-	 * @param array $args SQL parameters
-	 * @return Asgard\Db\Query Query object
+	 * @param  string $sql SQL query
+	 * @param  array  $args SQL parameters
+	 * @return Query  Query object
 	*/
 	public function query($sql, array $args=[]);
 	

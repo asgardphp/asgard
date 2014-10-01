@@ -27,7 +27,6 @@ class Migration {
 
 	/**
 	 * Wrapper for up().
-	 * @return [type] [description]
 	 */
 	public function _up() {
 		$this->up();
@@ -35,7 +34,6 @@ class Migration {
 
 	/**
 	 * Wrapper for down().
-	 * @return [type] [description]
 	 */
 	public function _down() {
 		$this->down();

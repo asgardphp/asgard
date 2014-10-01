@@ -51,7 +51,7 @@ interface EntityFormInterface extends \Asgard\Form\FormInterface {
 
 	/**
 	 * Return the errors of a nested-group if provided, or all.
-	 * @param  null|\Asgard\Form\GroupInterface $group
+	 * @param  \Asgard\Form\GroupInterface $group
 	 * @return array
 	 */
 	public function errors($group=null);

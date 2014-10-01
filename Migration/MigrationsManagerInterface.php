@@ -8,14 +8,14 @@ interface MigrationsManagerInterface {
 	/**
 	 * Set db dependency.
 	 * @param  \Asgard\Db\DBInterface    $db
-	 * @return MigrationManager $this
+	 * @return MigrationsManager $this
 	 */
 	public function setDB(\Asgard\Db\DBInterface $db);
 
 	/**
 	 * Set schema dependency.
 	 * @param  \Asgard\Db\SchemaInterface $schema
-	 * @return MigrationManager  $this
+	 * @return MigrationsManager  $this
 	 */
 	public function setSchema(\Asgard\Db\SchemaInterface $schema);
 

@@ -79,7 +79,7 @@ class File extends \Asgard\File\File {
 
 	/**
 	 * Set web flag.
-	 * @param [type] $web
+	 * @param boolean $web
 	 */
 	public function setWeb($web) {
 		$this->web = $web;

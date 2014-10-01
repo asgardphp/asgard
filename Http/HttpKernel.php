@@ -154,7 +154,7 @@ class HttpKernel implements HttpKernelInterface {
 	 * {@inheritDoc}
 	 */
 	public function getDebug() {
-		return $this->hooksManager;
+		return $this->debug;
 	}
 
 	/**

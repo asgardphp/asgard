@@ -157,7 +157,8 @@ class DataMapper implements DataMapperInterface {
 	 */
 	public function create($entityClass, $values=null, $force=false) {
 		$m = $this->entitiesManager->get($entityClass)->make();
-		return $this->save($m, $values, $force);
+		$this->save($m, $values, $force);
+		return $m;
 	}
 
 	/**
@@ -334,7 +335,7 @@ class DataMapper implements DataMapperInterface {
 				$this->related($entity, $relation)->sync($entity->data['properties'][$relation]->all());
 		}
 
-		return $entity;
+		return $this;
 	}
 
 	/**
@@ -380,7 +381,7 @@ class DataMapper implements DataMapperInterface {
 	/**
 	 * Create an ORM instance for a specific entity.
 	 * @param  \Asgard\Entity\Entity $entity
-	 * @return \Asgard\Orm\ORMInterface
+	 * @return ORMInterface
 	 */
 	protected function entityORM(\Asgard\Entity\Entity $entity) {
 		if($entity->isNew())

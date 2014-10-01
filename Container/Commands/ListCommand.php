@@ -33,7 +33,7 @@ class ListCommand extends \Asgard\Console\Command {
 		$container = $this->getContainer();
 		$services = [];
 		foreach($container->getRegistry() as $name=>$service) {
-			$class = $defined = $registered = null;
+			$defined = null;
 			$class = $this->guessServiceClass($name);
 			if($class !== null) {
 				$r = new \ReflectionClass($class);
@@ -61,7 +61,7 @@ class ListCommand extends \Asgard\Console\Command {
 
 		}
 		foreach($this->getContainer()->getInstances() as $name=>$service) {
-			$class = $defined = $registered = null;
+			$defined = null;
 			foreach($services as $v) {
 				if($v['name'] === $name)
 					continue 2;

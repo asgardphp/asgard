@@ -170,7 +170,7 @@ class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\Pers
 
 	/**
 	 * Article::destroyAll()
-	 * @return integer number of destroyed entities
+	 * @return DataMapperInterface number of destroyed entities
 	 */
 	public function static_destroyAll() {
 		return $this->getDataMapper()->destroyAll($this->entityClass);
@@ -200,9 +200,9 @@ class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\Pers
 	/**
 	 * $article->save()
 	 * @param  \Asgard\Entity\Entity $entity
-	 * @param  array             $values default attributes
-	 * @param  boolean            $force  skip validation
-	 * @return boolean  true fo successful saving, false otherwise
+	 * @param  array               $values default attributes
+	 * @param  boolean             $force  skip validation
+	 * @return DataMapperInterface
 	 */
 	public function call_save(\Asgard\Entity\Entity $entity, array $values=null, $force=false) {
 		return $this->getDataMapper()->save($entity, $values, $force);

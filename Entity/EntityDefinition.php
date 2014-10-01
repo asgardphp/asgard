@@ -426,7 +426,7 @@ class EntityDefinition {
 	
 	/**
 	 * Get the entity short name.
-	 * @return [type]
+	 * @return string
 	 */
 	public function getShortName() {
 		return basename(str_replace('\\', DIRECTORY_SEPARATOR, strtolower($this->getClass())));
