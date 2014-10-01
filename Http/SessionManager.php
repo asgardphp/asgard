@@ -4,7 +4,7 @@ namespace Asgard\Http;
 /**
  * Session manager.
  */
-class SessionManager implements \ArrayAccess {
+class SessionManager implements \Asgard\Common\BagInterface, \ArrayAccess {
 	/**
 	 * Constructor.
 	 */
@@ -75,7 +75,9 @@ class SessionManager implements \ArrayAccess {
 	 * @param  string $path
 	 * @return mixed
 	 */
-	public function get($path) {
+	public function get($path, $default=null) {
+		if(!$this->has($path))
+			return $default;
 		return \Asgard\Common\ArrayUtils::string_array_get($_SESSION, $path);
 	}
 

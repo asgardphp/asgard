@@ -7,12 +7,12 @@ namespace Asgard\Http\Browser;
 class Browser {
 	/**
 	 * Cookies bag.
-	 * @var \Asgard\Common\Bag
+	 * @var \Asgard\Common\BagInterface
 	 */
 	protected $cookies;
 	/**
 	 * Session bag.
-	 * @var \Asgard\Common\Bag
+	 * @var \Asgard\Common\BagInterface
 	 */
 	protected $session;
 	/**
@@ -43,7 +43,7 @@ class Browser {
 
 	/**
 	 * Return cookies.
-	 * @return \Asgard\Common\Bag
+	 * @return \Asgard\Common\BagInterface
 	 */
 	public function getCookies() {
 		return $this->cookies;
@@ -51,7 +51,7 @@ class Browser {
 
 	/**
 	 * Return session.
-	 * @return \Asgard\Common\Bag
+	 * @return \Asgard\Common\BagInterface
 	 */
 	public function getSession() {
 		return $this->session;

@@ -4,7 +4,7 @@ namespace Asgard\Common;
 /**
  * Bag to manipulate a set of data.
  */
-class Bag implements \ArrayAccess {
+class Bag implements BagInterface, \ArrayAccess {
 	/**
 	 * Data.
 	 * @var array
@@ -16,18 +16,7 @@ class Bag implements \ArrayAccess {
 	 * @param array $data
 	 */
 	public function __construct(array $data=[]) {
-		$this->load($data);
-	}
-	
-	/**
-	 * Load data.
-	 * @param  array  $data
-	 * @return Bag  $this
-	 */
-	public function load(array $data) {
-		foreach($data as $key=>$value)
-			$this->set($key, $value);
-		return $this;
+		$this->set($data);
 	}
 
 	/**

@@ -35,7 +35,7 @@ class Config extends \Asgard\Common\Bag {
 		$yaml = new \Symfony\Component\Yaml\Parser();
 		if(($r = file_get_contents($filename))) {
 			if(is_array($res = $yaml->parse($r)))
-				$this->load($res);
+				$this->set($res);
 		}
 		return $this;
 	}

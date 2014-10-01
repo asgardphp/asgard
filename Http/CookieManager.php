@@ -4,7 +4,7 @@ namespace Asgard\Http;
 /**
  * To manage cookies.
  */
-class CookieManager implements \ArrayAccess {
+class CookieManager implements \Asgard\Common\BagInterface, \ArrayAccess {
 	/**
 	 * Return all cookies.
 	 * @return array
@@ -52,8 +52,9 @@ class CookieManager implements \ArrayAccess {
 	 * @param  string $path
 	 * @return mixed
 	 */
-	public function get($path) {
-		if(!$this->has($path)) return;
+	public function get($path, $default=null) {
+		if(!$this->has($path))
+			return $default;
 		return $_COOKIE[$path];
 	}
 

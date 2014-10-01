@@ -12,37 +12,37 @@ class Request implements \ArrayAccess {
 	static protected $instance;
 	/**
 	 * GET input.
-	 * @var \Asgard\Common\Bag
+	 * @var \Asgard\Common\BagInterface
 	 */
 	public $get;
 	/**
 	 * POST input.
-	 * @var \Asgard\Common\Bag
+	 * @var \Asgard\Common\BagInterface
 	 */
 	public $post;
 	/**
 	 * FILE input.
-	 * @var \Asgard\Common\Bag
+	 * @var \Asgard\Common\BagInterface
 	 */
 	public $file;
 	/**
 	 * SERVER input.
-	 * @var \Asgard\Common\Bag
+	 * @var \Asgard\Common\BagInterface
 	 */
 	public $server;
 	/**
 	 * COOKIE input.
-	 * @var CookieManager|\Asgard\Common\Bag
+	 * @var \Asgard\Common\BagInterface
 	 */
 	public $cookie;
 	/**
 	 * Headers input.
-	 * @var \Asgard\Common\Bag
+	 * @var \Asgard\Common\BagInterface
 	 */
 	public $header;
 	/**
 	 * Session input.
-	 * @var SessionManager|\Asgard\Common\Bag
+	 * @var \Asgard\Common\BagInterface
 	 */
 	public $session;
 	/**
