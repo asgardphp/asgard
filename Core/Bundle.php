@@ -88,16 +88,22 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		$container->register('browser', function($container) {
 			return new \Asgard\Http\Browser\Browser($container['httpKernel']);
 		});
-		// $container->setParentClass('schema', 'Asgard\Http\Response');
-		// $container->register('response', function() { return new \Asgard\Http\Response; } );
-		$container->setParentClass('cookieManager', 'Asgard\Http\CookieManager');
+		$container->setParentClass('cookieManager', 'Asgard\Common\BagInterface');
 		$container->register('cookieManager', function($container) {
 			return $container['httpKernel']->getRequest()->cookie;
 		});
+		$container->setParentClass('sessionManager', 'Asgard\Common\BagInterfacer');
+		$container->register('sessionManager', function($container) {
+			return $container['httpKernel']->getRequest()->session;
+		});
 		$container->setParentClass('html', 'Asgard\Http\Utils\HTML');
-		$container->register('html', function($container) { return new \Asgard\Http\Utils\HTML($container['httpKernel']->getRequest()); });
+		$container->register('html', function($container) {
+			return new \Asgard\Http\Utils\HTML($container['httpKernel']->getRequest());
+		});
 		$container->setParentClass('url', 'Asgard\Http\URL');
-		$container->register('url', function($container) { return $container['httpKernel']->getRequest()->url; });
+		$container->register('url', function($container) {
+			return $container['httpKernel']->getRequest()->url;
+		});
 
 		#Migration
 		$container->setParentClass('migrationsManager', 'Asgard\Migration\MigrationsManager');
