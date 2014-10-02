@@ -206,14 +206,14 @@ class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 			$field->setCallback(function() use($entity, $name, $property, $locale) {
 				$field = $this->getEntityFieldsSolver()->doSolve($property);
 				$options = $this->getEntityFieldOptions($property);
-				$field->setoptions($options);
+				$field->setOptions($options);
 				return $field;
 			});
 		}
-		else {
+		elseif($field instanceof \Asgard\Form\Field) {
 			$options = $this->getEntityFieldOptions($property);
 			$options['default'] = $this->getDefaultValue($entity, $name, $property, $locale);
-			$field->setoptions($options);
+			$field->setOptions($options);
 		}
 
 		return $field;
