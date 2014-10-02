@@ -97,7 +97,7 @@ interface DataMapperInterface {
 	 * @param  \Asgard\Entity\Entity $entity
 	 * @param  array                 $values entity attributes
 	 * @param  boolean               $force  skip validation
-	 * @return DataMapperInterface   $this
+	 * @return \Asgard\Entity\Entity $entity
 	 */
 	public function save(\Asgard\Entity\Entity $entity, $values=null, $force=false);
 

@@ -342,7 +342,7 @@ class DataMapper implements DataMapperInterface {
 				$this->related($entity, $relation)->sync($entity->data['properties'][$relation]->all());
 		}
 
-		return $this;
+		return $entity;
 	}
 
 	/**
