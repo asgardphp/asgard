@@ -18,7 +18,7 @@ class UniqueTest extends \PHPUnit_Framework_TestCase {
 			'password' => '',
 			'database' => 'asgard'
 		]);
-		$dataMapper = new \Asgard\Orm\DataMapper($em, $db);
+		$dataMapper = new \Asgard\Orm\DataMapper($db, $em);
 
 		#Create table for entity
 		$schema = new \Asgard\Db\Schema($db);

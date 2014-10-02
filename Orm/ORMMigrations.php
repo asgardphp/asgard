@@ -106,6 +106,16 @@ class ORMMigrations {
 							];
 							$schemas[$table_name] = $arr;
 						}
+						#sortable
+						if($relation->get('sortable')) {
+							$schemas[$table_name][$relation->getPositionField()] = [
+								'type'           => 'int(11)',
+								'nullable'       => true,
+								'auto_increment' => false,
+								'default'        => null,
+								'key'            => null,
+							];
+						}
 					}
 					continue;
 				}

@@ -71,8 +71,8 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 				$dal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->relation->getTable());
 				$i = 1;
 				foreach($ids as $id) {
-					if(isset($this->relation['sortfield']) && $this->relation['sortfield'])
-						$dal->insert([$this->relation->getLinkA() => $this->parent->id, $this->relation->getLinkB() => $id, $this->relation['sortfield'] => $i++]);
+					if($this->relation->get('sortable'))
+						$dal->insert([$this->relation->getLinkA() => $this->parent->id, $this->relation->getLinkB() => $id, $this->relation->getPositionField() => $i++]);
 					else
 						$dal->insert([$this->relation->getLinkA() => $this->parent->id, $this->relation->getLinkB() => $id]);
 				}
@@ -107,8 +107,8 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 				$i = 1;
 				foreach($ids as $id) {
 					$dal->reset()->where([$this->relation->getLinkA() => $this->parent->id, $this->relation->getLinkB() => $id])->delete();
-					if(isset($this->relation['sortfield']) && $this->relation['sortfield'])
-						$dal->insert([$this->relation->getLinkA() => $this->parent->id, $this->relation->getLinkB() => $id, $this->sortfield => $i++]);
+					if($this->relation->get('sortable'))
+						$dal->insert([$this->relation->getLinkA() => $this->parent->id, $this->relation->getLinkB() => $id, $this->relation->getPositionField() => $i++]);
 					else
 						$dal->insert([$this->relation->getLinkA() => $this->parent->id, $this->relation->getLinkB() => $id]);
 				}

@@ -371,6 +371,8 @@ class ORM implements ORMInterface {
 						$relation->getTable($this->prefix).'.'.$relation->getLinkB().' = '.$alias.'.id',
 					])
 				]);
+				if($relation->reverse()->get('sortable'))
+					$dal->orderBy($relation->getTable($this->prefix).'.'.$relation->reverse()->getPositionField().' ASC');
 				break;
 		}
 
@@ -460,7 +462,7 @@ class ORM implements ORMInterface {
 
 						if(is_callable($closure))
 							$closure($orm);
-						$res = $orm->getDAL()->addSelect($joinTable.'.'.$currentEntityIdfield.' as __ormrelid')->groupBy(null)->get();
+						$res = $orm->getDAL()->addSelect($joinTable.'.'.$currentEntityIdfield.' __ormrelid')->groupBy(null)->get();
 						foreach($entities as $entity) {
 							$id = $entity->id;
 							$filter = array_filter($res, function($result) use ($id) {

@@ -50,6 +50,65 @@ class ORMTest extends \PHPUnit_Framework_TestCase {
 
 		static::$container = $container;
 	}
+
+	public function testHMABTSorting() {
+		#Deps
+		$db = new \Asgard\Db\DB([
+			'host'     => 'localhost',
+			'user'     => 'root',
+			'password' => '',
+			'database' => 'asgard'
+		]);
+		$em = new \Asgard\Entity\EntitiesManager;
+		$dataMapper = new \Asgard\Orm\DataMapper($db, $em);
+
+		#DB
+		$schema = new \Asgard\Db\Schema($db);
+		$schema->drop('news');
+		$schema->drop('tag');
+		$schema->drop('news_tag');
+		(new \Asgard\Orm\ORMMigrations($dataMapper))->autoMigrate([
+			$em->get('Asgard\Orm\Tests\Fixtures\HMABTSorting\News'),
+			$em->get('Asgard\Orm\Tests\Fixtures\HMABTSorting\Tag'),
+		], $schema);
+
+		#Fixtures
+		$dataMapper->create('Asgard\Orm\Tests\Fixtures\HMABTSorting\News', [
+			'id' => 1,
+			'title' => 'Hello!',
+			'tags'  => [
+				$dataMapper->create('Asgard\Orm\Tests\Fixtures\HMABTSorting\Tag', [
+					'id' => 3,
+					'name' => 'Economy',
+				]),
+				$dataMapper->create('Asgard\Orm\Tests\Fixtures\HMABTSorting\Tag', [
+					'id' => 1,
+					'name' => 'General',
+				]),
+				$dataMapper->create('Asgard\Orm\Tests\Fixtures\HMABTSorting\Tag', [
+					'id' => 2,
+					'name' => 'Science',
+				]),
+			]
+		]);
+
+		$news = $dataMapper->load('Asgard\Orm\Tests\Fixtures\HMABTSorting\News', 1);
+		$tagsIDs = $dataMapper->related($news, 'tags')->ids();
+		$this->assertEquals(
+			[3, 1, 2],
+			$tagsIDs
+		);
+
+		#Eager loading
+		$news = $dataMapper->orm('Asgard\Orm\Tests\Fixtures\HMABTSorting\News')->where('id', 1)->with('tags')->first();
+		$tagsIDs = [];
+		foreach($news->tags as $tag)
+			$tagsIDs[] = $tag->id;
+		$this->assertEquals(
+			[3, 1, 2],
+			$tagsIDs
+		);
+	}
 	
 	public function test1() {
 		#Dependencies
@@ -68,7 +127,7 @@ class ORMTest extends \PHPUnit_Framework_TestCase {
 			'password' => '',
 			'database' => 'asgard'
 		]);
-		$dataMapper = new \Asgard\Orm\DataMapper($em, $db);
+		$dataMapper = new \Asgard\Orm\DataMapper($db, $em);
 
 		#Create tables
 		$schema = new \Asgard\Db\Schema($db);

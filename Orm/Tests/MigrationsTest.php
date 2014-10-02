@@ -14,7 +14,7 @@ class MigrationsTest extends \PHPUnit_Framework_TestCase {
 		$container['hooks'] = new \Asgard\Hook\HooksManager;
 		$container['cache'] = new \Asgard\Cache\NullCache;
 		$container['entitiesManager'] = $entitiesManager = new \Asgard\Entity\EntitiesManager($container);
-		$dataMapper = new \Asgard\Orm\DataMapper($container['entitiesManager'], $container['db']);
+		$dataMapper = new \Asgard\Orm\DataMapper($container['db'], $container['entitiesManager']);
 
 		$ormm = new \Asgard\Orm\ORMMigrations($dataMapper);
 		$schema = new \Asgard\Db\Schema($container['db']);
@@ -162,7 +162,7 @@ class MigrationsTest extends \PHPUnit_Framework_TestCase {
 			'database' => 'asgard'
 		]);
 		$entitiesManager = new \Asgard\Entity\EntitiesManager;
-		$dataMapper = new \Asgard\Orm\DataMapper($entitiesManager, $db);
+		$dataMapper = new \Asgard\Orm\DataMapper($db, $entitiesManager);
 		$schema = new \Asgard\Db\Schema($db);
 		$schema->dropAll();
 

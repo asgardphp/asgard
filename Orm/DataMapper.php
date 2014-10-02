@@ -38,16 +38,16 @@ class DataMapper implements DataMapperInterface {
 
 	/**
 	 * Constructor.
-	 * @param \Asgard\Entity\EntitiesManagerInterface $entitiesManager
 	 * @param \Asgard\Db\DBInterface                  $db
-	 * @param string                         $locale    Default locale.
-	 * @param string                         $prefix    Tables prefix.
-	 * @param \Asgard\Container\Factory      $ormFactory
-	 * @param \Asgard\Container\Factory      $collectionOrmFactory
+	 * @param \Asgard\Entity\EntitiesManagerInterface $entitiesManager
+	 * @param string                                  $locale    Default locale.
+	 * @param string                                  $prefix    Tables prefix.
+	 * @param \Asgard\Container\Factory               $ormFactory
+	 * @param \Asgard\Container\Factory               $collectionOrmFactory
 	 */
-	public function __construct(\Asgard\Entity\EntitiesManagerInterface $entitiesManager, \Asgard\Db\DBInterface $db, $locale='en', $prefix=null, \Asgard\Container\Factory $ormFactory=null, \Asgard\Container\Factory $collectionOrmFactory=null) {
-		$this->entitiesManager      = $entitiesManager;
+	public function __construct(\Asgard\Db\DBInterface $db, \Asgard\Entity\EntitiesManagerInterface $entitiesManager=null, $locale='en', $prefix=null, \Asgard\Container\Factory $ormFactory=null, \Asgard\Container\Factory $collectionOrmFactory=null) {
 		$this->db                   = $db;
+		$this->entitiesManager      = $entitiesManager;
 		$this->locale               = $locale;
 		$this->prefix               = $prefix;
 		$this->ormFactory           = $ormFactory;
@@ -61,7 +61,7 @@ class DataMapper implements DataMapperInterface {
 		if(!ctype_digit($id) && !is_int($id))
 			return;
 
-		$entity = $this->entitiesManager->make($entityClass);
+		$entity = $this->getEntitiesManager()->make($entityClass);
 		$res = $this->orm($entityClass)->where(['id' => $id])->getDAL()->first();
 		if($res)
 			$entity->_set(static::unserialize($entity, $res));
@@ -75,7 +75,7 @@ class DataMapper implements DataMapperInterface {
 	 * {@inheritDoc}
 	 */
 	public function orm($entityClass) {
-		$definition = $this->entitiesManager->get($entityClass);
+		$definition = $this->getEntitiesManager()->get($entityClass);
 		if($this->ormFactory)
 			return $this->ormFactory->create([$definition, $this, $this->locale, $this->prefix]);
 		else
@@ -155,8 +155,17 @@ class DataMapper implements DataMapperInterface {
 	/**
 	 * {@inheritDoc}
 	 */
+	public function getEntitiesManager() {
+		if(!$this->entitiesManager)
+			$this->entitiesManager = new \Asgard\Entity\EntitiesManager;
+		return $this->entitiesManager;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public function create($entityClass, $values=null, $force=false) {
-		$m = $this->entitiesManager->get($entityClass)->make();
+		$m = $this->getEntitiesManager()->get($entityClass)->make();
 		$this->save($m, $values, $force);
 		return $m;
 	}
@@ -270,8 +279,7 @@ class DataMapper implements DataMapperInterface {
 			#relations with a single entity
 			elseif($prop->get('type') == 'entity') {
 				$rel = $this->relation($entity->getDefinition(), $name);
-				$type = $rel->type();
-				if($type == 'belongsTo' || $type == 'hasOne') {
+				if(!$rel->get('many')) {
 					$link = $rel->getLink();
 					$relatedEntity = $entity->data['properties'][$name];
 					if(is_object($relatedEntity)) {

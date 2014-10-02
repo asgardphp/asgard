@@ -50,6 +50,12 @@ interface DataMapperInterface {
 	public function destroy(\Asgard\Entity\Entity $entity);
 
 	/**
+	 * Return the entities manager instance.
+	 * @return \Asgard\Entity\EntitiesManagerInterface
+	 */
+	public function getEntitiesManager();
+
+	/**
 	 * Create and store an entity.
 	 * @param  string  $entityClass 
 	 * @param  array   $values        default entity attributes

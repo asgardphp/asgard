@@ -39,7 +39,7 @@ class EntityRelation {
 	/**
 	 * Constructor.
 	 * @param \Asgard\Entity\EntityDefinition $entityDefinition
-	 * @param DataMapperInterface                      $dataMapper
+	 * @param DataMapperInterface             $dataMapper
 	 * @param string                          $name
 	 * @param array                           $params
 	 */
@@ -77,6 +77,14 @@ class EntityRelation {
 	 */
 	public function getLinkB() {
 		return $this->getTargetDefinition()->getShortName().'_id';
+	}
+
+	/**
+	 * Return the position field name.
+	 * @return string
+	 */
+	public function getPositionField() {
+		return $this->getTargetDefinition()->getShortName().'_position';
 	}
 
 	/**

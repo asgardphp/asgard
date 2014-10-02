@@ -21,8 +21,8 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 		
 		$container->register('datamapper', function($container) {
 			return new \Asgard\Orm\DataMapper(
-				$container['entitiesManager'],
-				$container['db']
+				$container['db'],
+				$container['entitiesManager']
 			);
 		});
 

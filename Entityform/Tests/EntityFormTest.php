@@ -11,7 +11,7 @@ class EntityFormTest extends \PHPUnit_Framework_TestCase {
 			'database' => 'asgard',
 		]);
 		$em = new \Asgard\Entity\EntitiesManager;
-		$dataMapper = new \Asgard\Orm\DataMapper($em, $db);
+		$dataMapper = new \Asgard\Orm\DataMapper($db, $em);
 
 		#Fixtures
 		$schema = new \Asgard\Db\Schema($db);
