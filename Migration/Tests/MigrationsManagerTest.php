@@ -26,7 +26,7 @@ class BrowserTest extends \PHPUnit_Framework_TestCase {
 '	public function up() {'."\n".
 '		up();'."\n".
 '	}'."\n".
-'	'."\n".
+''."\n".
 '	public function down() {'."\n".
 '		down();'."\n".
 '	}'."\n".
