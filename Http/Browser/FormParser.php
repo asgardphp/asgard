@@ -17,7 +17,7 @@ class Field {
 	protected $choices = [];
 	/**
 	 * Field type.
-	 * @var [type]
+	 * @var string
 	 */
 	protected $type;
 

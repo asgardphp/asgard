@@ -47,7 +47,7 @@ interface ResolverInterface {
 	/**
 	 * Get a regex from a route.
 	 * @param  string     $route
-	 * @param  array|null $requirements
+	 * @param  array      $requirements
 	 * @return string
 	 */
 	public static function getRegexFromRoute($route, $requirements);

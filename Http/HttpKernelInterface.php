@@ -118,7 +118,7 @@ interface HttpKernelInterface {
 
 	/**
 	 * Get the last given request.
-	 * @return Request|null
+	 * @return Request
 	 */
 	public function getRequest();
 

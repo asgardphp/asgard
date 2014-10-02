@@ -582,7 +582,7 @@ class DAL {
 
 	/**
 	 * Build the WHERE conditions.
-	 * @param  null|string $default
+	 * @param  DBInterface\1$string $default
 	 * @return array  1st element is the SQL, 2nd is the parameters.
 	 */
 	protected function buildWhere($default=null) {
@@ -894,8 +894,8 @@ class DAL {
 	/**
 	 * Execute a math function.
 	 * @param  string      $fct
-	 * @param  null|string $what
-	 * @param  null|string $group_by
+	 * @param  DBInterface\1$string $what
+	 * @param  DBInterface\1$string $group_by
 	 * @return string
 	 */
 	protected function _function($fct, $what=null, $group_by=null) {
@@ -926,7 +926,7 @@ class DAL {
 	
 	/**
 	 * Count number of rows.
-	 * @param  null|string $group_by
+	 * @param  DBInterface\1$string $group_by
 	 * @return string
 	 */
 	public function count($group_by=null) {
@@ -936,7 +936,7 @@ class DAL {
 	/**
 	 * Return the minimum value.
 	 * @param  string      $what
-	 * @param  null|string $group_by
+	 * @param  DBInterface\1$string $group_by
 	 * @return string
 	 */
 	public function min($what, $group_by=null) {
@@ -946,7 +946,7 @@ class DAL {
 	/**
 	 * Return the maximum value.
 	 * @param  string      $what
-	 * @param  null|string $group_by
+	 * @param  DBInterface\1$string $group_by
 	 * @return string
 	 */
 	public function max($what, $group_by=null) {
@@ -956,7 +956,7 @@ class DAL {
 	/**
 	 * Return the average value.
 	 * @param  string $what
-	 * @param  null|string $group_by
+	 * @param  DBInterface\1$string $group_by
 	 * @return string
 	 */
 	public function avg($what, $group_by=null) {
@@ -966,7 +966,7 @@ class DAL {
 	/**
 	 * Return the sum.
 	 * @param  string $what
-	 * @param  null|string $group_by
+	 * @param  DBInterface\1$string $group_by
 	 * @return string
 	 */
 	public function sum($what, $group_by=null) {

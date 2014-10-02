@@ -64,7 +64,7 @@ interface ValidatorInterface {
 	/**
 	 * Get an instance of a rule.
 	 * @param  string $rule    rule name
-	 * @param  array  $params [description]
+	 * @param  array  $params
 	 * @return Rule
 	 */
 	public function getRule($rule, array $params);

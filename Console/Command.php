@@ -80,8 +80,8 @@ class Command extends \Symfony\Component\Console\Command\Command {
 
 	/**
 	 * Run the command.
-	 * @param  InputInterface  $input  [description]
-	 * @param  OutputInterface $output [description]
+	 * @param  InputInterface  $input
+	 * @param  OutputInterface $output
 	 * @return integer
 	 */
 	public function run(InputInterface $input, OutputInterface $output) {

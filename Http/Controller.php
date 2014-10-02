@@ -115,7 +115,7 @@ abstract class Controller {
 
 	/**
 	 * To be executed before the action.
-	 * @param  Request $request [description]
+	 * @param  Request $request
 	 * @return mixed
 	 */
 	public function before(Request $request) {

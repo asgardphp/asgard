@@ -17,7 +17,7 @@ class WidgetsManager implements WidgetsManagerInterface {
 	protected $widgets = [];
 	/**
 	 * Namespaces registry.
-	 * @var [type]
+	 * @var array
 	 */
 	protected $namespaces = [
 		'Asgard\Form\Widgets'

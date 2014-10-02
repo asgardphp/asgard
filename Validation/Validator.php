@@ -168,8 +168,8 @@ class Validator implements ValidatorInterface {
 
 	/**
 	 * Set multiple rules.
-	 * @param  array   $rules [description]
-	 * @param  boolean $each  [description]
+	 * @param  array   $rules
+	 * @param  boolean $each
 	 * @return ValidatorInterface       $this
 	 */
 	protected function callRules(array $rules, $each=false) {
