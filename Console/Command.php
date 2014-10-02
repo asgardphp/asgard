@@ -31,7 +31,7 @@ class Command extends \Symfony\Component\Console\Command\Command {
 	 * @var \Symfony\Component\Console\Output\OutputInterface
 	 */
 	protected $output;
-	
+
 	/**
 	 * Constructor.
 	*/
@@ -41,7 +41,7 @@ class Command extends \Symfony\Component\Console\Command\Command {
 
 		$this->specifyParameters();
 	}
-	
+
 	/**
 	 * Return the services container.
 	 * @return \Asgard\Container\Container
@@ -50,7 +50,7 @@ class Command extends \Symfony\Component\Console\Command\Command {
 		if($this->getApplication() instanceof \Asgard\Console\Application)
 			return $this->getApplication()->getContainer();
 	}
-	
+
 	/**
 	 * Set options and arguments of the command.
 	*/
@@ -61,7 +61,7 @@ class Command extends \Symfony\Component\Console\Command\Command {
 		foreach ($this->getOptions() as $options)
 			call_user_func_array([$this, 'addOption'], $options);
 	}
-	
+
 	/**
 	 * Command options.
 	 * @return array
@@ -69,7 +69,7 @@ class Command extends \Symfony\Component\Console\Command\Command {
 	protected function getOptions() {
 		return [];
 	}
-	
+
 	/**
 	 * Command arguments.
 	 * @return array
@@ -106,7 +106,7 @@ class Command extends \Symfony\Component\Console\Command\Command {
 
 	/**
 	 * Call another command silently.
-	 * @param  string $command  
+	 * @param  string $command
 	 * @param  array $arguments
 	 * @return integer
 	 */
@@ -120,7 +120,7 @@ class Command extends \Symfony\Component\Console\Command\Command {
 	/**
 	 * Prompt user for confirmation.
 	 * @param  string $questionStr
-	 * @return boolean            
+	 * @return boolean
 	 */
 	public function confirm($questionStr) {
 		$helper = $this->getHelperSet()->get('question');
@@ -131,7 +131,7 @@ class Command extends \Symfony\Component\Console\Command\Command {
 
 	/**
 	 * Output information message.
-	 * @param  string $msg 
+	 * @param  string $msg
 	 */
 	public function info($msg) {
 		$this->output->writeln('<info>'.$msg.'</info>');

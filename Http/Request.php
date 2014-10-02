@@ -235,7 +235,7 @@ class Request implements \ArrayAccess {
 	public function offsetUnset($offset) {
 		unset($this->params[$offset]);
 	}
-	
+
 	/**
 	 * Array get implementation.
 	 * @param  string $offset
@@ -334,12 +334,12 @@ class Request implements \ArrayAccess {
 			if(substr($name, 0, 5) == 'HTTP_')
 				$headers[str_replace(' ', '-', strtolower(str_replace('_', ' ', substr($name, 5))))] = $value;
 		}
-		return $headers; 
+		return $headers;
 	}
 
 	/**
 	 * Parse FILE input and return HttpFile objects.
-	 * @param  array  $raw 
+	 * @param  array  $raw
 	 * @return array
 	 */
 	protected function parseFiles(array $raw) {
@@ -350,7 +350,7 @@ class Request implements \ArrayAccess {
 				$tmp_name = $this->convertTo('tmp_name', $raw['tmp_name']);
 				$error = $this->convertTo('error', $raw['error']);
 				$size = $this->convertTo('size', $raw['size']);
-				
+
 				$files = $this->mergeAll($name, $type, $tmp_name, $error, $size);
 
 				foreach($files as $k=>$v)
@@ -367,7 +367,7 @@ class Request implements \ArrayAccess {
 
 		return $files;
 	}
-	
+
 	/**
 	 * Used by parseFiles.
 	 * @param  string $type
@@ -382,10 +382,10 @@ class Request implements \ArrayAccess {
 			else
 				$res[$name][$type] = $file;
 		}
-				
+
 		return $res;
 	}
-	
+
 	/**
 	 * Used by parseFiles.
 	 * @param  array  $name
@@ -399,10 +399,10 @@ class Request implements \ArrayAccess {
 		foreach($name as $k=>$v) {
 			if(isset($v['name']) && !is_array($v['name']))
 				$name[$k] = array_merge($v, $type[$k], $tmp_name[$k], $error[$k], $size[$k]);
-			else 
+			else
 				$name[$k] = $this->mergeAll($name[$k], $type[$k], $tmp_name[$k], $error[$k], $size[$k]);
 		}
-		
+
 		return $name;
 	}
 }

@@ -20,7 +20,7 @@ class HooksManager implements HooksManagerInterface {
 	 * @var array
 	 */
 	public $registry = [];
-	
+
 	/**
 	 * Return a static instance.
 	 * @return HooksManagerInterface
@@ -54,7 +54,7 @@ class HooksManager implements HooksManagerInterface {
 
 		return $chain->run($args);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	*/
@@ -67,10 +67,10 @@ class HooksManager implements HooksManagerInterface {
 			else
 				$result = $result[$key];
 		}
-		
+
 		return true;
 	}
-	
+
 	/**
 	 * Set a hook.
 	 * @param string   $identifier Hook identifier.
@@ -89,7 +89,7 @@ class HooksManager implements HooksManagerInterface {
 			$cb = new SerializableClosure($cb);
 		$arr[$key][$priority] = $cb;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	*/
@@ -103,13 +103,13 @@ class HooksManager implements HooksManagerInterface {
 			else
 				$result =& $result[$key];
 		}
-		
+
 		if(isset($result[$last]))
 			return $result[$last];
 		else
 			return [];
 	}
-	
+
 	/**
 	 * Create a hook.
 	 * @param string   $identifier
@@ -121,28 +121,28 @@ class HooksManager implements HooksManagerInterface {
 
 		$this->set($identifier, $cb);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	*/
 	public function hook($identifier, $cb) {
 		$this->createhook($identifier, $cb, 'on');
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	*/
 	public function hookBefore($identifier, $cb) {
 		$this->createhook($identifier, $cb, 'before');
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	*/
 	public function hookAfter($identifier, $cb) {
 		$this->createhook($identifier, $cb, 'after');
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	*/

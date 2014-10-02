@@ -112,7 +112,7 @@ class Property {
 			return $default;
 		return \Asgard\Common\ArrayUtils::string_array_get($this->params, $path);
 	}
-	
+
 	/**
 	 * Check if has a parameter.
 	 * @param  string  $path

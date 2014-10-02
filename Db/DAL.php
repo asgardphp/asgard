@@ -81,7 +81,7 @@ class DAL {
 	 */
 	protected $query;
 	/**
-	 * 
+	 *
 	 */
 
 	/**
@@ -101,7 +101,7 @@ class DAL {
     public function getParameters() {
 		return $this->params;
 	}
-	
+
 	/**
 	 * Set FROM tables.
 	 * @param  string $tables  Separated by ,
@@ -111,7 +111,7 @@ class DAL {
 		$this->tables = [];
 		return $this->addFrom($tables);
 	}
-	
+
 	/**
 	 * INTO table.
 	 * @param  string $table
@@ -147,7 +147,7 @@ class DAL {
 				throw new \Exception('Table alias '.$alias.' is already used.');
 			$this->tables[$alias] = $table;
 		}
-		
+
 		return $this;
 	}
 
@@ -229,7 +229,7 @@ class DAL {
 			$this->query = $this->query();
 		return $this->query->next();
 	}
-	
+
 	/**
 	 * Reset all parameters.
 	 * @return DAL  $this
@@ -244,10 +244,10 @@ class DAL {
 		$this->groupBy = null;
 		$this->joins = [];
 		$this->params = [];
-		
+
 		return $this;
 	}
-	
+
 	/**
 	 * Execute a query.
 	 * @param  string $sql
@@ -263,7 +263,7 @@ class DAL {
 
 		return $this->db->query($sql, $params);
 	}
-	
+
 	/**
 	 * Return the first row only.
 	 * @return array
@@ -271,7 +271,7 @@ class DAL {
 	public function first() {
 		return $this->query()->first();
 	}
-	
+
 	/**
 	 * Return selected rows.
 	 * @return array
@@ -279,7 +279,7 @@ class DAL {
 	public function get() {
 		return $this->query()->all();
 	}
-	
+
 	/**
 	 * Paginate the results.
 	 * @param  integer  $page
@@ -291,7 +291,7 @@ class DAL {
 		$this->per_page = $per_page;
 		$this->offset(($page-1)*$per_page);
 		$this->limit($per_page);
-		
+
 		return $this;
 	}
 
@@ -352,7 +352,7 @@ class DAL {
 				throw new \Exception('Column alias '.$alias.' is not already used.');
 			$this->columns[$alias] = $column;
 		}
-		
+
 		return $this;
 	}
 
@@ -395,7 +395,7 @@ class DAL {
 		$this->offset = $offset;
 		return $this;
 	}
-	
+
 	/**
 	 * Set limit.
 	 * @param  integer $limit
@@ -415,7 +415,7 @@ class DAL {
 		$this->orderBy = $orderBy;
 		return $this;
 	}
-	
+
 	/**
 	 * Set group by.
 	 * @param  string $groupBy
@@ -425,7 +425,7 @@ class DAL {
 		$this->groupBy = $groupBy;
 		return $this;
 	}
-	
+
 	/**
 	 * Add WHERE conditions.
 	 * @param  array|string $conditions
@@ -435,9 +435,9 @@ class DAL {
 	public function where($conditions, $values=null) {
 		if($values !== null)
 			$this->where[$conditions] = $values;
-		else		
+		else
 			$this->where[] = $conditions;
-		
+
 		return $this;
 	}
 
@@ -452,9 +452,9 @@ class DAL {
 	protected function processConditions($params, $condition = 'and', $brackets=false, $table=null) {
 		if(count($params) == 0)
 			return ['', []];
-		
+
 		$string_conditions = [];
-		
+
 		if(!is_array($params)) {
 			if($condition == 'and')
 				return [$this->replace($params), []];
@@ -486,10 +486,10 @@ class DAL {
 		}
 
 		$result = implode(' '.strtoupper($condition).' ', $string_conditions);
-		
+
 		if($brackets && count($params) > 1)
 			$result = '('.$result.')';
-		
+
 		return [$result, \Asgard\Common\ArrayUtils::flateArray($pdoparams)];
 	}
 
@@ -502,7 +502,7 @@ class DAL {
 		unset($this->joins[$alias]);
 		return $this;
 	}
-	
+
 	/**
 	 * Format identifiers.
 	 * @param  string $condition
@@ -541,7 +541,7 @@ class DAL {
 			return implode('.', $res);
 		}, $str);
 	}
-	
+
 	/**
 	 * Build the list of columns.
 	 * @return string
@@ -761,7 +761,7 @@ class DAL {
 
 		list($jointures, $joinparams) = $this->buildJointures();
 		$params = array_merge($params, $joinparams);
-		
+
 		list($where, $whereparams) = $this->buildWhere();
 		$params = array_merge($params, $whereparams);
 
@@ -791,10 +791,10 @@ class DAL {
 			$set[] = $this->replace($k).'=?';
 		$str = ' SET '.implode(', ', $set);
 		$params = array_merge($params, array_values($values));
-		
+
 		list($where, $whereparams) = $this->buildWhere();
 		$params = array_merge($params, $whereparams);
-		
+
 
 		$this->params = $params;
 		return 'UPDATE '.$tables.$jointures.$str.$where.$orderBy.$limit;
@@ -814,7 +814,7 @@ class DAL {
 
 		list($jointures, $joinparams) = $this->buildJointures();
 		$params = array_merge($params, $joinparams);
-		
+
 		list($where, $whereparams) = $this->buildWhere();
 		$params = array_merge($params, $whereparams);
 
@@ -852,11 +852,11 @@ class DAL {
 			$cols[] = $this->replace($k);
 		$str = ' ('.implode(', ', $cols).') VALUES ('.implode(', ', array_fill(0, count($values), '?')).')';
 		$params = array_merge($params, array_values($values));
-		
+
 		$this->params = $params;
 		return 'INSERT INTO '.$into.$str;
 	}
-	
+
 	/**
 	 * Update rows.
 	 * @param  array  $values
@@ -867,7 +867,7 @@ class DAL {
 		$params = $this->getParameters();
 		return $this->db->query($sql, $params)->affected();
 	}
-	
+
 	/**
 	 * Insert rows.
 	 * @param  array  $values
@@ -879,7 +879,7 @@ class DAL {
 		$this->db->query($sql, $params);
 		return $this->db->id();
 	}
-	
+
 	/**
 	 * Delete rows.
 	 * @param  array $tables
@@ -923,7 +923,7 @@ class DAL {
 			return \Asgard\Common\ArrayUtils::array_get($dal->first(), $fct);
 		}
 	}
-	
+
 	/**
 	 * Count number of rows.
 	 * @param  DBInterface\1$string $group_by
@@ -932,7 +932,7 @@ class DAL {
 	public function count($group_by=null) {
 		return $this->_function('count', null, $group_by);
 	}
-	
+
 	/**
 	 * Return the minimum value.
 	 * @param  string      $what
@@ -942,7 +942,7 @@ class DAL {
 	public function min($what, $group_by=null) {
 		return $this->_function('min', $what, $group_by);
 	}
-	
+
 	/**
 	 * Return the maximum value.
 	 * @param  string      $what
@@ -952,7 +952,7 @@ class DAL {
 	public function max($what, $group_by=null) {
 		return $this->_function('max', $what, $group_by);
 	}
-	
+
 	/**
 	 * Return the average value.
 	 * @param  string $what
@@ -962,7 +962,7 @@ class DAL {
 	public function avg($what, $group_by=null) {
 		return $this->_function('avg', $what, $group_by);
 	}
-	
+
 	/**
 	 * Return the sum.
 	 * @param  string $what

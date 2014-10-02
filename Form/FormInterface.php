@@ -126,20 +126,20 @@ interface FormInterface extends GroupInterface {
 	 * @return boolean true for success
 	 */
 	public function uploadSuccess();
-	
+
 	/**
 	 * Return the opening form tag.
 	 * @param  array $options
 	 * @return string
 	 */
 	public function open(array $options=[]);
-	
+
 	/**
 	 * Return the closing form tag.
 	 * @return string
 	 */
 	public function close();
-	
+
 	/**
 	 * Return the submit button.
 	 * @param  mixed $value

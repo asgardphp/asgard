@@ -25,7 +25,7 @@ class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\Pers
 
 		if(!isset($definition->order_by))
 			$definition->set('order_by', 'id DESC');
-		
+
 		$definition->hook('get', [$this, 'hookGet']);
 		$definition->hook('getTranslations', [$this, 'hookgetTranslations']);
 		$definition->hook('validation', [$this, 'hookValidation']);
@@ -116,7 +116,7 @@ class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\Pers
 	public function static_loadBy($property, $value) {
 		return $this->getDataMapper()->orm($this->entityClass)->where([$property => $value])->first();
 	}
-	
+
 	/**
 	 * Article::relations()
 	 * @return array
@@ -196,7 +196,7 @@ class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\Pers
 	}
 
 	#Calls
-	
+
 	/**
 	 * $article->save()
 	 * @param  \Asgard\Entity\Entity $entity

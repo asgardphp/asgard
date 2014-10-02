@@ -63,7 +63,7 @@ class ArrayUtils {
 			$arr =& $arr[$parent];
 		$arr[$lastkey] = $value;
 	}
-	
+
 	/**
 	 * Get element in array.
 	 * @param  array        $arr
@@ -82,7 +82,7 @@ class ArrayUtils {
 		}
 		return $arr;
 	}
-	
+
 	/**
 	 * Check if element exists in array.
 	 * @param  array        $arr
@@ -102,7 +102,7 @@ class ArrayUtils {
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Unset element in array.
 	 * @param  array        $arr
@@ -134,10 +134,10 @@ class ArrayUtils {
 			else
 				$res[] = $v;
 		}
-				
+
 		return $res;
 	}
-	
+
 	/**
 	 * Return all ements before a given position.
 	 * @param  array   $arr

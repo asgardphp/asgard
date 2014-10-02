@@ -70,14 +70,14 @@ interface ContainerInterface extends \ArrayAccess {
 
 	/**
 	 * Register a service.
-	 * @param  string $name    
+	 * @param  string $name
 	 * @param  callable $callback
 	 */
 	public function register($name, $callback);
-	
+
 	/**
 	 * Make a service.
-	 * @param  string $name  
+	 * @param  string $name
 	 * @param  array  $params
 	 * @param  mixed $default
 	 * @return mixed

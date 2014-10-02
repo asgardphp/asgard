@@ -17,7 +17,7 @@ class Tools {
 		$printedLength = 0;
 		$position = 0;
 		$tags = [];
-		
+
 		$res = '';
 
 		while ($printedLength < $maxLength && preg_match('{</?([a-z]+)[^>]*>|&#?[a-zA-Z0-9]+;}', $html, $match, PREG_OFFSET_CAPTURE, $position)) {
@@ -54,13 +54,13 @@ class Tools {
 
 		if($printedLength < $maxLength && $position < strlen($html))
 			$res .= (substr($html, $position, $maxLength - $printedLength));
-		
+
 		if($position < strlen($html))
 			$res .= $trailing;
-		
+
 		while(!empty($tags))
 			$res .= sprintf('</%s>', array_pop($tags));
-		
+
 		return $res;
 	}
 
@@ -73,12 +73,12 @@ class Tools {
 	 */
 	public static function truncate($str, $length, $trailing='...') {
 		$length -= mb_strlen($trailing);
-		
+
 		if (mb_strlen($str) > $length)
 			return mb_substr($str,0,$length).$trailing;
 		return $str;
 	}
-	
+
 	/**
 	 * Truncate a string by words.
 	 * @param  string  $str
@@ -89,10 +89,10 @@ class Tools {
 	public static function truncateWords($str, $length, $trailing='...') {
 		$words = explode(' ', $str);
 		$cutwords = array_slice($words, 0, $length);
-		
+
 		return implode(' ', $cutwords).(count($words) > count($cutwords) ? $trailing:'');
 	}
-	
+
 	/**
 	 * Remove accents.
 	 * @param  string $str
@@ -101,14 +101,14 @@ class Tools {
 	 */
 	public static function removeAccents($str, $charset='utf-8') {
 		$str = htmlentities($str, ENT_NOQUOTES, $charset);
-		
+
 		$str = preg_replace('#&([A-za-z])(?:acute|cedil|circ|grave|orn|ring|slash|th|tilde|uml);#', '\1', $str);
 		$str = preg_replace('#&([A-za-z]{2})(?:lig);#', '\1', $str);
 		$str = preg_replace('#&[^;]+;#', '', $str);
-		
+
 		return $str;
 	}
-	
+
 	/**
 	 * Generate a random string.
 	 * @param  integer $length
@@ -126,7 +126,7 @@ class Tools {
 
 		return $result;
 	}
-	
+
 	/**
 	 * Load a file and return the class contained in the file.
 	 * @param  string $file
@@ -136,7 +136,7 @@ class Tools {
 		$before = array_merge(get_declared_classes(), get_declared_interfaces());
 		require_once $file;
 		$after = array_merge(get_declared_classes(), get_declared_interfaces());
-		
+
 		$diff = array_diff($after, $before);
 		$result = array_values($diff)[count($diff)-1];
 		if(!$result) {

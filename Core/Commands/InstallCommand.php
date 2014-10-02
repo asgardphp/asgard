@@ -100,7 +100,7 @@ class InstallCommand extends \Asgard\Console\Command {
 			$version = isset($asgard['version']) ? $asgard['version']:'@dev';
 			$containerComposer['replace'][$name] = $version;
 		}
-		
+
 		#scripts
 		if(isset($asgard['scripts'])) {
 			foreach($asgard['scripts'] as $script)

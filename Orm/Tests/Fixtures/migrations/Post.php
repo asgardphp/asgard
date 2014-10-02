@@ -7,14 +7,14 @@ class Post extends \Asgard\Migration\DBMigration {
 			$table->add('content', 'text')
 				->nullable();
 		});
-		
+
 		$this->container['schema']->create('category_post', function($table) {
 			$table->add('post_id', 'int(11)')
 				->nullable();
 			$table->add('category_id', 'int(11)')
 				->nullable();
 		});
-		
+
 		$this->container['schema']->create('post', function($table) {
 			$table->add('id', 'int(11)')
 				->primary()
@@ -27,7 +27,7 @@ class Post extends \Asgard\Migration\DBMigration {
 			$table->add('author_id', 'int(11)')
 				->nullable();
 		});
-		
+
 		$this->container['schema']->create('author', function($table) {
 			$table->add('id', 'int(11)')
 				->primary()
@@ -35,7 +35,7 @@ class Post extends \Asgard\Migration\DBMigration {
 			$table->add('name', 'varchar(255)')
 				->nullable();
 		});
-		
+
 		$this->container['schema']->create('category', function($table) {
 			$table->add('id', 'int(11)')
 				->primary()
@@ -44,16 +44,16 @@ class Post extends \Asgard\Migration\DBMigration {
 				->nullable();
 		});
 	}
-	
+
 	public function down() {
 		$this->container['schema']->drop('post_translation');
-		
+
 		$this->container['schema']->drop('category_post');
-		
+
 		$this->container['schema']->drop('post');
-		
+
 		$this->container['schema']->drop('author');
-		
+
 		$this->container['schema']->drop('category');
 	}
 }

@@ -94,7 +94,7 @@ class Route {
 
 	/**
 	 * Set the controller class.
-	 * @param string $controller 
+	 * @param string $controller
 	 */
 	public function setController($controller) {
 		$this->controller = $controller;

@@ -37,7 +37,7 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			$entitiesManager->setValidatorFactory($container->createFactory('validator'));
 			return $entitiesManager;
 		});
-		
+
 		#FORMInterface
 		$container->setParentClass('widgetsManager', 'Asgard\Form\WidgetsManagerInterface');
 		$container->register('widgetsManager', function() { return new \Asgard\Form\WidgetsManager; });

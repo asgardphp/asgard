@@ -8,7 +8,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 		if(!defined('_ENV_'))
 			define('_ENV_', 'test');
 	}
-	
+
 	public function setUp(){
 		$db = $this->getDB();
 		$database = 'asgard';
@@ -42,7 +42,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 		index
 	drop index
 	#foreign keys
-	
+
 	add column
 	definition:
 		autoincrement
@@ -52,111 +52,111 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 		default
 	rename column
 	drop column
-	
+
 	raw sql
 	*/
-		
+
 	protected function tableExists($table) {
-		return $this->getDB()->query("SELECT * 
-			FROM INFORMATION_SCHEMA.TABLES 
-			WHERE TABLE_SCHEMA = '' 
+		return $this->getDB()->query("SELECT *
+			FROM INFORMATION_SCHEMA.TABLES
+			WHERE TABLE_SCHEMA = ''
 			AND  TABLE_NAME = '$table'")->count() > 0;
 	}
-		
+
 	protected function columnExists($table, $column) {
-		return $this->getDB()->query("SELECT * 
-			FROM INFORMATION_SCHEMA.COLUMNS 
-			WHERE TABLE_SCHEMA = 'asgard' 
+		return $this->getDB()->query("SELECT *
+			FROM INFORMATION_SCHEMA.COLUMNS
+			WHERE TABLE_SCHEMA = 'asgard'
 			AND  TABLE_NAME = '$table'
 			AND COLUMN_NAME = '$column'")->count() > 0;
 	}
-	
+
 	protected function isAutoincrement($table, $column) {
-		return $this->getDB()->query("SELECT * 
-			FROM INFORMATION_SCHEMA.COLUMNS 
-			WHERE TABLE_SCHEMA = 'asgard' 
+		return $this->getDB()->query("SELECT *
+			FROM INFORMATION_SCHEMA.COLUMNS
+			WHERE TABLE_SCHEMA = 'asgard'
 			AND  TABLE_NAME = '$table'
 			AND COLUMN_NAME = '$column'
 			AND EXTRA LIKE '%auto_increment%'")->count() > 0;
 	}
-	
+
 	protected function isNullable($table, $column) {
-		return $this->getDB()->query("SELECT * 
-			FROM INFORMATION_SCHEMA.COLUMNS 
-			WHERE TABLE_SCHEMA = 'asgard' 
+		return $this->getDB()->query("SELECT *
+			FROM INFORMATION_SCHEMA.COLUMNS
+			WHERE TABLE_SCHEMA = 'asgard'
 			AND  TABLE_NAME = '$table'
 			AND COLUMN_NAME = '$column'
 			AND IS_NULLABLE = 'YES'")->count() > 0;
 	}
-	
+
 	protected function getDefault($table, $column) {
-		$r = $this->getDB()->query("SELECT * 
-			FROM INFORMATION_SCHEMA.COLUMNS 
-			WHERE TABLE_SCHEMA = 'asgard' 
+		$r = $this->getDB()->query("SELECT *
+			FROM INFORMATION_SCHEMA.COLUMNS
+			WHERE TABLE_SCHEMA = 'asgard'
 			AND  TABLE_NAME = '$table'
 			AND COLUMN_NAME = '$column'")->first();
 		return $r['COLUMN_DEFAULT'];
 	}
-	
+
 	protected function getDataType($table, $column) {
-		$r = $this->getDB()->query("SELECT * 
-			FROM INFORMATION_SCHEMA.COLUMNS 
-			WHERE TABLE_SCHEMA = 'asgard' 
+		$r = $this->getDB()->query("SELECT *
+			FROM INFORMATION_SCHEMA.COLUMNS
+			WHERE TABLE_SCHEMA = 'asgard'
 			AND  TABLE_NAME = '$table'
 			AND COLUMN_NAME = '$column'")->first();
 		return $r['DATA_TYPE'];
 	}
-	
+
 	protected function getType($table, $column) {
-		$r = $this->getDB()->query("SELECT * 
-			FROM INFORMATION_SCHEMA.COLUMNS 
-			WHERE TABLE_SCHEMA = 'asgard' 
+		$r = $this->getDB()->query("SELECT *
+			FROM INFORMATION_SCHEMA.COLUMNS
+			WHERE TABLE_SCHEMA = 'asgard'
 			AND  TABLE_NAME = '$table'
 			AND COLUMN_NAME = '$column'")->first();
 		return $r['COLUMN_TYPE'];
 	}
-	
+
 	protected function getLength($table, $column) {
-		$r = $this->getDB()->query("SELECT * 
-			FROM INFORMATION_SCHEMA.COLUMNS 
-			WHERE TABLE_SCHEMA = 'asgard' 
+		$r = $this->getDB()->query("SELECT *
+			FROM INFORMATION_SCHEMA.COLUMNS
+			WHERE TABLE_SCHEMA = 'asgard'
 			AND  TABLE_NAME = '$table'
 			AND COLUMN_NAME = '$column'")->first();
 		return $r['CHARACTER_MAXIMUM_LENGTH'];
 	}
-		
+
 	protected function isPrimary($table, $column) {
-		return $this->getDB()->query("SELECT * 
-			FROM INFORMATION_SCHEMA.COLUMNS 
-			WHERE TABLE_SCHEMA = 'asgard' 
+		return $this->getDB()->query("SELECT *
+			FROM INFORMATION_SCHEMA.COLUMNS
+			WHERE TABLE_SCHEMA = 'asgard'
 			AND  TABLE_NAME = '$table'
 			AND COLUMN_NAME = '$column'
 			AND COLUMN_KEY = 'PRI'")->count() > 0;
 	}
-		
+
 	protected function isUnique($table, $column) {
-		return $this->getDB()->query("SELECT * 
-			FROM INFORMATION_SCHEMA.COLUMNS 
-			WHERE TABLE_SCHEMA = 'asgard' 
+		return $this->getDB()->query("SELECT *
+			FROM INFORMATION_SCHEMA.COLUMNS
+			WHERE TABLE_SCHEMA = 'asgard'
 			AND  TABLE_NAME = '$table'
 			AND COLUMN_NAME = '$column'
 			AND COLUMN_KEY = 'UNI'")->count() > 0;
 	}
-		
+
 	protected function isIndex($table, $column) {
-		return $this->getDB()->query("SELECT * 
-			FROM INFORMATION_SCHEMA.COLUMNS 
-			WHERE TABLE_SCHEMA = 'asgard' 
+		return $this->getDB()->query("SELECT *
+			FROM INFORMATION_SCHEMA.COLUMNS
+			WHERE TABLE_SCHEMA = 'asgard'
 			AND  TABLE_NAME = '$table'
 			AND COLUMN_NAME = '$column'
 			AND COLUMN_KEY = 'MUL'")->count() > 0;
 	}
-	
+
 	//~ isFulltext()
 //~ select group_concat(distinct column_name)
-//~ from information_schema.STATISTICS 
-//~ where table_schema = 'your_db' 
-//~ and table_name = 'your_table' 
+//~ from information_schema.STATISTICS
+//~ where table_schema = 'your_db'
+//~ and table_name = 'your_table'
 //~ and index_type = 'FULLTEXT';
 
 	#create table
@@ -164,7 +164,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 		//~ $this->assertTrue($this->tableExists('arpa_actualite'));
 		//~ $this->assertTrue($this->columnExists('arpa_actualite', 'id'));
 	//~ }
-	
+
 	#nullable
 	//~ ALTER TABLE mytable MODIFY mycolumn VARCHAR(255);
 	#primary
@@ -190,7 +190,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
   //~ `commentaire_id` int(1) NOT NULL,
   //~ PRIMARY KEY (`id`)
 //~ );
-	
+
 	public function test0() {
 		$schema = new \Asgard\Db\Schema($this->getDB());
 		$schema->create('test', function($table) {
@@ -199,68 +199,68 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 			$table->add('title', 'varchar', 50)
 				->nullable()
 				->def('The title');
-				
+
 			$table->primary('id');
 			$table->unique('title');
 		});
 	}
-	
+
 	public function test1() {
 		$schema = new \Asgard\Db\Schema($this->getDB());
 		$schema->create('test', function($table) {
 			$table->add('id', 'int', 11);
 		});
-		
+
 		$schema->drop('test');
 	}
-	
+
 	public function test2() {
 		$schema = new \Asgard\Db\Schema($this->getDB());
 		$schema->create('test', function($table) {
 			$table->add('id', 'int', 11);
 		});
-		
+
 		$schema->rename('test', 'test2');
 	}
-	
+
 	public function test3() {
 		$schema = new \Asgard\Db\Schema($this->getDB());
 		$schema->create('test', function($table) {
 			$table->add('id', 'int', 11);
 		});
-		
+
 		$schema->table('test', function($table) {
 			$table->add('title', 'text');
 		});
 	}
-	
+
 	public function test4() {
 		$schema = new \Asgard\Db\Schema($this->getDB());
 		$schema->create('test', function($table) {
 			$table->add('id', 'int', 11);
 			$table->add('title', 'text');
 		});
-		
+
 		$schema->dropColumn('test', 'title');
 	}
-	
+
 	public function test5() {
 		$schema = new \Asgard\Db\Schema($this->getDB());
 		$schema->create('test', function($table) {
 			$table->add('id', 'int', 11);
 			$table->add('title', 'text');
 		});
-		
+
 		$schema->renameColumn('test', 'title', 'title2');
 	}
-	
+
 	public function test6() {
 		$schema = new \Asgard\Db\Schema($this->getDB());
 		$schema->create('test', function($table) {
 			$table->add('id', 'int', 11);
 			$table->add('title', 'text');
 		});
-		
+
 		$schema->table('test', function($table) {
 			$table->col('title')
 				->type('varchar', 50)
@@ -270,42 +270,42 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 				->def('the title');
 		});
 	}
-	
+
 	public function test7() {
 		$schema = new \Asgard\Db\Schema($this->getDB());
 		$schema->create('test', function($table) {
 			$table->add('id', 'int', 11);
 			$table->add('title', 'varchar', 50);
 		});
-		
+
 		$schema->table('test', function($table) {
 			$table->col('title')
 				->dropIndex()
 				->unique();
 		});
 	}
-	
+
 	public function test8() {
 		$schema = new \Asgard\Db\Schema($this->getDB());
 		$schema->create('test', function($table) {
 			$table->add('id', 'int', 11);
 			$table->add('title', 'varchar', 50);
 		});
-		
+
 		$schema->table('test', function($table) {
 			$table->col('title')
 				->dropIndex()
 				->index();
 		});
 	}
-	
+
 	public function test9() {
 		$schema = new \Asgard\Db\Schema($this->getDB());
 		$schema->create('test', function($table) {
 			$table->add('id', 'int', 11);
 			$table->add('title', 'varchar', 50);
 		});
-		
+
 		$schema->table('test', function($table) {
 			$table->primary(['id', 'title']);
 		});

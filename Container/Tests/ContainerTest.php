@@ -59,7 +59,7 @@ class ContainerTest extends \PHPUnit_Framework_TestCase {
 
 	public function testRemove() {
 		$container = new \Asgard\Container\Container;
-		
+
 		$container['test'] = 123;
 		$this->assertTrue($container->has('test'));
 		$container->remove('test');

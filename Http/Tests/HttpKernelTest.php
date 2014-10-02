@@ -12,7 +12,7 @@ class HttpKernelTest extends \PHPUnit_Framework_TestCase {
 		$resolver = $this->getMock('Asgard\Http\Resolver', ['getRoute'], [new \Asgard\Cache\Cache(new \Asgard\Cache\NullCache)]);
 		$resolver->expects($this->once())->method('getRoute')->will($this->returnValue(new \Asgard\Http\Route('', 'Asgard\Http\Tests\Fixtures\HomeController', 'home')));
 		$kernel->setResolver($resolver);
-		
+
 		$this->assertEquals('<h1>Asgard</h1><p>Hello!</p>', $kernel->run()->getContent());
 	}
 
@@ -23,7 +23,7 @@ class HttpKernelTest extends \PHPUnit_Framework_TestCase {
 		$resolver = $this->getMock('Asgard\Http\Resolver', ['getRoute'], [new \Asgard\Cache\Cache(new \Asgard\Cache\NullCache)]);
 		$resolver->expects($this->once())->method('getRoute')->will($this->returnValue(new \Asgard\Http\Route('', 'Asgard\Http\LambdaController', function($request) { return '<h1>Asgard</h1><p>Hello!</p>'; })));
 		$kernel->setResolver($resolver);
-		
+
 		$this->assertEquals('<h1>Asgard</h1><p>Hello!</p>', $kernel->process(new \Asgard\Http\Request, false)->getContent());
 	}
 

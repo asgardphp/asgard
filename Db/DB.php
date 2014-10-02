@@ -15,7 +15,7 @@ class DB implements DBInterface {
 	 * @var array
 	 */
 	protected $config;
-	
+
 	/**
 	 * Constructor.
 	 * @param array $config database configuration
@@ -68,42 +68,42 @@ class DB implements DBInterface {
 	public function getConfig() {
 		return $this->config;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	*/
 	public function getDB() {
 		return $this->db;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	*/
 	public function query($sql, array $args=[]) {
 		return new Query($this->db, $sql, $args);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	*/
 	public function id() {
 		return $this->db->lastInsertId();
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	*/
 	public function beginTransaction() {
 		$this->db->beginTransaction();
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	*/
 	public function commit() {
 		$this->db->commit();
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	*/

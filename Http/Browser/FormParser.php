@@ -60,7 +60,7 @@ class Field {
 				$root = $document->appendchild($document->createElement('_root'));
 				$root->appendchild($node);
 				$xpath = new \DOMXPath($document);
-				
+
 				foreach($xpath->query('descendant::option', $root) as $option_node) {
 					$value = $option_node->getAttribute('value');
 					$this->choices[] = $value;
@@ -214,7 +214,7 @@ class FormParser {
 
 			$arr =& $res;
 			$key = array_pop($path);
-			
+
 			foreach($path as $parent)
 				$arr =& $arr[$parent];
 			if(!$key)

@@ -70,7 +70,7 @@ class DataMapper implements DataMapperInterface {
 			return null;
 		return $entity;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -88,7 +88,7 @@ class DataMapper implements DataMapperInterface {
 	public function all($entityClass) {
 		return $this->orm($entityClass)->all();
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -98,7 +98,7 @@ class DataMapper implements DataMapperInterface {
 			$count += $this->destroy($entity) ? 1:0;
 		return $count;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -189,7 +189,7 @@ class DataMapper implements DataMapperInterface {
 				$validator->attribute($name, $rules);
 		}
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -235,7 +235,7 @@ class DataMapper implements DataMapperInterface {
 		#set $values if any
 		if($values)
 			$entity->set($values);
-		
+
 		if(!$force && $errors = $this->errors($entity)) {
 			$msg = implode("\n", \Asgard\Common\ArrayUtils::flateArray($errors));
 			throw new EntityException($msg, $errors);
@@ -306,15 +306,15 @@ class DataMapper implements DataMapperInterface {
 		elseif(count($vars) > 0) {
 			if(!$orm->reset()->where(['id'=>$entity->id])->getDAL()->update($vars))
 				$entity->id = $orm->getDAL()->insert($vars);
-		}		
-		
+		}
+
 		#Persist i18n
 		foreach($i18n as $locale=>$values) {
 			$dal = new \Asgard\Db\DAL($this->db, $this->getTranslationTable($entity->getDefinition()));
 			if(!$dal->where(['id'=>$entity->id, 'locale'=>$locale])->update($values)) {
 				$dal->insert(
 					array_merge(
-						$values, 
+						$values,
 						[
 							'locale'=>$locale,
 							'id'=>$entity->id,
@@ -323,7 +323,7 @@ class DataMapper implements DataMapperInterface {
 				);
 			}
 		}
-	
+
 		#Persist relations
 		foreach($this->relations($entity->getDefinition()) as $relation => $params) {
 			if(!isset($entity->data['properties'][$relation]))
@@ -351,7 +351,7 @@ class DataMapper implements DataMapperInterface {
 	public function related(\Asgard\Entity\Entity $entity, $name) {
 		$rel = $this->relation($entity->getDefinition(), $name);
 		$relEntity = $rel->get('entity');
-		
+
 		switch($rel->type()) {
 			case 'hasOne':
 			case 'belongsTo':
@@ -396,7 +396,7 @@ class DataMapper implements DataMapperInterface {
 		else
 			return $this->orm(get_class($entity))->where(['id' => $entity->id]);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -413,7 +413,7 @@ class DataMapper implements DataMapperInterface {
 		else
 			return $this->prefix.$definition->getShortName();
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */

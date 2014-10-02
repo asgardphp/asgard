@@ -11,7 +11,7 @@ trait HookableTrait {
 	 * @var HooksManagerInterface
 	 */
 	protected $hooksManager;
-	
+
 	/**
 	 * Check if has a hook.
 	 * @param string $name
@@ -22,7 +22,7 @@ trait HookableTrait {
 			return false;
 		return $this->getHooksManager()->has($name);
 	}
-	
+
 	/**
 	 * Trigger a hook.
 	 * @param string    $name
@@ -36,7 +36,7 @@ trait HookableTrait {
 			return;
 		return $this->getHooksManager()->trigger($name, $args, $cb, $chain);
 	}
-	
+
 	/**
 	 * Set a hook.
 	 * @param string   $hookName
@@ -47,7 +47,7 @@ trait HookableTrait {
 		$args = [$hookName, $cb];
 		return call_user_func_array([$this->getHooksManager(), 'hook'], $args);
 	}
-	
+
 	/**
 	 * Set a "before" hook.
 	 * @param string   $hookName
@@ -58,10 +58,10 @@ trait HookableTrait {
 		$args = [$hookName, $cb];
 		return call_user_func_array([$this->getHooksManager(), 'hookBefore'], $args);
 	}
-	
+
 	/**
 	 * Set an "after" hook.
-	 * 
+	 *
 	 * @param string   $hookName
 	 * @param callable $cb
 	 * @return mixed
@@ -70,7 +70,7 @@ trait HookableTrait {
 		$args = [$hookName, $cb];
 		return call_user_func_array([$this->getHooksManager(), 'hookAfter'], $args);
 	}
-	
+
 	/**
 	 * Get the hooks manager.
 	 * @return HooksManagerInterface
@@ -80,7 +80,7 @@ trait HookableTrait {
 			$this->hooksManager = new \Asgard\Hook\HooksManager;
 		return $this->hooksManager;
 	}
-	
+
 	/**
 	 * Set the hooks manager.
 	 * @param HooksManagerInterface $hooksManager

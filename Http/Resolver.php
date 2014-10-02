@@ -57,7 +57,7 @@ class Resolver implements ResolverInterface {
 	public function addRoute($route) {
 		$this->routes[] = $route;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -65,7 +65,7 @@ class Resolver implements ResolverInterface {
 		$with = trim($request->url->get(), '/');
 		return static::matchWith($route, $with, $requirements, $request, $method);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -83,11 +83,11 @@ class Resolver implements ResolverInterface {
 			elseif($request && strtoupper($method) != $request->method())
 				return false;
 		}
-				
+
 		$regex = static::getRegexFromRoute($route, $requirements);
 		$matches = [];
 		$res = preg_match_all('/^'.$regex.'\/?$/', $with, $matches);
-		
+
 		if($res == 0)
 			return false;
 		else {
@@ -96,18 +96,18 @@ class Resolver implements ResolverInterface {
 			preg_match_all('/:([a-zA-Z0-9_]+)/', $route, $keys);
 			for($i=0; $i<count($keys[1]); $i++)
 				$results[$keys[1][$i]] = $matches[$i+1][0];
-			
+
 			return $results;
 		}
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	public static function getRegexFromRoute($route, $requirements) {
 		preg_match_all('/:([a-zA-Z0-9_]+)/', $route, $symbols);
 		$regex = preg_quote($route, '/');
-			
+
 		/* REPLACE EACH SYMBOL WITH ITS REGEX */
 		foreach($symbols[1] as $symbol) {
 			if(is_array($requirements) && array_key_exists($symbol, $requirements)) {
@@ -121,10 +121,10 @@ class Resolver implements ResolverInterface {
 			}
 			if(!isset($replacement))
 				$replacement = '[^\/]+';
-			
+
 			$regex = preg_replace('/\\\:'.$symbol.'/', '('.$replacement.')', $regex);
 		}
-		
+
 		return $regex;
 	}
 
@@ -162,7 +162,7 @@ class Resolver implements ResolverInterface {
 		usort($this->routes, function($r1, $r2) {
 			$route1 = $r1->getRoute();
 			$route2 = $r2->getRoute();
-			
+
 			if($route1 == $route2) {
 				if($r1->get('host'))
 					return -1;
@@ -196,7 +196,7 @@ class Resolver implements ResolverInterface {
 
 		return $this;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -216,10 +216,10 @@ class Resolver implements ResolverInterface {
 			$route .= urlencode($symbol).'='.urlencode($param);
 			$i++;
 		}
-			
+
 		if(preg_match('/:([a-zA-Z0-9_]+)/', $route))
 			throw new \Exception('Missing parameter for route: '.$route);
-		
+
 		return trim($route, '/');
 	}
 
@@ -261,7 +261,7 @@ class Resolver implements ResolverInterface {
 				}
 			}
 		}
-					
+
 		throw new \Exception('Route not found.');
 	}
 

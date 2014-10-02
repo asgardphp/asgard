@@ -37,7 +37,7 @@ class Kernel implements \ArrayAccess {
 	/**
 	 * Constructor.
 	 * @param string $root
-	 * @param string $env 
+	 * @param string $env
 	 */
 	public function __construct($root=null, $env=null) {
 		$this->setRoot($root);

@@ -3,7 +3,7 @@ namespace Asgard\Orm;
 
 /**
  * Helps performing operations like selection, deletion and update on a set of entities.
- * 
+ *
  * @author Michel Hognerud <michel@hognerud.net>
 */
 class ORM implements ORMInterface {
@@ -77,7 +77,7 @@ class ORM implements ORMInterface {
 	 * @var \Asgard\Container\Factory
 	 */
 	protected $paginatorFactory = null;
-	
+
 	/**
 	 * Constructor.
 	 * @param \Asgard\Entity\EntityDefinition $definition
@@ -98,7 +98,7 @@ class ORM implements ORMInterface {
 		else
 			$this->orderBy('id DESC');
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	*/
@@ -114,14 +114,14 @@ class ORM implements ORMInterface {
 			->where($this->where)
 			->join([$reverseRelationName => $this->join]);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	*/
 	public function __get($name) {
 		return $this->$name()->get();
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	*/
@@ -139,7 +139,7 @@ class ORM implements ORMInterface {
 
 		return $this;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	*/
@@ -147,27 +147,27 @@ class ORM implements ORMInterface {
 		$this->join[] = $relations;
 		return $this;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	*/
 	public function getTable() {
 		return $this->dataMapper->getTable($this->definition);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	*/
 	public function getTranslationTable() {
 		return $this->dataMapper->getTranslationTable($this->definition);
 	}
-	
+
 	/**
 	 * Converts a raw array to an entity.
-	 * 
+	 *
 	 * @param array                           $raw
 	 * @param \Asgard\Entity\EntityDefinition $definition The definition of the entity to be instantiated.
-	 * 
+	 *
 	 * @return \Asgard\Entity\Entity
 	*/
 	protected function toEntity(array $raw, \Asgard\Entity\EntityDefinition $definition=null) {
@@ -176,14 +176,14 @@ class ORM implements ORMInterface {
 		$new = $definition->make([], $this->locale);
 		return static::unserialize($new, $raw);
 	}
-	
+
 	/**
 	 * Fills up an entity with a raw array of data.
-	 * 
+	 *
 	 * @param \Asgard\Entity\Entity $entity
 	 * @param array                 $data
 	 * @param DBInterface\1$string           $locale Only necessary if the data concerns a specific locale.
-	 * 
+	 *
 	 * @return \Asgard\Entity\Entity
 	*/
 	protected static function unserialize(\Asgard\Entity\Entity $entity, array $data, $locale=null) {
@@ -194,7 +194,7 @@ class ORM implements ORMInterface {
 
 		return $entity->_set($data, $locale);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	*/
@@ -206,14 +206,14 @@ class ORM implements ORMInterface {
 		else
 			return $this->toEntity($r);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	*/
 	public function ids() {
 		return $this->values('id');
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	*/
@@ -223,7 +223,7 @@ class ORM implements ORMInterface {
 			$res[] = $one->get($property);
 		return $res;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	*/
@@ -233,14 +233,14 @@ class ORM implements ORMInterface {
 			return null;
 		return $res[0];
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	*/
 	public function all() {
 		return $this->get();
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	*/
@@ -279,10 +279,10 @@ class ORM implements ORMInterface {
 
 		return $dal;
 	}
-	
+
 	/**
 	 * Performs jointures on the DAL object.
-	 * 
+	 *
 	 * @param \Asgard\Db\DAL                  $dal
 	 * @param array                           $jointures Array of relations.
 	 * @param \Asgard\Entity\EntityDefinition $entityDefinition The entity class from which jointures are built.
@@ -325,10 +325,10 @@ class ORM implements ORMInterface {
 			}
 		}
 	}
-	
+
 	/**
 	 * Performs a single jointure.
-	 * 
+	 *
 	 * @param \Asgard\Db\DAL $dal
 	 * @param EntityRelation $relation The name of the relation.
 	 * @param string         $alias How the related table will be referenced in the SQL query.
@@ -386,7 +386,7 @@ class ORM implements ORMInterface {
 			]);
 		}
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	*/
@@ -415,7 +415,7 @@ class ORM implements ORMInterface {
 					case 'hasOne':
 					case 'belongsTo':
 						$link = $rel->getLink();
-						
+
 						$orm = $this->dataMapper->orm($relation_entity)->where(['id IN ('.implode(', ', $ids).')']);
 						if(is_callable($closure))
 							$closure($orm);
@@ -434,7 +434,7 @@ class ORM implements ORMInterface {
 						break;
 					case 'hasMany':
 						$link = $rel->getLink();
-						
+
 						$orm = $this->dataMapper->orm($relation_entity)->where([$link.' IN ('.implode(', ', $ids).')']);
 						if(is_callable($closure))
 							$closure($orm);
@@ -480,24 +480,24 @@ class ORM implements ORMInterface {
 				}
 			}
 		}
-		
+
 		return $entities;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	*/
 	public function selectQuery($sql, array $args=[]) {
 		$entities = [];
-		
+
 		$dal = new \Asgard\Db\DAL($this->dataMapper->getDB());
 		$rows = $dal->query($sql, $args)->all();
 		foreach($rows as $row)
 			$entities[] = static::unserialize($this->definition->make(), $row);
-			
+
 		return $entities;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	*/
@@ -508,10 +508,10 @@ class ORM implements ORMInterface {
 
 		$this->page = $page;
 		$this->per_page = $per_page;
-		
+
 		return $this;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	*/
@@ -524,21 +524,21 @@ class ORM implements ORMInterface {
 		else
 			return new \Asgard\Common\Paginator($this->count(), $page, $per_page);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	*/
 	public function with($with, \Closure $closure=null) {
 		$this->with[$with] = $closure;
-		
+
 		return $this;
 	}
-	
+
 	/**
 	 * Replace the tables by their i18n equivalent.
-	 * 
+	 *
 	 * @param string $sql SQL query.
-	 * 
+	 *
 	 * @return string The modified SQL query.
 	*/
 	protected function replaceTable($sql) {
@@ -554,12 +554,12 @@ class ORM implements ORMInterface {
 
 		return $sql;
 	}
-	
+
 	/**
 	 * Format the conditions before being used in SQL.
-	 * 
+	 *
 	 * @param array $conditions
-	 * 
+	 *
 	 * @return array FormInterfaceatted conditions.
 	*/
 	protected function processConditions(array $conditions) {
@@ -576,7 +576,7 @@ class ORM implements ORMInterface {
 
 		return $conditions;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	*/
@@ -585,10 +585,10 @@ class ORM implements ORMInterface {
 			$this->where[] = $this->processConditions($conditions);
 		else
 			$this->where[] = $this->processConditions([$conditions=>$val]);
-		
+
 		return $this;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	*/
@@ -596,7 +596,7 @@ class ORM implements ORMInterface {
 		$this->offset = $offset;
 		return $this;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	*/
@@ -604,7 +604,7 @@ class ORM implements ORMInterface {
 		$this->limit = $limit;
 		return $this;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	*/
@@ -612,7 +612,7 @@ class ORM implements ORMInterface {
 		$this->orderBy = $orderBy;
 		return $this;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	*/
@@ -623,7 +623,7 @@ class ORM implements ORMInterface {
 
 		return $count;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	*/
@@ -633,42 +633,42 @@ class ORM implements ORMInterface {
 
 		return $this;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	*/
 	public function count($group_by=null) {
 		return $this->getDAL()->count($group_by);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	*/
 	public function min($what, $group_by=null) {
 		return $this->getDAL()->min($what, $group_by);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	*/
 	public function max($what, $group_by=null) {
 		return $this->getDAL()->max($what, $group_by);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	*/
 	public function avg($what, $group_by=null) {
 		return $this->getDAL()->avg($what, $group_by);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	*/
 	public function sum($what, $group_by=null) {
 		return $this->getDAL()->sum($what, $group_by);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	*/
@@ -679,7 +679,7 @@ class ORM implements ORMInterface {
 		$this->limit = null;
 		$this->offset = null;
 		$this->join = [];
-		
+
 		return $this;
 	}
 }

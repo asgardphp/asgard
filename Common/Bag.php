@@ -10,7 +10,7 @@ class Bag implements BagInterface {
 	 * @var array
 	 */
 	protected $data = [];
-	
+
 	/**
 	 * Constructor.
 	 * @param array $data
@@ -52,7 +52,7 @@ class Bag implements BagInterface {
 	public function setAll($data) {
 		return $this->clear()->set($data);
 	}
-	
+
 	/**
 	 * Set a value.
 	 * @param string|array $path    nested keys separated by ".".
@@ -70,7 +70,7 @@ class Bag implements BagInterface {
 
 		return $this;
 	}
-	
+
 	/**
 	 * Get a value.
 	 * @param string $path    nested keys separated by ".".
@@ -82,7 +82,7 @@ class Bag implements BagInterface {
 			return $default;
 		return \Asgard\Common\ArrayUtils::string_array_get($this->data, $path);
 	}
-	
+
 	/**
 	 * Check if has element.
 	 * @param string $path    nested keys separated by ".".
@@ -91,7 +91,7 @@ class Bag implements BagInterface {
 	public function has($path) {
 		return \Asgard\Common\ArrayUtils::string_array_isset($this->data, $path);
 	}
-	
+
 	/**
 	 * Delete an element.
 	 * @param string $path    nested keys separated by ".".

@@ -44,10 +44,10 @@ class DynamicGroup extends Group {
 		$this->data = array_values($data);
 
 		$this->resetFields();
-		
+
 		foreach($data as $name=>$data)
 			$this->newField($name, $data);
-		
+
 		$this->updateChilds();
 
 		return $this;

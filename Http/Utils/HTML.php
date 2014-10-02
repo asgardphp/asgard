@@ -50,7 +50,7 @@ class HTML implements HTMLInterface {
 	 * @var string
 	 */
 	protected $keywords = '';
-	
+
 	/**
 	 * Constructor.
 	 * @param \Asgard\Http\Request $request
@@ -65,7 +65,7 @@ class HTML implements HTMLInterface {
 	public function codeStart() {
 		ob_start();
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -95,35 +95,35 @@ class HTML implements HTMLInterface {
 	public function getKeywords() {
 		return $this->keywords;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	public function setTitle($title) {
 		$this->title = $title;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	public function setDescription($description) {
 		$this->description = $description;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	public function setKeywords($keywords) {
 		$this->keywords = $keywords;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	public function printTitle() {
 		echo '<title>'.htmlentities($this->title, ENT_QUOTES, "UTF-8").'</title>';
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -131,7 +131,7 @@ class HTML implements HTMLInterface {
 		if($this->description)
 			echo '<meta name="description" content="'.str_replace('"', '\"', $this->description).'">';
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -139,7 +139,7 @@ class HTML implements HTMLInterface {
 		if($this->keywords)
 			echo '<meta name="keywords" content="'.str_replace('"', '\"', $this->keywords).'">';
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -147,7 +147,7 @@ class HTML implements HTMLInterface {
 		if(!in_array($js, $this->include_js))
 			$this->include_js[] = $js;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -155,28 +155,28 @@ class HTML implements HTMLInterface {
 		if(!in_array($css, $this->include_css))
 			$this->include_css[] = $css;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	public function codeJS($js) {
 		$this->code_js[] = $js;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	public function codeCSS($css) {
 		$this->code_css[] = $css;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	public function code($code) {
 		$this->code[] = $code;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -188,7 +188,7 @@ class HTML implements HTMLInterface {
 				echo '<script type="text/javascript" src="'.$this->request->url->to($js).'"></script>'."\n";
 		}
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -200,7 +200,7 @@ class HTML implements HTMLInterface {
 				echo '<link rel="stylesheet" href="'.$this->request->url->to($css).'"/>'."\n";
 		}
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -215,7 +215,7 @@ class HTML implements HTMLInterface {
 			</script>';
 		}
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -227,7 +227,7 @@ class HTML implements HTMLInterface {
 			echo '</style>';
 		}
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -235,7 +235,7 @@ class HTML implements HTMLInterface {
 		foreach($this->code as $code)
 			echo $code."\n";
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -246,7 +246,7 @@ class HTML implements HTMLInterface {
 		$this->printCSSCode();
 		$this->printCode();
 	}
-	
+
 	/**
 	 * Sanitize HTML input.
 	 * @param  string $html

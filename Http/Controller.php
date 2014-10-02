@@ -8,7 +8,7 @@ abstract class Controller {
 	use \Asgard\Hook\HookableTrait;
 	use \Asgard\Templating\ViewableTrait;
 	use \Asgard\Container\ContainerAwareTrait;
-	
+
 	/**
 	 * Request instance.
 	 * @var Request

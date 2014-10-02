@@ -207,10 +207,10 @@ class Form extends Group implements FormInterface {
 		}
 		if(!$this->sent())
 			return;
-	
+
 		if($cb = $this->preSaveCallback)
 			$cb($this);
-	
+
 		return $this->_save();
 	}
 
@@ -284,7 +284,7 @@ class Form extends Group implements FormInterface {
 	public function uploadSuccess() {
 		return $this->getRequest()->server['CONTENT_LENGTH'] <= (int)ini_get('post_max_size')*1024*1024;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -300,7 +300,7 @@ class Form extends Group implements FormInterface {
 		}
 		return '<form action="'.$action.'" method="'.$method.'"'.$enctype.$attrs.'>'."\n";
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -309,10 +309,10 @@ class Form extends Group implements FormInterface {
 		if($this->has('_csrf_token'))
 			$str .= $this['_csrf_token']->def();
 		$str .= '</form>';
-		
+
 		return $str;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */

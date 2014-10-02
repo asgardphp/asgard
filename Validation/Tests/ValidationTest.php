@@ -88,7 +88,7 @@ class Test extends \PHPUnit_Framework_TestCase {
 
 		$this->assertTrue(v::min(5)->errors(3)->hasError());
 		$this->assertFalse(v::min(5)->errors(7)->hasError());
-		
+
 		$this->assertEquals(['title', 'content'], v::attributes(['title'=>v::min(5), 'content'=>v::min(5)])->errors(['title'=>3, 'content'=>3])->failed());
 
 		$this->assertEquals('"3" must be greater than 5.', (string)v::min(5)->errors(3));

@@ -34,7 +34,7 @@ class ControllerException extends \Asgard\Debug\PSRException {
 	 * @return Response
 	 */
 	public function getResponse() {
-		if($this->response)	
+		if($this->response)
 			return $this->response;
 		else
 			return new \Asgard\Http\Response($this->code);

@@ -60,7 +60,7 @@ class PageLayout extends \Asgard\Http\Filter {
 			elseif(is_string($this->layout))
 				$result = \Asgard\Templating\PHPTemplate::renderFile($this->layout, ['content'=>$result, 'controller'=>$controller]);
 		}
-		
+
 		if($controller->htmlLayout === false)
 			return;
 		if(is_callable($controller->htmlLayout))

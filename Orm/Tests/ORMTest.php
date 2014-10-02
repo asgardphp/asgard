@@ -35,7 +35,7 @@ class ORMTest extends \PHPUnit_Framework_TestCase {
 		$entitiesManager->setValidatorFactory($container->createFactory('validator'));
 		#set the EntitiesManager static instance for activerecord-like entities (e.g. new Article or Article::find())
 		\Asgard\Entity\EntitiesManager::setInstance($entitiesManager);
-		
+
 		$container->register('datamapper', function($container) {
 			return new \Asgard\Orm\DataMapper(
 				$container['entitiesManager'],
@@ -109,7 +109,7 @@ class ORMTest extends \PHPUnit_Framework_TestCase {
 			$tagsIDs
 		);
 	}
-	
+
 	public function test1() {
 		#Dependencies
 		$container = new \Asgard\Container\Container;
@@ -208,12 +208,12 @@ class ORMTest extends \PHPUnit_Framework_TestCase {
 
 		#joinToEntity
 		$this->assertEquals(
-			1, 
+			1,
 			$dataMapper->orm('Asgard\Orm\Tests\Entities\News')->joinToEntity('category', $cat)->where('title', 'Welcome!')->first()->id
 		);
 		$author = $dataMapper->load('Asgard\Orm\Tests\Entities\Category', 2);
 		$this->assertEquals(
-			2, 
+			2,
 			$dataMapper->orm('Asgard\Orm\Tests\Entities\News')->joinToEntity('category', $cat)->joinToEntity('author', $author)->where('author.name', 'Joe')->first()->id
 		);
 		$this->assertEquals(
@@ -233,7 +233,7 @@ class ORMTest extends \PHPUnit_Framework_TestCase {
 
 		#join
 		$this->assertEquals(
-			2, 
+			2,
 			$dataMapper->orm('Asgard\Orm\Tests\Entities\Author')
 			->join('news')
 			->where('news.title', '1000th visitor!')

@@ -139,7 +139,7 @@ class EntitiesManager implements EntitiesManagerInterface {
 	public function get($entityClass) {
 		if(!$this->has($entityClass))
 			$this->makeDefinition($entityClass);
-		
+
 		return $this->definitions[$entityClass];
 	}
 
@@ -158,7 +158,7 @@ class EntitiesManager implements EntitiesManagerInterface {
 	protected function makeDefinition($entityClass) {
 		if($this->has($entityClass))
 			return $this->definitions[$entityClass];
-		
+
 		$hooksManager = $this->getHooksManager();
 		$definition = $this->getCache()->fetch('entitiesmanager.'.$entityClass.'.definition', function() use($entityClass, $hooksManager) {
 			return new EntityDefinition($entityClass, $this, $hooksManager);

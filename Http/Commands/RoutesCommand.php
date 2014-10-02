@@ -29,7 +29,7 @@ class RoutesCommand extends \Asgard\Console\Command {
 				($action instanceof \Closure ?
 							'Closure':
 							is_array($action) ?
-								is_object($action[0]) ? 
+								is_object($action[0]) ?
 									'array('.get_class($action[0]).', '.$action[1].')':
 									'array('.$action[0].', '.$action[1].')'
 								:

@@ -46,28 +46,28 @@ class URL implements URLInterface {
 	public function get() {
 		return $this->url;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	public function setURL($url) {
 		return $this->url = $url;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	public function setHost($host) {
 		return $this->host = $host;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	public function setRoot($root) {
 		return $this->root = $root;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -82,7 +82,7 @@ class URL implements URLInterface {
 		if($params = array_merge($this->request->get->all(), $params))
 			return '?'.http_build_query($params);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -91,7 +91,7 @@ class URL implements URLInterface {
 		$r .= $this->getParams($params);
 		return $r;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -101,7 +101,7 @@ class URL implements URLInterface {
 			$res .= $this->root().'/';
 		return $res;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -112,27 +112,27 @@ class URL implements URLInterface {
 		$this->setHost($parse['host']);
 		$this->setRoot($parse['path']);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	public function to($url) {
 		return $this->base().$url;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	public function root() {
 		$result = $this->root;
-		
+
 		$result = str_replace('\\', '/', $result);
 		$result = trim($result, '/');
 		$result = str_replace('//', '/', $result);
-		
+
 		return $result;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */

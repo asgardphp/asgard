@@ -33,8 +33,8 @@ interface MigrationsManagerInterface {
 
 	/**
 	 * Create a new migration from given code.
-	 * @param  string $up    
-	 * @param  string $down  
+	 * @param  string $up
+	 * @param  string $down
 	 * @param  string $name  migration name
 	 * @param  string $class entity class
 	 * @return string        final migration name
@@ -43,7 +43,7 @@ interface MigrationsManagerInterface {
 
 	/**
 	 * Check if it contains a migration.
-	 * @param  string  $migrationName 
+	 * @param  string  $migrationName
 	 * @return boolean                true if migration exists, false otherwise
 	 */
 	public function has($migrationName);
@@ -83,7 +83,7 @@ interface MigrationsManagerInterface {
 
 	/**
 	 * Rollback a migration.
-	 * @param  string $migrationName 
+	 * @param  string $migrationName
 	 * @return boolean                true for success, otherwise false
 	 */
 	public function unmigrate($migrationName);
@@ -95,7 +95,7 @@ interface MigrationsManagerInterface {
 
 	/**
 	 * Rollback until a given migration name.
-	 * @param  string $migrationName 
+	 * @param  string $migrationName
 	 */
 	public function rollbackUntil($migrationName);
 }

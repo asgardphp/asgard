@@ -54,7 +54,7 @@ class EntityFormTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals([], $form->errors());
 		$form->save();
 		$this->assertEquals($user->name, 'Bob');
-		
+
 		$request->post->set('user', []);
 		$form->fetch();
 		$this->assertEquals([

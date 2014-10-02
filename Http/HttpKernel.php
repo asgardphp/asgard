@@ -306,7 +306,7 @@ class HttpKernel implements HttpKernelInterface {
 		$controller->setContainer($this->container);
 
 		$this->addFilters($controller, $action, $request, $route);
-		
+
 		if($this->templateEngineFactory)
 			$controller->setTemplateEngine($this->templateEngineFactory->create([$controller]));
 		else {
@@ -336,7 +336,7 @@ class HttpKernel implements HttpKernelInterface {
 		$this->errorHandler->exceptionHandler($e, false);
 
 		$trace = $this->errorHandler->getBacktraceFromException($e);
-		
+
 		if($e instanceof \Asgard\Debug\PSRException)
 			$msg = $e->getMessage();
 		elseif($e instanceof \ErrorException)
@@ -347,7 +347,7 @@ class HttpKernel implements HttpKernelInterface {
 		$result = '<b>Message</b><br>'."\n"
 			. $msg."<hr>\n"
 			. \Asgard\Debug\Debug::getReport($trace);
-	
+
 		$response = new \Asgard\Http\Response(500);
 		if($this->debug)
 			return $response->setHeader('Content-Type', 'text/html')->setContent($result);

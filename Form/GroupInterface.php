@@ -34,7 +34,7 @@ interface GroupInterface extends \ArrayAccess, \Iterator {
 	 * @return string
 	 */
 	public function name();
-	
+
 	/**
 	 * Set the name.
 	 * @param string $name
@@ -46,7 +46,7 @@ interface GroupInterface extends \ArrayAccess, \Iterator {
 	 * @return integer
 	 */
 	public function size();
-	
+
 	/**
 	 * Check if group has a file.
 	 * @return boolean true if has file
@@ -95,7 +95,7 @@ interface GroupInterface extends \ArrayAccess, \Iterator {
 	 * @return boolean true if sent
 	 */
 	public function sent();
-	
+
 	/**
 	 * Return errors.
 	 * @return array
@@ -114,14 +114,14 @@ interface GroupInterface extends \ArrayAccess, \Iterator {
 	 * @return Field|Group
 	 */
 	public function get($name);
-	
+
 	/**
 	 * Add a field.
 	 * @param Field|GroupInterface $field
 	 * @param string               $name
 	 */
 	public function add($field, $name=null);
-	
+
 	/**
 	 * Check if has a field.
 	 * @param  string  $field_name
@@ -140,25 +140,25 @@ interface GroupInterface extends \ArrayAccess, \Iterator {
 	 * @return array
 	 */
 	public function fields();
-	
+
 	/**
 	 * Add fields.
 	 * @param array $fields
 	 */
 	public function addFields(array $fields);
-	
+
 	/**
 	 * Reset data.
 	 * @return GroupInterface $this
 	 */
 	public function reset();
-	
+
 	/**
 	 * Set data.
 	 * @param array $data
 	 */
 	public function setData(array $data);
-	
+
 	/**
 	 * Return data.
 	 * @return array
@@ -177,7 +177,7 @@ interface GroupInterface extends \ArrayAccess, \Iterator {
 	 * @return GroupInterface
 	 */
 	public function getTopForm();
-	
+
 	/**
 	 * Set fields.
 	 * @param array $fields

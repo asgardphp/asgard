@@ -42,7 +42,7 @@ interface EntityFormInterface extends \Asgard\Form\FormInterface {
 	 * @param string $name
 	 */
 	public function addRelation($name);
-	
+
 	/**
 	 * Save the entity.
 	 * @return boolean true for success

@@ -7,7 +7,7 @@ class FooController extends \Asgard\Http\Controller {
 	 * 	"src" : {
 	 * 		"type" : "regex",
 	 * 		"regex" : ".+"
-	 * 	}	
+	 * 	}
 	* })
 	*/
 	public function pageAction(\Asgard\Http\Request $request) {

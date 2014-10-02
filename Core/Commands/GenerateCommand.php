@@ -14,7 +14,7 @@ class GenerateCommand extends \Asgard\Console\Command {
 		$asgard = $this->getContainer();
 		$path = $this->input->getArgument('path');
 		$root = $asgard['kernel']['root'].'/';
-	
+
 		$yaml = new \Symfony\Component\Yaml\Parser();
 		$raw = $yaml->parse(file_get_contents($path));
 		if(!is_array($raw))
@@ -24,7 +24,7 @@ class GenerateCommand extends \Asgard\Console\Command {
 		$overrideFiles = $this->input->getOption('override-bundles');
 		$generator = new Generator($asgard);
 		$generator->setOverrideFiles($overrideFiles);
-		
+
 		foreach($raw as $bundle_name=>$bundle) {
 			if(file_exists($root.'app/'.$bundle_name.'/')) {
 				if($this->input->getOption('override-bundles'))
@@ -32,10 +32,10 @@ class GenerateCommand extends \Asgard\Console\Command {
 				elseif($this->input->getOption('skip'))
 					continue;
 			}
-			
+
 			$bundle['name'] = strtolower($bundle_name);
 			$bundle['namespace'] = ucfirst($bundle['name']);
-			
+
 			if(!isset($bundle['entities']))
 				$bundle['entities'] = [];
 			if(!isset($bundle['controllers']))
@@ -69,7 +69,7 @@ class GenerateCommand extends \Asgard\Console\Command {
 					$properties = array_keys($bundle['entities'][$name]['properties']);
 					$bundle['entities'][$name]['meta']['name_field'] = $properties[0];
 				}
-					
+
 				if(!isset($bundle['entities'][$name]['properties']))
 					$bundle['entities'][$name]['properties'] = [];
 				if(!isset($bundle['entities'][$name]['relations']))
@@ -86,7 +86,7 @@ class GenerateCommand extends \Asgard\Console\Command {
 
 				if(!isset($bundle['entities'][$name]['front']))
 					$bundle['entities'][$name]['front'] = false;
-				if($bundle['entities'][$name]['front'] && !is_array($bundle['entities'][$name]['front'])) 
+				if($bundle['entities'][$name]['front'] && !is_array($bundle['entities'][$name]['front']))
 					$bundle['entities'][$name]['front'] = ['index', 'show'];
 			}
 
@@ -197,7 +197,7 @@ class GenerateCommand extends \Asgard\Console\Command {
 					$this->comment($root.'tests/'.ucfirst($bundle['name']).'Test.php could not be generated.');
 			}
 		}
-			
+
 
 		$this->info('Bundles created: '.implode(', ', array_keys($bundles)));
 	}

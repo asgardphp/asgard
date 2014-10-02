@@ -37,7 +37,7 @@ class CookieManager implements \Asgard\Common\BagInterface {
 	public function setAll($data) {
 		$this->clear()->set($data);
 	}
-	
+
 	/**
 	 * Check if it contains a cookie.
 	 * @param  string  $path
@@ -79,7 +79,7 @@ class CookieManager implements \Asgard\Common\BagInterface {
 			}
 		}
 	}
-	
+
 	/**
 	 * Delete a cookie.
 	 * @param  string $path
@@ -93,7 +93,7 @@ class CookieManager implements \Asgard\Common\BagInterface {
 
 	/**
 	 * Array set implementation.
-	 * @param  string $offset 
+	 * @param  string $offset
 	 * @param  mixed   $value
 	 * @throws \LogicException If $offset is null
 	 */
@@ -106,7 +106,7 @@ class CookieManager implements \Asgard\Common\BagInterface {
 
 	/**
 	 * Array exists implementation.
-	 * @param  string $offset 
+	 * @param  string $offset
 	 * @return boolean true if cookie exists.
 	 */
 	public function offsetExists($offset) {
@@ -115,7 +115,7 @@ class CookieManager implements \Asgard\Common\BagInterface {
 
 	/**
 	 * Array unset implementation.
-	 * @param  string $offset 
+	 * @param  string $offset
 	 */
 	public function offsetUnset($offset) {
 		$this->delete($offset);
@@ -123,7 +123,7 @@ class CookieManager implements \Asgard\Common\BagInterface {
 
 	/**
 	 * Array get implementation.
-	 * @param  string $offset 
+	 * @param  string $offset
 	 * @return mixed
 	 */
 	public function offsetGet($offset) {

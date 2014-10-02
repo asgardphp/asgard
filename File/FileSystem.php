@@ -20,7 +20,7 @@ class FileSystem {
 	/**
 	 * Get the relative path.
 	 * @param  string $from
-	 * @param  string $to  
+	 * @param  string $to
 	 * @return string
 	 */
 	public static function relativeTo($from, $to) {
@@ -50,7 +50,7 @@ class FileSystem {
 
 	/**
 	 * Get a new unique filename if file exists.
-	 * @param  string $dst 
+	 * @param  string $dst
 	 * @return string
 	 */
 	public static function getNewFilename($dst) {
@@ -62,7 +62,7 @@ class FileSystem {
 		}
 		else
 			$filename = $dst;
-		
+
 		$i=1;
 		while(file_exists($dst))
 			$dst = $filename.'_'.($i++).(isset($ext) ? '.'.$ext:'');
@@ -74,13 +74,13 @@ class FileSystem {
 	 * Rename a file.
 	 * @param  string $src
 	 * @param  string $dst
-	 * @param  integer $mode 
+	 * @param  integer $mode
 	 * @return boolean     true for success, otherwise false
 	 */
 	public static function rename($src, $dst, $mode=null) {
 		if($mode === null)
 			$mode = static::OVERRIDE;
-		
+
 		if(!($finalDst = static::copy($src, $dst, $mode)))
 			return false;
 		else {
@@ -93,7 +93,7 @@ class FileSystem {
 	 * Copy a file.
 	 * @param  string $src
 	 * @param  string $dst
-	 * @param  integer $mode 
+	 * @param  integer $mode
 	 * @return boolean     true for success, otherwise false
 	 */
 	public static function copy($src, $dst, $mode=null) {
@@ -123,7 +123,7 @@ class FileSystem {
 	 * Copy a directory.
 	 * @param  string $src
 	 * @param  string $dst
-	 * @param  integer $mode 
+	 * @param  integer $mode
 	 * @return boolean     true for success, otherwise false
 	 */
 	protected static function copyDir($src, $dst, $mode=null) {
@@ -141,10 +141,10 @@ class FileSystem {
 		$r = true;
 		$dir = opendir($src);
 		static::mkdir($dst);
-		while(false !== ($file = readdir($dir))) { 
+		while(false !== ($file = readdir($dir))) {
 			if(($file != '.') && ($file != '..'))
 				$r = $r && static::copy($src.'/'.$file, $dst.'/'.$file, $mode);
-		} 
+		}
 		closedir($dir);
 
 		if($r !== false)
@@ -165,13 +165,13 @@ class FileSystem {
 			static::deleteDir($file);
 		else
 			unlink($file);
-		
+
 		return true;
 	}
-	
+
 	/**
 	 * Delete a directory.
-	 * @param  string $directory 
+	 * @param  string $directory
 	 * @return boolean     true for success, otherwise false
 	 */
 	protected static function deleteDir($directory) {
@@ -196,10 +196,10 @@ class FileSystem {
 		}
 		return true;
 	}
-	
+
 	/**
 	 * Make a directory.
-	 * @param  string $dir 
+	 * @param  string $dir
 	 * @return boolean     true for success, otherwise false
 	 */
 	public static function mkdir($dir) {
@@ -211,7 +211,7 @@ class FileSystem {
 	/**
 	 * Write into a file.
 	 * @param  string $dst
-	 * @param  string $content 
+	 * @param  string $content
 	 * @param  integer $mode
 	 * @return boolean      true for success, otherwise false
 	 */

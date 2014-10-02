@@ -22,7 +22,7 @@ class Config extends \Asgard\Common\Bag implements ConfigInterface {
 		}
 		return $this;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */

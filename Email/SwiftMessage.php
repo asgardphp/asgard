@@ -52,7 +52,7 @@ class SwiftMessage extends \Swift_Message {
 
 	/**
 	 * Set the hml content.
-	 * @param  string $html 
+	 * @param  string $html
 	 * @return SwiftMessage $this
 	 */
 	public function html($html) {
@@ -61,7 +61,7 @@ class SwiftMessage extends \Swift_Message {
 
 	/**
 	 * Set the text content.
-	 * @param  string $text 
+	 * @param  string $text
 	 * @return SwiftMessage $this
 	 */
 	public function text($text) {

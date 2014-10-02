@@ -120,7 +120,7 @@ class File {
 
 	/**
 	 * Get the relative path to a given one.
-	 * @param  string $path 
+	 * @param  string $path
 	 * @return string
 	 */
 	public function relativeTo($path) {

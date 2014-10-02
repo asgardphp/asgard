@@ -169,7 +169,7 @@ class Container implements ContainerInterface {
 			$callback = new SerializableClosure($callback);
 		$this->registry[$name] = $callback;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */

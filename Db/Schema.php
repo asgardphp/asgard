@@ -40,7 +40,7 @@ class BuildCol {
 	 * @var BuildTable
 	 */
 	protected $table;
-	
+
 	/**
 	 * Constructor.
 	 * @param BuildTable $table
@@ -63,7 +63,7 @@ class BuildCol {
 		$this->autoincrement = true;
 		return $this;
 	}
-	
+
 	/**
 	 * Set nullable.
 	 * @return BuildCol $this
@@ -72,7 +72,7 @@ class BuildCol {
 		$this->nullable = true;
 		return $this;
 	}
-	
+
 	/**
 	 * Set default value.
 	 * @param  mixed  $def
@@ -82,7 +82,7 @@ class BuildCol {
 		$this->def = $def;
 		return $this;
 	}
-	
+
 	/**
 	 * Set column as primary.
 	 * @return  BuildCol $this
@@ -91,7 +91,7 @@ class BuildCol {
 		$this->table->addPrimary($this->name);
 		return $this;
 	}
-	
+
 	/**
 	 * Set column as unique.
 	 * @return  BuildCol $this
@@ -100,7 +100,7 @@ class BuildCol {
 		$this->table->addUnique($this->name);
 		return $this;
 	}
-	
+
 	/**
 	 * Set column as index.
 	 * @return  BuildCol $this
@@ -109,28 +109,28 @@ class BuildCol {
 		$this->table->addIndex($this->name);
 		return $this;
 	}
-	
+
 	/**
 	 * Create the SQL query.
 	 * @return string
 	 */
 	public function sql() {
 		$sql = '`'.$this->name.'` ';
-		
+
 		if($this->length)
 			$sql .= $this->type.'('.$this->length.')';
 		else
 			$sql .= $this->type;
-		
+
 		if(!$this->nullable)
 			$sql .= ' NOT NULL';
-		
+
 		if($this->def)
 			$sql .= " DEFAULT '".$this->def."'";
-		
+
 		if($this->autoincrement)
 			$sql .= ' AUTO_INCREMENT';
-		
+
 		return $sql;
 	}
 }
@@ -164,7 +164,7 @@ class BuildTable {
 	 * @var array
 	 */
 	protected $uniques = [];
-	
+
 	/**
 	 * Constructor.
 	 * @param string $name
@@ -172,7 +172,7 @@ class BuildTable {
 	public function __construct($name) {
 		$this->name = $name;
 	}
-	
+
 	/**
 	 * Set table unique keys.
 	 * @param  array      $keys
@@ -182,7 +182,7 @@ class BuildTable {
 		$this->uniques = $keys;
 		return $this;
 	}
-	
+
 	/**
 	 * Set table indexes.
 	 * @param  array      $keys
@@ -192,7 +192,7 @@ class BuildTable {
 		$this->indexes = $keys;
 		return $this;
 	}
-	
+
 	/**
 	 * Set table primary keys.
 	 * @param  array      $keys
@@ -202,7 +202,7 @@ class BuildTable {
 		$this->primary = $keys;
 		return $this;
 	}
-	
+
 	/**
 	 * Add a primary key.
 	 * @param string $key
@@ -212,7 +212,7 @@ class BuildTable {
 		$this->primary[] = $key;
 		return $this;
 	}
-	
+
 	/**
 	 * Add an index.
 	 * @param string      $key
@@ -222,7 +222,7 @@ class BuildTable {
 		$this->indexes[] = $key;
 		return $this;
 	}
-	
+
 	/**
 	 * Add an unique key.
 	 * @param string      $key
@@ -232,7 +232,7 @@ class BuildTable {
 		$this->uniques[] = $key;
 		return $this;
 	}
-	
+
 	/**
 	 * Add a column.
 	 * @param string  $colName
@@ -245,21 +245,21 @@ class BuildTable {
 		$this->cols[] = $col;
 		return $col;
 	}
-	
+
 	/**
 	 * Create the SQL query.
 	 * @return string
 	 */
 	public function sql() {
 		$sql = 'CREATE TABLE `'.$this->name.'` (';
-		
+
 		$i = 0;
 		foreach($this->cols as $col) {
 			if($i++ > 0)
 				$sql .= ",\n";
 			$sql .= $col->sql();
 		}
-			
+
 		if($this->primary) {
 			$sql .= ",\n".'PRIMARY KEY (';
 			if(is_array($this->primary)) {
@@ -270,7 +270,7 @@ class BuildTable {
 				$sql .= '`'.$this->primary.'`';
 			$sql .= ')';
 		}
-		
+
 		if($this->indexes) {
 			$sql .= ",\n".'INDEX KEY (';
 			if(is_array($this->indexes)) {
@@ -281,7 +281,7 @@ class BuildTable {
 				$sql .= '`'.$this->indexes.'`';
 			$sql .= ')';
 		}
-		
+
 		if($this->uniques) {
 			$sql .= ",\n".'UNIQUE KEY (';
 			if(is_array($this->uniques)) {
@@ -292,9 +292,9 @@ class BuildTable {
 				$sql .= '`'.$this->uniques.'`';
 			$sql .= ')';
 		}
-		
+
 		$sql .= "\n".') CHARSET=utf8';
-		
+
 		return $sql;
 	}
 }
@@ -313,7 +313,7 @@ class Table {
 	 * @var string
 	 */
 	protected $name;
-	
+
 	/**
 	 * Constructor.
 	 * @param DBInterface     $db
@@ -323,7 +323,7 @@ class Table {
 		$this->db = $db;
 		$this->name = $name;
 	}
-	
+
 	/**
 	 * Add a column.
 	 * @param string $name
@@ -336,7 +336,7 @@ class Table {
 		$col->create();
 		return $col;
 	}
-	
+
 	/**
 	 * Access a column.
 	 * @param  string $name
@@ -346,7 +346,7 @@ class Table {
 		$col = new Column($this->db, $this->name, $name);
 		return $col;
 	}
-	
+
 	/**
 	 * Drop a column.
 	 * @param  string $name
@@ -356,7 +356,7 @@ class Table {
 		$col = new Column($this->db, $this->name, $name);
 		return $col->drop();
 	}
-	
+
 	/**
 	 * Set the primary keys.
 	 * @param  array $keys
@@ -366,7 +366,7 @@ class Table {
 		try {
 			$this->db->query('ALTER TABLE  `'.$this->name.'` DROP PRIMARY KEY');
 		} catch(\Asgard\Db\DBException $e) {}
-	
+
 		if(!is_array($keys))
 			$keys = [$keys];
 		$sql = 'ALTER TABLE  `'.$this->name.'` ADD PRIMARY KEY (';
@@ -375,7 +375,7 @@ class Table {
 		$sql .= implode(', ', $keys);
 		$sql .= ')';
 		$this->db->query($sql);
-		
+
 		return $this;
 	}
 }
@@ -409,7 +409,7 @@ class Column {
 	 * @var DBInterface
 	 */
 	protected $db;
-	
+
 	/**
 	 * Constructor.
 	 * @param DBInterface      $db
@@ -425,7 +425,7 @@ class Column {
 		$this->type = $type;
 		$this->length = $length;
 	}
-	
+
 	/**
 	 * Drop the column.
 	 * @return Column $this
@@ -433,10 +433,10 @@ class Column {
 	public function drop() {
 		$sql = 'alter table `'.$this->table.'` drop column `'.$this->name.'`';
 		$this->db->query($sql);
-		
+
 		return $this;
 	}
-	
+
 	/**
 	 * Create the column
 	 * @return Column $this
@@ -447,10 +447,10 @@ class Column {
 		else
 			$sql = 'ALTER TABLE `'.$this->table.'` ADD `'.$this->name.'` '.$this->type;
 		$this->db->query($sql);
-		
+
 		return $this;
 	}
-	
+
 	/**
 	 * Change the column.
 	 * @param  array  $params
@@ -487,11 +487,11 @@ class Column {
 			else
 				$after = ' AFTER `'.$params['after'].'`';
 		}
-		
+
 		$sql = 'ALTER TABLE `'.$table.'` CHANGE `'.$oldcol.'` `'.$newcol.'` '.$type.' '.$default.' '.$nullable.' '.$autoincrement.' '.$after;
 		$this->db->query($sql);
 	}
-	
+
 	/**
 	 * Set the column type.
 	 * @param  string  $type
@@ -505,12 +505,12 @@ class Column {
 			$type = $this->type.'('.$this->length.')';
 		else
 			$type = $this->type;
-			
+
 		$this->change(['type'=>$type]);
-	
+
 		return $this;
 	}
-	
+
 	/**
 	 * Rename the column.
 	 * @param  string $name
@@ -521,7 +521,7 @@ class Column {
 		$this->name = $name;
 		return $this;
 	}
-	
+
 	/**
 	 * Set the column nullable.
 	 * @return Column $this
@@ -530,7 +530,7 @@ class Column {
 		$this->change(['nullable'=>true]);
 		return $this;
 	}
-	
+
 	/**
 	 * Set the column not nullable.
 	 * @return Column $this
@@ -538,12 +538,12 @@ class Column {
 	public function notNullable() {
 		$sql = 'UPDATE `'.$this->table.'` set `'.$this->name.'` = 0 where `'.$this->name.'` is null';
 		$this->db->query($sql);
-		
+
 		$this->change(['nullable'=>false]);
-		
+
 		return $this;
 	}
-	
+
 	/**
 	 * Set the column default value.
 	 * @param  mixed $val
@@ -553,7 +553,7 @@ class Column {
 		$this->change(['default'=>$val]);
 		return $this;
 	}
-	
+
 	/**
 	 * Move the column to first position.
 	 * @return Column $this
@@ -562,7 +562,7 @@ class Column {
 		$this->change(['after'=>false]);
 		return $this;
 	}
-	
+
 	/**
 	 * Move the column after another one.
 	 * @param  string $column
@@ -572,7 +572,7 @@ class Column {
 		$this->change(['after'=>$column]);
 		return $this;
 	}
-	
+
 	/**
 	 * Set the column to autoincrement.
 	 * @return Column $this
@@ -581,7 +581,7 @@ class Column {
 		$this->change(['autoincrement'=>true]);
 		return $this;
 	}
-	
+
 	/**
 	 * Set the column not to autoincrement.
 	 * @return Column $this
@@ -590,63 +590,63 @@ class Column {
 		$this->change(['autoincrement'=>false]);
 		return $this;
 	}
-	
+
 	/**
 	 * Get the column type.
 	 * @return string
 	 */
 	protected function getType() {
-		$r = $this->db->query("SELECT * 
-			FROM INFORMATION_SCHEMA.COLUMNS 
-			WHERE TABLE_SCHEMA = '".$this->db->getConfig()['database']."' 
+		$r = $this->db->query("SELECT *
+			FROM INFORMATION_SCHEMA.COLUMNS
+			WHERE TABLE_SCHEMA = '".$this->db->getConfig()['database']."'
 			AND  TABLE_NAME = '$this->table'
 			AND COLUMN_NAME = '$this->name'")->first();
-		
+
 		return $r['COLUMN_TYPE'];
 	}
-	
+
 	/**
 	 * Get the column nullable parameter.
 	 * @return boolean
 	 */
 	protected function getNullable() {
-		$r = $this->db->query("SELECT * 
-			FROM INFORMATION_SCHEMA.COLUMNS 
-			WHERE TABLE_SCHEMA = '".$this->db->getConfig()['database']."' 
+		$r = $this->db->query("SELECT *
+			FROM INFORMATION_SCHEMA.COLUMNS
+			WHERE TABLE_SCHEMA = '".$this->db->getConfig()['database']."'
 			AND  TABLE_NAME = '$this->table'
 			AND COLUMN_NAME = '$this->name'")->first();
-		
+
 		return $r['IS_NULLABLE'] === 'YES';
 	}
-	
+
 	/**
 	 * Get the column default value.
 	 * @return mixed
 	 */
 	protected function getDefault() {
-		$r = $this->db->query("SELECT * 
-			FROM INFORMATION_SCHEMA.COLUMNS 
-			WHERE TABLE_SCHEMA = '".$this->db->getConfig()['database']."' 
+		$r = $this->db->query("SELECT *
+			FROM INFORMATION_SCHEMA.COLUMNS
+			WHERE TABLE_SCHEMA = '".$this->db->getConfig()['database']."'
 			AND  TABLE_NAME = '$this->table'
 			AND COLUMN_NAME = '$this->name'")->first();
-		
+
 		return $r['COLUMN_DEFAULT'];
 	}
-	
+
 	/**
 	 * Get the column autoincrement parameter.
 	 * @return boolean
 	 */
 	protected function getAutoincrement() {
-		$r = $this->db->query("SELECT * 
-			FROM INFORMATION_SCHEMA.COLUMNS 
-			WHERE TABLE_SCHEMA = '".$this->db->getConfig()['database']."' 
+		$r = $this->db->query("SELECT *
+			FROM INFORMATION_SCHEMA.COLUMNS
+			WHERE TABLE_SCHEMA = '".$this->db->getConfig()['database']."'
 			AND  TABLE_NAME = '$this->table'
 			AND COLUMN_NAME = '$this->name'")->first();
-		
+
 		return strpos($r['EXTRA'], 'auto_increment') !== false;
 	}
-	
+
 	/**
 	 * Drop the index.
 	 * @return Column $this
@@ -656,10 +656,10 @@ class Column {
 		try {
 			$this->db->query($sql);
 		} catch(\Asgard\Db\DBException $e) {}
-		
+
 		return $this;
 	}
-	
+
 	/**
 	 * Set an index.
 	 * @return Column $this
@@ -667,10 +667,10 @@ class Column {
 	public function index() {
 		$sql = 'ALTER TABLE `'.$this->table.'` ADD INDEX(`'.$this->name.'`)';
 		$this->db->query($sql);
-		
+
 		return $this;
 	}
-	
+
 	/**
 	 * Set as unique.
 	 * @return Column $this
@@ -678,10 +678,10 @@ class Column {
 	public function unique() {
 		$sql = 'ALTER TABLE `'.$this->table.'` ADD UNIQUE(`'.$this->name.'`)';
 		$this->db->query($sql);
-		
+
 		return $this;
 	}
-	
+
 	/**
 	 * Set as primary key.
 	 * @return Column $this
@@ -689,7 +689,7 @@ class Column {
 	public function primary() {
 		$sql = 'ALTER TABLE `'.$this->table.'` ADD PRIMARY KEY (`'.$this->name.'`)';
 		$this->db->query($sql);
-		
+
 		return $this;
 	}
 }
@@ -730,7 +730,7 @@ class Schema implements SchemaInterface {
 		$sql = $table->sql();
 		$this->db->query($sql);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -738,7 +738,7 @@ class Schema implements SchemaInterface {
 		$sql = 'TRUNCATE TABLE  `'.$tableName.'`';
 		$this->db->query($sql);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -746,7 +746,7 @@ class Schema implements SchemaInterface {
 		$sql = 'alter table `'.$table.'` drop column `'.$col.'`';
 		$this->db->query($sql);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -754,7 +754,7 @@ class Schema implements SchemaInterface {
 		$sql = 'DROP TABLE IF EXISTS `'.$table.'`';
 		$this->db->query($sql);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -762,7 +762,7 @@ class Schema implements SchemaInterface {
 		$sql = 'RENAME TABLE `'.$from.'` TO `'.$to.'`';
 		$this->db->query($sql);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -770,7 +770,7 @@ class Schema implements SchemaInterface {
 		$table = new Table($this->db, $tableName);
 		$cb($table);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */

@@ -31,7 +31,7 @@ class MigrationsManager implements MigrationsManagerInterface {
 	/**
 	 * Constructor.
 	 * @param string $directory
-	 * @param \Asgard\Container\ContainerInterface $container 
+	 * @param \Asgard\Container\ContainerInterface $container
 	 */
 	public function __construct($directory, \Asgard\Container\ContainerInterface $container=null) {
 		$this->directory = $directory;
@@ -85,13 +85,13 @@ class MigrationsManager implements MigrationsManagerInterface {
 		$dst = $this->directory.'/'.$name.'.php';
 		$dst = \Asgard\File\FileSystem::getNewFilename($dst);
 		$name = str_replace('.php', '', basename($dst));
-			
+
 		$migration = '<?php
 class '.$name.' extends '.$class.' {
 	public function up() {
 		'.$up.'
 	}
-	
+
 	public function down() {
 		'.$down."
 	}

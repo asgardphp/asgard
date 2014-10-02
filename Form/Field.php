@@ -148,7 +148,7 @@ abstract class Field {
 	public function render($render_callback, array $options=[]) {
 		return $this->parent->render($render_callback, $this, $options);
 	}
-	
+
 	/**
 	 * __toString magic method.
 	 * @return string
@@ -156,7 +156,7 @@ abstract class Field {
 	public function __toString() {
 		return $this->def();
 	}
-	
+
 	/**
 	 * Get the value.
 	 * @return mixed
@@ -164,7 +164,7 @@ abstract class Field {
 	public function value() {
 		return $this->value;
 	}
-	
+
 	/**
 	 * Set the parent.
 	 * @param GroupInterface $parent
@@ -180,7 +180,7 @@ abstract class Field {
 	public function getParent() {
 		return $this->parent;
 	}
-	
+
 	/**
 	 * Set the name.
 	 * @param string $name
@@ -188,7 +188,7 @@ abstract class Field {
 	public function setName($name) {
 		$this->name = $name;
 	}
-	
+
 	/**
 	 * Set the value.
 	 * @param mixed $value
@@ -196,7 +196,7 @@ abstract class Field {
 	public function setValue($value) {
 		$this->value = $value;
 	}
-	
+
 	/**
 	 * Get all parents.
 	 * @return array
@@ -204,14 +204,14 @@ abstract class Field {
 	public function getParents() {
 		return $this->parent->getParents();
 	}
-	
+
 	/**
 	 * Get field id.
 	 * @return string
 	 */
 	public function getID() {
 		$parents = $this->getParents();
-		
+
 		if(count($parents) > 0) {
 			$id = $parents[0].'-';
 			for($i=1; $i<count($parents); $i++)
@@ -222,14 +222,14 @@ abstract class Field {
 		else
 			return $this->name;
 	}
-	
+
 	/**
 	 * Get the full name.
 	 * @return string
 	 */
 	public function name() {
 		$parents = $this->getParents();
-	
+
 		if(count($parents) > 0) {
 			$id = $parents[0];
 			for($i=1; $i<count($parents); $i++)

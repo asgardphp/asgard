@@ -25,7 +25,7 @@ class Paginator implements PaginatorInterface {
 	 * @var \Asgard\Http\Request
 	 */
 	protected $request;
-	
+
 	/**
 	 * Constructor.
 	 * @param integer                    $total
@@ -39,28 +39,28 @@ class Paginator implements PaginatorInterface {
 		$this->page     = $page ? $page:1;
 		$this->request  = $request;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	public function getStart() {
 		return ($this->page-1)*$this->per_page;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	public function getLimit() {
 		return $this->per_page;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	public function getPages() {
 		return ceil($this->total/$this->per_page);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -71,7 +71,7 @@ class Paginator implements PaginatorInterface {
 		else
 			return $first;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -82,7 +82,7 @@ class Paginator implements PaginatorInterface {
 		else
 			return $last;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -96,28 +96,28 @@ class Paginator implements PaginatorInterface {
 			$r .= '<a href="'.$this->getNext().'">»</a>';
 		return $r;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	public function hasPrev() {
 		return ($this->page > 1);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	public function hasNext() {
 		return ($this->page < $this->getPages());
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	public function getPrev() {
 		return $this->request->url->full(['page'=>$this->page-1]);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */

@@ -9,7 +9,7 @@ class MultipleSelectField extends \Asgard\Form\Field {
 	 * {@inheritDoc}
 	 */
 	protected $widget = 'checkboxes';
-	
+
 	/**
 	 * {@inheritDoc}
 	 */

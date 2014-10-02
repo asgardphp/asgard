@@ -6,7 +6,7 @@ namespace Asgard\Core;
  */
 class Publisher {
 	use \Asgard\Container\ContainerAwareTrait;
-	
+
 	/**
 	 * Console output.
 	 * @var \Symfony\Component\Console\Output\OutputInterface
@@ -25,7 +25,7 @@ class Publisher {
 
 	/**
 	 * Publish assets from a directory to another.
-	 * @param  string $src   
+	 * @param  string $src
 	 * @param  string $dstDir
 	 * @return boolean true for success
 	 */
@@ -41,10 +41,10 @@ class Publisher {
 
 	/**
 	 * Publish migration files.
-	 * @param  string  $src    
-	 * @param  string  $dstDir 
+	 * @param  string  $src
+	 * @param  string  $dstDir
 	 * @param  boolean $migrate
-	 * @return boolean true for success         
+	 * @return boolean true for success
 	 */
 	public function publishMigrations($src, $dstDir, $migrate) {
 		$r = true;
@@ -105,10 +105,10 @@ class Publisher {
 		$r = true;
 		$dir = opendir($src);
 		\Asgard\File\FileSystem::mkdir($dst);
-		while(false !== ($file = readdir($dir))) { 
+		while(false !== ($file = readdir($dir))) {
 			if(($file != '.') && ($file != '..'))
 				$r = $r && $this->copy($src.'/'.$file, $dst.'/'.$file);
-		} 
+		}
 		closedir($dir);
 
 		if($r !== false)

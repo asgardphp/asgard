@@ -12,7 +12,7 @@ interface ConfigInterface extends \Asgard\Common\BagInterface {
 	 * @return ConfigInterface $this
 	 */
 	public function loadDir($dir, $env=null);
-	
+
 	/**
 	 * Load a file.
 	 * @param  string          $filename

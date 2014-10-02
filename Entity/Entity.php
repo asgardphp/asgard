@@ -63,7 +63,7 @@ abstract class Entity {
 	public function setLocale($locale) {
 		$this->locale = $locale;
 	}
-	
+
 	/**
 	 * __set magic method.
 	 * @param string $name
@@ -81,7 +81,7 @@ abstract class Entity {
 	public function __get($name) {
 		return $this->get($name);
 	}
-	
+
 	/**
 	 * __isset magic method.
 	 * @param  string  $name
@@ -90,7 +90,7 @@ abstract class Entity {
 	public function __isset($name) {
 		return isset($this->data['properties'][$name]);
 	}
-	
+
 	/**
 	 * __unset magic method.
 	 * @param string $name
@@ -118,7 +118,7 @@ abstract class Entity {
 	public function __call($name, array $arguments) {
 		return $this->getDefinition()->call($this, $name, $arguments);
 	}
-	
+
 	/**
 	 * Initialize the configuration. To be overwritten in the entity class.
 	 * @param  EntityDefinition $entityDefinition
@@ -170,7 +170,7 @@ abstract class Entity {
 	public function isOld() {
 		return !$this->isNew();
 	}
-	
+
 	/**
 	 * Get a validator.
 	 * @param  array $locales
@@ -230,13 +230,13 @@ abstract class Entity {
 		}
 
 		$messages = array_merge($messages, $this->getDefinition()->messages());
-		
+
 		$validator->set('entity', $this);
 		$validator->attributesMessages($messages);
 
 		return $validator;
 	}
-	
+
 	/**
 	 * Check if entity is valid.
 	 * @return boolean
@@ -248,7 +248,7 @@ abstract class Entity {
 			return $validator->valid($data);
 		});
 	}
-	
+
 	/**
 	 * Return entity errors.
 	 * @return array
@@ -300,7 +300,7 @@ abstract class Entity {
 		}
 		elseif($name !== 'translations' && $name !== 'properties')
 			$this->data[$name] = $value;
-		
+
 		return $this;
 	}
 
@@ -341,7 +341,7 @@ abstract class Entity {
 		}
 		else
 			$this->data[$name] = $value;
-				
+
 		return $this;
 	}
 
@@ -354,7 +354,7 @@ abstract class Entity {
 	public function _get($name, $locale=null) {
 		if(!$locale)
 			$locale = $this->getLocale();
-		
+
 		if($this->getDefinition()->hasProperty($name)) {
 			if($this->getDefinition()->property($name)->get('i18n') && $locale !== $this->getLocale()) {
 				#multiple locales at once
@@ -379,7 +379,7 @@ abstract class Entity {
 		elseif(isset($this->data[$name]))
 			return $this->data[$name];
 	}
-	
+
 	/**
 	 * Hard get data. With pre-processing.
 	 * @param  string $name
@@ -395,14 +395,14 @@ abstract class Entity {
 
 		return $this->_get($name, $locale);
 	}
-	
+
 	/**
 	 * Convert entity to a raw array.
 	 * @return array
 	 */
 	public function toArrayRaw() {
 		$res = [];
-		
+
 		foreach($this->getDefinition()->properties() as $name=>$property) {
 			if($this->getDefinition()->property($name)->get('type') == 'entity')
 				continue;
@@ -411,17 +411,17 @@ abstract class Entity {
 			else
 				$res[$name] = $this->get($name);
 		}
-		
+
 		return $res;
 	}
-	
+
 	/**
 	 * Convert entity to a formatted array.
 	 * @return array
 	 */
 	public function toArray() {
 		$res = [];
-		
+
 		foreach($this->getDefinition()->properties() as $name=>$property) {
 			if($this->getDefinition()->property($name)->get('type') == 'entity')
 				continue;
@@ -433,7 +433,7 @@ abstract class Entity {
 			else
 				$res[$name] = $this->propertyToArray($res[$name], $property);
 		}
-		
+
 		return $res;
 	}
 
@@ -513,7 +513,7 @@ abstract class Entity {
 		if(!$locales)
 			$locales = $this->getLocales();
 		$res = [];
-		
+
 		foreach($this->getDefinition()->properties() as $name=>$property) {
 			if($property->i18n) {
 				foreach($locales as $locale) {
@@ -541,7 +541,7 @@ abstract class Entity {
 		if(!$locales)
 			$locales = $this->getLocales();
 		$res = [];
-		
+
 		foreach($this->getDefinition()->properties() as $name=>$property) {
 			if($property->i18n) {
 				foreach($locales as $locale) {
@@ -561,7 +561,7 @@ abstract class Entity {
 			else
 				$res[$name] = $this->propertyToArray($this->get($name), $property);
 		}
-		
+
 		return $res;
 	}
 
@@ -587,7 +587,7 @@ abstract class Entity {
 			$entities[$k] = $entity->toArrayI18N($locales);
 		return json_encode($entities);
 	}
-	
+
 	/**
 	 * Check if entity and translations are valid.
 	 * @param  array $locales
@@ -602,7 +602,7 @@ abstract class Entity {
 			return $validator->valid($data);
 		});
 	}
-	
+
 	/**
 	 * Return errors for entity and translations.
 	 * @param  array $locales

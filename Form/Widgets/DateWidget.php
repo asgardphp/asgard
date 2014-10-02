@@ -14,7 +14,7 @@ class DateWidget extends \Asgard\Form\Widget {
 		$day = $this->field->getDay();
 		$month = $this->field->getMonth();
 		$year = $this->field->getYear();
-		
+
 		$form = $this->field->getParent();
 
 		return $form->getWidget('select', $this->field->name().'[day]', $day, ['id'=>$this->field->getID().'-day', 'choices'=>array_combine(range(1, 31), range(1, 31))]).

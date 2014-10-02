@@ -70,7 +70,7 @@ class Flash {
 	public function addWarning($message) {
 		return $this->add('warning', $message);
 	}
-	
+
 	/**
 	 * Add a custom type message.
 	 * @param string $type
@@ -81,11 +81,11 @@ class Flash {
 			$this->messages[$type] = array_merge($this->messages[$type], $message);
 		else
 			$this->messages[$type][] = $message;
-			
+
 		$this->persist();
 		return true;
 	}
-	
+
 	/**
 	 * Show all messages.
 	 * @param  string $cat
@@ -115,7 +115,7 @@ class Flash {
 		if($cat)
 			unset($this->messages[$type][$cat]);
 		else
-			$this->messages[$type] = [];	
+			$this->messages[$type] = [];
 		$this->persist();
 	}
 }

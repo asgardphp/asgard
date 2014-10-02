@@ -52,7 +52,7 @@ class SessionManager implements \Asgard\Common\BagInterface {
 	public function setAll($data) {
 		$this->clear()->set($data);
 	}
-	
+
 	/**
 	 * Check if the session has a variable.
 	 * @param  string  $path
@@ -61,7 +61,7 @@ class SessionManager implements \Asgard\Common\BagInterface {
 	public function has($path) {
 		return \Asgard\Common\ArrayUtils::string_array_isset($_SESSION, $path);
 	}
-	
+
 	/**
 	 * Delete a session variable.
 	 * @param  string $path

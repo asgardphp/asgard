@@ -12,7 +12,7 @@ class SelectFieldTest extends \PHPUnit_Framework_TestCase {
 
 		$this->assertEquals('<select name="field" id="field"><option value="0">test</option><option value="1" selected="selected">default</option><option value="2">1</option><option value="3">2</option><option value="4">3</option></select>', (string)($form['field']->def()));
 		$this->assertEquals('1', $form['field']->value());
-		
+
 		foreach($form['field']->getRadios() as $name=>$radio) {
 			if($name === 0) {
 				$this->assertEquals('<input type="radio" name="field" value="0">', (string)$radio);

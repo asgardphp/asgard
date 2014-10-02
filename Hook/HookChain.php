@@ -23,7 +23,7 @@ class HookChain {
 	 * @var integer
 	 */
 	public $executed = 0;
-	
+
 	/**
 	 * Constructor.
 	 * @param \Asgard\Container\ContainerInterface $container Application container.
@@ -31,7 +31,7 @@ class HookChain {
 	public function __construct(\Asgard\Container\ContainerInterface $container=null) {
 		$this->container = $container;
 	}
-	
+
 	/**
 	 * Execute the chain.
 	 * @param array $args
@@ -49,7 +49,7 @@ class HookChain {
 				return;
 		}
 	}
-	
+
 	/**
 	 * Stop the execution.
 	*/

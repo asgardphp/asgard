@@ -19,7 +19,7 @@ class BrowserCommand extends \Asgard\Console\Command {
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$method = $this->input->getArgument('method');
 		$url = $this->input->getArgument('url');
-		
+
 		$headers = $this->input->getOption('h') ? json_decode($this->input->getOption('h'), true):[];
 		$post = $this->input->getOption('p') ? json_decode($this->input->getOption('p'), true):[];
 		$session = $this->input->getOption('ss') ? json_decode($this->input->getOption('ss'), true):[];

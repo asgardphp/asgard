@@ -34,7 +34,7 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 
 		$this->joinToEntity($this->relation->reverse(), $entity);
 	}
-	
+
 	/**
 	 * Update the related entities.
 	 * @param integer|array           $ids   array of entity ids
@@ -53,7 +53,7 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 				$ids[$k] = (int)$v->id;
 			}
 		}
-	
+
 		switch($this->relation->type()) {
 			case 'hasMany':
 			$relationEntityDefinition = $this->relation->getTargetDefinition();
@@ -80,10 +80,10 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 			default:
 				throw new \Exception('Collection only works with hasMany and HMABT');
 		}
-		
+
 		return $this;
 	}
-	
+
 	/**
 	 * Add new entities to the relation.
 	 * @param integer|array $ids
@@ -94,7 +94,7 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 		foreach($ids as $k=>$id)
 			if($id instanceof \Asgard\Entity\Entity)
 				$ids[$k] = (int)$id->id;
-			
+
 		switch($this->relation['type']) {
 			case 'hasMany':
 				$relationEntityDefinition = $this->relation->getTargetDefinition();
@@ -116,7 +116,7 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 			default:
 				throw new \Exception('Collection only works with hasMany and HMABT');
 		}
-		
+
 		return $this;
 	}
 
@@ -139,7 +139,7 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 		}
 		return $new;
 	}
-	
+
 	/**
 	 * Remove entities from the relation.
 	 * @param  integer|array          $ids
@@ -152,7 +152,7 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 			if($id instanceof \Asgard\Entity\Entity)
 				$ids[$k] = $id->id;
 		}
-			
+
 		switch($this->relation->type()) {
 			case 'hasMany':
 				$relation_entity = $this->relation['entity'];
@@ -168,7 +168,7 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 			default:
 				throw new \Exception('Collection only works with hasMany and HMABT');
 		}
-		
+
 		return $this;
 	}
 }

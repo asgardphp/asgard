@@ -64,7 +64,7 @@ class Tracker {
 
 	/**
 	 * Check if a migration is registered.
-	 * @param  string  $migration 
+	 * @param  string  $migration
 	 * @return boolean            true if registered, false otherwise
 	 */
 	public function has($migration) {
@@ -98,7 +98,7 @@ class Tracker {
 
 	/**
 	 * Get all migrations until a given migration name
-	 * @param  string $untilMigration 
+	 * @param  string $untilMigration
 	 * @return arra
 	 */
 	public function getUntil($untilMigration) {
@@ -128,7 +128,7 @@ class Tracker {
 
 	/**
 	 * Remove a migration.
-	 * @param  string $migrationName 
+	 * @param  string $migrationName
 	 */
 	public function remove($migrationName) {
 		$list = $this->getList();
@@ -169,7 +169,7 @@ class Tracker {
 
 	/**
 	 * Persist migrations list.
-	 * @param  array $res 
+	 * @param  array $res
 	 */
 	protected function writeMigrations($res) {
 		uasort($res, function($a, $b) {
@@ -192,7 +192,7 @@ class Tracker {
 
 	/**
 	 * Persist migration statuses.
-	 * @param  array $res 
+	 * @param  array $res
 	 */
 	protected function writeTracking($res) {
 		uasort($res, function($a, $b) {

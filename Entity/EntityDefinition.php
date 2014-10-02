@@ -7,7 +7,7 @@ namespace Asgard\Entity;
  */
 class EntityDefinition {
 	use \Asgard\Hook\HookableTrait;
-	
+
 	/**
 	 * Entities manager dependency.
 	 * @var EntitiesManagerInterface
@@ -80,8 +80,8 @@ class EntityDefinition {
 		$this->generalHooksManager = $generalHooksManager;
 
 		$this->addProperty('id', [
-			'type'     => 'text', 
-			'editable' => false, 
+			'type'     => 'text',
+			'editable' => false,
 			'required' => false,
 			'position' => -9999,
 			'defaut'   => 0,
@@ -130,7 +130,7 @@ class EntityDefinition {
 			$clone = $properties;
 			foreach($clone as $name=>$property) {
 				if(is_int($name)) {
-					$properties = 
+					$properties =
 						\Asgard\Common\ArrayUtils::array_before($properties, $name) +
 						[$property => []] +
 						\Asgard\Common\ArrayUtils::array_after($properties, $name);
@@ -424,7 +424,7 @@ class EntityDefinition {
 		}
 		return false;
 	}
-	
+
 	/**
 	 * Get the entity short name.
 	 * @return string
@@ -444,7 +444,7 @@ class EntityDefinition {
 	public function processBeforeSet($entity, $name, &$value, $locale=null, $hook=true) {
 		if($hook)
 			$this->trigger('set', [$entity, $name, &$value, $locale]);
-	
+
 		if($this->hasProperty($name)) {
 			if($this->property($name)->get('setHook')) {
 				$hook = $this->property($name)->get('setHook');
@@ -477,7 +477,7 @@ class EntityDefinition {
 	public function processBeforeAdd($entity, $name, &$value, $locale=null, $hook=true) {
 		if($hook)
 			$this->trigger('set', [$entity, $name, &$value, $locale]);
-	
+
 		if($this->property($name)->get('setHook')) {
 			$hook  = $this->property($name)->get('setHook');
 			$value = call_user_func_array($hook, [$value]);

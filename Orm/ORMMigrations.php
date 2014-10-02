@@ -63,7 +63,7 @@ class ORMMigrations {
 		$schemas = [];
 		foreach($definitions as $definition) {
 			$schema = [];
-			
+
 			foreach($definition->properties() as $name=>$prop) {
 				if(!$prop->orm)
 					$col = [];
@@ -231,7 +231,7 @@ class ORMMigrations {
 				$params['default'] = $v['Default'];
 				$params['auto_increment'] = (strpos($v['Extra'], 'auto_increment') !== false);
 				$params['position'] = $pos++;
-				
+
 				$description[$name] = $params;
 				unset($description[$k]);
 			}
@@ -242,8 +242,8 @@ class ORMMigrations {
 
 	/**
 	 * Build the migration code by comparing the new schemas to the old ones.
-	 * @param  array   $newSchemas 
-	 * @param  array   $oldSchemas 
+	 * @param  array   $newSchemas
+	 * @param  array   $oldSchemas
 	 * @param  boolean $drop       true to drop the old tables
 	 * @return string  migration code
 	 */
@@ -321,7 +321,7 @@ class ORMMigrations {
 		foreach($cols as $col=>$params)
 			$res .= $this->createColumn($col, $params);
 		$res .= "\n});\n\n";
-		
+
 		return $res;
 	}
 
@@ -370,7 +370,7 @@ class ORMMigrations {
 				$res .= "\n		->def('$params[default]')";
 		}
 		$res .= ";";
-		
+
 		return $res;
 	}
 
@@ -395,7 +395,7 @@ class ORMMigrations {
 		if($params['default'])
 			$res .= "\n		->def('$params[default]')";
 		$res .= ";";
-		
+
 		return $res;
 	}
 }

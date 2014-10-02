@@ -129,7 +129,7 @@ class Response {
 	 * Get HTTP code.
 	 * @return integer
 	 */
-	public function getCode() { 
+	public function getCode() {
 		return $this->code;
 	}
 
@@ -137,7 +137,7 @@ class Response {
 	 * Get Request.
 	 * @return Request
 	 */
-	public function getRequest() { 
+	public function getRequest() {
 		return $this->request;
 	}
 
@@ -194,7 +194,7 @@ class Response {
 	public function sendHeaders() {
 		if(headers_sent())
 			return;
-	
+
 		$headers = [];
 		if(array_key_exists($this->code, static::$codes))
 			$headers[] = 'HTTP/1.1 '.$this->code.' '.static::$codes[$this->code];
@@ -202,7 +202,7 @@ class Response {
 			$headers[] = 'HTTP/1.1 200 '.static::$codes[200];
 		foreach($this->headers as $k=>$v)
 			$headers[] = $k.': '.$v;
-			
+
 		foreach($headers as $h)
 			header($h);
 	}
@@ -214,7 +214,7 @@ class Response {
 		$this->sendHeaders();
 		echo $this->content;
 	}
-	
+
 	/**
 	 * Redirect the user to a given url.
 	 * @param  string $url

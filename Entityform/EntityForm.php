@@ -26,7 +26,7 @@ class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 	 */
 	protected $dataMapper;
 
-	
+
 	/**
 	 * Constructor.
 	 * @param \Asgard\Entity\Entity  $entity
@@ -46,7 +46,7 @@ class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 		$this->dataMapper         = $dataMapper;
 		$this->entity             = $entity;
 		$this->locales            = isset($options['locales']) ? $options['locales']:[];
-	
+
 		$fields = [];
 		foreach($entity->getDefinition()->properties() as $name=>$property) {
 			if(isset($options['only']) && !in_array($name, $options['only']))
@@ -129,7 +129,7 @@ class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 		$orm = $dataMapper->orm($relation->get('entity'));
 		while($v = $orm->next())
 			$ids[$v->id] = (string)$v;
-		
+
 		if($relation->get('many')) {
 			$this->add(new \Asgard\Form\Fields\MultipleSelectField([
 				'type'    => 'integer',
@@ -145,7 +145,7 @@ class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 			]), $name);
 		}
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -174,7 +174,7 @@ class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 				$errors = $group->errors();
 			else
 				throw new \Exception('The field should not be a: '.get_class($group));
-				
+
 			foreach($group as $name=>$sub_field) {
 				if($sub_field instanceof \Asgard\Form\Group) {
 					$group_errors = $this->errors($sub_field);
@@ -183,7 +183,7 @@ class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 				}
 			}
 		}
-		
+
 		$this->setErrors($errors);
 		$this->errors = $errors;
 
@@ -252,7 +252,7 @@ class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 		elseif($entity->get($name, $locale) !== null)
 			return $entity->get($name, $locale);
 	}
-	
+
 	/**
 	 * Return its own errors.
 	 * @return array

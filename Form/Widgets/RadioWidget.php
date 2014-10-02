@@ -10,7 +10,7 @@ class RadioWidget extends \Asgard\Form\Widget {
 	 */
 	public function render(array $options=[]) {
 		$options = $this->options+$options;
-		
+
 		$attrs = [];
 		if(isset($options['attrs']))
 			$attrs = $options['attrs'];

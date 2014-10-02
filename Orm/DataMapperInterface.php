@@ -12,10 +12,10 @@ interface DataMapperInterface {
 	 * @return \Asgard\Entity\Entity
 	 */
 	public function load($entityClass, $id);
-	
+
 	/**
 	 * Create an ORM instance.
-	 * @param  string          $entityClass 
+	 * @param  string          $entityClass
 	 * @return ORMInterface
 	 */
 	public function orm($entityClass);
@@ -26,14 +26,14 @@ interface DataMapperInterface {
 	 * @return array
 	 */
 	public function all($entityClass);
-	
+
 	/**
 	 * Destroy all entities of a clas.
-	 * @param  string     $entityClass 
+	 * @param  string     $entityClass
 	 * @return integer
 	 */
 	public function destroyAll($entityClass);
-	
+
 	/**
 	 * Destroy a specific entity.
 	 * @param  string  $entityClass entity class
@@ -57,7 +57,7 @@ interface DataMapperInterface {
 
 	/**
 	 * Create and store an entity.
-	 * @param  string  $entityClass 
+	 * @param  string  $entityClass
 	 * @param  array   $values        default entity attributes
 	 * @param  boolean $force         skip validation
 	 * @return \Asgard\Entity\Entity
@@ -77,7 +77,7 @@ interface DataMapperInterface {
 	 * @param  \Asgard\Validation\ValidatorInterface $validator
 	 */
 	public function prepareValidator($entity, $validator);
-	
+
 	/**
 	 * Validate an entity.
 	 * @param  \Asgard\Entity\Entity $entity
@@ -130,7 +130,7 @@ interface DataMapperInterface {
 	 * @return string
 	 */
 	public function getTable(\Asgard\Entity\EntityDefinition $definition);
-	
+
 	/**
 	 * Return an entity with translations.
 	 * @param  \Asgard\Entity\Entity $entity

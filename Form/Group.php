@@ -102,7 +102,7 @@ class Group implements GroupInterface {
 	public function name() {
 		return $this->name;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -116,7 +116,7 @@ class Group implements GroupInterface {
 	public function size() {
 		return count($this->fields);
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -131,7 +131,7 @@ class Group implements GroupInterface {
 			elseif($field instanceof Fields\FileField)
 				return true;
 		}
-		
+
 		return false;
 	}
 
@@ -185,16 +185,16 @@ class Group implements GroupInterface {
 	public function sent() {
 		return $this->parent->sent();
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	public function errors() {
 		if(!$this->sent())
 			return [];
-		
+
 		$errors = [];
-	
+
 		foreach($this->fields as $name=>$field) {
 			if($field instanceof self) {
 				$errors[$name] = $field->errors();
@@ -223,7 +223,7 @@ class Group implements GroupInterface {
 	public function get($name) {
 		return $this->fields[$name];
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -232,10 +232,10 @@ class Group implements GroupInterface {
 			$this->fields[$name] = $this->parseFields($field, $name);
 		else
 			$this->fields[] = $this->parseFields($field, count($this->fields));
-		
+
 		return $this;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -257,7 +257,7 @@ class Group implements GroupInterface {
 	public function fields() {
 		return $this->fields;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -266,7 +266,7 @@ class Group implements GroupInterface {
 			$this->fields[$name] = $this->parseFields($sub_fields, $name);
 		return $this;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -274,7 +274,7 @@ class Group implements GroupInterface {
 		$this->setData([]);
 		return $this;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -283,23 +283,23 @@ class Group implements GroupInterface {
 		$this->updateChilds();
 		return $this;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
 	public function data() {
 		$res = [];
-		
+
 		foreach($this->fields as $field) {
 			if($field instanceof Field)
 				$res[$field->name] = $field->value();
 			elseif($field instanceof self)
 				$res[$field->name] = $field->data();
 		}
-		
+
 		return $res;
 	}
-	
+
 	/**
 	 * Array set implementation.
 	 * @param  string $offset
@@ -311,7 +311,7 @@ class Group implements GroupInterface {
 		else
 			$this->fields[$offset] = $this->parseFields($value, $offset);
 	}
-	
+
 	/**
 	 * Array exists implementation.
 	 * @param  string $offset
@@ -320,7 +320,7 @@ class Group implements GroupInterface {
 	public function offsetExists($offset) {
 		return isset($this->fields[$offset]);
 	}
-	
+
 	/**
 	 * Array unset implementation.
 	 * @param  string $offset
@@ -328,7 +328,7 @@ class Group implements GroupInterface {
 	public function offsetUnset($offset) {
 		unset($this->fields[$offset]);
 	}
-	
+
 	/**
 	 * Array get implementation.
 	 * @param  string $offset
@@ -337,7 +337,7 @@ class Group implements GroupInterface {
 	public function offsetGet($offset) {
 		return isset($this->fields[$offset]) ? $this->fields[$offset] : null;
 	}
-	
+
 	/**
 	 * Iterator valid implementation.
 	 * @return boolean
@@ -394,7 +394,7 @@ class Group implements GroupInterface {
 			return $this->parent->getTopForm();
 		return $this;
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -426,7 +426,7 @@ class Group implements GroupInterface {
 		$validator = $this->createValidator();
 		$constrains = [];
 		$messages = [];
-		
+
 		foreach($this->fields as $name=>$field) {
 			if($field instanceof Field) {
 				if($field_rules = $field->getValidationRules())
@@ -510,10 +510,10 @@ class Group implements GroupInterface {
 			$field = $fields;
 			$field->setName($name);
 			$field->setParent($this);
-			
+
 			if(isset($this->data[$name]))
 				$field->setValue($this->data[$name]);
-			
+
 			return $field;
 		}
 		elseif($fields instanceof self) {
@@ -523,7 +523,7 @@ class Group implements GroupInterface {
 			$group->setData(
 				(isset($this->data[$name]) ? $this->data[$name]:[])
 			);
-				
+
 			return $group;
 		}
 	}
@@ -533,7 +533,7 @@ class Group implements GroupInterface {
 	 */
 	public function doSave() {
 	}
-	
+
 	/**
 	 * Save the group and its children.
 	 * @param  GroupInterface $group
@@ -551,7 +551,7 @@ class Group implements GroupInterface {
 			}
 		}
 	}
-	
+
 	/**
 	 * Update children data.
 	 */
@@ -609,7 +609,7 @@ class Group implements GroupInterface {
 
 		return array_merge($errors, $this->getReportErrors($report));
 	}
-	
+
 	/**
 	 * Return array of errors from a report.
 	 * @param  \Asgard\Validation\Report $report
@@ -622,7 +622,7 @@ class Group implements GroupInterface {
 				$attrErrors = $this->getReportErrors($attrReport);
 				if($attrErrors)
 					$errors[$attribute] = $attrErrors;
-			}	
+			}
 			return $errors;
 		}
 		else

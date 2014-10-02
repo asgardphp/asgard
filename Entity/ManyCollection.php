@@ -124,7 +124,7 @@ class ManyCollection implements \ArrayAccess, \Iterator, \Countable {
 	public function offsetGet($offset) {
 		return $this->get($offset);
 	}
-	
+
 	/**
 	 * Iterator valid implementation.
 	 * @return boolean

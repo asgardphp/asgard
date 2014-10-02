@@ -9,7 +9,7 @@ use Symfony\Component\Console\Input\InputOption;
 */
 class Application extends \Symfony\Component\Console\Application {
 	use \Asgard\Container\ContainerAwareTrait;
-	
+
 	/**
 	 * Constructor.
 	 * @param string                      $name

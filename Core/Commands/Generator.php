@@ -3,7 +3,7 @@ namespace Asgard\Core\Commands;
 
 class Generator {
 	use \Asgard\Container\ContainerAwareTrait;
-	
+
 	protected $overrideFiles = false;
 
 	public function __construct($container) {

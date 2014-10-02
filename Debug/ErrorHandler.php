@@ -119,7 +119,7 @@ class ErrorHandler {
 	/**
 	 * PHP Error handler.
 	 * @param  integer $errno
-	 * @param  string  $errstr 
+	 * @param  string  $errstr
 	 * @param  string  $errfile
 	 * @param  integer $errline
 	 * @throws \ErrorException For all PHP errors.
@@ -147,7 +147,7 @@ class ErrorHandler {
 
 		if($kill) {
 			$trace = $this->getBacktraceFromException($e);
-			
+
 			if($e instanceof PSRException)
 				$msg = $e->getMessage();
 			elseif($e instanceof \ErrorException)
@@ -196,10 +196,10 @@ class ErrorHandler {
 	/**
 	 * Log an error.
 	 * @param  integer $severity
-	 * @param  string  $message 
-	 * @param  string  $file    
-	 * @param  integer $line    
-	 * @param  array   $trace   
+	 * @param  string  $message
+	 * @param  string  $file
+	 * @param  integer $line
+	 * @param  array   $trace
 	 */
 	public function log($severity, $message, $file, $line, $trace=null) {
 		if(!$this->isLogging())

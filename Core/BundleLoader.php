@@ -85,7 +85,7 @@ class BundleLoader {
 		else {
 			$hooks = $container->has('hooks') ? $this->loadHooks():[];
 			$routes = $container->has('resolver') ? $this->loadControllers():[];
-			
+
 			$container['cache']->save('bundles/'.$this->getID(), [
 				'hooks' => $hooks,
 				'routes' => $routes,

@@ -29,14 +29,14 @@ class Debug {
 		#clear all active buffers
 		while(ob_get_length())
 			ob_end_clean();
-		
+
 		if(php_sapi_name() != 'cli')
 			echo '<pre>';
 		foreach(array_slice(func_get_args(), 1) as $arg)
 			var_dump($arg);
 		if(php_sapi_name() != 'cli')
 			echo '</pre>';
-		
+
 		die(static::getReport($trace));
 	}
 
@@ -65,7 +65,7 @@ class Debug {
 		}
 		return $r;
 	}
-	
+
 	/**
 	 * Format the backtrace in HTML.
 	 * @param  \Asgard\Http\Request $request
@@ -127,7 +127,7 @@ EOT;
 				$next = $backtrace[$i+1];
 			else
 				$next = $backtrace[count($backtrace)-1];
-			
+
 			#Links
 			if(isset($trace['file'])) {
 				$url = static::$url;
@@ -157,7 +157,7 @@ EOT;
 				$r .= '</ul></div>';
 				$r .= '</div>';
 			}
-			
+
 			#Code snippet
 			if(isset($trace['line'])) {
 				$start = $trace['line']-5-1;
@@ -167,7 +167,7 @@ EOT;
 				if(file_exists($trace['file']))
 					$r .= static::getCode($trace['file'], $start, 11, $pos);
 			}
-			
+
 			$r .= '<hr/>';
 		}
 
@@ -189,7 +189,7 @@ EOT;
 		ob_end_clean();
 		$code = explode('<br />', $code);
 		$code = array_slice($code, $offset, $limit);
-		
+
 		if($code) {
 			$r = '<div><span class="toggle"><span>+</span>Code:</span>'."<br>\n";
 			$r .= '<div style="display:none"><code>';
@@ -205,7 +205,7 @@ EOT;
 			return $r;
 		}
 	}
-	
+
 	/**
 	 * Return the backtrace formatted for CLI.
 	 * @param  array $backtrace
@@ -214,11 +214,11 @@ EOT;
 	public static function getCLIBacktrace($backtrace=null) {
 		if(!$backtrace)
 			$backtrace = debug_backtrace();
-		
+
 		$r = '';
 		for($i=0; $i<count($backtrace); $i++) {
 			$trace = $backtrace[$i];
-			
+
 			if(isset($trace['file']))
 				$r .= $trace['file'].':'.$trace['line']."\n";
 		}

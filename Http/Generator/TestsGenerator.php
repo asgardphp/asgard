@@ -36,7 +36,7 @@ class TestsGenerator {
 	public function addTests($tests, $dst) {
 		if(!file_exists($dst))
 			$this->createTestFile($dst);
-		
+
 		$original = file_get_contents($dst);
 		$tests = trim($tests);
 		$res = preg_replace('/\s*(\}\s*\})$/', "\n\t\t".$tests."\n\t".'\1', $original);

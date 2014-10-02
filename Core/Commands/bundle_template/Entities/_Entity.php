@@ -28,12 +28,12 @@ class <?=ucfirst($entity['meta']['name']) ?> extends \Asgard\Entity\Entity {
 			new <?=$behaviorname ?>,
 	<?php endforeach ?>
 		];
-		
+
 	<?php if(isset($entity['meta']['order_by'])): ?>
 		$definitin->order_by = <?=$entity['meta']['order_by'] ?>;
 	<?php endif ?>
 	}
-	
+
 	public function __toString() {
 		return (string)$this-><?=$entity['meta']['name_field'] ?>;
 	}

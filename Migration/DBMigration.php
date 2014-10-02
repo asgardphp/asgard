@@ -55,7 +55,7 @@ abstract class DBMigration extends Migration {
 	 */
 	public function _down() {
 		$db = $this->container['db'];
-		
+
 		$db->beginTransaction();
 		try {
 			parent::_down();

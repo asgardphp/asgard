@@ -35,7 +35,7 @@ class Query {
 			throw new DBException($e->getMessage().'<br/>'."\n".'SQL: '.$sql.' ('.implode(', ', $args).')'); #todo extend pdoexception?
 		}
 	}
-	
+
 	/**
 	 * Return the next row.
 	 * @return array

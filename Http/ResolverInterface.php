@@ -22,7 +22,7 @@ interface ResolverInterface {
 	 * @param Route $route
 	 */
 	public function addRoute($route);
-	
+
 	/**
 	 * Check if a request matches a route.
 	 * @param  Request $request
@@ -32,7 +32,7 @@ interface ResolverInterface {
 	 * @return boolean|array
 	 */
 	public static function match(Request $request, $route, $requirements=null, $method=null);
-	
+
 	/**
 	 * Actually check if url and route match.
 	 * @param  string  $route
@@ -43,7 +43,7 @@ interface ResolverInterface {
 	 * @return boolean|array
 	 */
 	public static function matchWith($route, $with, $requirements=null, $request=null, $method=null);
-	
+
 	/**
 	 * Get a regex from a route.
 	 * @param  string     $route
@@ -63,7 +63,7 @@ interface ResolverInterface {
 	 * Sort the routes by order of coverage. Routes covering less first.
 	 */
 	public function sortRoutes();
-	
+
 	/**
 	 * Build an URL from a route.
 	 * @param  string     $route
