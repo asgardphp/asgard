@@ -3,7 +3,6 @@ namespace Asgard\Orm;
 
 /**
  * Helps performing operations like selection, deletion and update on a set of entities.
- *
  * @author Michel Hognerud <michel@hognerud.net>
 */
 class ORM implements ORMInterface {

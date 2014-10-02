@@ -3,6 +3,7 @@ namespace Asgard\Http;
 
 /**
  * Action filter.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Filter {
 	/**

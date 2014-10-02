@@ -3,6 +3,7 @@ namespace Asgard\Validation\Rules;
 
 /**
  * Perform a callback validation.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Callback extends \Asgard\Validation\Rule {
 	/**

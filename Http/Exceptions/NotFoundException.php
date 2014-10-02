@@ -3,6 +3,7 @@ namespace Asgard\Http\Exceptions;
 
 /**
  * NotFound (404) exceptions.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class NotFoundException extends \Asgard\Http\ControllerException {
 	/**

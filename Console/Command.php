@@ -9,6 +9,7 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 /**
  * Command parent class.
+ * @author Michel Hognerud <michel@hognerud.com>
  * @api
  */
 class Command extends \Symfony\Component\Console\Command\Command {

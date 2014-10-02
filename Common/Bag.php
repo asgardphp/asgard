@@ -3,6 +3,7 @@ namespace Asgard\Common;
 
 /**
  * Bag to manipulate a set of data.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Bag implements BagInterface {
 	/**

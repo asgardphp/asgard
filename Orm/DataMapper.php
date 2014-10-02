@@ -3,6 +3,7 @@ namespace Asgard\Orm;
 
 /**
  * Handle database storage of entities.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class DataMapper implements DataMapperInterface {
 	/**

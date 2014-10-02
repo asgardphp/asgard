@@ -3,6 +3,7 @@ namespace Asgard\Form\Fields;
 
 /**
  * Multiple select field.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class MultipleSelectField extends \Asgard\Form\Field {
 	/**

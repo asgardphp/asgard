@@ -3,6 +3,7 @@ namespace Asgard\Validation\Rules;
 
 /**
  * Check if any of the rule validates the input.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Any extends \Asgard\Validation\Rule {
 	/**

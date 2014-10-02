@@ -3,6 +3,7 @@ namespace Asgard\Db;
 
 /**
  * Query objects.
+ * @author Michel Hognerud <michel@hognerud.com>
  * @api
  */
 class Query {

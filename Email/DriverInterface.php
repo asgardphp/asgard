@@ -3,6 +3,7 @@ namespace Asgard\Email;
 
 /**
  * Interface for email drivers.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 interface DriverInterface {
 	/**

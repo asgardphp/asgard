@@ -3,6 +3,7 @@ namespace Asgard\Templating;
 
 /**
  * Trait for classes using templates.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 trait ViewableTrait {
 	/**

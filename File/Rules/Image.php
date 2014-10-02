@@ -3,6 +3,7 @@ namespace Asgard\File\Rules;
 
 /**
  * Check that the file is an image.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Image extends \Asgard\Validation\Rule {
 	/**

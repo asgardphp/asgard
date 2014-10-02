@@ -3,6 +3,7 @@ namespace Asgard\Form;
 
 /**
  * Field.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 abstract class Field {
 	/**

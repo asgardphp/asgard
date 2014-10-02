@@ -5,6 +5,7 @@ namespace Asgard\Debug;
 
 /**
  * Debugging utils.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Debug {
 	/**

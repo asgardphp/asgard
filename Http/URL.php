@@ -3,6 +3,7 @@ namespace Asgard\Http;
 
 /**
  * URL class.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class URL implements URLInterface {
 	/**

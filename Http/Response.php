@@ -3,6 +3,7 @@ namespace Asgard\Http;
 
 /**
  * Response.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Response {
 	/**

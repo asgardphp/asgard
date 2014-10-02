@@ -3,6 +3,7 @@ namespace Asgard\Validation\Rules;
 
 /**
  * Check that the input is equal to a given value.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Equal extends \Asgard\Validation\Rule {
 	/**

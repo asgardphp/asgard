@@ -3,6 +3,7 @@ namespace Asgard\Cache;
 
 /**
  * Fake cache class. Uses the same API but does not persist objects.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class NullCache implements \Doctrine\Common\Cache\Cache {
 	/**

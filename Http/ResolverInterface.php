@@ -3,6 +3,7 @@ namespace Asgard\Http;
 
 /**
  * Resolve routes to actions.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 interface ResolverInterface {
 	/**

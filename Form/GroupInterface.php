@@ -3,6 +3,7 @@ namespace Asgard\Form;
 
 /**
  * Group of fieldsor sub-groups.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 interface GroupInterface extends \ArrayAccess, \Iterator {
 	/**

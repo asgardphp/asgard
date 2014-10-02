@@ -3,6 +3,7 @@ namespace Asgard\Form;
 
 /**
  * Group with undefined number of fields.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class DynamicGroup extends Group {
 	/**

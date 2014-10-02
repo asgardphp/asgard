@@ -3,6 +3,7 @@ namespace Asgard\Http\Browser;
 
 /**
  * Browser.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 interface BrowserInterface {
 	/**

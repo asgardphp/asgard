@@ -3,6 +3,7 @@ namespace Asgard\Validation;
 
 /**
  * Rule parent class.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 abstract class Rule {
 	/**

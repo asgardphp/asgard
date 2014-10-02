@@ -3,6 +3,7 @@ namespace Asgard\Form\Fields;
 
 /**
  * Month field.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class MonthField extends \Asgard\Form\Fields\SelectField {
 	/**

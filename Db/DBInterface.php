@@ -3,7 +3,8 @@ namespace Asgard\Db;
 
 /**
  * Database.
-	 * @api
+ * @author Michel Hognerud <michel@hognerud.com>
+ * @api
  */
 interface DBInterface {
 	/**

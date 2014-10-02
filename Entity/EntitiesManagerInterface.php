@@ -3,6 +3,7 @@ namespace Asgard\Entity;
 
 /**
  * Manage entities.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 interface EntitiesManagerInterface {
 	/**

@@ -3,6 +3,7 @@ namespace Asgard\Http;
 
 /**
  * Test parent class.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 abstract class Test extends \PHPUnit_Framework_TestCase {
 	/**

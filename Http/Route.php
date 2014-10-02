@@ -3,6 +3,7 @@ namespace Asgard\Http;
 
 /**
  * Route.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Route {
 	/**

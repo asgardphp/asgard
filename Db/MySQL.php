@@ -3,7 +3,8 @@ namespace Asgard\Db;
 
 /**
  * Util to import and dump mysql files.
-	 * @api
+ * @author Michel Hognerud <michel@hognerud.com>
+ * @api
  */
 class MySQL {
 	/**

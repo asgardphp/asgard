@@ -3,6 +3,7 @@ namespace Asgard\Form\Widgets;
 
 /**
  * Hidden widget.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class HiddenWidget extends \Asgard\Form\Widget {
 	/**

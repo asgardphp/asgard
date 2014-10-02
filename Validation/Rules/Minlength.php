@@ -3,6 +3,7 @@ namespace Asgard\Validation\Rules;
 
 /**
  * Check that the string length is greater or equal to the given length.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Minlength extends \Asgard\Validation\Rule {
 	/**

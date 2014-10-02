@@ -3,6 +3,7 @@ namespace Asgard\Form;
 
 /**
  * Widget. Render a field.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 abstract class Widget {
 	/**

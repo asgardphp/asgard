@@ -3,6 +3,7 @@ namespace Asgard\Db;
 
 /**
  * Database Abstraction Layer.
+ * @author Michel Hognerud <michel@hognerud.com>
  * @api
  */
 class DAL {

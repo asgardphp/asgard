@@ -3,6 +3,7 @@ namespace Asgard\Entity\Properties;
 
 /**
  * Datetime Property.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class DatetimeProperty extends \Asgard\Entity\Property {
 	/**

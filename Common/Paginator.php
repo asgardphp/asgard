@@ -3,6 +3,7 @@ namespace Asgard\Common;
 
 /**
  * Paginator.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Paginator implements PaginatorInterface {
 	/**

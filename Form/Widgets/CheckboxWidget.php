@@ -3,6 +3,7 @@ namespace Asgard\Form\Widgets;
 
 /**
  * Checkbox widget.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class CheckboxWidget extends \Asgard\Form\Widget {
 	/**

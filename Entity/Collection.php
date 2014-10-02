@@ -3,6 +3,7 @@ namespace Asgard\Entity;
 
 /**
  * Entities collection.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 interface Collection {
 	/**

@@ -3,6 +3,7 @@ namespace Asgard\Form\Widgets;
 
 /**
  * Textarea widget.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class TextareaWidget extends \Asgard\Form\Widget {
 	/**

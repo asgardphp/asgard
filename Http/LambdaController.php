@@ -3,6 +3,7 @@ namespace Asgard\Http;
 
 /**
  * Controller for actions without a controller.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class LambdaController extends Controller {
 	/**

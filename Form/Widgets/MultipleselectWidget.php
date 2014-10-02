@@ -3,6 +3,7 @@ namespace Asgard\Form\Widgets;
 
 /**
  * Multiple select widget.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class MultipleselectWidget extends \Asgard\Form\Widget {
 	/**

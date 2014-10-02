@@ -3,6 +3,7 @@ namespace Asgard\Form\Widgets;
 
 /**
  * Datetime widget.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class DatetimeWidget extends \Asgard\Form\Widget {
 	/**

@@ -3,6 +3,7 @@ namespace Asgard\Cache;
 
 /**
  * Cache wrapper.
+ * @author Michel Hognerud <michel@hognerud.com>
  * @api
  */
 class Cache implements \Doctrine\Common\Cache\Cache, \ArrayAccess {

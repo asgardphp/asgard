@@ -3,6 +3,7 @@ namespace Asgard\Validation\Rules;
 
 /**
  * Check that the input contains less than a given number.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Haslessthan extends \Asgard\Validation\Rule {
 	/**

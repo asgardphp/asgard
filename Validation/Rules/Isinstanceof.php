@@ -3,6 +3,7 @@ namespace Asgard\Validation\Rules;
 
 /**
  * Check if the object is instance of a class.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Isinstanceof extends \Asgard\Validation\Rule {
 	/**

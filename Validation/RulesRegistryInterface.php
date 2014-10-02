@@ -3,6 +3,7 @@ namespace Asgard\Validation;
 
 /**
  * Contains the rules for validation.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 interface RulesRegistryInterface {
 	/**

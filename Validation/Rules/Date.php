@@ -3,6 +3,7 @@ namespace Asgard\Validation\Rules;
 
 /**
  * Check that the input has a date format.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Date extends \Asgard\Validation\Rule {
 	/**

@@ -3,6 +3,7 @@ namespace Asgard\Migration;
 
 /**
  * Migration class
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Migration {
 	use \Asgard\Container\ContainerAwareTrait;

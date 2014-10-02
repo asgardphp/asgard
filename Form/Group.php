@@ -3,6 +3,7 @@ namespace Asgard\Form;
 
 /**
  * Group of fieldsor sub-groups.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Group implements GroupInterface {
 	/**

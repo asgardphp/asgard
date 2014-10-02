@@ -3,6 +3,7 @@ namespace Asgard\Orm\Rules;
 
 /**
  * Verify that there is at least 1 entity.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Relationrequired extends \Asgard\Validation\Rule {
 	/**

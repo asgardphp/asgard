@@ -3,6 +3,7 @@ namespace Asgard\Core;
 
 /**
  * Asgard core bundle.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Bundle extends \Asgard\Core\BundleLoader {
 	/**

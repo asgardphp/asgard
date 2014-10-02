@@ -3,6 +3,7 @@ namespace Asgard\Form\Widgets;
 
 /**
  * Text widget.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class TextWidget extends \Asgard\Form\Widget {
 	/**

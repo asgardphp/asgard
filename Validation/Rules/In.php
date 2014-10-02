@@ -3,6 +3,7 @@ namespace Asgard\Validation\Rules;
 
 /**
  * Check that the input is in a given array.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class In extends \Asgard\Validation\Rule {
 	/**

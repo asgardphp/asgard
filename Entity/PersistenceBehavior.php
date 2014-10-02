@@ -3,6 +3,7 @@ namespace Asgard\Entity;
 
 /**
  * Persistence behavior.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 interface PersistenceBehavior {
 	/**

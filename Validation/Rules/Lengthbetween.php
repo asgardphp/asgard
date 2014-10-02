@@ -3,6 +3,7 @@ namespace Asgard\Validation\Rules;
 
 /**
  * Check that the input length is between two given numbers.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Lengthbetween extends \Asgard\Validation\Rule {
 	/**

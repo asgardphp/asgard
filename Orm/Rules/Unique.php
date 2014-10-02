@@ -3,6 +3,7 @@ namespace Asgard\Orm\Rules;
 
 /**
  * Verify that there is no other entity with the same attribute.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Unique extends \Asgard\Validation\Rule {
 	/**

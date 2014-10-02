@@ -3,6 +3,7 @@ namespace Asgard\Entity;
 
 /**
  * Entity file.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class File extends \Asgard\File\File {
 	/**

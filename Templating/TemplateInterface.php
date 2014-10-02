@@ -3,6 +3,7 @@ namespace Asgard\Templating;
 
 /**
  * Interface for templates
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 interface TemplateInterface {
 	/**

@@ -3,6 +3,7 @@ namespace Asgard\Validation\Rules;
 
 /**
  * Check that the input is equal or greater than the given number.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Min extends \Asgard\Validation\Rule {
 	/**

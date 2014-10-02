@@ -3,6 +3,7 @@ namespace Asgard\Orm;
 
 /**
  * Define relation between entities.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class EntityRelation {
 	/**

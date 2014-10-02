@@ -3,6 +3,7 @@ namespace Asgard\Core;
 
 /**
  * Asgard kernel class.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Kernel implements \ArrayAccess {
 	use \Asgard\Container\ContainerAwareTrait;

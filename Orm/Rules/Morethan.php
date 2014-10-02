@@ -3,6 +3,7 @@ namespace Asgard\Orm\Rules;
 
 /**
  * Verify that there more less than x entities.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Morethan extends \Asgard\Validation\Rule {
 	/**

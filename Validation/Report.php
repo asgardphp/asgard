@@ -3,6 +3,7 @@ namespace Asgard\Validation;
 
 /**
  * Errors container.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Report {
 	/**

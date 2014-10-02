@@ -3,6 +3,7 @@ namespace Asgard\Validation\Rules;
 
 /**
  * Check that the input matches the given pattern.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Regex extends \Asgard\Validation\Rule {
 	/**

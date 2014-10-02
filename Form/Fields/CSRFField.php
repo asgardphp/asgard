@@ -3,6 +3,7 @@ namespace Asgard\Form\Fields;
 
 /**
  * CSRF field.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class CSRFField extends \Asgard\Form\Fields\HiddenField {
 	/**

@@ -3,6 +3,7 @@ namespace Asgard\Email;
 
 /**
  * Send email through Swift.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class SwiftEmail implements DriverInterface {
 	/**

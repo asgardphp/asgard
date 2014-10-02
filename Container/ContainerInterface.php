@@ -3,6 +3,7 @@ namespace Asgard\Container;
 
 /**
  * Services container.
+ * @author Michel Hognerud <michel@hognerud.com>
  * @api
  */
 interface ContainerInterface extends \ArrayAccess {

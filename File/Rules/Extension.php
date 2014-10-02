@@ -3,6 +3,7 @@ namespace Asgard\File\Rules;
 
 /**
  * Check that the file's extension is allowed.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Extension extends \Asgard\Validation\Rule {
 	public $extension;

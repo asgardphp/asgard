@@ -3,6 +3,7 @@ namespace Asgard\Form\Fields;
 
 /**
  * Day field.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class DayField extends \Asgard\Form\Fields\SelectField {
 	/**

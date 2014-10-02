@@ -3,6 +3,7 @@ namespace Asgard\Form\Widgets;
 
 /**
  * File widget.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class FileWidget extends \Asgard\Form\Widget {
 	/**

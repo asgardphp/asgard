@@ -5,6 +5,7 @@ use Jeremeamia\SuperClosure\SerializableClosure;
 
 /**
  * Entity definition property.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Property {
 	/**

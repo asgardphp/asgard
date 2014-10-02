@@ -3,6 +3,7 @@ namespace Asgard\Validation\Rules;
 
 /**
  * Check that the input contains a given element.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Contains extends \Asgard\Validation\Rule {
 	/**

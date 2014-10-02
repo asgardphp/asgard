@@ -3,6 +3,7 @@ namespace Asgard\Config;
 
 /**
  * Configuration bag.
+ * @author Michel Hognerud <michel@hognerud.com>
  * @api
  */
 interface ConfigInterface extends \Asgard\Common\BagInterface {

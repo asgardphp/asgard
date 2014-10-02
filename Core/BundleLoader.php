@@ -3,6 +3,7 @@ namespace Asgard\Core;
 
 /**
  * Bundles parent class.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class BundleLoader {
 	use \Asgard\Container\ContainerAwareTrait;

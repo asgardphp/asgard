@@ -3,6 +3,7 @@ namespace Asgard\Orm;
 
 /**
  * Exception for entity errors.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class EntityException extends \Exception implements \Asgard\Entity\EntityExceptionInterface {
 	/**

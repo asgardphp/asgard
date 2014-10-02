@@ -3,6 +3,7 @@ namespace Asgard\Http;
 
 /**
  * Request class.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Request implements \ArrayAccess {
 	/**

@@ -3,6 +3,7 @@ namespace Asgard\Http\Generator;
 
 /**
  * HTTP tests generator.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class TestsGenerator {
 	use \Asgard\Container\ContainerAwareTrait;

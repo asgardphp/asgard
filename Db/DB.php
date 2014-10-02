@@ -3,6 +3,7 @@ namespace Asgard\Db;
 
 /**
  * Database.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class DB implements DBInterface {
 	/**

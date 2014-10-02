@@ -3,6 +3,7 @@ namespace Asgard\Entity;
 
 /**
  * Interface for entity exceptions.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 interface EntityExceptionInterface {
 	/**

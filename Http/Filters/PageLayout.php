@@ -3,6 +3,7 @@ namespace Asgard\Http\Filters;
 
 /**
  * Page layout filter. Adds a layout to the reponse.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class PageLayout extends \Asgard\Http\Filter {
 	/**

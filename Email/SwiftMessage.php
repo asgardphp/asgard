@@ -3,6 +3,7 @@ namespace Asgard\Email;
 
 /**
  * Extended SwiftMessage class.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class SwiftMessage extends \Swift_Message {
 	/**

@@ -3,6 +3,7 @@ namespace Asgard\Orm;
 
 /**
  * ORM for related entities.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 	/**

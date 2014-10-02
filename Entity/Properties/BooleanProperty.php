@@ -3,6 +3,7 @@ namespace Asgard\Entity\Properties;
 
 /**
  * Boolean Property.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class BooleanProperty extends \Asgard\Entity\Property {
 	/**

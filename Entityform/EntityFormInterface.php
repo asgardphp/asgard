@@ -3,6 +3,7 @@ namespace Asgard\Entityform;
 
 /**
  * Create form from an entity.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 interface EntityFormInterface extends \Asgard\Form\FormInterface {
 	/**

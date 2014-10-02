@@ -3,6 +3,7 @@ namespace Asgard\Validation;
 
 /**
  * Validator exception.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class ValidatorException extends \Exception {
 	/**

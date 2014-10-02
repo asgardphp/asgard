@@ -3,6 +3,7 @@ namespace Asgard\Form\Widgets;
 
 /**
  * Password widget.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class PasswordWidget extends \Asgard\Form\Widget {
 	/**

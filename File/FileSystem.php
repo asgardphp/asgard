@@ -3,6 +3,7 @@ namespace Asgard\File;
 
 /**
  * File system.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class FileSystem {
 	/**

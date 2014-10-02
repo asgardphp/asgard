@@ -3,6 +3,7 @@ namespace Asgard\Http;
 
 /**
  * Http file.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class HttpFile extends \Asgard\File\File {
 	/**

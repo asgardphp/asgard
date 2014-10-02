@@ -3,6 +3,7 @@ namespace Asgard\Http\Utils;
 
 /**
  * Store messages in the session and display them on the next page.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Flash {
 	/**

@@ -5,6 +5,7 @@ use Jeremeamia\SuperClosure\SerializableClosure;
 
 /**
  * Services container.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Container implements ContainerInterface {
 	/**

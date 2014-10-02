@@ -3,6 +3,7 @@ namespace Asgard\Container;
 
 /**
  * Parent for all facades.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 abstract class Facade {
 	/**

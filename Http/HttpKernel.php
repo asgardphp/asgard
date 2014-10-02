@@ -3,6 +3,7 @@ namespace Asgard\Http;
 
 /**
  * HTTP Kernel.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class HttpKernel implements HttpKernelInterface {
 	use \Asgard\Container\ContainerAwareTrait;

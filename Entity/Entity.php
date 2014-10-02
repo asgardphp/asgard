@@ -4,6 +4,7 @@ namespace Asgard\Entity;
 /**
  * Entity.
  * @property integer $id
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 abstract class Entity {
 	/**

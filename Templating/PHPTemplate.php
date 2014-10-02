@@ -3,6 +3,7 @@ namespace Asgard\Templating;
 
 /**
  * Template using PHP for formatting
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class PHPTemplate implements TemplateInterface {
 	/**

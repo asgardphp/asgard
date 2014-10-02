@@ -3,6 +3,7 @@ namespace Asgard\Common;
 
 /**
  * Array utils.
+ * @author Michel Hognerud <michel@hognerud.com>
  * @api
  */
 class ArrayUtils {

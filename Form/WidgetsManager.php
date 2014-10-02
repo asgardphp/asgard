@@ -3,6 +3,7 @@ namespace Asgard\Form;
 
 /**
  * Manage widgets available for form fields.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class WidgetsManager implements WidgetsManagerInterface {
 	/**

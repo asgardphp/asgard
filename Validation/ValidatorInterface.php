@@ -4,6 +4,7 @@ use Symfony\Component\Translation\TranslatorInterface;
 
  /**
   * Validator.
+ * @author Michel Hognerud <michel@hognerud.com>
   */
 interface ValidatorInterface {
 	/**

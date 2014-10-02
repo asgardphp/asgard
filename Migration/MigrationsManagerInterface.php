@@ -3,6 +3,7 @@ namespace Asgard\Migration;
 
 /**
  * Manage the migrations.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 interface MigrationsManagerInterface {
 	/**

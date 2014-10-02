@@ -3,6 +3,7 @@ namespace Asgard\Entity;
 
 /**
  * Collection of many elements.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class ManyCollection implements \ArrayAccess, \Iterator, \Countable {
 	/**

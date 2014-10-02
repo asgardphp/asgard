@@ -3,6 +3,7 @@ namespace Asgard\Http\Utils;
 
 /**
  * HTML helper.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 interface HTMLInterface {
 	/**

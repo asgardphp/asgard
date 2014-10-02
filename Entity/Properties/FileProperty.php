@@ -3,6 +3,7 @@ namespace Asgard\Entity\Properties;
 
 /**
  * File Property.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class FileProperty extends \Asgard\Entity\Property {
 	/**

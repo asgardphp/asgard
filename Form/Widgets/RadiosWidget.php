@@ -3,6 +3,7 @@ namespace Asgard\Form\Widgets;
 
 /**
  * Radios widget.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class RadiosWidget extends \Asgard\Form\Widget {
 	/**

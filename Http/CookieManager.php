@@ -3,6 +3,7 @@ namespace Asgard\Http;
 
 /**
  * To manage cookies.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class CookieManager implements \Asgard\Common\BagInterface {
 	/**

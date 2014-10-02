@@ -3,6 +3,7 @@ namespace Asgard\Debug;
 
 /**
  * Exception for PSR-3.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class PSRException extends \Exception {
 	/**

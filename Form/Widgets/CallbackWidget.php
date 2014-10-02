@@ -3,6 +3,7 @@ namespace Asgard\Form\Widgets;
 
 /**
  * Callback widget.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class CallbackWidget extends \Asgard\Form\Widget {
 	/**

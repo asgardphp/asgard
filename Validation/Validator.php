@@ -10,6 +10,7 @@ use Symfony\Component\Translation\TranslatorInterface;
   * @method $this rule($rule, $params=[], $each=false)
   * @method $this isNull($param=true)
   * @method $this required($param=true)
+ * @author Michel Hognerud <michel@hognerud.com>
   */
 class Validator implements ValidatorInterface {
 	/**

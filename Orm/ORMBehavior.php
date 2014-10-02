@@ -3,6 +3,7 @@ namespace Asgard\Orm;
 
 /**
  * ORM Behavior.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\PersistenceBehavior, \Asgard\Entity\RelationsBehavior {
 	/**

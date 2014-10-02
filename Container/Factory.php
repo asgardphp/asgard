@@ -3,6 +3,7 @@ namespace Asgard\Container;
 
 /**
  * Provides an API to generate instances.
+ * @author Michel Hognerud <michel@hognerud.com>
  * @api
  */
 class Factory {

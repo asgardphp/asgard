@@ -3,6 +3,7 @@ namespace Asgard\Form\Fields;
 
 /**
  * Select field.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class SelectField extends \Asgard\Form\Field {
 	/**

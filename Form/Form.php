@@ -3,6 +3,7 @@ namespace Asgard\Form;
 
 /**
  * Form.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Form extends Group implements FormInterface {
 	use \Asgard\Container\ContainerAwareTrait;

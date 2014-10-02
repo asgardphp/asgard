@@ -3,6 +3,7 @@ namespace Asgard\Validation\Rules;
 
 /**
  * Check that the input length is equal to a given number.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Length extends \Asgard\Validation\Rule {
 	/**

@@ -3,6 +3,7 @@ namespace Asgard\Core;
 
 /**
  * Publish bundle assets.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Publisher {
 	use \Asgard\Container\ContainerAwareTrait;

@@ -3,6 +3,7 @@ namespace Asgard\Validation\Rules;
 
 /**
  * Check that the input length is less or equal to the given length.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Maxlength extends \Asgard\Validation\Rule {
 	/**

@@ -3,6 +3,7 @@ namespace Asgard\Container;
 
 /**
  * Trait for classes using a container.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 trait ContainerAwareTrait {
 	/**

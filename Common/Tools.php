@@ -3,6 +3,7 @@ namespace Asgard\Common;
 
 /**
  * Random util functions.
+ * @author Michel Hognerud <michel@hognerud.com>
  * @api
  */
 class Tools {

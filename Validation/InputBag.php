@@ -3,6 +3,7 @@ namespace Asgard\Validation;
 
 /**
  * Contains and manipulates inputs for validation.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class InputBag {
 	/**

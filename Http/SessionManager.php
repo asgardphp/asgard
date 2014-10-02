@@ -3,6 +3,7 @@ namespace Asgard\Http;
 
 /**
  * Session manager.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class SessionManager implements \Asgard\Common\BagInterface {
 	/**

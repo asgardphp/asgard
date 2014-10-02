@@ -3,6 +3,7 @@ namespace Asgard\Http;
 
 /**
  * Controller exception.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class ControllerException extends \Asgard\Debug\PSRException {
 	/**

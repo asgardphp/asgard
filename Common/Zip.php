@@ -3,6 +3,7 @@ namespace Asgard\Common;
 
 /**
  * Class to zip files.
+ * @author Michel Hognerud <michel@hognerud.com>
  * @api
  */
 class Zip {

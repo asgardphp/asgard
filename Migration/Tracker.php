@@ -3,6 +3,7 @@ namespace Asgard\Migration;
 
 /**
  * Tracker class to track migrations statuses.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Tracker {
 	/**

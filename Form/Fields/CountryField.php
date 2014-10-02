@@ -3,6 +3,7 @@ namespace Asgard\Form\Fields;
 
 /**
  * Country field.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class CountryField extends SelectField {
 	/**

@@ -3,6 +3,7 @@ namespace Asgard\Form\Widgets;
 
 /**
  * Select widget.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class SelectWidget extends \Asgard\Form\Widget {
 	/**

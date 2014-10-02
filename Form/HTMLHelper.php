@@ -3,6 +3,7 @@ namespace Asgard\Form;
 
 /**
  * Helper to create HTML tags.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class HTMLHelper {
 	/**

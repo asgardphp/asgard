@@ -1,6 +1,10 @@
 <?php
 namespace Asgard\Hook;
 
+/**
+ * Hooks Manager.
+ * @author Michel Hognerud <michel@hognerud.com>
+ */
 interface HooksManagerInterface {
 	/**
 	 * Trigger a hook.

@@ -3,6 +3,7 @@ namespace Asgard\Form\Fields;
 
 /**
  * Year field.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class YearField extends \Asgard\Form\Fields\SelectField {
 	/**

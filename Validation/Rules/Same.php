@@ -3,6 +3,7 @@ namespace Asgard\Validation\Rules;
 
 /**
  * Check if the input is the same as another attribute.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Same extends \Asgard\Validation\Rule {
 	/**

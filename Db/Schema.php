@@ -3,6 +3,7 @@ namespace Asgard\Db;
 
 /**
  * Column builder.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class BuildCol {
 	/**
@@ -137,6 +138,7 @@ class BuildCol {
 
 /**
  * Table builder.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class BuildTable {
 	/**
@@ -301,6 +303,7 @@ class BuildTable {
 
 /**
  * Table.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Table {
 	/**
@@ -382,6 +385,7 @@ class Table {
 
 /**
  * Column.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Column {
 	/**
@@ -696,6 +700,7 @@ class Column {
 
 /**
  * Schema builder.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Schema implements SchemaInterface {
 	/**

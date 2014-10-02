@@ -3,6 +3,7 @@ namespace Asgard\File;
 
 /**
  * File instance.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class File {
 	/**

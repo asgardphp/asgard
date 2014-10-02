@@ -3,6 +3,7 @@ namespace Asgard\Form\Widgets;
 
 /**
  * Submit widget.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class SubmitWidget extends \Asgard\Form\Widget {
 	/**

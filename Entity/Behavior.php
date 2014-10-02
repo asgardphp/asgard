@@ -3,6 +3,7 @@ namespace Asgard\Entity;
 
 /**
  * Entity Behavior.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Behavior {
 	/**

@@ -3,6 +3,7 @@ namespace Asgard\Entityform;
 
 /**
  * Solve form fields from entity properties.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 interface EntityFieldsSolverInterface {
 	/**

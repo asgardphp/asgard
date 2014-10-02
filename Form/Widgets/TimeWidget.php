@@ -3,6 +3,7 @@ namespace Asgard\Form\Widgets;
 
 /**
  * Time widget.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class TimeWidget extends \Asgard\Form\Widget {
 	/**

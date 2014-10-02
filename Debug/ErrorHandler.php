@@ -3,6 +3,7 @@ namespace Asgard\Debug;
 
 /**
  * Error handler.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class ErrorHandler {
 	/**

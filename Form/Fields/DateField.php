@@ -3,6 +3,7 @@ namespace Asgard\Form\Fields;
 
 /**
  * Date field.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class DateField extends \Asgard\Form\Field {
 	/**

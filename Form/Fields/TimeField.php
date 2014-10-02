@@ -3,6 +3,7 @@ namespace Asgard\Form\Fields;
 
 /**
  * Time field.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class TimeField extends \Asgard\Form\Field {
 	/**

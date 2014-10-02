@@ -3,6 +3,7 @@ namespace Asgard\Migration;
 
 /**
  * Migration class for database
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 abstract class DBMigration extends Migration {
 	/**

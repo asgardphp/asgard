@@ -3,6 +3,7 @@ namespace Asgard\Validation\Rules;
 
 /**
  * Check that the input is an email address.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Email extends \Asgard\Validation\Rule {
 	/**

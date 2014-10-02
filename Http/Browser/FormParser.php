@@ -3,6 +3,7 @@ namespace Asgard\Http\Browser;
 
 /**
  * Form field.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Field {
 	/**

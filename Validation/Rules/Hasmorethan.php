@@ -3,6 +3,7 @@ namespace Asgard\Validation\Rules;
 
 /**
  * Check that the input countains more than a given number.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Hasmorethan extends \Asgard\Validation\Rule {
 	/**

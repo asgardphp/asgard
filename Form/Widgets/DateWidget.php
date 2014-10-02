@@ -3,6 +3,7 @@ namespace Asgard\Form\Widgets;
 
 /**
  * Dage widget.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class DateWidget extends \Asgard\Form\Widget {
 	/**

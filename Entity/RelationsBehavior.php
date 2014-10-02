@@ -3,6 +3,7 @@ namespace Asgard\Entity;
 
 /**
  * Behavior to handle relations.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 interface RelationsBehavior {
 	/**

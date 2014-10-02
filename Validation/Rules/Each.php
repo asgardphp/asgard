@@ -3,6 +3,7 @@ namespace Asgard\Validation\Rules;
 
 /**
  * Check that each element of the iterable input validates the given validator.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Each extends \Asgard\Validation\Rule {
 	/**

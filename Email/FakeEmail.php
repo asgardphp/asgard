@@ -3,6 +3,7 @@ namespace Asgard\Email;
 
 /**
  * A fake email sender. Write emails in a text file.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class FakeEmail implements DriverInterface {
 	/**

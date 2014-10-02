@@ -3,6 +3,7 @@ namespace Asgard\Orm;
 
 /**
  * Handle the migrations for the ORM.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class ORMMigrations {
 	/**
