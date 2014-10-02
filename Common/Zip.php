@@ -3,6 +3,7 @@ namespace Asgard\Common;
 
 /**
  * Class to zip files.
+ * @api
  */
 class Zip {
 	/**
@@ -10,6 +11,7 @@ class Zip {
 	 * @param  string $source
 	 * @param  string $destination
 	 * @return boolean true for success
+	 * @api
 	 */
 	public static function zip($source, $destination) {
 	    if(!extension_loaded('zip') || !file_exists($source))

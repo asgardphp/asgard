@@ -3,6 +3,7 @@ namespace Asgard\Db;
 
 /**
  * Util to import and dump mysql files.
+	 * @api
  */
 class MySQL {
 	/**
@@ -14,6 +15,7 @@ class MySQL {
 	/**
 	 * Constructor.
 	 * @param array $config
+	 * @api
 	 */
 	public function __construct($config) {
 		$this->config = $config;
@@ -24,6 +26,7 @@ class MySQL {
 	 * @param string $src SQL file path.
 	 * @throws \Exception When file is not accessible.
 	 * @return integer 1 for success, 0 for failure.
+	 * @api
 	*/
 	public function import($src) {
 		if(!file_exists(realpath($src)))
@@ -48,6 +51,7 @@ class MySQL {
 	 * Dump an SQL file.
 	 * @param  string $dst
 	 * @return integer 1 for success, 0 for failure.
+	 * @api
 	 */
 	public function dump($dst) {
 		$host = $this->config['host'];

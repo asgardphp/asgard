@@ -3,6 +3,7 @@ namespace Asgard\Db;
 
 /**
  * Database Abstraction Layer.
+ * @api
  */
 class DAL {
 	/**
@@ -88,6 +89,7 @@ class DAL {
 	 * Constructor.
 	 * @param DBInterface  $db
 	 * @param string  $tables
+	 * @api
 	 */
 	public function __construct(DBInterface $db, $tables=null) {
 		$this->db = $db;
@@ -97,6 +99,7 @@ class DAL {
     /**
      * Return the DAL parameters.
      * @return array
+	 * @api
      */
     public function getParameters() {
 		return $this->params;
@@ -106,6 +109,7 @@ class DAL {
 	 * Set FROM tables.
 	 * @param  string $tables  Separated by ,
 	 * @return DAL    $this
+	 * @api
 	 */
 	public function from($tables) {
 		$this->tables = [];
@@ -116,6 +120,7 @@ class DAL {
 	 * INTO table.
 	 * @param  string $table
 	 * @return DAL    $this
+	 * @api
 	 */
 	public function into($table) {
 		$this->into = $table;
@@ -126,6 +131,7 @@ class DAL {
 	 * Add FROM tables.
 	 * @param string $tables  Separated by ,
 	 * @return DAL  $this
+	 * @api
 	 */
 	public function addFrom($tables) {
 		if(!$tables)
@@ -155,6 +161,7 @@ class DAL {
 	 * Remove a FROM table.
 	 * @param  string $what
 	 * @return DALm   $this
+	 * @api
 	 */
 	public function removeFrom($what) {
 		foreach($this->tables as $alias=>$table) {
@@ -195,6 +202,7 @@ class DAL {
 	 * @param  string|array $table
 	 * @param  string|array $conditions
 	 * @return DAL    $this
+	 * @api
 	 */
 	public function leftjoin($table, $conditions=null) {
 		return $this->join('leftjoin', $table, $conditions);
@@ -205,6 +213,7 @@ class DAL {
 	 * @param  string|array $table
 	 * @param  string|array $conditions
 	 * @return DAL    $this
+	 * @api
 	 */
 	public function rightjoin($table, $conditions=null) {
 		return $this->join('rightjoin', $table, $conditions);
@@ -215,6 +224,7 @@ class DAL {
 	 * @param  string|array $table
 	 * @param  string|array $conditions
 	 * @return DAL    $this
+	 * @api
 	 */
 	public function innerjoin($table, $conditions=null) {
 		return $this->join('innerjoin', $table, $conditions);
@@ -223,6 +233,7 @@ class DAL {
 	/**
 	 * Return the next row.
 	 * @return array
+	 * @api
 	 */
 	public function next() {
 		if($this->query === null)
@@ -233,6 +244,7 @@ class DAL {
 	/**
 	 * Reset all parameters.
 	 * @return DAL  $this
+	 * @api
 	 */
 	public function reset() {
 		$this->tables = [];
@@ -253,6 +265,7 @@ class DAL {
 	 * @param  string $sql
 	 * @param  array  $params
 	 * @return Query
+	 * @api
 	 */
 	public function query($sql=null, array $params=[]) {
 		if($sql === null) {
@@ -267,6 +280,7 @@ class DAL {
 	/**
 	 * Return the first row only.
 	 * @return array
+	 * @api
 	 */
 	public function first() {
 		return $this->query()->first();
@@ -275,6 +289,7 @@ class DAL {
 	/**
 	 * Return selected rows.
 	 * @return array
+	 * @api
 	 */
 	public function get() {
 		return $this->query()->all();
@@ -285,6 +300,7 @@ class DAL {
 	 * @param  integer  $page
 	 * @param  integer  $per_page
 	 * @return DAL    $this
+	 * @api
 	 */
 	public function paginate($page, $per_page=10) {
 		$this->page = $page = $page ? $page:1;
@@ -299,6 +315,7 @@ class DAL {
 	 * Set the paginator factory.
 	 * @param \Asgard\Container\Factory $paginatorFactory
 	 * @return DAL    $this
+	 * @api
 	 */
 	public function setPaginatorFactory($paginatorFactory) {
 		$this->paginatorFactory = $paginatorFactory;
@@ -308,6 +325,7 @@ class DAL {
 	/**
 	 * Get a paginator instance.
 	 * @return \Asgard\Common\PaginatorInterface
+	 * @api
 	 */
 	public function getPaginator() {
 		if($this->page === null || $this->per_page === null)
@@ -321,6 +339,7 @@ class DAL {
 	 * Set SELECT columns.
 	 * @param  string|array $columns
 	 * @return DAL    $this
+	 * @api
 	 */
 	public function select($columns) {
 		$this->columns = [];
@@ -331,6 +350,7 @@ class DAL {
 	 * Add SELECT columns.
 	 * @param string|array $columns
 	 * @return DAL    $this
+	 * @api
 	 */
 	public function addSelect($columns) {
 		if(is_array($columns))
@@ -375,6 +395,7 @@ class DAL {
 	 * Remove a SELECT column.
 	 * @param  string $what
 	 * @return DAL    $this
+	 * @api
 	 */
 	public function removeSelect($what) {
 		foreach($this->columns as $alias=>$column) {
@@ -390,6 +411,7 @@ class DAL {
 	 * Set offset.
 	 * @param  integer $offset
 	 * @return DAL    $this
+	 * @api
 	 */
 	public function offset($offset) {
 		$this->offset = $offset;
@@ -400,6 +422,7 @@ class DAL {
 	 * Set limit.
 	 * @param  integer $limit
 	 * @return DAL    $this
+	 * @api
 	 */
 	public function limit($limit) {
 		$this->limit = $limit;
@@ -410,6 +433,7 @@ class DAL {
 	 * Set order by.
 	 * @param  string $orderBy
 	 * @return DAL    $this
+	 * @api
 	 */
 	public function orderBy($orderBy) {
 		$this->orderBy = $orderBy;
@@ -420,6 +444,7 @@ class DAL {
 	 * Set group by.
 	 * @param  string $groupBy
 	 * @return DAL    $this
+	 * @api
 	 */
 	public function groupBy($groupBy) {
 		$this->groupBy = $groupBy;
@@ -431,6 +456,7 @@ class DAL {
 	 * @param  array|string $conditions
 	 * @param  mixed $values
 	 * @return DAL    $this
+	 * @api
 	 */
 	public function where($conditions, $values=null) {
 		if($values !== null)
@@ -497,6 +523,7 @@ class DAL {
 	 * Remove a jointure.
 	 * @param  string $alias
 	 * @return DAL    $this
+	 * @api
 	 */
 	public function removeJointure($alias) {
 		unset($this->joins[$alias]);
@@ -733,7 +760,7 @@ class DAL {
 	 * @param  boolean $with_alias  Add aliases or not.
 	 * @return string
 	 */
-	public function buildTables($with_alias=true) {
+	protected function buildTables($with_alias=true) {
 		$tables = [];
 		if(!$this->tables)
 			throw new \Exception('Must set tables with method from($tables) before running the query.');
@@ -749,6 +776,7 @@ class DAL {
 	/**
 	 * Build a SELECT SQL query.
 	 * @return string
+	 * @api
 	 */
 	public function buildSQL() {
 		$params = [];
@@ -773,6 +801,7 @@ class DAL {
 	 * Build an UPDATE SQL query.
 	 * @param  array  $values
 	 * @return string
+	 * @api
 	 */
 	public function buildUpdateSQL(array $values) {
 		if(count($values) == 0)
@@ -804,6 +833,7 @@ class DAL {
 	 * Build a DELETE SQL query.
 	 * @param  array $del_tables
 	 * @return string
+	 * @api
 	 */
 	public function buildDeleteSQL(array $del_tables=[]) {
 		$params = [];
@@ -833,6 +863,7 @@ class DAL {
 	 * Build an INSERT SQL query.
 	 * @param  array  $values
 	 * @return string
+	 * @api
 	 */
 	public function buildInsertSQL(array $values) {
 		if(count($values) == 0)
@@ -861,6 +892,7 @@ class DAL {
 	 * Update rows.
 	 * @param  array  $values
 	 * @return Query
+	 * @api
 	 */
 	public function update(array $values) {
 		$sql = $this->buildUpdateSQL($values);
@@ -872,6 +904,7 @@ class DAL {
 	 * Insert rows.
 	 * @param  array  $values
 	 * @return Query
+	 * @api
 	 */
 	public function insert(array $values) {
 		$sql = $this->buildInsertSQL($values);
@@ -884,6 +917,7 @@ class DAL {
 	 * Delete rows.
 	 * @param  array $tables
 	 * @return Query
+	 * @api
 	 */
 	public function delete(array $tables=[]) {
 		$sql = $this->buildDeleteSQL($tables);
@@ -928,6 +962,7 @@ class DAL {
 	 * Count number of rows.
 	 * @param  string $group_by
 	 * @return string
+	 * @api
 	 */
 	public function count($group_by=null) {
 		return $this->_function('count', null, $group_by);
@@ -938,6 +973,7 @@ class DAL {
 	 * @param  string      $what
 	 * @param  string $group_by
 	 * @return string
+	 * @api
 	 */
 	public function min($what, $group_by=null) {
 		return $this->_function('min', $what, $group_by);
@@ -948,6 +984,7 @@ class DAL {
 	 * @param  string      $what
 	 * @param  string $group_by
 	 * @return string
+	 * @api
 	 */
 	public function max($what, $group_by=null) {
 		return $this->_function('max', $what, $group_by);
@@ -958,6 +995,7 @@ class DAL {
 	 * @param  string $what
 	 * @param  string $group_by
 	 * @return string
+	 * @api
 	 */
 	public function avg($what, $group_by=null) {
 		return $this->_function('avg', $what, $group_by);
@@ -968,6 +1006,7 @@ class DAL {
 	 * @param  string $what
 	 * @param  string $group_by
 	 * @return string
+	 * @api
 	 */
 	public function sum($what, $group_by=null) {
 		return $this->_function('sum', $what, $group_by);

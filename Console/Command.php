@@ -9,6 +9,7 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 
 /**
  * Command parent class.
+ * @api
  */
 class Command extends \Symfony\Component\Console\Command\Command {
 	/**
@@ -34,6 +35,7 @@ class Command extends \Symfony\Component\Console\Command\Command {
 
 	/**
 	 * Constructor.
+	 * @api
 	*/
 	public function __construct() {
 		parent::__construct($this->name);

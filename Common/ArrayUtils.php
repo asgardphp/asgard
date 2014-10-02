@@ -3,6 +3,7 @@ namespace Asgard\Common;
 
 /**
  * Array utils.
+ * @api
  */
 class ArrayUtils {
 	/**
@@ -11,6 +12,7 @@ class ArrayUtils {
 	 * @param  string $str_path  nested keys separated by ".".
 	 * @param  mixed  $default
 	 * @return mixed
+	 * @api
 	 */
 	public static function string_array_get($arr, $str_path, $default=null) {
 		$path = explode('.', $str_path);
@@ -22,6 +24,7 @@ class ArrayUtils {
 	 * @param  array  $arr
 	 * @param  string $str_path  nested keys separated by ".".
 	 * @param  mixed $value
+	 * @api
 	 */
 	public static function string_array_set(&$arr, $str_path, $value) {
 		$path = explode('.', $str_path);
@@ -33,6 +36,7 @@ class ArrayUtils {
 	 * @param  array  $arr
 	 * @param  string $str_path  nested keys separated by ".".
 	 * @return boolean
+	 * @api
 	 */
 	public static function string_array_isset($arr, $str_path) {
 		$path = explode('.', $str_path);
@@ -43,6 +47,7 @@ class ArrayUtils {
 	 * Unset element in array.
 	 * @param  array  $arr
 	 * @param  string $str_path  nested keys separated by ".".
+	 * @api
 	 */
 	public static function string_array_unset(&$arr, $str_path) {
 		$path = explode('.', $str_path);
@@ -54,6 +59,7 @@ class ArrayUtils {
 	 * @param  array        $arr
 	 * @param  string|array $path  list of nested keys.
 	 * @param  mixed        $value
+	 * @api
 	 */
 	public static function array_set(&$arr, $path, $value) {
 		if(!is_array($path))
@@ -70,6 +76,7 @@ class ArrayUtils {
 	 * @param  string|array $path  list of nested keys.
 	 * @param  mixed        $default
 	 * @return mixed
+	 * @api
 	 */
 	public static function array_get($arr, $path, $default=null) {
 		if(!is_array($path))
@@ -88,6 +95,7 @@ class ArrayUtils {
 	 * @param  array        $arr
 	 * @param  string|array $path  list of nested keys.
 	 * @return boolean
+	 * @api
 	 */
 	public static function array_isset($arr, $path) {
 		if(!$path)
@@ -107,6 +115,7 @@ class ArrayUtils {
 	 * Unset element in array.
 	 * @param  array        $arr
 	 * @param  string|array $path  list of nested keys.
+	 * @api
 	 */
 	public static function array_unset(&$arr, $path) {
 		if(!$path)
@@ -123,6 +132,7 @@ class ArrayUtils {
 	 * Flatten an array.
 	 * @param  array $arr
 	 * @return array
+	 * @api
 	 */
 	public static function flateArray($arr) {
 		if(!is_array($arr))
@@ -143,6 +153,7 @@ class ArrayUtils {
 	 * @param  array   $arr
 	 * @param  integer $i
 	 * @return array
+	 * @api
 	 */
 	public static function array_before($arr, $i) {
 		$res = [];
@@ -159,6 +170,7 @@ class ArrayUtils {
 	 * @param  array   $arr
 	 * @param  integer $i
 	 * @return array
+	 * @api
 	 */
 	public static function array_after($arr, $i) {
 		$res = [];

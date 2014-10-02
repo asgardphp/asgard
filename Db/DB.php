@@ -20,6 +20,7 @@ class DB implements DBInterface {
 	 * Constructor.
 	 * @param array $config database configuration
 	 * @param \PDO  $db database connection
+	 * @api
 	*/
 	public function __construct(array $config, \PDO $db=null) {
 		$this->config = $config;

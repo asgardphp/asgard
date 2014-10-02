@@ -3,6 +3,7 @@ namespace Asgard\Db;
 
 /**
  * Query objects.
+ * @api
  */
 class Query {
 	/**
@@ -39,6 +40,7 @@ class Query {
 	/**
 	 * Return the next row.
 	 * @return array
+	 * @api
 	 */
 	public function next() {
 		return $this->rsc->fetch(\PDO::FETCH_ASSOC);
@@ -47,6 +49,7 @@ class Query {
 	/**
 	 * Return the number of affected rows.
 	 * @return integer
+	 * @api
 	 */
 	public function affected() {
 		return $this->rsc->rowCount();
@@ -55,6 +58,7 @@ class Query {
 	/**
 	 * Count the results.
 	 * @return integer
+	 * @api
 	 */
 	public function count() {
 		return $this->rsc->rowCount();
@@ -63,6 +67,7 @@ class Query {
 	/**
 	 * Return the first row only.
 	 * @return array
+	 * @api
 	 */
 	public function first() {
 		return $this->rsc->fetch(\PDO::FETCH_ASSOC);
@@ -71,6 +76,7 @@ class Query {
 	/**
 	 * Return all rows at once.
 	 * @return array
+	 * @api
 	 */
 	public function all() {
 		return $this->rsc->fetchAll(\PDO::FETCH_ASSOC);

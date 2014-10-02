@@ -3,6 +3,7 @@ namespace Asgard\Common;
 
 /**
  * Random util functions.
+ * @api
  */
 class Tools {
 	/**
@@ -11,6 +12,7 @@ class Tools {
 	 * @param  integer $maxLength
 	 * @param  string  $trailing
 	 * @return string
+	 * @api
 	 */
 	public static function truncateHTML($html, $maxLength, $trailing='...') {
 		$html = trim($html);
@@ -70,6 +72,7 @@ class Tools {
 	 * @param  integer $length
 	 * @param  string  $trailing
 	 * @return string
+	 * @api
 	 */
 	public static function truncate($str, $length, $trailing='...') {
 		$length -= mb_strlen($trailing);
@@ -85,6 +88,7 @@ class Tools {
 	 * @param  integer $length
 	 * @param  string $trailing
 	 * @return string
+	 * @api
 	 */
 	public static function truncateWords($str, $length, $trailing='...') {
 		$words = explode(' ', $str);
@@ -98,6 +102,7 @@ class Tools {
 	 * @param  string $str
 	 * @param  string $charset
 	 * @return string
+	 * @api
 	 */
 	public static function removeAccents($str, $charset='utf-8') {
 		$str = htmlentities($str, ENT_NOQUOTES, $charset);
@@ -114,6 +119,7 @@ class Tools {
 	 * @param  integer $length
 	 * @param  string  $validCharacters
 	 * @return string
+	 * @api
 	 */
 	public static function randstr($length=10, $validCharacters = 'abcdefghijklmnopqrstuxyvwzABCDEFGHIJKLMNOPQRSTUXYVWZ0123456789') {
 		$validCharNumber = strlen($validCharacters);
@@ -131,6 +137,7 @@ class Tools {
 	 * Load a file and return the class contained in the file.
 	 * @param  string $file
 	 * @return string
+	 * @api
 	 */
 	public static function loadClassFile($file) {
 		$before = array_merge(get_declared_classes(), get_declared_interfaces());

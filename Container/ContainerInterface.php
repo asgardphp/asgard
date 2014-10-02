@@ -3,6 +3,7 @@ namespace Asgard\Container;
 
 /**
  * Services container.
+ * @api
  */
 interface ContainerInterface extends \ArrayAccess {
 	/**
@@ -11,6 +12,7 @@ interface ContainerInterface extends \ArrayAccess {
 	 * @param  string    $parent
 	 * @param  boolean   $force
 	 * @return ContainerInterface $this
+	 * @api
 	 */
 	public function setParentClass($name, $parent, $force=false);
 
@@ -18,18 +20,21 @@ interface ContainerInterface extends \ArrayAccess {
 	 * Return the parent class.
 	 * @param  string $name
 	 * @return string
+	 * @api
 	 */
 	public function getParentClass($name);
 
 	/**
 	 * Get the registry.
 	 * @return array
+	 * @api
 	 */
 	public function getRegistry();
 
 	/**
 	 * Get the instances.
 	 * @return array
+	 * @api
 	 */
 	public function getInstances();
 
@@ -37,6 +42,7 @@ interface ContainerInterface extends \ArrayAccess {
 	 * Set autofacade to true or false.
 	 * @param  boolean            $facade
 	 * @return ContainerInterface $this
+	 * @api
 	 */
 	public function setAutofacade($facade);
 
@@ -44,6 +50,7 @@ interface ContainerInterface extends \ArrayAccess {
 	 * Get a service.
 	 * @param  string $name
 	 * @return mixed
+	 * @api
 	 */
 	public function get($name);
 
@@ -52,6 +59,7 @@ interface ContainerInterface extends \ArrayAccess {
 	 * @param  string    $name
 	 * @param  mixed     $value
 	 * @return ContainerInterface $this
+	 * @api
 	 */
 	public function set($name, $value);
 
@@ -59,12 +67,14 @@ interface ContainerInterface extends \ArrayAccess {
 	 * Check if has a service.
 	 * @param  string  $name
 	 * @return boolean       true if service exists.
+	 * @api
 	 */
 	public function has($name);
 
 	/**
 	 * Remove a service.
 	 * @param  string $name
+	 * @api
 	 */
 	public function remove($name);
 
@@ -72,6 +82,7 @@ interface ContainerInterface extends \ArrayAccess {
 	 * Register a service.
 	 * @param  string $name
 	 * @param  callable $callback
+	 * @api
 	 */
 	public function register($name, $callback);
 
@@ -81,6 +92,7 @@ interface ContainerInterface extends \ArrayAccess {
 	 * @param  array  $params
 	 * @param  mixed $default
 	 * @return mixed
+	 * @api
 	 */
 	public function make($name, array $params=[], $default=null);
 
@@ -88,6 +100,7 @@ interface ContainerInterface extends \ArrayAccess {
 	 * Check if a service was registered.
 	 * @param  string $name
 	 * @return boolean      true if registered
+	 * @api
 	 */
 	public function registered($name);
 
@@ -95,6 +108,7 @@ interface ContainerInterface extends \ArrayAccess {
 	 * Create a factory.
 	 * @param  string|callable $what
 	 * @return Factory
+	 * @api
 	 */
 	public function createFactory($what);
 

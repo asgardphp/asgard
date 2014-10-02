@@ -3,6 +3,7 @@ namespace Asgard\Config;
 
 /**
  * Configuration bag.
+ * @api
  */
 interface ConfigInterface extends \Asgard\Common\BagInterface {
 	/**
@@ -10,6 +11,7 @@ interface ConfigInterface extends \Asgard\Common\BagInterface {
 	 * @param  string          $dir
 	 * @param  string          $env
 	 * @return ConfigInterface $this
+	 * @api
 	 */
 	public function loadDir($dir, $env=null);
 
@@ -17,6 +19,7 @@ interface ConfigInterface extends \Asgard\Common\BagInterface {
 	 * Load a file.
 	 * @param  string          $filename
 	 * @return ConfigInterface $this
+	 * @api
 	 */
 	public function loadFile($filename);
 }

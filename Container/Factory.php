@@ -3,6 +3,7 @@ namespace Asgard\Container;
 
 /**
  * Provides an API to generate instances.
+ * @api
  */
 class Factory {
 	/**
@@ -20,6 +21,7 @@ class Factory {
 	 * Constructor.
 	 * @param callable $callback
 	 * @param ContainerInterface $container
+	 * @api
 	 */
 	public function __construct($callback, ContainerInterface $container=null) {
 		$this->callback = $callback;
@@ -30,6 +32,7 @@ class Factory {
 	 * Create an instance.
 	 * @param  array $params
 	 * @return mixed
+	 * @api
 	 */
 	public function create(array $params=[]) {
 		$callback = $this->callback;

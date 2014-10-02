@@ -6,6 +6,7 @@ use Symfony\Component\Console\Input\InputOption;
 /**
  * The Asgard Console Application
  * @author Michel Hognerud <michel@hognerud.net>
+ * @api
 */
 class Application extends \Symfony\Component\Console\Application {
 	use \Asgard\Container\ContainerAwareTrait;
@@ -15,6 +16,7 @@ class Application extends \Symfony\Component\Console\Application {
 	 * @param string                      $name
 	 * @param string                      $version
 	 * @param \Asgard\Container\ContainerInterface $container The application container
+	 * @api
 	*/
 	public function __construct($name, $version=null, $container=null) {
 		$this->container = $container;

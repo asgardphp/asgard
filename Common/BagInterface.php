@@ -3,23 +3,27 @@ namespace Asgard\Common;
 
 /**
  * Bag to manipulate a set of data.
+ * @api
  */
 interface BagInterface extends \ArrayAccess {
 	/**
 	 * Return all data.
 	 * @return array
+	 * @api
 	 */
 	public function all();
 
 	/**
 	 * Clear data.
 	 * @return BagInterface  $this
+	 * @api
 	 */
 	public function clear();
 
 	/**
 	 * Return number of elements.
 	 * @return integer
+	 * @api
 	 */
 	public function size();
 
@@ -27,6 +31,7 @@ interface BagInterface extends \ArrayAccess {
 	 * Set all elements.
 	 * @param array $data
 	 * @return BagInterface  $this
+	 * @api
 	 */
 	public function setAll($data);
 
@@ -35,6 +40,7 @@ interface BagInterface extends \ArrayAccess {
 	 * @param string|array $path    nested keys separated by ".".
 	 * @param mixed        $value
 	 * @return BagInterface         $this
+	 * @api
 	 */
 	public function set($path, $value=null);
 
@@ -43,6 +49,7 @@ interface BagInterface extends \ArrayAccess {
 	 * @param string $path    nested keys separated by ".".
 	 * @param mixed  $default
 	 * @return mixed
+	 * @api
 	 */
 	public function get($path, $default=null);
 
@@ -50,6 +57,7 @@ interface BagInterface extends \ArrayAccess {
 	 * Check if has element.
 	 * @param string $path    nested keys separated by ".".
 	 * @return boolean
+	 * @api
 	 */
 	public function has($path);
 
@@ -57,6 +65,7 @@ interface BagInterface extends \ArrayAccess {
 	 * Delete an element.
 	 * @param string $path    nested keys separated by ".".
 	 * @return BagInterface  $this
+	 * @api
 	 */
 	public function delete($path);
 }
