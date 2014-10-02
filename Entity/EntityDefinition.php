@@ -3,6 +3,7 @@ namespace Asgard\Entity;
 
 /**
  * Entity definition.
+ * @property-write array $properties
  */
 class EntityDefinition {
 	use \Asgard\Hook\HookableTrait;
