@@ -182,7 +182,7 @@ class ORM implements ORMInterface {
 	 *
 	 * @param \Asgard\Entity\Entity $entity
 	 * @param array                 $data
-	 * @param DBInterface\1$string           $locale Only necessary if the data concerns a specific locale.
+	 * @param string           $locale Only necessary if the data concerns a specific locale.
 	 *
 	 * @return \Asgard\Entity\Entity
 	*/

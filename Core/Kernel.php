@@ -162,7 +162,7 @@ class Kernel implements \ArrayAccess {
 
 	/**
 	 * Get the cache dependency.
-	 * @param  DBInterface\1$string $cache
+	 * @param  string $cache
 	 * @return \Asgard\Cache\Cache
 	 */
 	protected function getCache($cache) {
@@ -172,7 +172,7 @@ class Kernel implements \ArrayAccess {
 
 	/**
 	 * Register the bundle's services.
-	 * @param  DBInterface\1$string $cache
+	 * @param  string $cache
 	 * @return \Asgard\Container\Container
 	 */
 	protected function buildContainer($cache=null) {
@@ -221,7 +221,7 @@ class Kernel implements \ArrayAccess {
 
 	/**
 	 * Get the hooks annotations reader dependency.
-	 * @param  DBInterface\1$string $cache
+	 * @param  string $cache
 	 * @return \Asgard\Hook\AnnotationsReader
 	 */
 	protected function getHooksAnnotationsReader($cache) {
@@ -234,7 +234,7 @@ class Kernel implements \ArrayAccess {
 
 	/**
 	 * Get the controllers annotations reader dependency.
-	 * @param  DBInterface\1$string $cache
+	 * @param  string $cache
 	 * @return \Asgard\Http\AnnotationsReader
 	 */
 	protected function getControllersAnnotationsReader($cache) {
@@ -247,7 +247,7 @@ class Kernel implements \ArrayAccess {
 
 	/**
 	 * Actually fetch all the budles.
-	 * @param  DBInterface\1$string $cache
+	 * @param  string $cache
 	 * @return array
 	 */
 	protected function doGetBundles($cache=null) {

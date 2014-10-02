@@ -79,7 +79,7 @@ class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\Pers
 	 * @param  string  $name      static call name
 	 * @param  array   $args
 	 * @param  boolean $processed
-	 * @return DBInterface\1$\Asgard\Orm\ORM
+	 * @return \Asgard\Orm\ORM
 	 */
 	public function staticCatchAll($name, array $args, &$processed) {
 		#Article::where() / ::limit() / ::orderBy() / ..
@@ -95,7 +95,7 @@ class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\Pers
 	 * @param  string                $name      static call name
 	 * @param  array                 $args
 	 * @param  boolean               $processed
-	 * @return DBInterface\1$\Asgard\Entity\Entity|\Asgard\Orm\CollectionORM
+	 * @return \Asgard\Entity\Entity|CollectionORM
 	 */
 	public function callCatchAll($entity, $name, $args, &$processed) {
 		#$article->authors()
@@ -111,7 +111,7 @@ class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\Pers
 	 * Article::loadBy('title', 'hello world')
 	 * @param  string $property property name
 	 * @param  mixed  $value
-	 * @return DBInterface\1$\Asgard\Entity\Entity
+	 * @return \Asgard\Entity\Entity
 	 */
 	public function static_loadBy($property, $value) {
 		return $this->getDataMapper()->orm($this->entityClass)->where([$property => $value])->first();
@@ -146,7 +146,7 @@ class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\Pers
 	/**
 	 * Article::load(2)
 	 * @param  integer $id entity id
-	 * @return DBInterface\1$\Asgard\Entity\Entity
+	 * @return \Asgard\Entity\Entity
 	 */
 	public function static_load($id) {
 		return $this->getDataMapper()->load($this->entityClass, $id);

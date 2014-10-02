@@ -165,7 +165,7 @@ interface ORMInterface {
 	 * Add new conditions to the query.
 	 *
 	 * @param array|string $conditions Array of conditions or name of a property.
-	 * @param DBInterface\1$string  $val Value of the property.
+	 * @param string  $val Value of the property.
 	 *
 	 * @return \Asgard\Orm\ORMInterface $this
 	*/

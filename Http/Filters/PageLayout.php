@@ -7,19 +7,19 @@ namespace Asgard\Http\Filters;
 class PageLayout extends \Asgard\Http\Filter {
 	/**
 	 * Layout callback or template.
-	 * @var DBInterface\1$callable|string
+	 * @var callable|string
 	 */
 	protected $layout;
 	/**
 	 * HTML layout callback or template.
-	 * @var DBInterface\1$callable|string
+	 * @var callable|string
 	 */
 	protected $htmlLayout;
 
 	/**
 	 * Constructor.
-	 * @param DBInterface\1$callable|string $layout
-	 * @param DBInterface\1$callable|string $htmlLayout
+	 * @param callable|string $layout
+	 * @param callable|string $htmlLayout
 	 */
 	public function __construct($layout=null, $htmlLayout=null) {
 		$this->layout = $layout;
