@@ -30,7 +30,7 @@ interface DataMapperInterface {
 	/**
 	 * Destroy all entities of a clas.
 	 * @param  string     $entityClass 
-	 * @return DataMapperInterface $this
+	 * @return integer
 	 */
 	public function destroyAll($entityClass);
 	
@@ -45,7 +45,7 @@ interface DataMapperInterface {
 	/**
 	 * Destroy an entity.
 	 * @param  \Asgard\Entity\Entity $entity
-	 * @return true for success, otherwise false
+	 * @return boolean true for success, otherwise false
 	 */
 	public function destroy(\Asgard\Entity\Entity $entity);
 

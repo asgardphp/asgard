@@ -93,19 +93,18 @@ class DataMapper implements DataMapperInterface {
 	 * {@inheritDoc}
 	 */
 	public function destroyAll($entityClass) {
+		$count = 0;
 		foreach($this->all($entityClass) as $entity)
-			$this->destroy($entity);
-		return $this;
+			$count += $this->destroy($entity) ? 1:0;
+		return $count;
 	}
 	
 	/**
 	 * {@inheritDoc}
 	 */
 	public function destroyOne($entityClass, $id) {
-		if($entity = $this->load($entityClass, $id)) {
-			$this->destroy($entity);
-			return true;
-		}
+		if($entity = $this->load($entityClass, $id))
+			return $this->destroy($entity);
 		return false;
 	}
 
@@ -148,7 +147,7 @@ class DataMapper implements DataMapperInterface {
 
 			$entity->id = null;
 
-			return $r;
+			return $r > 0;
 		});
 	}
 
