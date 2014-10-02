@@ -15,4 +15,8 @@ before_script:
   - php composer.phar install --prefer-source --no-interaction --dev
   - mysql -e 'create database asgard;'
 
-script: phpunit
+after_script:
+  - wget https://scrutinizer-ci.com/ocular.phar
+  - php ocular.phar code-coverage:upload --format=php-clover coverage.clover
+
+script: phpunit --coverage-clover=coverage.clover
