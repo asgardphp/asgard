@@ -104,7 +104,7 @@ class Resolver implements ResolverInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public static function getRegexFromRoute($route, $requirements) {
+	public static function getRegexFromRoute($route, $requirements=null) {
 		preg_match_all('/:([a-zA-Z0-9_]+)/', $route, $symbols);
 		$regex = preg_quote($route, '/');
 
