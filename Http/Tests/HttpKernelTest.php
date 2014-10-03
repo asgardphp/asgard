@@ -9,7 +9,7 @@ class HttpKernelTest extends \PHPUnit_Framework_TestCase {
 		$kernel = new HttpKernel;
 		$kernel->setHooksManager(new \Asgard\Hook\HooksManager);
 
-		$resolver = $this->getMock('Asgard\Http\Resolver', ['getRoute'], [new \Asgard\Cache\Cache(new \Asgard\Cache\NullCache)]);
+		$resolver = $this->getMock('Asgard\Http\Resolver', ['getRoute'], [new \Asgard\Cache\Cache]);
 		$resolver->expects($this->once())->method('getRoute')->will($this->returnValue(new \Asgard\Http\Route('', 'Asgard\Http\Tests\Fixtures\HomeController', 'home')));
 		$kernel->setResolver($resolver);
 
@@ -20,7 +20,7 @@ class HttpKernelTest extends \PHPUnit_Framework_TestCase {
 		$kernel = new HttpKernel;
 		$kernel->setHooksManager(new \Asgard\Hook\HooksManager);
 
-		$resolver = $this->getMock('Asgard\Http\Resolver', ['getRoute'], [new \Asgard\Cache\Cache(new \Asgard\Cache\NullCache)]);
+		$resolver = $this->getMock('Asgard\Http\Resolver', ['getRoute'], [new \Asgard\Cache\Cache]);
 		$resolver->expects($this->once())->method('getRoute')->will($this->returnValue(new \Asgard\Http\Route('', 'Asgard\Http\LambdaController', function($request) { return '<h1>Asgard</h1><p>Hello!</p>'; })));
 		$kernel->setResolver($resolver);
 
@@ -28,7 +28,7 @@ class HttpKernelTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testCatching() {
-		$resolver = $this->getMock('Asgard\Http\Resolver', ['getRoute'], [new \Asgard\Cache\Cache(new \Asgard\Cache\NullCache)]);
+		$resolver = $this->getMock('Asgard\Http\Resolver', ['getRoute'], [new \Asgard\Cache\Cache]);
 		$resolver->expects($this->once())->method('getRoute')->will($this->returnValue(new \Asgard\Http\Route('', 'Asgard\Http\Tests\Fixtures\HomeController', 'error')));
 
 		$kernel = new HttpKernel;
@@ -42,7 +42,7 @@ class HttpKernelTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testNoInformation() {
-		$resolver = $this->getMock('Asgard\Http\Resolver', ['getRoute'], [new \Asgard\Cache\Cache(new \Asgard\Cache\NullCache)]);
+		$resolver = $this->getMock('Asgard\Http\Resolver', ['getRoute'], [new \Asgard\Cache\Cache]);
 		$resolver->expects($this->once())->method('getRoute')->will($this->returnValue(new \Asgard\Http\Route('', 'Asgard\Http\Tests\Fixtures\HomeController', 'error')));
 
 		$kernel = new HttpKernel;
@@ -56,7 +56,7 @@ class HttpKernelTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testHookException() {
-		$resolver = $this->getMock('Asgard\Http\Resolver', ['getRoute'], [new \Asgard\Cache\Cache(new \Asgard\Cache\NullCache)]);
+		$resolver = $this->getMock('Asgard\Http\Resolver', ['getRoute'], [new \Asgard\Cache\Cache]);
 		$resolver->expects($this->once())->method('getRoute')->will($this->returnValue(new \Asgard\Http\Route('', 'Asgard\Http\Tests\Fixtures\HomeController', 'exception')));
 
 		$hooks = new \Asgard\Hook\HooksManager;

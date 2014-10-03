@@ -3,7 +3,7 @@ namespace Asgard\Http\Tests;
 
 class BrowserTest extends \PHPUnit_Framework_TestCase {
 	public function test1() {
-		$cache = new \Asgard\Cache\Cache(new \Asgard\Cache\NullCache);
+		$cache = new \Asgard\Cache\Cache;
 		$resolver = new \Asgard\Http\Resolver($cache);
 		$resolver->addRoute(new \Asgard\Http\Route('', 'Asgard\Http\Tests\Fixtures\HomeController', 'home'));
 		$httpKernel = new \Asgard\Http\HttpKernel;

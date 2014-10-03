@@ -7,7 +7,7 @@ use \Asgard\Http\Route;
 
 class ResolverTest extends \PHPUnit_Framework_TestCase {
 	public function testGetRoute() {
-		$cache = new \Asgard\Cache\Cache(new \Asgard\Cache\NullCache);
+		$cache = new \Asgard\Cache\Cache;
 		$resolver = new Resolver($cache);
 		$route = new Route('test/:id/plpl', 'controller', 'action');
 
@@ -22,7 +22,7 @@ class ResolverTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testSortRoutes() {
-		$cache = new \Asgard\Cache\Cache(new \Asgard\Cache\NullCache);
+		$cache = new \Asgard\Cache\Cache;
 		$resolver = new Resolver($cache);
 
 		$resolver->addRoute(new Route('test', '', ''));
@@ -41,7 +41,7 @@ class ResolverTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testParameter() {
-		$cache = new \Asgard\Cache\Cache(new \Asgard\Cache\NullCache);
+		$cache = new \Asgard\Cache\Cache;
 		$resolver = new Resolver($cache);
 		$route = new Route('test/:id/plpl', 'callback', 'foo', [1,2,3]);
 
@@ -54,7 +54,7 @@ class ResolverTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testBuildRoute() {
-		$cache = new \Asgard\Cache\Cache(new \Asgard\Cache\NullCache);
+		$cache = new \Asgard\Cache\Cache;
 		$resolver = new Resolver($cache);
 		$this->assertEquals('test/1/plpl', $resolver->buildRoute('test/:id/plpl', ['id'=>1]));
 	}

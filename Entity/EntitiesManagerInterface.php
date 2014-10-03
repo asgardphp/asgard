@@ -32,13 +32,13 @@ interface EntitiesManagerInterface {
 
 	/**
 	 * Set the cache dependency.
-	 * @param \Asgard\Cache\Cache $cache
+	 * @param \Asgard\Cache\CacheInterface $cache
 	 */
-	public function setCache(\Asgard\Cache\Cache $cache);
+	public function setCache(\Asgard\Cache\CacheInterface $cache);
 
 	/**
 	 * Get the cache dependency.
-	 * @return \Asgard\Cache\Cache
+	 * @return \Asgard\Cache\CacheInterface
 	 */
 	public function getCache();
 

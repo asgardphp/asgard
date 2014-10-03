@@ -18,7 +18,7 @@ class Resolver implements ResolverInterface {
 	protected $httpKernel;
 	/**
 	 * Cache instance.
-	 * @var \Asgard\Cache\Cache
+	 * @var \Asgard\Cache\CacheInterface
 	 */
 	protected $cache;
 	/**
@@ -29,11 +29,11 @@ class Resolver implements ResolverInterface {
 
 	/**
 	 * Constructor.
-	 * @param \Asgard\Cache\Cache $cache
+	 * @param \Asgard\Cache\CacheInterface $cache
 	 */
-	public function __construct(\Asgard\Cache\Cache $cache=null) {
+	public function __construct(\Asgard\Cache\CacheInterface $cache=null) {
 		if(!$cache)
-			$cache = new \Asgard\Cache\Cache(new \Asgard\Cache\NullCache);
+			$cache = new \Asgard\Cache\Cache;
 		$this->cache = $cache;
 	}
 

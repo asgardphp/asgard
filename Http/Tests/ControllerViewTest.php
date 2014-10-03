@@ -18,7 +18,7 @@ class ControllerViewTest extends \PHPUnit_Framework_TestCase {
 			return $engine;
 		}));
 
-		$resolver = $this->getMock('Asgard\Http\Resolver', ['getRoute'], [new \Asgard\Cache\Cache(new \Asgard\Cache\NullCache)]);
+		$resolver = $this->getMock('Asgard\Http\Resolver', ['getRoute'], [new \Asgard\Cache\Cache]);
 		$resolver->expects($this->once())->method('getRoute')->will($this->returnValue(new Route('', 'Asgard\Http\Tests\Fixtures\TemplateController', 'home')));
 		$kernel->setResolver($resolver);
 
@@ -34,7 +34,7 @@ class ControllerViewTest extends \PHPUnit_Framework_TestCase {
 			return $engine;
 		}));
 
-		$resolver = $this->getMock('Asgard\Http\Resolver', ['getRoute'], [new \Asgard\Cache\Cache(new \Asgard\Cache\NullCache)]);
+		$resolver = $this->getMock('Asgard\Http\Resolver', ['getRoute'], [new \Asgard\Cache\Cache]);
 		$resolver->expects($this->once())->method('getRoute')->will($this->returnValue(new Route('', 'Asgard\Http\Tests\Fixtures\TemplateController', 'home2')));
 		$kernel->setResolver($resolver);
 

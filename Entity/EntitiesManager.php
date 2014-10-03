@@ -20,7 +20,7 @@ class EntitiesManager implements EntitiesManagerInterface {
 	protected $definitions = [];
 	/**
 	 * Cache
-	 * @var \Asgard\Cache\Cache
+	 * @var \Asgard\Cache\CacheInterface
 	 */
 	protected $cache;
 	/**
@@ -86,7 +86,7 @@ class EntitiesManager implements EntitiesManagerInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function setCache(\Asgard\Cache\Cache $cache) {
+	public function setCache(\Asgard\Cache\CacheInterface $cache) {
 		$this->cache = $cache;
 		return $this;
 	}
@@ -96,7 +96,7 @@ class EntitiesManager implements EntitiesManagerInterface {
 	 */
 	public function getCache() {
 		if(!$this->cache)
-			$this->cache = new \Asgard\Cache\Cache(new \Asgard\Cache\NullCache);
+			$this->cache = new \Asgard\Cache\Cache;
 		return $this->cache;
 	}
 

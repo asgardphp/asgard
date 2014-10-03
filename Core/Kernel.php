@@ -164,7 +164,7 @@ class Kernel implements \ArrayAccess {
 	/**
 	 * Get the cache dependency.
 	 * @param  string $cache
-	 * @return \Asgard\Cache\Cache
+	 * @return \Asgard\Cache\CacheInterface
 	 */
 	protected function getCache($cache) {
 		$reflector = new \ReflectionClass($cache);

@@ -6,7 +6,7 @@ namespace Asgard\Cache;
  * @author Michel Hognerud <michel@hognerud.com>
  * @api
  */
-class Cache implements \Doctrine\Common\Cache\Cache, \ArrayAccess {
+class Cache implements CacheInterface {
 	/**
 	 * Cache driver.
 	 * @var \Doctrine\Common\Cache\Cache
@@ -18,7 +18,7 @@ class Cache implements \Doctrine\Common\Cache\Cache, \ArrayAccess {
 	 * @param \Doctrine\Common\Cache\Cache $driver Doctrine cache object
 	 * @api
 	 */
-	public function __construct($driver=null) {
+	public function __construct(\Doctrine\Common\Cache\Cache $driver=null) {
 		if($driver == null)
 			$driver = new NullCache;
 		$this->driver = $driver;
@@ -29,14 +29,14 @@ class Cache implements \Doctrine\Common\Cache\Cache, \ArrayAccess {
 	 * @param \Doctrine\Common\Cache\Cache $driver Doctrine cache object
 	 * @api
 	 */
-	public function setDriver($driver) {
+	public function setDriver(\Doctrine\Common\Cache\Cache $driver) {
 		$this->driver = $driver;
 	}
 
 	/**
 	 * Fetch a value.
 	 * @param  string  $id
-	 * @param  mixed  $default
+	 * @param  mixed   $default
 	 * @return mixed
 	 * @api
 	 */
