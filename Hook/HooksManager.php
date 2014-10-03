@@ -19,7 +19,7 @@ class HooksManager implements HooksManagerInterface {
 	 * Hooks registry.
 	 * @var array
 	 */
-	public $registry = [];
+	protected $registry = [];
 
 	/**
 	 * Return a static instance.
@@ -45,12 +45,12 @@ class HooksManager implements HooksManagerInterface {
 	public function trigger($name, array $args=[], $cb=null, &$chain=null) {
 		$chain = new HookChain($this->container);
 
-		$chain->calls = array_merge(
+		$chain->setCalls(array_merge(
 			$this->get($name.'.before'),
 			$this->get($name.'.on'),
 			$cb !== null ? [$cb]:[],
 			$this->get($name.'.after')
-		);
+		));
 
 		return $chain->run($args);
 	}

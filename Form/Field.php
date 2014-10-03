@@ -25,7 +25,7 @@ abstract class Field {
 	 * Name.
 	 * @var string
 	 */
-	public    $name;
+	protected $name;
 	/**
 	 * Value.
 	 * @var mixed
@@ -51,6 +51,14 @@ abstract class Field {
 	}
 
 	/**
+	 * Return the name.
+	 * @return string
+	 */
+	public function getName() {
+		return $this->name;
+	}
+
+	/**
 	 * Set field options.
 	 * @param array $options
 	 */
@@ -64,6 +72,12 @@ abstract class Field {
 			$this->widget = $this->options['widget'];
 
 		return $this;
+	}
+
+	public function getOption($name) {
+		if(!isset($this->options[$name]))
+			return;
+		return $this->options[$name];
 	}
 
 	/**
@@ -240,6 +254,14 @@ abstract class Field {
 		}
 		else
 			return $this->name;
+	}
+
+	/**
+	 * Get the field short name.
+	 * @return string
+	 */
+	public function shortName() {
+		return $this->name;
 	}
 
 	/**

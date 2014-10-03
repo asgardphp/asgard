@@ -293,9 +293,9 @@ class Group implements GroupInterface {
 
 		foreach($this->fields as $field) {
 			if($field instanceof Field)
-				$res[$field->name] = $field->value();
+				$res[$field->shortName()] = $field->value();
 			elseif($field instanceof self)
-				$res[$field->name] = $field->data();
+				$res[$field->name()] = $field->data();
 		}
 
 		return $res;

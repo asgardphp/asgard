@@ -329,22 +329,16 @@ class EntityDefinition {
 			});
 		}
 
-		if(is_object($property)) {
-			$property->setDefinition($this);
-			$property->setName($name);
+		$property->setDefinition($this);
+		$property->setName($name);
 
-			if($property->getPosition() === null)
-				$property->setPosition(count($this->properties)+1);
-			$this->properties[$name] = $property;
+		if($property->getPosition() === null)
+			$property->setPosition(count($this->properties)+1);
+		$this->properties[$name] = $property;
 
-			uasort($this->properties, function($a, $b) {
-				if(!is_object($a) || $a->getPosition() === null)
-					return 1;
-				if(!is_object($b) || $b->getPosition() === null)
-					return -1;
-				return $a->getPosition() > $b->getPosition();
-			});
-		}
+		uasort($this->properties, function($a, $b) {
+			return $a->getPosition() > $b->getPosition();
+		});
 	}
 
 	/**

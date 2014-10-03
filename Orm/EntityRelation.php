@@ -30,7 +30,7 @@ class EntityRelation {
 	 * Relation name.
 	 * @var string
 	 */
-	public $name;
+	protected $name;
 	/**
 	 * Parameters.
 	 * @var array
@@ -51,6 +51,14 @@ class EntityRelation {
 		$this->dataMapper = $dataMapper;
 		$this->params = $params;
 		$this->params['name'] = $this->name = $name;
+	}
+
+	/**
+	 * Return the name.
+	 * @return string.
+	 */
+	public function getName() {
+		return $this->name;
 	}
 
 	/**

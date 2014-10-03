@@ -11,7 +11,7 @@ class DAL {
 	 * Database instance.
 	 * @var DBInterface
 	 */
-	public $db;
+	protected $db;
 	/**
 	 * Paginator factory.
 	 * @var \Asgard\Container\Factory
@@ -21,70 +21,67 @@ class DAL {
 	 * Tables to access.
 	 * @var array
 	 */
-	public $tables  = [];
+	protected $tables  = [];
 	/**
 	 * Columns to access.
 	 * @var array
 	 */
-	public $columns = [];
+	protected $columns = [];
 	/**
 	 * Where conditions.
 	 * @var array
 	 */
-	public $where   = [];
+	protected $where   = [];
 	/**
 	 * Jointures.
 	 * @var array
 	 */
-	public $joins   = [];
+	protected $joins   = [];
 	/**
 	 * Parameters.
 	 * @var array
 	 */
-	public $params  = [];
+	protected $params  = [];
 	/**
 	 * Offset.
 	 * @var integer
 	 */
-	public $offset;
+	protected $offset;
 	/**
 	 * Limit.
 	 * @var integer
 	 */
-	public $limit;
+	protected $limit;
 	/**
 	 * Order by.
 	 * @var string
 	 */
-	public $orderBy;
+	protected $orderBy;
 	/**
 	 * Group by.
 	 * @var string
 	 */
-	public $groupBy;
+	protected $groupBy;
 	/**
 	 * Into table.
 	 * @var string
 	 */
-	public $into;
+	protected $into;
 	/**
 	 * Page number.
 	 * @var integer
 	 */
-	public $page;
+	protected $page;
 	/**
 	 * Number of rows per page.
 	 * @var integer
 	 */
-	public $per_page;
+	protected $per_page;
 	/**
 	 * Query instance.
 	 * @var Query
 	 */
 	protected $query;
-	/**
-	 *
-	 */
 
 	/**
 	 * Constructor.
@@ -97,12 +94,22 @@ class DAL {
 		$this->addFrom($tables);
 	}
 
-    /**
-     * Return the DAL parameters.
-     * @return array
+	/**
+	 * Return a raw SQL object.
+	 * @param  string $sql
+	 * @return Raw
 	 * @api
-     */
-    public function getParameters() {
+	 */
+	public static function raw($sql) {
+		return new Raw($sql);
+	}
+
+	/**
+	 * Return the DAL parameters.
+	 * @return array
+	 * @api
+	 */
+	public function getParameters() {
 		return $this->params;
 	}
 
@@ -497,10 +504,14 @@ class DAL {
 					$string_conditions[] = $this->replace($value);
 				else {
 					$res = $this->replace($key);
-					if(static::isIdentifier($key))
-						$res .= '=?';
+					if($value instanceof Raw)
+						$res .= '='.$value;
+					else {
+						if(static::isIdentifier($key))
+							$res .= '=?';
+						$pdoparams[] = $value;
+					}
 					$string_conditions[] = $res;
-					$pdoparams[] = $value;
 				}
 			}
 			else {
@@ -817,10 +828,15 @@ class DAL {
 		$params = array_merge($params, $joinparams);
 
 		$set = [];
-		foreach($values as $k=>$v)
-			$set[] = $this->replace($k).'=?';
+		foreach($values as $k=>$v) {
+			if($v instanceof Raw)
+				$set[] = $this->replace($k).'='.$v;
+			else {
+				$params[] = $v;
+				$set[] = $this->replace($k).'=?';
+			}
+		}
 		$str = ' SET '.implode(', ', $set);
-		$params = array_merge($params, array_values($values));
 
 		list($where, $whereparams) = $this->buildWhere();
 		$params = array_merge($params, $whereparams);
@@ -880,10 +896,16 @@ class DAL {
 		$into = $this->identifierQuotes($into);
 
 		$cols = [];
-		foreach($values as $k=>$v)
+		foreach($values as $k=>&$v) {
 			$cols[] = $this->replace($k);
-		$str = ' ('.implode(', ', $cols).') VALUES ('.implode(', ', array_fill(0, count($values), '?')).')';
-		$params = array_merge($params, array_values($values));
+			if($v instanceof Raw)
+				$v = (string)$v;
+			else {
+				$params[] = $v;
+				$v = '?';
+			}
+		}
+		$str = ' ('.implode(', ', $cols).') VALUES ('.implode(', ', $values).')';
 
 		$this->params = $params;
 		return 'INSERT INTO '.$into.$str;

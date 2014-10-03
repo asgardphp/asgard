@@ -15,7 +15,7 @@ abstract class Widget {
 	 * Field
 	 * @var Field|Group
 	 */
-	public $field;
+	protected $field;
 	/**
 	 * Name.
 	 * @var string

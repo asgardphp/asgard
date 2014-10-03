@@ -10,22 +10,22 @@ class URL implements URLInterface {
 	 * Request instance.
 	 * @var Request
 	 */
-	public $request;
+	protected $request;
 	/**
 	 * Host address.
 	 * @var string
 	 */
-	public $host;
+	protected $host;
 	/**
 	 * Root path.
 	 * @var string
 	 */
-	public $root;
+	protected $root;
 	/**
 	 * Url.
 	 * @var string
 	 */
-	public $url;
+	protected $url;
 
 	/**
 	 * Constructor.

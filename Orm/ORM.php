@@ -134,7 +134,7 @@ class ORM implements ORMInterface {
 		}
 		$this->join($relation);
 
-		$this->where([$relation->name.'.id' => $entity->id]);
+		$this->where([$relation->getName().'.id' => $entity->id]);
 
 		return $this;
 	}
@@ -310,7 +310,7 @@ class ORM implements ORMInterface {
 						$this->jointure($dal, $relation, $alias, $table);
 						if(!is_array($recJoins))
 							$recJoins = [$recJoins];
-						$this->recursiveJointures($dal, $recJoins, $relation->getTargetDefinition(), $relation->name);
+						$this->recursiveJointures($dal, $recJoins, $relation->getTargetDefinition(), $relation->getName());
 					}
 				}
 			}
@@ -334,7 +334,7 @@ class ORM implements ORMInterface {
 	 * @param string         $ref_table The table from which to performs the jointure.
 	*/
 	protected function jointure(\Asgard\Db\DAL $dal, $relation, $alias, $ref_table) {
-		$relationName = $relation->name;
+		$relationName = $relation->getName();
 		$relationEntityDefinition = $relation->getTargetDefinition();
 		if($alias === null)
 			$alias = $relationName;

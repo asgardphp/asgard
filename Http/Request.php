@@ -65,7 +65,7 @@ class Request implements \ArrayAccess {
 	 * Request parameters.
 	 * @var array
 	 */
-	public $params = [
+	protected $params = [
 		'format'	=>	'html',
 	];
 

@@ -441,7 +441,7 @@ class DataMapper implements DataMapperInterface {
 			$relations = [];
 			foreach($definition->properties() as $name=>$prop) {
 				if($prop->get('type') == 'entity')
-					$relations[$name] = new EntityRelation($definition, $this, $name, $prop->params);
+					$relations[$name] = new EntityRelation($definition, $this, $name, $prop->getParams());
 			}
 			$definition->set('relations', $relations);
 			return $relations;

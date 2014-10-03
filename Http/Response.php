@@ -15,17 +15,17 @@ class Response {
 	 * Response content.
 	 * @var string
 	 */
-	public $content;
+	protected $content;
 	/**
 	 * Response HTTP code.
 	 * @var integer
 	 */
-	public $code = 200;
+	protected $code = 200;
 	/**
 	 * Response headers.
 	 * @var array
 	 */
-	public $headers = [];
+	protected $headers = [];
 	/**
 	 * Codes title.
 	 * @var array

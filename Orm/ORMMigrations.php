@@ -138,9 +138,9 @@ class ORMMigrations {
 					$col['key'] = '';
 				if(!isset($prop->orm['auto_increment']))
 					$col['auto_increment'] = false;
-				$col['position'] = $prop->params['position'];
+				$col['position'] = $prop->getPosition('position');
 
-				if($prop->i18n) {
+				if($prop->get('i18n')) {
 					if(!isset($schemas[$dataMapper->getTranslationTable($definition)])) {
 						$schemas[$dataMapper->getTranslationTable($definition)] = [
 							'id' => [

@@ -1,6 +1,8 @@
 <?php
 namespace Asgard\Db\Tests;
 
+use Asgard\Db\DAL;
+
 class DALTest extends \PHPUnit_Framework_TestCase {
 	protected static $db;
 
@@ -26,6 +28,12 @@ class DALTest extends \PHPUnit_Framework_TestCase {
 			);
 		}));
 		return $dal;
+	}
+
+	public function testRawSQL() {
+		$this->assertEquals('SELECT * FROM `news` WHERE `date`=NOW()', $this->getDAL()->from('news')->where('date', DAL::raw('NOW()'))->buildSQL());
+		$this->assertEquals('INSERT INTO `news` (`date`) VALUES (NOW())', $this->getDAL()->into('news')->buildInsertSQL(['date'=>DAL::raw('NOW()')]));
+		$this->assertEquals('UPDATE `news` SET `date`=NOW()', $this->getDAL()->from('news')->buildUpdateSQL(['date'=>DAL::raw('NOW()')]));
 	}
 
 	public function test1() {

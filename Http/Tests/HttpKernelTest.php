@@ -38,7 +38,7 @@ class HttpKernelTest extends \PHPUnit_Framework_TestCase {
 		$kernel->setErrorHandler(new \Asgard\Debug\ErrorHandler);
 		$response = $kernel->process(new Request, true);
 		$this->assertEquals(500, $response->getCode());
-		$this->assertContains('Undefined variable: a', $response->content);
+		$this->assertContains('Undefined variable: a', $response->getContent());
 	}
 
 	public function testNoInformation() {
@@ -52,7 +52,7 @@ class HttpKernelTest extends \PHPUnit_Framework_TestCase {
 		$kernel->setErrorHandler(new \Asgard\Debug\ErrorHandler);
 		$response = $kernel->process(new Request, true);
 		$this->assertEquals(500, $response->getCode());
-		$this->assertEquals('<h1>Error</h1>Oops, something went wrong.', $response->content);
+		$this->assertEquals('<h1>Error</h1>Oops, something went wrong.', $response->getContent());
 	}
 
 	public function testHookException() {

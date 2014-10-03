@@ -14,11 +14,6 @@ class Property {
 	 */
 	protected $definition;
 	/**
-	 * Property position.
-	 * @var integer
-	 */
-	protected $position;
-	/**
 	 * Property name.
 	 * @var string
 	 */
@@ -27,7 +22,7 @@ class Property {
 	 * Parameters.
 	 * @var array
 	 */
-	public $params = [];
+	protected $params = [];
 
 	/**
 	 * Constructor.
@@ -46,7 +41,7 @@ class Property {
 			if($v instanceof \Closure)
 				$this->params[$k] = new SerializableClosure($v);
 		}
-		return ['position', 'definition', 'name', 'params'];
+		return ['definition', 'name', 'params'];
 	}
 
 	/**
