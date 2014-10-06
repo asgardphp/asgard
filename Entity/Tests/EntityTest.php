@@ -21,6 +21,217 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 		\Asgard\Entity\EntitiesManager::setInstance($entitiesManager);
 	}
 
+	public function testToArray() {
+		$date = date('Y-m-d');
+
+		$news = new Classes\News([
+			'title' => 'Test Title',
+			'content' => 'Test Content',
+			'comments' => [
+				new Classes\Comment([
+					'content' => 'foo'
+				]),
+				new Classes\Comment([
+					'content' => 'bar'
+				]),
+				new Classes\Comment([
+					'content' => 'baz'
+				])
+			]
+		]);
+		$arr = [
+			'id' => null,
+			'title' => 'Test Title',
+			'content' => 'Test Content',
+			'published' => $date,
+			'comments' => [
+				[
+					'id' => null,
+					'content' => 'foo',
+					'published' => $date,
+					'another_property' => null
+				],
+				[
+					'id' => null,
+					'content' => 'bar',
+					'published' => $date,
+					'another_property' => null
+				],
+				[
+					'id' => null,
+					'content' => 'baz',
+					'published' => $date,
+					'another_property' => null
+				]
+			],
+			'another_property' => null
+		];
+		$arrRaw = [
+			'id' => null,
+			'title' => 'Test Title',
+			'content' => 'Test Content',
+			'published' => $news->published,
+			'comments' => [
+				[
+					'id' => null,
+					'content' => 'foo',
+					'published' => $news->published,
+					'another_property' => null
+				],
+				[
+					'id' => null,
+					'content' => 'bar',
+					'published' => $news->published,
+					'another_property' => null
+				],
+				[
+					'id' => null,
+					'content' => 'baz',
+					'published' => $news->published,
+					'another_property' => null
+				]
+			],
+			'another_property' => null
+		];
+
+		#toArrayRaw
+		$this->assertEquals(
+			$arrRaw,
+			$news->toArrayRaw(1)
+		);
+
+		#toArray
+		$this->assertEquals(
+			$arr,
+			$news->toArray(1)
+		);
+
+		#toJSON
+		$this->assertEquals(
+			json_encode($arr),
+			$news->toJSON(1)
+		);
+
+		#arrayToJSON
+		$this->assertEquals(
+			json_encode([$arr]),
+			\Asgard\Entity\Entity::arrayToJSON([$news], 1)
+		);
+
+
+		#I18N
+		$newsi18n = new Classes\Newsi18n([
+			'title' => 'Test Title',
+			'content' => 'Test Content',
+			'comments' => [
+				(new Classes\Commenti18n([
+					'content' => 'foo'
+				]))->set('content', 'foofr', 'fr'),
+				(new Classes\Commenti18n([
+					'content' => 'bar'
+				]))->set('content', 'barfr', 'fr'),
+				(new Classes\Commenti18n([
+					'content' => 'baz'
+				]))->set('content', 'bazfr', 'fr'),
+			]
+		]);
+		$newsi18n->set('title', 'Un test', 'fr');
+		$arrI18N = [
+			'id' => null,
+			'title' => [
+				'en' => 'Test Title',
+				'fr' => 'Un test'
+			],
+			'content' => 'Test Content',
+			'comments' => [
+				[
+					'id' => null,
+					'content' => [
+						'en' => 'foo',
+						'fr' => 'foofr'
+					],
+					'another_property' => null
+				],
+				[
+					'id' => null,
+					'content' => [
+						'en' => 'bar',
+						'fr' => 'barfr'
+					],
+					'another_property' => null
+				],
+				[
+					'id' => null,
+					'content' => [
+						'en' => 'baz',
+						'fr' => 'bazfr'
+					],
+					'another_property' => null
+				]
+			],
+			'another_property' => null
+		];
+		$arrRawI18N = [
+			'id' => null,
+			'title' => [
+				'en' => 'Test Title',
+				'fr' => 'Un test'
+			],
+			'content' => 'Test Content',
+			'comments' => [
+				[
+					'id' => null,
+					'content' => [
+						'en' => 'foo',
+						'fr' => 'foofr'
+					],
+					'another_property' => null
+				],
+				[
+					'id' => null,
+					'content' => [
+						'en' => 'bar',
+						'fr' => 'barfr'
+					],
+					'another_property' => null
+				],
+				[
+					'id' => null,
+					'content' => [
+						'en' => 'baz',
+						'fr' => 'bazfr'
+					],
+					'another_property' => null
+				]
+			],
+			'another_property' => null
+		];
+
+		#toArrayRawI18N
+		$this->assertEquals(
+			$arrRawI18N,
+			$newsi18n->toArrayRawI18N([], 1)
+		);
+
+		#toArrayI18N
+		$this->assertEquals(
+			$arrI18N,
+			$newsi18n->toArrayI18N([], 1)
+		);
+
+		#toJSONI18N
+		$this->assertEquals(
+			json_encode($arrI18N),
+			$newsi18n->toJSONI18N([], 1)
+		);
+
+		#arrayToJSONI18N
+		$this->assertEquals(
+			json_encode([$arrI18N]),
+			\Asgard\Entity\Entity::arrayToJSONI18N([$newsi18n], [], 1)
+		);
+	}
+
 	public function testEntitiesWithDependencyInjection() {
 		$container = new \Asgard\Container\Container;
 		$container['hooks'] = new \Asgard\Hook\HooksManager($container);

@@ -399,15 +399,24 @@ abstract class Entity {
 
 	/**
 	 * Convert entity to a raw array.
+	 * @param  integer $depth
 	 * @return array
 	 */
-	public function toArrayRaw() {
+	public function toArrayRaw($depth=0) {
 		$res = [];
 
 		foreach($this->getDefinition()->properties() as $name=>$property) {
-			if($this->getDefinition()->property($name)->get('type') == 'entity')
-				continue;
-			if($this->getDefinition()->property($name)->get('many'))
+			if($this->getDefinition()->property($name)->get('type') == 'entity') {
+				if($depth < 1)
+					continue;
+				if($this->getDefinition()->property($name)->get('many')) {
+					foreach($this->get($name) as $entity)
+						$res[$name][] = $entity->toArrayRaw($depth-1);
+				}
+				else
+					$res[$name] = $entity->toArrayRaw($depth-1);
+			}
+			elseif($this->getDefinition()->property($name)->get('many'))
 				$res[$name] = $this->get($name)->all();
 			else
 				$res[$name] = $this->get($name);
@@ -418,21 +427,29 @@ abstract class Entity {
 
 	/**
 	 * Convert entity to a formatted array.
+	 * @param  integer $depth
 	 * @return array
 	 */
-	public function toArray() {
+	public function toArray($depth=0) {
 		$res = [];
 
 		foreach($this->getDefinition()->properties() as $name=>$property) {
-			if($this->getDefinition()->property($name)->get('type') == 'entity')
-				continue;
-			$res[$name] = $this->get($name);
-			if($property->get('many')) {
-				foreach($res[$name] as $k=>$v)
+			if($this->getDefinition()->property($name)->get('type') == 'entity') {
+				if($depth < 1)
+					continue;
+				if($this->getDefinition()->property($name)->get('many')) {
+					foreach($this->get($name) as $entity)
+						$res[$name][] = $entity->toArray($depth-1);
+				}
+				else
+					$res[$name] = $entity->toArray($depth-1);
+			}
+			elseif($property->get('many')) {
+				foreach($this->get($name) as $k=>$v)
 					$res[$name][$k] = $this->propertyToArray($v, $property);
 			}
 			else
-				$res[$name] = $this->propertyToArray($res[$name], $property);
+				$res[$name] = $this->propertyToArray($this->get($name), $property);
 		}
 
 		return $res;
@@ -440,20 +457,22 @@ abstract class Entity {
 
 	/**
 	 * Convert entity to json.
+	 * @param  integer $depth
 	 * @return string
 	 */
-	public function toJSON() {
-		return json_encode($this->toArray());
+	public function toJSON($depth=0) {
+		return json_encode($this->toArray($depth));
 	}
 
 	/**
 	 * Convert an array of entities to json.
 	 * @param  array  $entities
+	 * @param  integer $depth
 	 * @return string
 	 */
-	public static function arrayToJSON(array $entities) {
+	public static function arrayToJSON(array $entities, $depth=0) {
 		foreach($entities as $k=>$entity)
-			$entities[$k] = $entity->toArray();
+			$entities[$k] = $entity->toArray($depth);
 		return json_encode($entities);
 	}
 
@@ -508,21 +527,32 @@ abstract class Entity {
 	/**
 	 * Convert entity to a raw array with translations.
 	 * @param  array $locales
+	 * @param  integer $depth
 	 * @return array
 	 */
-	public function toArrayRawI18N(array $locales=[]) {
+	public function toArrayRawI18N(array $locales=[], $depth=0) {
 		if(!$locales)
 			$locales = $this->getLocales();
 		$res = [];
 
 		foreach($this->getDefinition()->properties() as $name=>$property) {
-			if($property->i18n) {
+			if($property->get('i18n')) {
 				foreach($locales as $locale) {
 					if($this->getDefinition()->property($name)->get('many'))
 						$res[$name][$locale] = $this->get($name, $locale)->all();
 					else
 						$res[$name][$locale] = $this->get($name, $locale);
 				}
+			}
+			elseif($this->getDefinition()->property($name)->get('type') == 'entity') {
+				if($depth < 1)
+					continue;
+				if($this->getDefinition()->property($name)->get('many')) {
+					foreach($this->get($name) as $entity)
+						$res[$name][] = $entity->toArrayRawI18N($locales, $depth-1);
+				}
+				else
+					$res[$name] = $entity->toArrayRawI18N($locales, $depth-1);
 			}
 			elseif($this->getDefinition()->property($name)->get('many'))
 				$res[$name] = $this->get($name)->all();
@@ -536,9 +566,10 @@ abstract class Entity {
 	/**
 	 * Convert entity to a formatted array with translations.
 	 * @param  array $locales
+	 * @param  integer $depth
 	 * @return array
 	 */
-	public function toArrayI18N(array $locales=[]) {
+	public function toArrayI18N(array $locales=[], $depth=0) {
 		if(!$locales)
 			$locales = $this->getLocales();
 		$res = [];
@@ -553,6 +584,16 @@ abstract class Entity {
 					else
 						$res[$name][$locale] = $this->propertyToArray($this->get($name, $locale), $property);
 				}
+			}
+			elseif($this->getDefinition()->property($name)->get('type') == 'entity') {
+				if($depth < 1)
+					continue;
+				if($this->getDefinition()->property($name)->get('many')) {
+					foreach($this->get($name) as $entity)
+						$res[$name][] = $entity->toArrayI18N($locales, $depth-1);
+				}
+				else
+					$res[$name] = $entity->toArrayI18N($depth-1);
 			}
 			elseif($this->getDefinition()->property($name)->get('many')) {
 				$res[$name] = [];
@@ -569,23 +610,25 @@ abstract class Entity {
 	/**
 	 * Convert entity to JSON with translations.
 	 * @param  array $locales
+	 * @param  integer $depth
 	 * @return string
 	 */
-	public function toJSONI18N(array $locales=[]) {
+	public function toJSONI18N(array $locales=[], $depth=0) {
 		if(!$locales)
 			$locales = $this->getLocales();
-		return json_encode($this->toArrayI18N($locales));
+		return json_encode($this->toArrayI18N($locales, $depth));
 	}
 
 	/**
 	 * Convert many entities to JSON with translations.
 	 * @param  array  $entities
 	 * @param  array $locales
+	 * @param  integer $depth
 	 * @return string
 	 */
-	public static function arrayToJSONI18N(array $entities, array $locales=[]) {
+	public static function arrayToJSONI18N(array $entities, array $locales=[], $depth=0) {
 		foreach($entities as $k=>$entity)
-			$entities[$k] = $entity->toArrayI18N($locales);
+			$entities[$k] = $entity->toArrayI18N($locales, $depth);
 		return json_encode($entities);
 	}
 

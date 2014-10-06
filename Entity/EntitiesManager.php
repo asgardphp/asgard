@@ -27,7 +27,7 @@ class EntitiesManager implements EntitiesManagerInterface {
 	 * Default locale.
 	 * @var string
 	 */
-	protected $defaultLocale;
+	protected $defaultLocale = 'en';
 	/**
 	 * Validator factory.
 	 * @var \Asgard\Container\Factory

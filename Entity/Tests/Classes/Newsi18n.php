@@ -7,7 +7,12 @@ class Newsi18n extends \Asgard\Entity\Entity {
 			'title' => [
 				'i18n' => true,
 			],
-			'content'
+			'content',
+			'comments' => [
+				'type' => 'entity',
+				'entity' => 'Asgard\Entity\Tests\Classes\Commenti18n',
+				'many' => true,
+			]
 		];
 
 		$definition->addProperty('another_property');

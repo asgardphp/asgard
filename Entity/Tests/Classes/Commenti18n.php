@@ -1,20 +1,19 @@
 <?php
 namespace Asgard\Entity\Tests\Classes;
 
-class News extends \Asgard\Entity\Entity {
+class Commenti18n extends \Asgard\Entity\Entity {
 	public static function definition(\Asgard\Entity\EntityDefinition $definition) {
 		$definition->properties = [
-			'title' => [
-				'validation' => [
-					'required' => true,
-				]
+			'content' => [
+				'i18n' => true
 			],
-			'content',
-			'published' => 'date',
 			'comments' => [
 				'type' => 'entity',
-				'entity' => 'Asgard\Entity\Tests\Classes\Comment',
-				'many' => true,
+				'entity' => 'Asgard\Entity\Tests\Classes\News',
+			],
+			'comments' => [
+				'type' => 'entity',
+				'entity' => 'Asgard\Entity\Tests\Classes\Newsi18n',
 			]
 		];
 
