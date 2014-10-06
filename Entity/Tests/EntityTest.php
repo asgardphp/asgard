@@ -22,7 +22,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testToArray() {
-		$date = date('Y-m-d');
+		$date = new \Carbon\Carbon;
 
 		$news = new Classes\News([
 			'title' => 'Test Title',
@@ -40,6 +40,33 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 			]
 		]);
 		$arr = [
+			'id' => null,
+			'title' => 'Test Title',
+			'content' => 'Test Content',
+			'published' => $date->format('Y-m-d'),
+			'comments' => [
+				[
+					'id' => null,
+					'content' => 'foo',
+					'published' => $date->format('Y-m-d'),
+					'another_property' => null
+				],
+				[
+					'id' => null,
+					'content' => 'bar',
+					'published' => $date->format('Y-m-d'),
+					'another_property' => null
+				],
+				[
+					'id' => null,
+					'content' => 'baz',
+					'published' => $date->format('Y-m-d'),
+					'another_property' => null
+				]
+			],
+			'another_property' => null
+		];
+		$arrRaw = [
 			'id' => null,
 			'title' => 'Test Title',
 			'content' => 'Test Content',
@@ -61,33 +88,6 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 					'id' => null,
 					'content' => 'baz',
 					'published' => $date,
-					'another_property' => null
-				]
-			],
-			'another_property' => null
-		];
-		$arrRaw = [
-			'id' => null,
-			'title' => 'Test Title',
-			'content' => 'Test Content',
-			'published' => $news->published,
-			'comments' => [
-				[
-					'id' => null,
-					'content' => 'foo',
-					'published' => $news->published,
-					'another_property' => null
-				],
-				[
-					'id' => null,
-					'content' => 'bar',
-					'published' => $news->published,
-					'another_property' => null
-				],
-				[
-					'id' => null,
-					'content' => 'baz',
-					'published' => $news->published,
 					'another_property' => null
 				]
 			],
