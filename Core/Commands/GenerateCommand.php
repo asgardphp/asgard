@@ -6,10 +6,22 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
+/**
+ * Generate command.
+ */
 class GenerateCommand extends \Asgard\Console\Command {
+	/**
+	 * {@inheritDoc}
+	 */
 	protected $name = 'generate';
+	/**
+	 * {@inheritDoc}
+	 */
 	protected $description = 'Generate bundles from a single YAML file';
 
+	/**
+	 * {@inheritDoc}
+	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$asgard = $this->getContainer();
 		$path = $this->input->getArgument('path');
@@ -202,6 +214,12 @@ class GenerateCommand extends \Asgard\Console\Command {
 		$this->info('Bundles created: '.implode(', ', array_keys($bundles)));
 	}
 
+	/**
+	 * Add a new tests file.
+	 * @param array  $tests
+	 * @param string $dst
+	 * @return boolean
+	 */
 	protected function addToTests($tests, $dst) {
 		if(!$tests)
 			return true;
@@ -227,12 +245,18 @@ class '.basename($dst, '.php').' extends \Asgard\Http\Test {
 		return true;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	protected function getArguments() {
 		return [
 			['path', InputArgument::REQUIRED, 'Path to the YAML file']
 		];
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	protected function getOptions() {
 		return [
 			['override-bundles', null, InputOption::VALUE_NONE, 'Override existing bundles', null],

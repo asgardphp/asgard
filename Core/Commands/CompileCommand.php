@@ -4,10 +4,22 @@ namespace Asgard\Core\Commands;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Compile command.
+ */
 class CompileCommand extends \Asgard\Console\Command {
+	/**
+	 * {@inheritDoc}
+	 */
 	protected $name = 'compile';
+	/**
+	 * {@inheritDoc}
+	 */
 	protected $description = 'Compile classes into one file for better performance';
 
+	/**
+	 * {@inheritDoc}
+	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$this->getApplication()->add(new \ClassPreloader\Command\PreCompileCommand);
 

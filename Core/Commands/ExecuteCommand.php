@@ -5,10 +5,22 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 
+/**
+ * Execute command.
+ */
 class ExecuteCommand extends \Asgard\Console\Command {
+	/**
+	 * {@inheritDoc}
+	 */
 	protected $name = 'execute';
+	/**
+	 * {@inheritDoc}
+	 */
 	protected $description = 'Execute PHP code in the application context';
 
+	/**
+	 * {@inheritDoc}
+	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$cmd = $this->input->getArgument('cmd');
 		try {
@@ -22,6 +34,9 @@ class ExecuteCommand extends \Asgard\Console\Command {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	protected function getArguments() {
 		return [
 			['cmd', InputArgument::REQUIRED, 'PHP code'],

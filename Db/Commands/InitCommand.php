@@ -5,16 +5,36 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
 
+/**
+ * Init the database command.
+ */
 class InitCommand extends \Asgard\Console\Command {
+	/**
+	 * {@inheritDoc}
+	 */
 	protected $name = 'db:init';
+	/**
+	 * {@inheritDoc}
+	 */
 	protected $description = 'Initialize the database';
+	/**
+	 * Configuration directory.
+	 * @var string
+	 */
 	protected $dir;
 
+	/**
+	 * Constructor.
+	 * @param string $dir
+	 */
 	public function __construct($dir) {
 		$this->dir = $dir;
 		parent::__construct();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$dialog = $this->getHelperSet()->get('dialog');
 

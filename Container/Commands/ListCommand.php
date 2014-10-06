@@ -5,16 +5,36 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
 
+/**
+ * List available services command.
+ */
 class ListCommand extends \Asgard\Console\Command {
+	/**
+	 * {@inheritDoc}
+	 */
 	protected $name = 'services';
+	/**
+	 * {@inheritDoc}
+	 */
 	protected $description = 'Show all the services loaded in the application';
+	/**
+	 * Root directory.
+	 * @var string
+	 */
 	protected $root;
 
+	/**
+	 * Constructor.
+	 * @param string $root
+	 */
 	public function __construct($root) {
 		$this->root = $root;
 		parent::__construct();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$table = $this->getHelperSet()->get('table');
 		$headers = ['Name', 'Type', 'Parent'];
@@ -97,6 +117,9 @@ class ListCommand extends \Asgard\Console\Command {
 		$table->render($this->output);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	protected function getOptions() {
 		return [
 			['class', null, InputOption::VALUE_NONE, 'Show the returned class.', null],
@@ -105,6 +128,11 @@ class ListCommand extends \Asgard\Console\Command {
 		];
 	}
 
+	/**
+	 * Guess the class of a service.
+	 * @param  string $name
+	 * @return string
+	 */
 	protected function guessServiceClass($name) {
 		try {
 			$obj = $this->getContainer()->get($name);

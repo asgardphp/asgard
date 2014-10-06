@@ -7,10 +7,22 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 use Asgard\Core\Publisher;
 
+/**
+ * Install a module command.
+ */
 class InstallCommand extends \Asgard\Console\Command {
+	/**
+	 * {@inheritDoc}
+	 */
 	protected $name = 'install';
+	/**
+	 * {@inheritDoc}
+	 */
 	protected $description = 'Install a module into your application';
 
+	/**
+	 * {@inheritDoc}
+	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$sources = $this->input->getArgument('sources');
 		$suggest = $this->input->getOption('suggest');
@@ -37,6 +49,16 @@ class InstallCommand extends \Asgard\Console\Command {
 		}
 	}
 
+	/**
+	 * Install a module.
+	 * @param  string $src
+	 * @param  boolean $suggest
+	 * @param  boolean $migrate
+	 * @param  boolean $updateComposer
+	 * @param  string $root
+	 * @param  array $modules
+	 * @param  array $containerComposer
+	 */
 	protected function install($src, $suggest, $migrate, $updateComposer, $root, &$modules, &$containerComposer) {
 		$tmp = $root.'/tmp/'.\Asgard\Common\Tools::randstr(10);
 
@@ -112,21 +134,44 @@ class InstallCommand extends \Asgard\Console\Command {
 		$this->info('Module "'.$name.'" added with success.');
 	}
 
+	/**
+	 * Git clone a project.
+	 * @param  string $src
+	 * @param  string $tmp
+	 * @return boolean
+	 */
 	protected function gitInstall($src, $tmp) {
 		$cmd = 'git clone --recursive "'.$src.'" "'.$tmp.'"';
 		return $this->runCommand($cmd, true);
 	}
 
+	/**
+	 * Git checkout.
+	 * @param  string $dir
+	 * @param  string $tag
+	 * @return boolean
+	 */
 	protected function gitCheckout($dir, $tag) {
 		$cmd = 'cd "'.$dir.'" & git checkout tags/'.$tag;
 		return $this->runCommand($cmd, true);
 	}
 
+	/**
+	 * Update composer.
+	 * @param  string $dir
+	 * @return boolean
+	 */
 	protected function updateComposer($dir) {
 		$cmd = 'composer update --working-dir "'.$dir.'"';
 		return $this->runCommand($cmd, true);
 	}
 
+	/**
+	 * Run a command.
+	 * @param  string  $cmd
+	 * @param  boolean $verbose
+	 * @return boolean
+	 */
 	protected function runCommand($cmd, $verbose=false) {
 		$this->comment($cmd);
 
@@ -150,6 +195,9 @@ class InstallCommand extends \Asgard\Console\Command {
 		return $exitCode === 0;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	protected function getOptions() {
 		return [
 			['suggest', null, InputOption::VALUE_NONE, 'Install suggested dependencies.', null],
@@ -158,6 +206,9 @@ class InstallCommand extends \Asgard\Console\Command {
 		];
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	protected function getArguments() {
 		return [
 			['sources', InputArgument::IS_ARRAY, 'Source folder'],

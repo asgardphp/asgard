@@ -4,16 +4,36 @@ namespace Asgard\Config\Commands;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Init config command.
+ */
 class InitCommand extends \Asgard\Console\Command {
+	/**
+	 * {@inheritDoc}
+	 */
 	protected $name = 'config:init';
+	/**
+	 * {@inheritDoc}
+	 */
 	protected $description = 'Initialize the configuration file';
+	/**
+	 * Configuration directory.
+	 * @var string
+	 */
 	protected $dir;
 
+	/**
+	 * Constructor.
+	 * @param string $dir
+	 */
 	public function __construct($dir) {
 		$this->dir = $dir;
 		parent::__construct();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$this->initConfig('config.yml');
 		$this->initConfig('config_dev.yml');
@@ -21,6 +41,10 @@ class InitCommand extends \Asgard\Console\Command {
 		$this->initConfig('config_test.yml');
 	}
 
+	/**
+	 * Initialize a configuration file.
+	 * @param  string $file
+	 */
 	protected function initConfig($file) {
 		if(file_exists($this->dir.'/'.$file)) {
 			if(!$this->confirm('Do you want to override "'.$file.'"?'))

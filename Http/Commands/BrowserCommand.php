@@ -6,16 +6,35 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 
+/**
+ * Browser command.
+ */
 class BrowserCommand extends \Asgard\Console\Command {
+	/**
+	 * {@inheritDoc}
+	 */
 	protected $name = 'browser';
+	/**
+	 * {@inheritDoc}
+	 */
 	protected $description = 'Execute an HTTP request';
-
+	/**
+	 * HTTPKernel dependency.
+	 * @var \Asgard\Http\HttpKernelInterface
+	 */
 	protected $httpKernel;
 
+	/**
+	 * Constructor.
+	 * @param \Asgard\Http\HttpKernelInterface $httpKernel
+	 */
 	public function __construct(\Asgard\Http\HttpKernelInterface $httpKernel) {
 		$this->httpKernel = $httpKernel;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$method = $this->input->getArgument('method');
 		$url = $this->input->getArgument('url');
@@ -60,6 +79,9 @@ class BrowserCommand extends \Asgard\Console\Command {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	protected function getOptions() {
 		return [
 			['showAll', null, InputOption::VALUE_NONE, 'Show the whole response'],
@@ -78,6 +100,9 @@ class BrowserCommand extends \Asgard\Console\Command {
 		];
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	protected function getArguments() {
 		return [
 			['method', InputArgument::REQUIRED, 'The HTTP method'],

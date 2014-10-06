@@ -5,20 +5,50 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 
+/**
+ * Generate migration command.
+ */
 class GenerateMigrationCommand extends \Asgard\Console\Command {
+	/**
+	 * {@inheritDoc}
+	 */
 	protected $name = 'orm:generate';
+	/**
+	 * {@inheritDoc}
+	 */
 	protected $description = 'Generate a migration from ORM entities';
+	/**
+	 * Entities manager dependency.
+	 * @var \Asgard\Entity\EntitiesManagerInterface
+	 */
 	protected $entitiesManager;
+	/**
+	 * Migrations manager dependency.
+	 * @var \Asgard\Migration\MigrationsManagerInterface
+	 */
 	protected $migrationsManager;
+	/**
+	 * DataMapper dependency.
+	 * @var \Asgard\Orm\DataMapperInterface
+	 */
 	protected $dataMapper;
 
-	public function __construct($entitiesManager, $migrationsManager, $dataMapper) {
+	/**
+	 * Constructor.
+	 * @param \Asgard\Entity\EntitiesManagerInterface      $entitiesManager
+	 * @param \Asgard\Migration\MigrationsManagerInterface $migrationsManager
+	 * @param \Asgard\Orm\DataMapperInterface              $dataMapper
+	 */
+	public function __construct(\Asgard\Entity\EntitiesManagerInterface $entitiesManager, \Asgard\Migration\MigrationsManagerInterface $migrationsManager, \Asgard\Orm\DataMapperInterface $dataMapper) {
 		$this->entitiesManager = $entitiesManager;
 		$this->migrationsManager = $migrationsManager;
 		$this->dataMapper = $dataMapper;
 		parent::__construct();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$migration = $this->input->getArgument('migration') ? $this->input->getArgument('migration'):'Automigrate';
 
@@ -38,6 +68,9 @@ class GenerateMigrationCommand extends \Asgard\Console\Command {
 			$this->error('The migration could not be generated.');
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	protected function getArguments() {
 		return [
 			['migration', InputArgument::OPTIONAL, 'The migration name'],

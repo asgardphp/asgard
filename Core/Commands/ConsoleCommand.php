@@ -4,10 +4,22 @@ namespace Asgard\Core\Commands;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Console command.
+ */
 class ConsoleCommand extends \Asgard\Console\Command {
+	/**
+	 * {@inheritDoc}
+	 */
 	protected $name = 'console';
+	/**
+	 * {@inheritDoc}
+	 */
 	protected $description = 'Interact with your application';
 
+	/**
+	 * {@inheritDoc}
+	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$this->output->writeln('Type "quit" to quit.');
 

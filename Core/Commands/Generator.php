@@ -1,19 +1,40 @@
 <?php
 namespace Asgard\Core\Commands;
 
+/**
+ * Generator.
+ */
 class Generator {
 	use \Asgard\Container\ContainerAwareTrait;
 
+	/**
+	 * Flag to override existing files.
+	 * @var boolean
+	 */
 	protected $overrideFiles = false;
 
-	public function __construct($container) {
+	/**
+	 * Constructor.
+	 * @param \Asgard\Container\ContainerInterface $container
+	 */
+	public function __construct(\Asgard\Container\ContainerInterface $container) {
 		$this->container = $container;
 	}
 
+	/**
+	 * Set flag to override existing files.
+	 * @param boolean $overrideFiles
+	 */
 	public function setOverrideFiles($overrideFiles) {
 		$this->overrideFiles = $overrideFiles;
 	}
 
+	/**
+	 * Process a template file.
+	 * @param  string $_src
+	 * @param  string $_dst
+	 * @param  array $vars
+	 */
 	public function processFile($_src, $_dst, $vars) {
 		if(!$this->overrideFiles && file_exists($_dst))
 			return;
@@ -33,6 +54,11 @@ class Generator {
 		\Asgard\File\FileSystem::write($_dst, $content);
 	}
 
+	/**
+	 * Format PHP variables to string.
+	 * @param  mixed $v
+	 * @return string
+	 */
 	public function outputPHP($v) {
 		return var_export($v, true);
 	}

@@ -5,18 +5,42 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 
+/**
+ * Dump the database command.
+ */
 class DumpCommand extends \Asgard\Console\Command {
+	/**
+	 * {@inheritDoc}
+	 */
 	protected $name = 'db:dump';
+	/**
+	 * {@inheritDoc}
+	 */
 	protected $description = 'Dump the database';
+	/**
+	 * Detination directory.
+	 * @var string
+	 */
 	protected $dir;
+	/**
+	 * Database dependency.
+	 * @var \Asgard\Db\DBInterface
+	 */
 	protected $db;
 
-	public function __construct($db, $dir) {
+	/**
+	 * Constructor.
+	 * @param \Asgard\Db\DBInterface $db
+	 */
+	public function __construct(\Asgard\Db\DBInterface $db) {
 		$this->db = $db;
 		$this->dir = $dir;
 		parent::__construct();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$dst = $this->input->getArgument('dst') ? $this->input->getArgument('dst'):$this->dir.'/'.time().'.sql';
 		if($this->db->dump($dst))
@@ -25,6 +49,9 @@ class DumpCommand extends \Asgard\Console\Command {
 			$this->error('The database could not be dumped.');
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	protected function getArguments() {
 		return [
 			['dst', InputArgument::OPTIONAL, 'The destination'],

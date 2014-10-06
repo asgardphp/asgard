@@ -4,16 +4,36 @@ namespace Asgard\Http\Commands;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Routes command.
+ */
 class RoutesCommand extends \Asgard\Console\Command {
+	/**
+	 * {@inheritDoc}
+	 */
 	protected $name = 'routes';
+	/**
+	 * {@inheritDoc}
+	 */
 	protected $description = 'List all registered routes';
+	/**
+	 * Resolver dependency.
+	 * @var \Asgard\Http\ResolverInterface
+	 */
 	protected $resolver;
 
-	public function __construct($resolver) {
+	/**
+	 * Constructor.
+	 * @param \Asgard\Http\ResolverInterface $resolver
+	 */
+	public function __construct(\Asgard\Http\ResolverInterface $resolver) {
 		$this->resolver = $resolver;
 		parent::__construct();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$table = $this->getHelperSet()->get('table');
 		$table->setHeaders(['Method', 'Host', 'URL', 'Controller', 'Action']);

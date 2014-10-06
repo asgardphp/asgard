@@ -7,10 +7,22 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
 use Asgard\Core\Publisher;
 
+/**
+ * Publish command.
+ */
 class PublishCommand extends \Asgard\Console\Command {
+	/**
+	 * {@inheritDoc}
+	 */
 	protected $name = 'publish';
+	/**
+	 * {@inheritDoc}
+	 */
 	protected $description = 'Publish a bundle files';
 
+	/**
+	 * {@inheritDoc}
+	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$bundle = $this->input->getArgument('bundle');
 
@@ -69,6 +81,9 @@ class PublishCommand extends \Asgard\Console\Command {
 		$this->info('Files published with success.');
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	protected function getOptions() {
 		return [
 			['all', null, InputOption::VALUE_NONE, 'Publish all files.', null],
@@ -81,6 +96,9 @@ class PublishCommand extends \Asgard\Console\Command {
 		];
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	protected function getArguments() {
 		return [
 			['bundle', InputArgument::REQUIRED, 'Path to bundle'],
