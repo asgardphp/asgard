@@ -4,10 +4,6 @@ use Symfony\Component\Translation\TranslatorInterface;
 
  /**
   * Validator.
-  * @method static attribute($attribute, $rules=null)
-  * @method $this attributes(array $attributes)
-  * @method $this rules(array $rules, $each=false)
-  * @method $this rule($rule, $params=[], $each=false)
   * @method $this isNull($param=true)
   * @method $this required($param=true)
  * @author Michel Hognerud <michel@hognerud.com>
@@ -104,15 +100,7 @@ class Validator implements ValidatorInterface {
 	 * @return mixed
 	 */
 	public function __call($name, array $args) {
-		if($name == 'attribute')
-			return call_user_func_array([$this, 'callAttribute'], $args);
-		if($name == 'attributes')
-			return call_user_func_array([$this, 'callAttributes'], $args);
-		if($name == 'rules')
-			return call_user_func_array([$this, 'callRules'], $args);
-		if($name == 'rule')
-			return call_user_func_array([$this, 'callRule'], $args);
-		return call_user_func_array([$this, 'callRule'], [$name, $args]);
+		return call_user_func_array([$this, 'rule'], [$name, $args]);
 	}
 
 	/**
@@ -123,15 +111,7 @@ class Validator implements ValidatorInterface {
 	 */
 	public static function __callStatic($name, array $args) {
 		$v = new static;
-		if($name == 'attribute')
-			return call_user_func_array([$v, 'callAttribute'], $args);
-		if($name == 'attributes')
-			return call_user_func_array([$v, 'callAttributes'], $args);
-		if($name == 'rules')
-			return call_user_func_array([$v, 'callRules'], $args);
-		if($name == 'rule')
-			return call_user_func_array([$v, 'callRule'], $args);
-		return call_user_func_array([$v, 'callRule'], [$name, $args]);
+		return call_user_func_array([$v, 'rule'], [$name, $args]);
 	}
 
 	/**
@@ -141,7 +121,7 @@ class Validator implements ValidatorInterface {
 	 * @param  boolean $each   to validate the rule against each input of an array.
 	 * @return ValidatorInterface       $this
 	 */
-	protected function callRule($rule, $params=[], $each=false) {
+	public function rule($rule, $params=[], $each=false) {
 		if(!is_array($params))
 			$params = [$params];
 		if($rule === 'required')
@@ -153,7 +133,7 @@ class Validator implements ValidatorInterface {
 				foreach(explode('|', $rule) as $r) {
 					list($r, $params) = explode(':', $r);
 					$params = explode(',', $params);
-					$this->callRule($r, $params);
+					$this->rule($r, $params);
 				}
 				return $this;
 			}
@@ -173,10 +153,10 @@ class Validator implements ValidatorInterface {
 	 * @param  boolean $each
 	 * @return ValidatorInterface       $this
 	 */
-	protected function callRules(array $rules, $each=false) {
+	public function rules(array $rules, $each=false) {
 		if(count($rules) === 2 && isset($rules['each']) && isset($rules['self'])) {
-			$this->callRules($rules['each'], true);
-			$this->callRules($rules['self'], false);
+			$this->rules($rules['each'], true);
+			$this->rules($rules['self'], false);
 			return $this;
 		}
 
@@ -195,7 +175,7 @@ class Validator implements ValidatorInterface {
 	 * @param  array  $rules     attribute rules
 	 * @return ValidatorInterface         $this or the attribute validator.
 	 */
-	protected function callAttribute($attribute, $rules=null) {
+	public function attribute($attribute, $rules=null) {
 		if(!is_array($attribute))
 			$attribute = explode('.', $attribute);
 
@@ -233,7 +213,7 @@ class Validator implements ValidatorInterface {
 	 * @param  array  $attributes
 	 * @return ValidatorInterface       $this
 	 */
-	public function callAttributes(array $attributes) {
+	public function attributes(array $attributes) {
 		foreach($attributes as $attribute=>$rules)
 			$this->attribute($attribute, $rules);
 		return $this;
