@@ -477,7 +477,7 @@ class Validator implements ValidatorInterface {
 			}
 		}
 
-		$attrErrors = array_filter(\Asgard\Common\ArrayUtils::flateArray($errors['attributes']));
+		$attrErrors = array_filter(\Asgard\Common\ArrayUtils::flatten($errors['attributes']));
 		if(!$errors['self'] && ($errors['rules'] || $attrErrors)) {
 			$allErrors = array_merge($errors['rules'], $attrErrors);
 			if(count($allErrors) === 1)

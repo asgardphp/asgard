@@ -528,7 +528,7 @@ class DAL {
 		if($brackets && count($params) > 1)
 			$result = '('.$result.')';
 
-		return [$result, \Asgard\Common\ArrayUtils::flateArray($pdoparams)];
+		return [$result, \Asgard\Common\ArrayUtils::flatten($pdoparams)];
 	}
 
 	/**

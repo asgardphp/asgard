@@ -104,9 +104,9 @@ class Flash {
 	 */
 	public function show($type, $cat=null, $cb=null) {
 		if($cat)
-			$messages = isset($this->messages[$type][$cat]) ? \Asgard\Common\ArrayUtils::flateArray($this->messages[$type][$cat]):[];
+			$messages = isset($this->messages[$type][$cat]) ? \Asgard\Common\ArrayUtils::flatten($this->messages[$type][$cat]):[];
 		else
-			$messages = isset($this->messages[$type]) ? \Asgard\Common\ArrayUtils::flateArray($this->messages[$type]):[];
+			$messages = isset($this->messages[$type]) ? \Asgard\Common\ArrayUtils::flatten($this->messages[$type]):[];
 		foreach($messages as $msg) {
 			if($cb)
 				echo $cb($msg, $type);

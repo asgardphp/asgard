@@ -238,7 +238,7 @@ class DataMapper implements DataMapperInterface {
 			$entity->set($values);
 
 		if(!$force && $errors = $this->errors($entity)) {
-			$msg = implode("\n", \Asgard\Common\ArrayUtils::flateArray($errors));
+			$msg = implode("\n", \Asgard\Common\ArrayUtils::flatten($errors));
 			throw new EntityException($msg, $errors);
 		}
 

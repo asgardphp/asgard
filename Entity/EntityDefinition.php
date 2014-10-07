@@ -132,9 +132,9 @@ class EntityDefinition {
 			foreach($clone as $name=>$property) {
 				if(is_int($name)) {
 					$properties =
-						\Asgard\Common\ArrayUtils::array_before($properties, $name) +
+						\Asgard\Common\ArrayUtils::before($properties, $name) +
 						[$property => []] +
-						\Asgard\Common\ArrayUtils::array_after($properties, $name);
+						\Asgard\Common\ArrayUtils::after($properties, $name);
 				}
 			}
 

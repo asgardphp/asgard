@@ -15,7 +15,7 @@ class ArrayUtils {
 	 * @return mixed
 	 * @api
 	 */
-	public static function string_array_get($arr, $str_path, $default=null) {
+	public static function get($arr, $str_path, $default=null) {
 		$path = explode('.', $str_path);
 		return static::array_get($arr, $path, $default);
 	}
@@ -27,7 +27,7 @@ class ArrayUtils {
 	 * @param  mixed $value
 	 * @api
 	 */
-	public static function string_array_set(&$arr, $str_path, $value) {
+	public static function set(&$arr, $str_path, $value) {
 		$path = explode('.', $str_path);
 		static::array_set($arr, $path, $value);
 	}
@@ -39,7 +39,7 @@ class ArrayUtils {
 	 * @return boolean
 	 * @api
 	 */
-	public static function string_array_isset($arr, $str_path) {
+	public static function _isset($arr, $str_path) {
 		$path = explode('.', $str_path);
 		return static::array_isset($arr, $path);
 	}
@@ -50,7 +50,7 @@ class ArrayUtils {
 	 * @param  string $str_path  nested keys separated by ".".
 	 * @api
 	 */
-	public static function string_array_unset(&$arr, $str_path) {
+	public static function _unset(&$arr, $str_path) {
 		$path = explode('.', $str_path);
 		static::array_unset($arr, $path);
 	}
@@ -135,13 +135,13 @@ class ArrayUtils {
 	 * @return array
 	 * @api
 	 */
-	public static function flateArray($arr) {
+	public static function flatten($arr) {
 		if(!is_array($arr))
 			return [$arr];
 		$res = [];
 		foreach($arr as $k=>$v) {
 			if(is_array($v))
-				$res = array_merge($res, static::flateArray($v));
+				$res = array_merge($res, static::flatten($v));
 			else
 				$res[] = $v;
 		}
@@ -155,7 +155,7 @@ class ArrayUtils {
 	 * @return array
 	 * @api
 	 */
-	public static function array_before($arr, $i) {
+	public static function before($arr, $i) {
 		$res = [];
 		foreach($arr as $k=>$v) {
 			if($k === $i)
@@ -172,7 +172,7 @@ class ArrayUtils {
 	 * @return array
 	 * @api
 	 */
-	public static function array_after($arr, $i) {
+	public static function after($arr, $i) {
 		$res = [];
 		$do = false;
 		foreach($arr as $k=>$v) {

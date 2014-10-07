@@ -721,7 +721,7 @@ class Schema implements SchemaInterface {
 	 * {@inheritDoc}
 	 */
 	public function dropAll() {
-		$tables = \Asgard\Common\ArrayUtils::flateArray($this->db->query('SHOW TABLES')->all());
+		$tables = \Asgard\Common\ArrayUtils::flatten($this->db->query('SHOW TABLES')->all());
 		foreach($tables as $table)
 			$this->db->query('DROP TABLE '.$table);
 	}

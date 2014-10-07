@@ -67,7 +67,7 @@ class Bag implements BagInterface {
 				$this->set($k, $v);
 		}
 		else
-			\Asgard\Common\ArrayUtils::string_array_set($this->data, $path, $value);
+			\Asgard\Common\ArrayUtils::set($this->data, $path, $value);
 
 		return $this;
 	}
@@ -81,7 +81,7 @@ class Bag implements BagInterface {
 	public function get($path, $default=null) {
 		if(!$this->has($path))
 			return $default;
-		return \Asgard\Common\ArrayUtils::string_array_get($this->data, $path);
+		return \Asgard\Common\ArrayUtils::get($this->data, $path);
 	}
 
 	/**
@@ -90,7 +90,7 @@ class Bag implements BagInterface {
 	 * @return boolean
 	 */
 	public function has($path) {
-		return \Asgard\Common\ArrayUtils::string_array_isset($this->data, $path);
+		return \Asgard\Common\ArrayUtils::_isset($this->data, $path);
 	}
 
 	/**
@@ -99,7 +99,7 @@ class Bag implements BagInterface {
 	 * @return Bag  $this
 	 */
 	public function delete($path) {
-		\Asgard\Common\ArrayUtils::string_array_unset($this->data, $path);
+		\Asgard\Common\ArrayUtils::_unset($this->data, $path);
 		return $this;
 	}
 

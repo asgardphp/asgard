@@ -60,7 +60,7 @@ class SessionManager implements \Asgard\Common\BagInterface {
 	 * @return boolean
 	 */
 	public function has($path) {
-		return \Asgard\Common\ArrayUtils::string_array_isset($_SESSION, $path);
+		return \Asgard\Common\ArrayUtils::_isset($_SESSION, $path);
 	}
 
 	/**
@@ -68,7 +68,7 @@ class SessionManager implements \Asgard\Common\BagInterface {
 	 * @param  string $path
 	 */
 	public function delete($path) {
-		\Asgard\Common\ArrayUtils::string_array_unset($_SESSION, $path);
+		\Asgard\Common\ArrayUtils::_unset($_SESSION, $path);
 	}
 
 	/**
@@ -79,7 +79,7 @@ class SessionManager implements \Asgard\Common\BagInterface {
 	public function get($path, $default=null) {
 		if(!$this->has($path))
 			return $default;
-		return \Asgard\Common\ArrayUtils::string_array_get($_SESSION, $path);
+		return \Asgard\Common\ArrayUtils::get($_SESSION, $path);
 	}
 
 	/**
@@ -94,7 +94,7 @@ class SessionManager implements \Asgard\Common\BagInterface {
 				static::set($k, $v);
 		}
 		else
-			\Asgard\Common\ArrayUtils::string_array_set($_SESSION, $path, $value);
+			\Asgard\Common\ArrayUtils::set($_SESSION, $path, $value);
 	}
 
 	/**
