@@ -145,7 +145,6 @@ class ArrayUtils {
 			else
 				$res[] = $v;
 		}
-
 		return $res;
 	}
 

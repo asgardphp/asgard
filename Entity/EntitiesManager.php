@@ -161,9 +161,11 @@ class EntitiesManager implements EntitiesManagerInterface {
 			return $this->definitions[$entityClass];
 
 		$hooksManager = $this->getHooksManager();
-		$definition = $this->getCache()->fetch('entitiesmanager.'.$entityClass.'.definition', function() use($entityClass, $hooksManager) {
-			return new EntityDefinition($entityClass, $this, $hooksManager);
-		});
+		$definition = false;
+		if($cache = $this->getCache())
+			$definition = $cache->fetch('entitiesmanager.'.$entityClass.'.definition');
+		if($definition === false)
+			$definition = new EntityDefinition($entityClass, $this, $hooksManager);
 		$definition->setEntitiesManager($this);
 		$definition->setGeneralHooksManager($hooksManager);
 

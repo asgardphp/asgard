@@ -106,7 +106,7 @@ class EntityDefinition {
 
 	/**
 	 * Return the services container.
-	 * @return \Asgard\Container\Container
+	 * @return \Asgard\Container\ContainerInterface
 	 */
 	public function getContainer() {
 		return $this->entitiesManager->getContainer();

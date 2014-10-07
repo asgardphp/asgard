@@ -12,12 +12,14 @@
     "require": {
         "php": ">=5.4.0",
         "doctrine/annotations": "1.*",
-        "asgard/cache": "0.*",
         "asgard/common": "0.*",
         "asgard/file": "0.*",
         "asgard/hook": "0.*",
         "asgard/container": "0.*",
         "asgard/debug": "0.*",
         "asgard/templating": "0.*"
+    },
+    "suggest": {
+        "asgard/cache": "0.*"
     }
 }

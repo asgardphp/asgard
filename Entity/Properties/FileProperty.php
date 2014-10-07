@@ -11,6 +11,32 @@ class FileProperty extends \Asgard\Entity\Property {
 	 * @var array
 	 */
 	protected static $defaultExtensions = ['pdf', 'doc', 'jpg', 'jpeg', 'png', 'docx', 'gif', 'rtf', 'ppt', 'xls', 'zip', 'txt'];
+	/**
+	 * Web directory.
+	 * @var string
+	 */
+	protected $webDir;
+	/**
+	 * URL dependency.
+	 * @var \Asgard\Http\URLInterface
+	 */
+	protected $url;
+
+	/**
+	 * Set the web directory.
+	 * @param string $webDir
+	 */
+	public function setWebDir($webDir) {
+		$this->webDir = $webDir;
+	}
+
+	/**
+	 * Set the URL dependency.
+	 * @param \Asgard\Http\URLInterface $url
+	 */
+	public function setUrl(\Asgard\Http\URLInterface $url) {
+		$this->url = $url;
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -48,6 +74,9 @@ class FileProperty extends \Asgard\Entity\Property {
 		return null;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	protected function doSerialize($obj) {
 		if(is_object($obj))
 			return $obj->src();
@@ -60,11 +89,8 @@ class FileProperty extends \Asgard\Entity\Property {
 		if(!$str || !file_exists($str))
 			return null;
 		$file = new \Asgard\Entity\File($str);
-		$container = $this->definition->getContainer();
-		if($container->has('config') && isset($container['config']['webdir']))
-			$file->setWebDir($container['config']['webdir']);
-		if($container->has('httpKernel'))
-			$file->setUrl($container['httpKernel']->getRequest()->url);
+		$file->setWebDir($this->webDir);
+		$file->setUrl($this->url);
 		$file->setDir($this->get('dir'));
 		$file->setWeb($this->get('web'));
 		return $file;
@@ -79,11 +105,8 @@ class FileProperty extends \Asgard\Entity\Property {
 		if(is_object($val)) {
 			if($val instanceof \Asgard\Http\HttpFile)
 				$val = new \Asgard\Entity\File($val->src(), $val->getName());
-			$container = $this->definition->getContainer();
-			if($container->has('config') && isset($container['config']['webdir']))
-				$val->setWebDir($container['config']['webdir']);
-			if($container->has('httpKernel'))
-				$val->setUrl($container['httpKernel']->getRequest()->url);
+			$val->setWebDir($this->webDir);
+			$val->setUrl($this->url);
 			$val->setDir($this->get('dir'));
 			$val->setWeb($this->get('web'));
 		}

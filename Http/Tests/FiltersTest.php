@@ -10,8 +10,7 @@ use \Asgard\Http\Route;
 
 class FiltersTest extends \PHPUnit_Framework_TestCase {
 	public function testFilterAll() {
-		$cache = new \Asgard\Cache\Cache;
-		$resolver = new \Asgard\Http\Resolver($cache);
+		$resolver = new \Asgard\Http\Resolver;
 		$httpKernel = new HttpKernel;
 		$httpKernel->setResolver($resolver);
 		$httpKernel->setHooksManager(new \Asgard\Hook\HooksManager);
@@ -24,8 +23,7 @@ class FiltersTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testFilter() {
-		$cache = new \Asgard\Cache\Cache;
-		$resolver = new \Asgard\Http\Resolver($cache);
+		$resolver = new \Asgard\Http\Resolver;
 		$httpKernel = new HttpKernel;
 		$httpKernel->setResolver($resolver);
 		$httpKernel->setHooksManager(new \Asgard\Hook\HooksManager);
@@ -38,8 +36,7 @@ class FiltersTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testBeforeAll() {
-		$cache = new \Asgard\Cache\Cache;
-		$resolver = new \Asgard\Http\Resolver($cache);
+		$resolver = new \Asgard\Http\Resolver;
 		$httpKernel = new HttpKernel;
 		$httpKernel->setResolver($resolver);
 		$httpKernel->setHooksManager(new \Asgard\Hook\HooksManager);
@@ -52,8 +49,7 @@ class FiltersTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testBefore() {
-		$cache = new \Asgard\Cache\Cache;
-		$resolver = new \Asgard\Http\Resolver($cache);
+		$resolver = new \Asgard\Http\Resolver;
 		$httpKernel = new HttpKernel;
 		$httpKernel->setResolver($resolver);
 		$httpKernel->setHooksManager(new \Asgard\Hook\HooksManager);
@@ -66,8 +62,7 @@ class FiltersTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testAfterAll() {
-		$cache = new \Asgard\Cache\Cache;
-		$resolver = new \Asgard\Http\Resolver($cache);
+		$resolver = new \Asgard\Http\Resolver;
 		$httpKernel = new HttpKernel;
 		$httpKernel->setResolver($resolver);
 		$httpKernel->setHooksManager(new \Asgard\Hook\HooksManager);
@@ -80,8 +75,7 @@ class FiltersTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testAfter() {
-		$cache = new \Asgard\Cache\Cache;
-		$resolver = new \Asgard\Http\Resolver($cache);
+		$resolver = new \Asgard\Http\Resolver;
 		$httpKernel = new HttpKernel;
 		$httpKernel->setResolver($resolver);
 		$httpKernel->setHooksManager(new \Asgard\Hook\HooksManager);

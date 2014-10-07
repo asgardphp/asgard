@@ -40,7 +40,7 @@ class Behavior {
 
 	/**
 	 * Get entity definition container.
-	 * @return \Asgard\Container\Container
+	 * @return \Asgard\Container\ContainerInterface
 	 */
 	public function getContainer() {
 		return $this->definition->getContainer();

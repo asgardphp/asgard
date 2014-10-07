@@ -18,7 +18,7 @@ class Application extends \Symfony\Component\Console\Application {
 	 * @param \Asgard\Container\ContainerInterface $container The application container
 	 * @api
 	*/
-	public function __construct($name, $version=null, $container=null) {
+	public function __construct($name, $version=null, \Asgard\Container\ContainerInterface $container=null) {
 		$this->container = $container;
 		parent::__construct($name, $version);
 		$this->setCatchExceptions(false);

@@ -438,10 +438,6 @@ class Group implements GroupInterface {
 		}
 
 		$validator->set('group', $this);
-		if($container = $this->getContainer()) {
-			$validator->setRegistry($container['rulesregistry']);
-			$validator->setTranslator($container['translator']);
-		}
 		$validator->attributes($constrains);
 		$validator->attributesMessages($messages);
 		return $validator;

@@ -135,7 +135,8 @@ class Resolver implements ResolverInterface {
 	public function getRoute(Request $request) {
 		$request_key = sha1(serialize([$request->method(), $request->url->get()]));
 
-		$results = $this->cache->fetch('Router/requests/'.$request_key, function() use($request) {
+		$results = $this->cache->fetch('Router/requests/'.$request_key);
+		if($results === false) {
 			/* PARSE ALL ROUTES */
 			foreach($this->routes as $r) {
 				$route = $r->getRoute();
@@ -143,10 +144,12 @@ class Resolver implements ResolverInterface {
 				$method = $r->get('method');
 
 				/* IF THE ROUTE MATCHES */
-				if(($results = static::match($request, $route, $requirements, $method)) !== false)
-					return ['route' => $r, 'params' => $results];
+				if(($results = static::match($request, $route, $requirements, $method)) !== false) {
+					$results = ['route' => $r, 'params' => $results];
+					break;
+				}
 			}
-		});
+		};
 
 		if(!$results)
 			return null;

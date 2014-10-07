@@ -11,7 +11,9 @@
     },
     "require": {
         "php": ">=5.4.0",
-        "asgard/http": "0.*",
         "psr/log": "1.*"
+    },
+    "require-dev": {
+        "asgard/http": "0.*"
     }
 }

@@ -38,6 +38,12 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			$entitiesManager->setValidatorFactory($container->createFactory('validator'));
 			return $entitiesManager;
 		});
+		$container->register('Asgard.Entity.PropertyType.file', function($container, $params) {
+			$prop = new \Asgard\Entity\Properties\FileProperty($params);
+			$prop->setWebDir($container['config']['webdir']);
+			$prop->setUrl($container['httpKernel']->getRequest()->url);
+			return $prop;
+		});
 
 		#FORMInterface
 		$container->setParentClass('widgetsManager', 'Asgard\Form\WidgetsManagerInterface');

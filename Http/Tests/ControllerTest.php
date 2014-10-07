@@ -31,8 +31,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testControllerRoute() {
-		$cache = new \Asgard\Cache\Cache;
-		$resolver = new Resolver($cache);
+		$resolver = new Resolver;
 		$resolver->addRoute(new Route('test', 'Asgard\Http\Tests\Fixtures\Controllers\FooController', 'page'));
 		$request = new Request;
 		$request->url->setURL('test');

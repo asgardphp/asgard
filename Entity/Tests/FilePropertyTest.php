@@ -6,10 +6,7 @@ class FilePropertyTest extends \PHPUnit_Framework_TestCase {
 
 	public static function setUpBeforeClass() {
 		$container = new \Asgard\Container\Container;
-		$container['config'] = new \Asgard\Config\Config;
-		$container['config']['webdir'] = __DIR__.'/Fixtures/';
 		$container['hooks'] = new \Asgard\Hook\HooksManager($container);
-		$container['cache'] = new \Asgard\Cache\NullCache;
 		$container['rulesregistry'] = new \Asgard\Validation\RulesRegistry;
 		$container['rulesregistry']->registerNamespace('Asgard\File\Rules');
 		$container['httpKernel'] = new \Asgard\Http\HttpKernel;
@@ -22,6 +19,12 @@ class FilePropertyTest extends \PHPUnit_Framework_TestCase {
 		$request->url->setHost('localhost');
 		$request->url->setRoot('folder');
 		$container['httpKernel']->addRequest($request);
+		$container->register('Asgard.Entity.PropertyType.file', function($container, $params) {
+			$prop = new \Asgard\Entity\Properties\FileProperty($params);
+			$prop->setWebDir(__DIR__.'/Fixtures/');
+			$prop->setUrl($container['httpKernel']->getRequest()->url);
+			return $prop;
+		});
 
 		$entitiesManager = $container['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($container);
 		$entitiesManager->setValidatorFactory($container->createFactory('validator'));

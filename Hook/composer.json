@@ -10,8 +10,10 @@
         "php": ">=5.4.0",
         "jeremeamia/SuperClosure": "1.*",
         "doctrine/annotations": "1.*",
-        "asgard/cache": "0.*",
         "asgard/container": "0.*"
+    },
+    "suggest": {
+        "asgard/cache": "0.*"
     },
     "autoload": {
         "psr-4": {"Asgard\\Hook\\": "."}

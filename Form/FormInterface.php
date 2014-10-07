@@ -32,7 +32,7 @@ interface FormInterface extends GroupInterface {
 
 	/**
 	 * Get container from this form or parent.
-	 * @return \Asgard\Container\Container
+	 * @return \Asgard\Container\ContainerInterface
 	 */
 	public function getContainer();
 
