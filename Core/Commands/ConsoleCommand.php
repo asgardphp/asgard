@@ -6,6 +6,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Console command.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class ConsoleCommand extends \Asgard\Console\Command {
 	/**

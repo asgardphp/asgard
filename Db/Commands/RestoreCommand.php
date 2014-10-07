@@ -7,6 +7,7 @@ use Symfony\Component\Console\Input\InputArgument;
 
 /**
  * Restore a backup command.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class RestoreCommand extends \Asgard\Console\Command {
 	/**

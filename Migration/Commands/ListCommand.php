@@ -6,6 +6,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * List migrations command.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class ListCommand extends \Asgard\Console\Command {
 	/**

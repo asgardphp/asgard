@@ -8,6 +8,7 @@ use Symfony\Component\Console\Input\InputArgument;
 
 /**
  * Browser command.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class BrowserCommand extends \Asgard\Console\Command {
 	/**

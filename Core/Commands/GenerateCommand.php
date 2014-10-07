@@ -8,6 +8,7 @@ use Symfony\Component\Console\Input\InputArgument;
 
 /**
  * Generate command.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class GenerateCommand extends \Asgard\Console\Command {
 	/**

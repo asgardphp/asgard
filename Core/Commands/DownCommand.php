@@ -6,6 +6,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Maintenance down command.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class DownCommand extends \Asgard\Console\Command {
 	/**

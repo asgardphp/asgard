@@ -7,6 +7,7 @@ use Symfony\Component\Console\Input\InputArgument;
 
 /**
  * Unmigrate command.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class UnmigrateCommand extends \Asgard\Console\Command {
 	/**

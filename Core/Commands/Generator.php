@@ -3,6 +3,7 @@ namespace Asgard\Core\Commands;
 
 /**
  * Generator.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class Generator {
 	use \Asgard\Container\ContainerAwareTrait;

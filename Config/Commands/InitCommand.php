@@ -6,6 +6,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Init config command.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class InitCommand extends \Asgard\Console\Command {
 	/**

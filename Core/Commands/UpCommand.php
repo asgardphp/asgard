@@ -6,6 +6,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Maintenance up command.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class UpCommand extends \Asgard\Console\Command {
 	/**

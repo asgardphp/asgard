@@ -6,6 +6,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Refresh migrations command.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class RefreshCommand extends \Asgard\Console\Command {
 	/**

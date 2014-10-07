@@ -6,6 +6,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Empty the tables command.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class EmptyCommand extends \Asgard\Console\Command {
 	/**

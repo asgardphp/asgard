@@ -7,6 +7,7 @@ use Symfony\Component\Console\Input\InputArgument;
 
 /**
  * Remove a migration command.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class RemoveCommand extends \Asgard\Console\Command {
 	/**

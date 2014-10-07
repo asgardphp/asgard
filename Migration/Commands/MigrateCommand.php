@@ -6,6 +6,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Migrate command.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class MigrateCommand extends \Asgard\Console\Command {
 	/**

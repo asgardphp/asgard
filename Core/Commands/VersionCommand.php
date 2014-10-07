@@ -6,6 +6,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Show version command.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class VersionCommand extends \Asgard\Console\Command {
 	/**

@@ -9,6 +9,7 @@ use Asgard\Core\Publisher;
 
 /**
  * Publish command.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class PublishCommand extends \Asgard\Console\Command {
 	/**

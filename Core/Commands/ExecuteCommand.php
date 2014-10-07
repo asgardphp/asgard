@@ -7,6 +7,7 @@ use Symfony\Component\Console\Input\InputArgument;
 
 /**
  * Execute command.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class ExecuteCommand extends \Asgard\Console\Command {
 	/**

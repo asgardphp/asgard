@@ -6,6 +6,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Compile command.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class CompileCommand extends \Asgard\Console\Command {
 	/**

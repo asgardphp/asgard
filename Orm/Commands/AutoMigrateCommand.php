@@ -7,6 +7,7 @@ use Symfony\Component\Console\Input\InputArgument;
 
 /**
  * Automigrate command.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class AutoMigrateCommand extends \Asgard\Console\Command {
 	/**

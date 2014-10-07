@@ -6,6 +6,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Routes command.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class RoutesCommand extends \Asgard\Console\Command {
 	/**

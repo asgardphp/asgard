@@ -6,6 +6,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * Rollback command.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class RollbackCommand extends \Asgard\Console\Command {
 	/**

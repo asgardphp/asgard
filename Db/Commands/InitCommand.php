@@ -7,6 +7,7 @@ use Symfony\Component\Console\Input\InputOption;
 
 /**
  * Init the database command.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class InitCommand extends \Asgard\Console\Command {
 	/**

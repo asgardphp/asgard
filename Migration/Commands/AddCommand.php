@@ -7,6 +7,7 @@ use Symfony\Component\Console\Input\InputArgument;
 
 /**
  * Add a migration command.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class AddCommand extends \Asgard\Console\Command {
 	/**

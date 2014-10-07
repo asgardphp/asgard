@@ -7,6 +7,7 @@ use Symfony\Component\Console\Input\InputOption;
 
 /**
  * List available services command.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class ListCommand extends \Asgard\Console\Command {
 	/**

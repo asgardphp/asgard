@@ -7,6 +7,7 @@ use Symfony\Component\Console\Input\InputArgument;
 
 /**
  * Dump the database command.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class DumpCommand extends \Asgard\Console\Command {
 	/**

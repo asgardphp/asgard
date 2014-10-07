@@ -9,6 +9,7 @@ use Asgard\Core\Publisher;
 
 /**
  * Install a module command.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class InstallCommand extends \Asgard\Console\Command {
 	/**

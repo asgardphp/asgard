@@ -7,6 +7,7 @@ use Symfony\Component\Console\Input\InputArgument;
 
 /**
  * Generate tests command.
+ * @author Michel Hognerud <michel@hognerud.com>
  */
 class GenerateTestsCommand extends \Asgard\Console\Command {
 	/**
