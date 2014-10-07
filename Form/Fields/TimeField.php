@@ -20,9 +20,9 @@ class TimeField extends \Asgard\Form\Field {
 	 */
 	public function setValue($value) {
 		if(is_array($value) && isset($value['hour']) && isset($value['minute']) && isset($value['second']))
-			$this->value = \Carbon\Carbon::createFromTime($value['hour'], $value['minute'], $value['second']);
+			$this->value = \Asgard\Common\Time::createFromTime($value['hour'], $value['minute'], $value['second']);
 		elseif(is_string($value))
-			$this->value = \Carbon\Carbon::createFromFormat('Y-m-d', $value);
+			$this->value = \Asgard\Common\Time::createFromFormat('Y-m-d', $value);
 	}
 
 	/**

@@ -10,7 +10,7 @@ class Date extends \Asgard\Validation\Rule {
 	 * {@inheritDoc}
 	 */
 	public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\ValidatorInterface $validator) {
-		if($input instanceof \Carbon\Carbon)
+		if($input instanceof \Asgard\Common\DatetimeInterface)
 			return true;
 		if(is_string($input))
 			return preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/', $input) === 1;

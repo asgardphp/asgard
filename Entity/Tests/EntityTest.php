@@ -22,7 +22,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testToArray() {
-		$date = new \Carbon\Carbon;
+		$date = new \Asgard\Common\Datetime;
 
 		$news = new Classes\News([
 			'title' => 'Test Title',
@@ -239,7 +239,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 		$news = $em->make('Asgard\Entity\Tests\Classes\News', [
 			'title' => 'Test Title',
 			'content' => 'Test Content',
-			'published' => \Carbon\Carbon::create(2009, 9, 9),
+			'published' => \Asgard\Common\Datetime::create(2009, 9, 9),
 		]);
 		$this->assertEquals('Test Title', $news->title);
 		$this->assertEquals('Test Content', $news->content);
@@ -258,7 +258,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 		$news = new Classes\News([
 			'title' => 'Test Title',
 			'content' => 'Test Content',
-			'published' => \Carbon\Carbon::create(2009, 9, 9),
+			'published' => \Asgard\Common\Datetime::create(2009, 9, 9),
 		]);
 		$this->assertEquals('Test Title', $news->title);
 		$this->assertEquals('Test Content', $news->content);
@@ -320,7 +320,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 				'id' => null,
 				'title' => 'bla',
 				'content' => 'Test Content',
-				#'published' => \Carbon\Carbon::create(2009, 9, 9),
+				#'published' => \Asgard\Common\Datetime::create(2009, 9, 9),
 				'another_property' => ''
 			],
 			$newsArray
@@ -331,17 +331,17 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 			new Classes\News([
 				'title' => 'Title 1',
 				'content' => 'Content 1',
-				'published' => \Carbon\Carbon::create(2009, 9, 9),
+				'published' => \Asgard\Common\Datetime::create(2009, 9, 9),
 			]),
 			new Classes\News([
 				'title' => 'Title 2',
 				'content' => 'Content 2',
-				'published' => \Carbon\Carbon::create(2009, 9, 9),
+				'published' => \Asgard\Common\Datetime::create(2009, 9, 9),
 			]),
 			new Classes\News([
 				'title' => 'Title 3',
 				'content' => 'Content 3',
-				'published' => \Carbon\Carbon::create(2009, 9, 9),
+				'published' => \Asgard\Common\Datetime::create(2009, 9, 9),
 			]),
 		];
 		$this->assertEquals(

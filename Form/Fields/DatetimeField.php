@@ -20,9 +20,9 @@ class DatetimeField extends \Asgard\Form\Field {
 	 */
 	public function setValue($value) {
 		if(is_array($value) && isset($value['year']) && isset($value['month']) && isset($value['day']) && isset($value['hour']) && isset($value['minute']) && isset($value['second']))
-			$this->value = \Carbon\Carbon::create($value['year'], $value['month'], $value['day'], $value['hour'], $value['minute'], $value['second']);
+			$this->value = \Asgard\Common\Datetime::create($value['year'], $value['month'], $value['day'], $value['hour'], $value['minute'], $value['second']);
 		elseif(is_string($value))
-			$this->value = \Carbon\Carbon::createFromFormat('Y-m-d', $value);
+			$this->value = \Asgard\Common\Datetime::createFromFormat('Y-m-d', $value);
 	}
 
 	/**

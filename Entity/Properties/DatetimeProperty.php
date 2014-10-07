@@ -11,7 +11,7 @@ class DatetimeProperty extends \Asgard\Entity\Property {
 	 */
 	public function getRules() {
 		$rules = parent::getRules();
-		$rules['isinstanceof'] = 'Carbon\Carbon';
+		$rules['isinstanceof'] = 'Asgard\Common\DatetimeInterface';
 
 		return $rules;
 	}
@@ -30,7 +30,7 @@ class DatetimeProperty extends \Asgard\Entity\Property {
 	 * {@inheritDoc}
 	 */
 	public function _getDefault() {
-		return \Carbon\Carbon::now();
+		return \Asgard\Common\Datetime::now();
 	}
 
 	/**
@@ -46,18 +46,18 @@ class DatetimeProperty extends \Asgard\Entity\Property {
 	 * {@inheritDoc}
 	 */
 	protected function doUnserialize($str) {
-		return \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $str);
+		return \Asgard\Common\Datetime::createFromFormat('Y-m-d H:i:s', $str);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function doSet($val, \Asgard\Entity\Entity $entity, $name) {
-		if($val instanceof \Carbon\Carbon)
+		if($val instanceof \Asgard\Common\DatetimeInterface)
 			return $val;
 		elseif(is_string($val)) {
 			try {
-				return \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $val);
+				return \Asgard\Common\Datetime::createFromFormat('Y-m-d H:i:s', $val);
 			} catch(\Exception $e) {
 				return $val;
 			}
