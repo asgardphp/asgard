@@ -148,8 +148,8 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		$container->setParentClass('datamapper', 'Asgard\Orm\DataMapperInterface');
 		$container->register('datamapper', function($container) {
 			return new \Asgard\Orm\DataMapper(
-				$container['entitiesManager'],
 				$container['db'],
+				$container['entitiesManager'],
 				$container['config']['locale'],
 				$container['config']['database/prefix'],
 				$container->createFactory('orm'),
