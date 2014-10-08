@@ -41,7 +41,8 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		$container->register('Asgard.Entity.PropertyType.file', function($container, $params) {
 			$prop = new \Asgard\Entity\Properties\FileProperty($params);
 			$prop->setWebDir($container['config']['webdir']);
-			$prop->setUrl($container['httpKernel']->getRequest()->url);
+			if($container['httpKernel']->getRequest())
+				$prop->setUrl($container['httpKernel']->getRequest()->url);
 			return $prop;
 		});
 
@@ -241,6 +242,12 @@ class Bundle extends \Asgard\Core\BundleLoader {
 				$dbDump = new \Asgard\Db\Commands\DumpCommand($db, $container['kernel']['root'].'/storage/dumps/sql');
 				$container['console']->add($dbDump);
 			} catch(\Exception $e) {}
+
+			$showEnv = new \Asgard\Core\Commands\ShowEnvironmentCommand($container['kernel']);
+			$container['console']->add($showEnv);
+
+			$switchEnv = new \Asgard\Core\Commands\SwitchEnvironmentCommand($container['kernel']);
+			$container['console']->add($switchEnv);
 
 			$httpRoutes = new \Asgard\Http\Commands\RoutesCommand($container['resolver']);
 			$container['console']->add($httpRoutes);

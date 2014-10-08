@@ -31,6 +31,7 @@ class BrowserCommand extends \Asgard\Console\Command {
 	 */
 	public function __construct(\Asgard\Http\HttpKernelInterface $httpKernel) {
 		$this->httpKernel = $httpKernel;
+		parent::__construct();
 	}
 
 	/**
