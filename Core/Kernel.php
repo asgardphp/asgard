@@ -47,7 +47,7 @@ class Kernel implements \ArrayAccess {
 
 	/**
 	 * Get the services container.
-	 * @return \Asgard\Container\Container
+	 * @return \Asgard\Container\ContainerInterface
 	 */
 	public function getContainer() {
 		if(!$this->container) {
@@ -174,7 +174,7 @@ class Kernel implements \ArrayAccess {
 	/**
 	 * Register the bundle's services.
 	 * @param  string $cache
-	 * @return \Asgard\Container\Container
+	 * @return \Asgard\Container\ContainerInterface
 	 */
 	protected function buildContainer($cache=null) {
 		if($cache) {
