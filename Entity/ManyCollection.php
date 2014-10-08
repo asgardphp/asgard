@@ -35,8 +35,8 @@ class ManyCollection implements \ArrayAccess, \Iterator, \Countable {
 	 */
 	public function __construct($definition, $entity, $name) {
 		$this->definition = $definition;
-		$this->entity = $entity;
-		$this->name = $name;
+		$this->entity     = $entity;
+		$this->name       = $name;
 	}
 
 	/**

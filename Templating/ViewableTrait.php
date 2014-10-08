@@ -77,7 +77,7 @@ trait ViewableTrait {
 	 */
 	protected function runTemplate($method, array $args=[]) {
 		ob_start();
-		$result = call_user_func_array([$this, $method], $args);
+		$result         = call_user_func_array([$this, $method], $args);
 		$viewableBuffer = ob_get_clean();
 
 		#result returned by method?

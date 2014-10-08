@@ -38,8 +38,8 @@ class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 	 */
 	public function __construct(
 		\Asgard\Entity\Entity  $entity,
-		array                  $options            = [],
-		\Asgard\Http\Request   $request            = null,
+		array                  $options = [],
+		\Asgard\Http\Request   $request = null,
 		EntityFieldsSolverInterface     $entityFieldsSolver = null,
 		\Asgard\Orm\DataMapperInterface $dataMapper         = null
 	) {
@@ -227,7 +227,6 @@ class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 	 */
 	protected function getEntityFieldOptions(\Asgard\Entity\Property $property) {
 		$options = [];
-
 		$options['form'] = $this;
 
 		if(isset($property->get('form')['validation'])) {

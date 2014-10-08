@@ -423,10 +423,10 @@ class Column {
 	 * @param integer $length
 	 */
 	public function __construct(DBInterface $db, $table, $name, $type=null, $length=null) {
-		$this->db = $db;
-		$this->table = $table;
-		$this->name = $name;
-		$this->type = $type;
+		$this->db     = $db;
+		$this->table  = $table;
+		$this->name   = $name;
+		$this->type   = $type;
 		$this->length = $length;
 	}
 

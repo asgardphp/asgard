@@ -24,7 +24,7 @@ class DynamicGroup extends Group {
 	 * @param callable $default_render
 	 */
 	public function __construct($cb=null, $default_render=null) {
-		$this->cb = $cb;
+		$this->cb             = $cb;
 		$this->default_render = $default_render;
 	}
 

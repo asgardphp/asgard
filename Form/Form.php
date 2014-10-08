@@ -13,8 +13,8 @@ class Form extends Group implements FormInterface {
 	 * @var array
 	 */
 	protected $options = [
-		'method'	=>	'post',
-		'action'	=>	'',
+		'method' => 'post',
+		'action' => '',
 	];
 	/**
 	 * HTTP method.
@@ -55,10 +55,10 @@ class Form extends Group implements FormInterface {
 	 * @param array                $fields
 	 */
 	public function __construct(
-		$name=null,
-		array $options=[],
-		\Asgard\Http\Request $request=null,
-		array $fields=[]
+		$name                         = null,
+		array $options                = [],
+		\Asgard\Http\Request $request = null,
+		array $fields                 = []
 		) {
 		$this->name = $name;
 		$this->options = $options;

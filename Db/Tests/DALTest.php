@@ -47,7 +47,7 @@ class DALTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals('SELECT `id` AS `i`, `title` AS `t` FROM `news`', $this->getDAL()->from('news')->select('id i')->addSelect('title t')->buildSQL());
 
 		/* OFFSET */
-		$this->assertEquals('SELECT * FROM `news` LIMIT 10, 18446744073709551615', $this->getDAL()->from('news')->offset(10)->buildSQL());
+		$this->assertEquals('SELECT * FROM `news` LIMIT 10, '.PHP_INT_MAX, $this->getDAL()->from('news')->offset(10)->buildSQL());
 
 		/* LIMIT */
 		$this->assertEquals('SELECT * FROM `news` LIMIT 10', $this->getDAL()->from('news')->limit(10)->buildSQL());

@@ -56,9 +56,9 @@ class Group implements GroupInterface {
 	 */
 	public function __construct(
 		array $fields,
-		$name=null,
-		array $data=[],
-		$parent=null
+		$name       = null,
+		array $data = [],
+		$parent     = null
 		) {
 		$this->addFields($fields);
 		$this->name = $name;

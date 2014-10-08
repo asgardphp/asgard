@@ -15,12 +15,12 @@ class Report {
 	 * Rules errors.
 	 * @var array<string>
 	 */
-	protected $rules=[];
+	protected $rules = [];
 	/**
 	 * Attributes errors.
 	 * @var array
 	 */
-	protected $attributes=[];
+	protected $attributes = [];
 
 	/**
 	 * Constructor.

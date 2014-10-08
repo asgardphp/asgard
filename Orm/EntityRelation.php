@@ -45,12 +45,12 @@ class EntityRelation {
 	 * @param array                           $params
 	 */
 	public function __construct(\Asgard\Entity\EntityDefinition $entityDefinition, DataMapperInterface $dataMapper, $name, array $params) {
-		$entityClass = $entityDefinition->getClass();
-		$this->entityClass = $entityClass;
+		$entityClass            = $entityDefinition->getClass();
+		$this->entityClass      = $entityClass;
 		$this->entityDefinition = $entityDefinition;
-		$this->dataMapper = $dataMapper;
-		$this->params = $params;
-		$this->params['name'] = $this->name = $name;
+		$this->dataMapper       = $dataMapper;
+		$this->params           = $params;
+		$this->params['name']   = $this->name = $name;
 	}
 
 	/**
@@ -102,7 +102,7 @@ class EntityRelation {
 	 * @return string
 	 */
 	public function getTable($prefix=null) {
-		$entityShortName = $this->entityDefinition->getShortName();
+		$entityShortName         = $this->entityDefinition->getShortName();
 		$relationEntityShortName = $this->getTargetDefinition()->getShortName();
 
 		if($entityShortName < $relationEntityShortName)

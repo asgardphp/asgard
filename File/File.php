@@ -37,7 +37,7 @@ class File {
 	 * @param string $src
 	 */
 	public function setSrc($src) {
-		$this->src = realpath($src);
+		$this->src = $this->formatPath($src);
 	}
 
 	/**

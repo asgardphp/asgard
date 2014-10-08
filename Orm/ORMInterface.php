@@ -141,7 +141,7 @@ interface ORMInterface {
 	 *
 	 * @return \Asgard\Orm\ORMInterface $this
 	*/
-	public function paginate($page, $per_page=10);
+	public function paginate($page=1, $per_page=10);
 
 	/**
 	 * Returns the paginator tool.

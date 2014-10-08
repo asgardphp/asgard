@@ -31,8 +31,8 @@ class HttpFile extends \Asgard\File\File {
 	 * @param integer $error
 	 */
 	public function __construct($src, $name, $type, $size, $error) {
-		$this->type = $type;
-		$this->size = $size;
+		$this->type  = $type;
+		$this->size  = $size;
 		$this->error = $error;
 		parent::__construct($src, $name);
 		$this->setUploaded(true);

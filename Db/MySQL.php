@@ -39,9 +39,9 @@ class MySQL {
 		$cmd = 'mysql -h '.$host.' -u '.$user.($pwd ? ' -p'.$pwd:'').' '.$db.' < '.realpath($src);
 		$process = proc_open($cmd,
 			[
-			   0 => ["pipe", "r"],
-			   1 => ["pipe", "w"],
-			   2 => ["pipe", "w"],
+				0 => ["pipe", "r"],
+				1 => ["pipe", "w"],
+				2 => ["pipe", "w"],
 			],
 			$pipes
 		);
@@ -64,9 +64,9 @@ class MySQL {
 		$cmd = 'mysqldump --user='.$user.' --password='.$pwd.' --host='.$host.' '.$db.' > '.$dst;
 		$process = proc_open($cmd,
 			[
-			   0 => ["pipe", "r"],
-			   1 => ["pipe", "w"],
-			   2 => ["pipe", "w"],
+				0 => ["pipe", "r"],
+				1 => ["pipe", "w"],
+				2 => ["pipe", "w"],
 			],
 			$pipes
 		);

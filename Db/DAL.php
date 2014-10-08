@@ -255,15 +255,15 @@ class DAL {
 	 * @api
 	 */
 	public function reset() {
-		$this->tables = [];
+		$this->tables  = [];
 		$this->columns = [];
-		$this->where = [];
-		$this->offset = null;
-		$this->limit = null;
+		$this->where   = [];
+		$this->offset  = null;
+		$this->limit   = null;
 		$this->orderBy = null;
 		$this->groupBy = null;
-		$this->joins = [];
-		$this->params = [];
+		$this->joins   = [];
+		$this->params  = [];
 
 		return $this;
 	}
@@ -760,7 +760,7 @@ class DAL {
 			if($this->limit)
 				$limit .= ', '.$this->limit;
 			else
-				$limit .= ', 18446744073709551615';
+				$limit .= ', '.PHP_INT_MAX;
 		}
 		else
 			$limit .= $this->limit;
@@ -962,10 +962,10 @@ class DAL {
 		$dal = clone $this;
 		if($group_by) {
 			$dal->select($group_by.' groupby, '.strtoupper($fct).'('.$what.') '.$fct)
-				->groupBy($group_by)
-				->offset(null)
-				->orderBy(null)
-				->limit(null);
+			    ->groupBy($group_by)
+			    ->offset(null)
+			    ->orderBy(null)
+			    ->limit(null);
 			$res = [];
 			foreach($dal->get() as $v)
 				$res[$v['groupby']] = $v[$fct];
@@ -973,10 +973,10 @@ class DAL {
 		}
 		else {
 			$dal->select($fct.'('.$what.') '.$fct)
-				->groupBy(null)
-				->offset(null)
-				->orderBy(null)
-				->limit(null);
+			    ->groupBy(null)
+			    ->offset(null)
+			    ->orderBy(null)
+			    ->limit(null);
 			return \Asgard\Common\ArrayUtils::array_get($dal->first(), $fct);
 		}
 	}

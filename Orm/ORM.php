@@ -500,13 +500,11 @@ class ORM implements ORMInterface {
 	/**
 	 * {@inheritDoc}
 	*/
-	public function paginate($page, $per_page=10) {
-		$page = $page ? $page:1;
-		$this->offset(($page-1)*$per_page);
-		$this->limit($per_page);
-
+	public function paginate($page=1, $per_page=10) {
 		$this->page = $page;
 		$this->per_page = $per_page;
+		$this->offset(($this->page-1)*$this->per_page);
+		$this->limit($this->per_page);
 
 		return $this;
 	}
@@ -529,7 +527,6 @@ class ORM implements ORMInterface {
 	*/
 	public function with($with, \Closure $closure=null) {
 		$this->with[$with] = $closure;
-
 		return $this;
 	}
 
@@ -672,12 +669,12 @@ class ORM implements ORMInterface {
 	 * {@inheritDoc}
 	*/
 	public function reset() {
-		$this->where = [];
-		$this->with = [];
+		$this->where   = [];
+		$this->with    = [];
 		$this->orderBy = null;
-		$this->limit = null;
-		$this->offset = null;
-		$this->join = [];
+		$this->limit   = null;
+		$this->offset  = null;
+		$this->join    = [];
 
 		return $this;
 	}

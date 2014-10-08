@@ -37,7 +37,7 @@ class MigrationsManager implements MigrationsManagerInterface {
 	public function __construct($directory, \Asgard\Container\ContainerInterface $container=null) {
 		$this->directory = $directory;
 		$this->container = $container;
-		$this->tracker = new Tracker($directory);
+		$this->tracker   = new Tracker($directory);
 	}
 
 	/**
