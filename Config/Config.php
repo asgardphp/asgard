@@ -10,7 +10,14 @@ class Config extends \Asgard\Common\Bag implements ConfigInterface {
 	 * {@inheritDoc}
 	 */
 	public function loadDir($dir, $env=null) {
-		foreach(glob($dir.'/*.yml') as $filename) {
+		$files = glob($dir.'/*.yml');
+		usort($files, function($a, $b) {
+			if(strpos($a, '.locale.') !== false)
+				return 1;
+			if(strpos($b, '.locale.') !== false)
+				return -1;
+		});
+		foreach($files as $filename) {
 			if(is_dir($filename))
 				$this->loadDir($filename);
 			else {
