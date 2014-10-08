@@ -43,8 +43,8 @@ class DataMapper implements DataMapperInterface {
 	 * @param \Asgard\Entity\EntitiesManagerInterface $entitiesManager
 	 * @param string                                  $locale    Default locale.
 	 * @param string                                  $prefix    Tables prefix.
-	 * @param \Asgard\Container\Factory               $ormFactory
-	 * @param \Asgard\Container\Factory               $collectionOrmFactory
+	 * @param ORMFactoryInterface                     $ormFactory
+	 * @param CollectionORMFactoryInterface           $collectionOrmFactory
 	 */
 	public function __construct(\Asgard\Db\DBInterface $db, \Asgard\Entity\EntitiesManagerInterface $entitiesManager=null, $locale='en', $prefix=null, ORMFactoryInterface $ormFactory=null, CollectionORMFactoryInterface $collectionOrmFactory=null) {
 		$this->db                   = $db;
