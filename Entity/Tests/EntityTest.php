@@ -5,15 +5,9 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 	public static function setUpBeforeClass() {
 		$container = new \Asgard\Container\Container;
 		$container['hooks'] = new \Asgard\Hook\HooksManager($container);
-		$container['rulesregistry'] = new \Asgard\Validation\RulesRegistry;
-		$container->register('validator', function($container) {
-			$validator = new \Asgard\Validation\Validator;
-			$validator->setRegistry($container['rulesregistry']);
-			return $validator;
-		});
 
 		$entitiesManager = $container['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($container);
-		$entitiesManager->setValidatorFactory($container->createFactory('validator'));
+		$entitiesManager->setValidatorFactory(new \Asgard\Validation\ValidatorFactory(new \Asgard\Validation\RulesRegistry));
 		#set the EntitiesManager static instance for activerecord-like entities (e.g. new Article or Article::find())
 		\Asgard\Entity\EntitiesManager::setInstance($entitiesManager);
 	}

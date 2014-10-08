@@ -35,7 +35,7 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			$entitiesManager = new \Asgard\Entity\EntitiesManager($container);
 			$entitiesManager->setHooksManager($container['hooks']);
 			$entitiesManager->setDefaultLocale($container['config']['locale']);
-			$entitiesManager->setValidatorFactory($container->createFactory('validator'));
+			$entitiesManager->setValidatorFactory(new \Asgard\Validation\ValidatorFactory);
 			return $entitiesManager;
 		});
 		$container->register('Asgard.Entity.PropertyType.file', function($container, $params) {
@@ -142,6 +142,10 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			$validator = new \Asgard\Validation\Validator;
 			$validator->setRegistry($container['rulesregistry']);
 			return $validator;
+		});
+		$container->setParentClass('validator_factory', 'Asgard\Validation\ValidatorFactoryInterface');
+		$container->register('validator_factory', function($container) {
+			return new \Asgard\Validation\ValidatorFactory($container['rulesRegistry']);
 		});
 		$container->setParentClass('rulesregistry', 'Asgard\Validation\RulesRegistryInterface');
 		$container->register('rulesregistry', function() { return new \Asgard\Validation\RulesRegistry; } );

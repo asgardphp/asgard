@@ -43,7 +43,7 @@ class Form extends Group implements FormInterface {
 	protected $preSaveCallback;
 	/**
 	 * Validator factory.
-	 * @var \Asgard\Container\Factory
+	 * @var \Asgard\Validation\ValidatorFactoryInterface
 	 */
 	protected $validatorFactory;
 
@@ -72,7 +72,7 @@ class Form extends Group implements FormInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function setValidatorFactory($validatorFactory) {
+	public function setValidatorFactory(\Asgard\Validation\ValidatorFactoryInterface $validatorFactory) {
 		$this->validatorFactory = $validatorFactory;
 		return $this;
 	}

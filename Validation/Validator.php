@@ -76,6 +76,14 @@ class Validator implements ValidatorInterface {
 	protected $formatParameters;
 
 	/**
+	 * Constructor.
+	 * @param RulesRegistryInterface $registry
+	 */
+	public function __construct(RulesRegistryInterface $registry=null) {
+		$this->registry = $registry;
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public function setTranslator(TranslatorInterface $translator) {

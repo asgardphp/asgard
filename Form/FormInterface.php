@@ -8,9 +8,9 @@ namespace Asgard\Form;
 interface FormInterface extends GroupInterface {
 	/**
 	 * Set validator factory dependency.
-	 * @param \Asgard\Container\Factory $validatorFactory
+	 * @param \Asgard\Validation\ValidatorFactoryInterface $validatorFactory
 	 */
-	public function setValidatorFactory($validatorFactory);
+	public function setValidatorFactory(\Asgard\Validation\ValidatorFactoryInterface $validatorFactory);
 
 	/**
 	 * Create a validator.

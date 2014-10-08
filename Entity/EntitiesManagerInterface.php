@@ -20,9 +20,9 @@ interface EntitiesManagerInterface {
 
 	/**
 	 * Set the validator factory.
-	 * @param \Asgard\Container\Factory $validatorFactory
+	 * @param \Asgard\Validation\ValidatorFactoryInterface $validatorFactory
 	 */
-	public function setValidatorFactory(\Asgard\Container\Factory $validatorFactory);
+	public function setValidatorFactory(\Asgard\Validation\ValidatorFactoryInterface $validatorFactory);
 
 	/**
 	 * Create a validator.

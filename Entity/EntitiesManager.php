@@ -30,7 +30,7 @@ class EntitiesManager implements EntitiesManagerInterface {
 	protected $defaultLocale = 'en';
 	/**
 	 * Validator factory.
-	 * @var \Asgard\Container\Factory
+	 * @var \Asgard\Validation\ValidatorFactoryInterface
 	 */
 	protected $validatorFactory;
 	/**
@@ -68,7 +68,7 @@ class EntitiesManager implements EntitiesManagerInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function setValidatorFactory(\Asgard\Container\Factory $validatorFactory) {
+	public function setValidatorFactory(\Asgard\Validation\ValidatorFactoryInterface $validatorFactory) {
 		$this->validatorFactory = $validatorFactory;
 		return $this;
 	}

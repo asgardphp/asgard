@@ -9,12 +9,6 @@ class ORMTest extends \PHPUnit_Framework_TestCase {
 		$container['hooks']         = new \Asgard\Hook\HooksManager($container);
 		$container['config']        = new \Asgard\Config\Config;
 		$container['cache']         = new \Asgard\Cache\NullCache;
-		$container['rulesregistry'] = new \Asgard\Validation\RulesRegistry;
-		$container->register('validator', function($container) {
-			$validator = new \Asgard\Validation\Validator;
-			$validator->setRegistry($container['rulesregistry']);
-			return $validator;
-		});
 		$container['db'] = new \Asgard\Db\DB([
 			'database' => 'asgard',
 			'user'     => 'root',
@@ -32,7 +26,7 @@ class ORMTest extends \PHPUnit_Framework_TestCase {
 		});
 
 		$entitiesManager = $container['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($container);
-		$entitiesManager->setValidatorFactory($container->createFactory('validator'));
+		$entitiesManager->setValidatorFactory(new \Asgard\Validation\ValidatorFactory);
 		#set the EntitiesManager static instance for activerecord-like entities (e.g. new Article or Article::find())
 		\Asgard\Entity\EntitiesManager::setInstance($entitiesManager);
 
@@ -113,14 +107,17 @@ class ORMTest extends \PHPUnit_Framework_TestCase {
 	public function test1() {
 		#Dependencies
 		$container = new \Asgard\Container\Container;
-		$container['rulesRegistry'] = new \Asgard\Validation\RulesRegistry;
-		$container['rulesRegistry']->registerNamespace('Asgard\Orm\Rules');
+		// $container['rulesRegistry'] = new \Asgard\Validation\RulesRegistry;
+		// $container['rulesRegistry']->registerNamespace('Asgard\Orm\Rules');
 		#todo should i use full classnames?
 		$em = new \Asgard\Entity\EntitiesManager;
-		$em->setValidatorFactory($container->createFactory(function($container) {
-			$validator = new \Asgard\Validation\Validator;
-			return $validator->setRegistry($container['rulesregistry']);
-		}));
+		$rulesRegistry = new \Asgard\Validation\RulesRegistry;
+		$rulesRegistry->registerNamespace('Asgard\Orm\Rules');
+		$em->setValidatorFactory(new \Asgard\Validation\ValidatorFactory($rulesRegistry));
+		// $em->setValidatorFactory($container->createFactory(function($container) {
+		// 	$validator = new \Asgard\Validation\Validator;
+		// 	return $validator->setRegistry($container['rulesregistry']);
+		// }));
 		$db = new \Asgard\Db\DB([
 			'host'     => 'localhost',
 			'user'     => 'root',

@@ -5,13 +5,10 @@ class UniqueTest extends \PHPUnit_Framework_TestCase {
 	public function test1() {
 		#Dependencies
 		$container = new \Asgard\Container\Container;
-		$container['rulesRegistry'] = new \Asgard\Validation\RulesRegistry;
-		$container['rulesRegistry']->register('unique', 'Asgard\Orm\Rules\Unique');
 		$em = new \Asgard\Entity\EntitiesManager;
-		$em->setValidatorFactory($container->createFactory(function($container) {
-			$validator = new \Asgard\Validation\Validator;
-			return $validator->setRegistry($container['rulesregistry']);
-		}));
+		$rulesRegistry = new \Asgard\Validation\RulesRegistry;
+		$rulesRegistry->register('unique', 'Asgard\Orm\Rules\Unique');
+		$em->setValidatorFactory(new \Asgard\Validation\ValidatorFactory($rulesRegistry));
 		$db = new \Asgard\Db\DB([
 			'host'     => 'localhost',
 			'user'     => 'root',
