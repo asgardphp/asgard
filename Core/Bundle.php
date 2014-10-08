@@ -155,9 +155,15 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		$container->register('orm', function($container, $entityClass, $dataMapper, $locale, $prefix) {
 			return new \Asgard\Orm\ORM($entityClass, $dataMapper, $locale, $prefix, $container['paginator_factory']);
 		});
+		$container->register('orm_factory', function($container) {
+			return new \Asgard\Orm\ORMFactory($container['paginator_factory']);
+		});
 		$container->setParentClass('collectionOrmInterface', 'Asgard\Orm\CollectionORMInterface');
 		$container->register('collectionOrm', function($container, $entityClass, $name, $dataMapper, $locale, $prefix) {
 			return new \Asgard\Orm\CollectionORM($entityClass, $name, $dataMapper, $locale, $prefix, $container['paginator_factory']);
+		});
+		$container->register('collectionOrm_factory', function($container) {
+			return new \Asgard\Orm\CollectionORMFactory($container['paginator_factory']);
 		});
 		$container->setParentClass('datamapper', 'Asgard\Orm\DataMapperInterface');
 		$container->register('datamapper', function($container) {
@@ -166,8 +172,8 @@ class Bundle extends \Asgard\Core\BundleLoader {
 				$container['entitiesManager'],
 				$container['config']['locale'],
 				$container['config']['database/prefix'],
-				$container->createFactory('orm'),
-				$container->createFactory('collectionOrm')
+				$container['orm_factory'],
+				$container['collectionOrm_factory']
 			);
 		});
 	}

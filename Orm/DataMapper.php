@@ -28,12 +28,12 @@ class DataMapper implements DataMapperInterface {
 	protected $prefix;
 	/**
 	 * ORM Factory.
-	 * @var \Asgard\Container\Factory
+	 * @var ORMFactoryInterface
 	 */
 	protected $ormFactory;
 	/**
 	 * CollectionORM Factory.
-	 * @var \Asgard\Container\Factory
+	 * @var CollectionORMFactoryInterface
 	 */
 	protected $collectionOrmFactory;
 
@@ -46,7 +46,7 @@ class DataMapper implements DataMapperInterface {
 	 * @param \Asgard\Container\Factory               $ormFactory
 	 * @param \Asgard\Container\Factory               $collectionOrmFactory
 	 */
-	public function __construct(\Asgard\Db\DBInterface $db, \Asgard\Entity\EntitiesManagerInterface $entitiesManager=null, $locale='en', $prefix=null, \Asgard\Container\Factory $ormFactory=null, \Asgard\Container\Factory $collectionOrmFactory=null) {
+	public function __construct(\Asgard\Db\DBInterface $db, \Asgard\Entity\EntitiesManagerInterface $entitiesManager=null, $locale='en', $prefix=null, ORMFactoryInterface $ormFactory=null, CollectionORMFactoryInterface $collectionOrmFactory=null) {
 		$this->db                   = $db;
 		$this->entitiesManager      = $entitiesManager;
 		$this->locale               = $locale;
@@ -78,7 +78,7 @@ class DataMapper implements DataMapperInterface {
 	public function orm($entityClass) {
 		$definition = $this->getEntitiesManager()->get($entityClass);
 		if($this->ormFactory)
-			return $this->ormFactory->create([$definition, $this, $this->locale, $this->prefix]);
+			return $this->ormFactory->create($definition, $this, $this->locale, $this->prefix);
 		else
 			return new ORM($definition, $this, $this->locale, $this->prefix);
 	}
@@ -366,7 +366,7 @@ class DataMapper implements DataMapperInterface {
 			case 'hasMany':
 			case 'HMABT':
 				if($this->collectionOrmFactory)
-					return $this->collectionOrmFactory->create([$entity, $this, $name, $this->locale, $this->prefix]);
+					return $this->collectionOrmFactory->create($entity, $this, $name, $this->locale, $this->prefix);
 				else
 					return new CollectionORM($entity, $name, $this, $this->locale, $this->prefix);
 			default:
