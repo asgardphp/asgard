@@ -20,13 +20,7 @@ class DALTest extends \PHPUnit_Framework_TestCase {
 
 	protected static function getDAL() {
 		$dal = new \Asgard\Db\DAL(static::$db);
-		$dal->setPaginatorFactory(new \Asgard\Container\Factory(function($container, $params) {
-			return new \Asgard\Common\Paginator(
-				$params[0], #total
-				$params[1], #page
-				$params[2] #per_page
-			);
-		}));
+		$dal->setPaginatorFactory(new \Asgard\Common\PaginatorFactory);
 		return $dal;
 	}
 

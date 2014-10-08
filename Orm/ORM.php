@@ -73,7 +73,7 @@ class ORM implements ORMInterface {
 	protected $tmp_dal = null;
 	/**
 	 * Paginator factory.
-	 * @var \Asgard\Container\Factory
+	 * @var \Asgard\Common\PaginatorFactoryInterface
 	 */
 	protected $paginatorFactory = null;
 
@@ -83,9 +83,9 @@ class ORM implements ORMInterface {
 	 * @param DataMapperInterface                      $datamapper
 	 * @param string                          $locale           default locale
 	 * @param string                          $prefix           tables prefix
-	 * @param \Asgard\Container\Factory       $paginatorFactory
+	 * @param \Asgard\Common\PaginatorFactoryInterface       $paginatorFactory
 	 */
-	public function __construct(\Asgard\Entity\EntityDefinition $definition, DataMapperInterface $datamapper, $locale=null, $prefix=null, \Asgard\Container\Factory $paginatorFactory=null) {
+	public function __construct(\Asgard\Entity\EntityDefinition $definition, DataMapperInterface $datamapper, $locale=null, $prefix=null, \Asgard\Common\PaginatorFactoryInterface $paginatorFactory=null) {
 		$this->definition       = $definition;
 		$this->dataMapper       = $datamapper;
 		$this->locale           = $locale;

@@ -14,7 +14,7 @@ class DAL {
 	protected $db;
 	/**
 	 * Paginator factory.
-	 * @var \Asgard\Container\Factory
+	 * @var \Asgard\Common\PaginatorFactoryInterface
 	 */
 	protected $paginatorFactory;
 	/**
@@ -321,11 +321,11 @@ class DAL {
 
 	/**
 	 * Set the paginator factory.
-	 * @param \Asgard\Container\Factory $paginatorFactory
-	 * @return DAL    $this
+	 * @param \Asgard\Common\PaginatorFactoryInterface $paginatorFactory
+	 * @return DAL                                     $this
 	 * @api
 	 */
-	public function setPaginatorFactory($paginatorFactory) {
+	public function setPaginatorFactory(\Asgard\Common\PaginatorFactoryInterface $paginatorFactory) {
 		$this->paginatorFactory = $paginatorFactory;
 		return $this;
 	}

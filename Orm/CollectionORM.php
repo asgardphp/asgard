@@ -19,14 +19,14 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 
 	/**
 	 * Constructor.
-	 * @param \Asgar\dEntity\Entity $entity   \Asgard\Entity\Entity
-	 * @param string                          $relation_name
+	 * @param \Asgar\dEntity\Entity $entity            $entity
+	 * @param string                                   $relation_name
 	 * @param DataMapperInterface                      $datamapper
-	 * @param string                          $locale        default locale
-	 * @param string                          $prefix        tables prefix
-	 * @param \Asgard\Container\Factory       $paginatorFactory
+	 * @param string                                   $locale        default locale
+	 * @param string                                   $prefix        tables prefix
+	 * @param \Asgard\Common\PaginatorFactoryInterface $paginatorFactory
 	 */
-	public function __construct(\Asgard\Entity\Entity $entity, $relationName, DataMapperInterface $dataMapper, $locale=null, $prefix=null, \Asgard\Container\Factory $paginatorFactory=null) {
+	public function __construct(\Asgard\Entity\Entity $entity, $relationName, DataMapperInterface $dataMapper, $locale=null, $prefix=null, \Asgard\Common\PaginatorFactoryInterface $paginatorFactory=null) {
 		$this->parent = $entity;
 
 		$this->relation = $dataMapper->relation($entity->getDefinition(), $relationName);

@@ -35,7 +35,7 @@ class Paginator implements PaginatorInterface {
 	 * @param \Asgard\Http\Request       $request
 	 */
 	public function __construct($total, $page=1, $per_page=10, $request=null) {
-		$this->per_page	= $per_page;
+		$this->per_page = $per_page;
 		$this->total    = $total;
 		$this->page     = $page ? $page:1;
 		$this->request  = $request;
