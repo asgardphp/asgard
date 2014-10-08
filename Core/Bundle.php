@@ -81,8 +81,8 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		$container->register('httpKernel', function($container) {
 			$httpKernel = new \Asgard\Http\HttpKernel($container);
 			$httpKernel->setDebug($container['config']['debug']);
-			if($container->registered('templateEngine'))
-				$httpKernel->setTemplateEngineFactory($container->createFactory('templateEngine'));
+			if($container->has('templateEngine_factory'))
+				$httpKernel->setTemplateEngineFactory($container['templateEngine_factory']);
 			$httpKernel->setHooksManager($container['hooks']);
 			$httpKernel->setErrorHandler($container['errorHandler']);
 			$httpKernel->setTranslator($container['translator']);

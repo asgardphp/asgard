@@ -1,6 +1,10 @@
 <?php
 namespace Asgard\Common;
 
+/**
+ * Paginator factory interface.
+ * @author Michel Hognerud <michel@hognerud.com>
+ */
 interface PaginatorFactoryInterface {
 	/**
 	 * Create a new instance.

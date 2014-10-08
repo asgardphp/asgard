@@ -43,10 +43,10 @@ interface HttpKernelInterface {
 
 	/**
 	 * Set template engine factory.
-	 * @param \Asgard\Container\Factory $templateEngineFactory
+	 * @param \Asgard\Templating\TemplateEngineFactoryInterface $templateEngineFactory
 	 * @return HttpKernelInterface $this
 	 */
-	public function setTemplateEngineFactory(\Asgard\Container\Factory $templateEngineFactory);
+	public function setTemplateEngineFactory(\Asgard\Templating\TemplateEngineFactoryInterface $templateEngineFactory);
 
 	/**
 	 * Return the HooksManager.
@@ -80,7 +80,7 @@ interface HttpKernelInterface {
 
 	/**
 	 * Return the HooksManager
-	 * @return \Asgard\Container\Factory
+	 * @return \Asgard\Templating\TemplateEngineFactoryInterface
 	 */
 	public function getTemplateEngineFactory();
 

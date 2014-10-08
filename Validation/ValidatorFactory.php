@@ -1,12 +1,11 @@
 <?php
 namespace Asgard\Validation;
 
+/**
+ * Validator factory.
+ * @author Michel Hognerud <michel@hognerud.com>
+ */
 class ValidatorFactory implements ValidatorFactoryInterface {
-	/**
-	 * @var RulesRegistry
-	 */
-	protected $rulesRegistry;
-
 	/**
 	 * Constructor.
 	 * @param RulesRegistry $rulesRegistry
@@ -17,7 +16,7 @@ class ValidatorFactory implements ValidatorFactoryInterface {
 
 	/**
 	 * {@inheritDoc}
-	 * @return Validator
+	 * @return TemplateEngine
 	 */
 	public function create() {
 		return new Validator($this->rulesRegistry);

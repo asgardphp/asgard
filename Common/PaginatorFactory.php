@@ -1,6 +1,10 @@
 <?php
 namespace Asgard\Common;
 
+/**
+ * Paginator factory.
+ * @author Michel Hognerud <michel@hognerud.com>
+ */
 class PaginatorFactory implements PaginatorFactoryInterface {
 	/**
 	 * HTTP request.

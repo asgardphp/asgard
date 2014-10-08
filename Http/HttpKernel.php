@@ -70,7 +70,7 @@ class HttpKernel implements HttpKernelInterface {
 	protected $debug = false;
 	/**
 	 * Template engine factory.
-	 * @var \Asgard\Container\Factory
+	 * @var \Asgard\Templating\TemplateEngineFactoryInterface
 	 */
 	protected $templateEngineFactory;
 	/**
@@ -130,7 +130,7 @@ class HttpKernel implements HttpKernelInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function setTemplateEngineFactory(\Asgard\Container\Factory $templateEngineFactory) {
+	public function setTemplateEngineFactory(\Asgard\Templating\TemplateEngineFactoryInterface $templateEngineFactory) {
 		$this->templateEngineFactory = $templateEngineFactory;
 		return $this;
 	}
