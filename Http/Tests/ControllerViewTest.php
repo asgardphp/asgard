@@ -12,11 +12,7 @@ class ControllerViewTest extends \PHPUnit_Framework_TestCase {
 	public function testReturnTemplate() {
 		$kernel = new HttpKernel;
 		$kernel->setHooksManager(new \Asgard\Hook\HooksManager);
-		$kernel->setTemplateEngineFactory(new \Asgard\Container\Factory(function($container, $controller) {
-			$engine = new Fixtures\Templates\TemplateEngine;
-			$engine->setController($controller);
-			return $engine;
-		}));
+		$kernel->setTemplateEngineFactory(new Fixtures\Templates\TemplateEngineFactory);
 
 		$resolver = $this->getMock('Asgard\Http\Resolver', ['getRoute']);
 		$resolver->expects($this->once())->method('getRoute')->will($this->returnValue(new Route('', 'Asgard\Http\Tests\Fixtures\TemplateController', 'home')));
@@ -28,11 +24,7 @@ class ControllerViewTest extends \PHPUnit_Framework_TestCase {
 	public function testTemplateEngine() {
 		$kernel = new HttpKernel;
 		$kernel->setHooksManager(new \Asgard\Hook\HooksManager);
-		$kernel->setTemplateEngineFactory(new \Asgard\Container\Factory(function($container, $controller) {
-			$engine = new Fixtures\Templates\TemplateEngine;
-			$engine->setController($controller);
-			return $engine;
-		}));
+		$kernel->setTemplateEngineFactory(new Fixtures\Templates\TemplateEngineFactory);
 
 		$resolver = $this->getMock('Asgard\Http\Resolver', ['getRoute']);
 		$resolver->expects($this->once())->method('getRoute')->will($this->returnValue(new Route('', 'Asgard\Http\Tests\Fixtures\TemplateController', 'home2')));

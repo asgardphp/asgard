@@ -10,5 +10,5 @@ interface TemplateEngineFactoryInterface {
 	 * Create a new instance.
 	 * @return TemplateEngineInterface
 	 */
-	public function create();
+	public function create(\Asgard\Http\Controller $controller);
 }

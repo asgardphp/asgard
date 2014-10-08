@@ -20,6 +20,8 @@ class Datetime extends \DateTime implements DatetimeInterface {
 	 * @param DateTimeZone $tz
 	 */
 	public function __construct($time=null, $tz=null) {
+		if($time===null)
+			$time = 'now';
 		parent::__construct($time, $tz); #need to initialize parent \DateTime as well or comparaison will fail in PHP internals
 		return $this->carbon = new Carbon($time, $tz);
 	}

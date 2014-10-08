@@ -309,7 +309,7 @@ class HttpKernel implements HttpKernelInterface {
 		$this->addFilters($controller, $action, $request, $route);
 
 		if($this->templateEngineFactory)
-			$controller->setTemplateEngine($this->templateEngineFactory->create([$controller]));
+			$controller->setTemplateEngine($this->templateEngineFactory->create($controller));
 		else {
 			foreach($this->templatePathSolvers as $cb)
 				$controller->addTemplatePathSolver($cb);

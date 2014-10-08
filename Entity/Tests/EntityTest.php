@@ -13,7 +13,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testToArray() {
-		$date = new \Asgard\Common\Datetime(time());
+		$date = new \Asgard\Common\Datetime;
 
 		$news = new Classes\News([
 			'title' => 'Test Title',
