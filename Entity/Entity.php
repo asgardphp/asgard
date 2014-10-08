@@ -575,7 +575,7 @@ abstract class Entity {
 		$res = [];
 
 		foreach($this->getDefinition()->properties() as $name=>$property) {
-			if($property->i18n) {
+			if($property->get('i18n')) {
 				foreach($locales as $locale) {
 					if($this->getDefinition()->property($name)->get('many')) {
 						foreach($this->get($name, $locale)->all() as $k=>$v)

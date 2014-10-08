@@ -146,34 +146,6 @@ class EntityDefinition {
 	}
 
 	/**
-	 * __get magic method.
-	 * @param  string $name
-	 * @return mixed
-	 */
-	public function __get($name) {
-		return $this->get($name);
-	}
-
-	/**
-	 * __isset magic method.
-	 * @param  string  $name
-	 * @return boolean
-	 */
-	public function __isset($name) {
-		return isset($this->metas[$name]);
-	}
-
-	/**
-	 * __call magic method.
-	 * @param  string $name
-	 * @param  array  $arguments
-	 * @return mixed
-	 */
-	public function __call($name, array $arguments) {
-		return $this->callStatic($name, $arguments);
-	}
-
-	/**
 	 * Handle a custom call.
 	 * @param  Entity $entity
 	 * @param  string $name
@@ -414,7 +386,7 @@ class EntityDefinition {
 	 */
 	public function isI18N() {
 		foreach($this->properties as $prop) {
-			if($prop->i18n)
+			if($prop->get('i18n'))
 				return true;
 		}
 		return false;

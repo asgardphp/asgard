@@ -66,10 +66,10 @@ class ORMMigrations {
 			$schema = [];
 
 			foreach($definition->properties() as $name=>$prop) {
-				if(!$prop->orm)
+				if(!$prop->get('orm'))
 					$col = [];
 				else
-					$col = $prop->orm;
+					$col = $prop->get('orm');
 
 				#relations
 				if($prop->get('type') == 'entity') {
@@ -123,20 +123,20 @@ class ORMMigrations {
 
 				if($prop->get('many'))
 					$col['type'] = 'blob';
-				elseif(!isset($prop->orm['type'])) {
+				elseif(!isset($prop->get('orm')['type'])) {
 					if(method_exists($prop, 'getSQLType'))
 						$col['type'] = $prop->getSQLType();
 					else
 						throw new \Exception('Cannot convert '.$prop->type.' type');
 				}
 
-				if(!isset($prop->orm['default']))
+				if(!isset($col['default']))
 					$col['default'] = false;
-				if(!isset($prop->orm['nullable']))
+				if(!isset($col['nullable']))
 					$col['nullable'] = true;
-				if(!isset($prop->orm['key']))
+				if(!isset($col['key']))
 					$col['key'] = '';
-				if(!isset($prop->orm['auto_increment']))
+				if(!isset($col['auto_increment']))
 					$col['auto_increment'] = false;
 				$col['position'] = $prop->getPosition('position');
 

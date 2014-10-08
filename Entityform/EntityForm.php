@@ -54,7 +54,7 @@ class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 				continue;
 			if(isset($options['except']) && in_array($name, $options['except']))
 				continue;
-			if($property->editable === false || $property->form_editable === false)
+			if($property->get('editable') === false || $property->get('form_editable') === false)
 				continue;
 
 			if($this->locales && $property->get('i18n')) {

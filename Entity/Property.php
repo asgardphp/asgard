@@ -89,15 +89,6 @@ class Property {
 	}
 
 	/**
-	 * __get magic method.
-	 * @param  string $what
-	 * @return mixed
-	 */
-	public function __get($what) {
-		return $this->get($what);
-	}
-
-	/**
 	 * Get a parameter.
 	 * @param  string $path
 	 * @param  mixed  $default

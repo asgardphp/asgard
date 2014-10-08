@@ -257,7 +257,7 @@ class ORM implements ORMInterface {
 			$translation_table = $this->getTranslationTable();
 			$selects = [$table.'.*'];
 			foreach($this->definition->properties() as $name=>$property) {
-				if($property->i18n)
+				if($property->get('i18n'))
 					$selects[] = $translation_table.'.'.$name;
 			}
 			$dal->select($selects);
