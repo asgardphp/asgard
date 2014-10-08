@@ -155,7 +155,7 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		$container->register('orm', function($container, $entityClass, $dataMapper, $locale, $prefix) {
 			return new \Asgard\Orm\ORM($entityClass, $dataMapper, $locale, $prefix, $container['paginator_factory']);
 		});
-		$container->setParentClass('collectionOrm', 'Asgard\Orm\CollectionORMInterface');
+		$container->setParentClass('collectionOrmInterface', 'Asgard\Orm\CollectionORMInterface');
 		$container->register('collectionOrm', function($container, $entityClass, $name, $dataMapper, $locale, $prefix) {
 			return new \Asgard\Orm\CollectionORM($entityClass, $name, $dataMapper, $locale, $prefix, $container['paginator_factory']);
 		});

@@ -106,7 +106,7 @@ interface DataMapperInterface {
 	 * Return the related entities of an entity.
 	 * @param  \Asgard\Entity\Entity $entity
 	 * @param  string                $name   relation name
-	 * @return \Asgrd\Entity\Entity|CollectionORM
+	 * @return \Asgrd\Entity\Entity|CollectionORMInterface
 	 */
 	public function related(\Asgard\Entity\Entity $entity, $name);
 

@@ -96,7 +96,7 @@ class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\Pers
 	 * @param  string                $name      static call name
 	 * @param  array                 $args
 	 * @param  boolean               $processed
-	 * @return \Asgard\Entity\Entity|CollectionORM
+	 * @return \Asgard\Entity\Entity|CollectionORMInterface
 	 */
 	public function callCatchAll($entity, $name, $args, &$processed) {
 		#$article->authors()
@@ -222,7 +222,7 @@ class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\Pers
 	 * $article->related('category')
 	 * @param  \Asgard\Entity\Entity $entity
 	 * @param  string             $relation   relation name
-	 * @return \Asgrd\Entity\Entity|CollectionORM
+	 * @return \Asgrd\Entity\Entity|CollectionORMInterface
 	 */
 	public function call_related(\Asgard\Entity\Entity $entity, $relation) {
 		return $this->getDataMapper()->related($entity, $relation);

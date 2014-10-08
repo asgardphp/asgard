@@ -5,7 +5,7 @@ namespace Asgard\Orm;
  * ORM for related entities.
  * @author Michel Hognerud <michel@hognerud.com>
  */
-class CollectionORM extends ORM implements \Asgard\Entity\Collection {
+class CollectionORM extends ORM implements CollectionORMInterface {
 	/**
 	 * Parent entity.
 	 * @var \Asgard\Entity\Entity
@@ -37,10 +37,7 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 	}
 
 	/**
-	 * Update the related entities.
-	 * @param integer|array           $ids   array of entity ids
-	 * @param boolean                 $force true to skip validation
-	 * @return CollectionORMInterface        $this
+	 * {@inheritDoc}
 	 */
 	public function sync($ids, $force=false) {
 		if(!$ids)
@@ -86,8 +83,7 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 	}
 
 	/**
-	 * Add new entities to the relation.
-	 * @param integer|array $ids
+	 * {@inheritDoc}
 	 */
 	public function add($ids) {
 		if(!is_array($ids))
@@ -122,9 +118,7 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 	}
 
 	/**
-	 * Create a new entity and add it to the relation.
-	 * @param  array $params entity default attributes
-	 * @return \Asgard\Entity\Entitiy
+	 * {@inheritDoc}
 	 */
 	public function create(array $params=[]) {
 		$new = $this->relation->getTargetDefinition()->make();
@@ -142,9 +136,7 @@ class CollectionORM extends ORM implements \Asgard\Entity\Collection {
 	}
 
 	/**
-	 * Remove entities from the relation.
-	 * @param  integer|array          $ids
-	 * @return CollectionORMInterface $this
+	 * {@inheritDoc}
 	 */
 	public function remove($ids) {
 		if(!is_array($ids))
