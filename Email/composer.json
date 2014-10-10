@@ -1,6 +1,5 @@
 {
     "name": "asgard/email",
-    "version": "0.1.0",
     "license": "MIT",
     "authors": [{
         "name": "Michel Hognerud",
@@ -12,5 +11,6 @@
     "require": {
         "php": ">=5.4.0",
         "swiftmailer/swiftmailer": "~5.1"
-    }
+    },
+    "minimum-stability": "dev"
 }

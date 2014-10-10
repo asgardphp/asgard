@@ -1,6 +1,5 @@
 {
     "name": "asgard/asgard",
-    "version": "0.1.0",
     "description": "Asgard PHP Framework",
     "license": "MIT",
     "authors": [{
@@ -49,5 +48,6 @@
         "asgard/orm": "self.version",
         "asgard/templating": "self.version",
         "asgard/validation": "self.version"
-    }
+    },
+    "minimum-stability": "dev"
 }

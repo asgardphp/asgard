@@ -1,6 +1,5 @@
 {
     "name": "asgard/core",
-    "version": "0.1.0",
     "license": "MIT",
     "authors": [{
         "name": "Michel Hognerud",
@@ -14,5 +13,6 @@
     },
     "autoload": {
         "psr-4": {"Asgard\\Core\\": "."}
-    }
+    },
+    "minimum-stability": "dev"
 }
