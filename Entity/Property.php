@@ -256,7 +256,7 @@ class Property {
 	 * @param string $name
 	 * @return mixed
 	 */
-	public function set($val, Entity $entity, $name) {
+	public function setDecorator($val, Entity $entity, $name) {
 		if($this->get('many')) {
 			if($val instanceof ManyCollection)
 				return $val;

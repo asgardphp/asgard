@@ -282,13 +282,24 @@ class DataMapper implements DataMapperInterface {
 				if(!$rel->get('many')) {
 					$link = $rel->getLink();
 					$relatedEntity = $entity->data['properties'][$name];
+					#entity object
 					if(is_object($relatedEntity)) {
 						if($relatedEntity->isNew())
 							$this->save($relatedEntity, null, $force);
 						$vars[$link] = $relatedEntity->id;
+						if($rel->get('polymorphic'))
+							$vars[$rel->getLinkType()] = get_class($relatedEntity);
 					}
-					else
-						$vars[$link] = $relatedEntity;
+					else {
+						#array with class and id
+						if($rel->get('polymorphic')) {
+							$vars[$rel->getLinkType()] = $relatedEntity[0];
+							$vars[$link] = $relatedEntity[1];
+						}
+						#id
+						else
+							$vars[$link] = $relatedEntity;
+					}
 				}
 			}
 			#other properties
@@ -330,17 +341,36 @@ class DataMapper implements DataMapperInterface {
 			if(!isset($entity->data['properties'][$relation]))
 				continue;
 			$rel = $this->relation($entity->getDefinition(), $relation);
-			$reverse_rel = $rel->reverse();
-			$type = $rel->type();
 
-			if($type == 'hasOne') {
-				$relation_entity = $rel->get('entity');
-				$link = $reverse_rel->getLink();
-				$this->orm($relation_entity)->where([$link => $entity->id])->getDAL()->update([$link => 0]);
-				$this->orm($relation_entity)->where(['id' => $entity->data[$relation]->id])->getDAL()->update([$link => $entity->id]);
+			$type = $rel->type();
+			if($rel->get('polymorphic')) {
+				#todo
 			}
-			elseif($rel->get('many'))
-				$this->related($entity, $relation)->sync($entity->data['properties'][$relation]->all());
+			else {
+				$reverse_rel = $rel->reverse();
+				if($reverse_rel->get('polymorphic')) {
+					if($type == 'hasOne') {
+						$relation_entity = $rel->get('entity');
+						$link = $reverse_rel->getLink();
+						$linkType = $reverse_rel->getLinkType();
+						$this->orm($relation_entity)->where([$link => $entity->id, $linkType => get_class($entity)])->getDAL()->update([$link => null, $linkType => null]);
+						$this->orm($relation_entity)->where(['id' => $entity->data['properties'][$relation]->id])->getDAL()->update([$link => $entity->id, $linkType => get_class($entity)]);
+					}
+					elseif($rel->get('many')) {
+						#todo
+					}
+				}
+				else {
+					if($type == 'hasOne') {
+						$relation_entity = $rel->get('entity');
+						$link = $reverse_rel->getLink();
+						$this->orm($relation_entity)->where([$link => $entity->id])->getDAL()->update([$link => 0]);
+						$this->orm($relation_entity)->where(['id' => $entity->data['properties'][$relation]->id])->getDAL()->update([$link => $entity->id]);
+					}
+					elseif($rel->get('many'))
+						$this->related($entity, $relation)->sync($entity->data['properties'][$relation]->all());
+				}
+			}
 		}
 
 		return $entity;
@@ -358,7 +388,7 @@ class DataMapper implements DataMapperInterface {
 			case 'belongsTo':
 				$link = $rel->getLink();
 				if($rel->get('polymorphic')) {
-					$relEntity = $entity->get($rel->get('link_type'));
+					$relEntity = $entity->get($rel->getLinkType());
 					if(!$relEntity)
 						return;
 				}

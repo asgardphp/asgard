@@ -3,6 +3,11 @@ namespace Asgard\Db;
 
 interface SchemaInterface {
 	/**
+	 * Empty all tables.
+	 */
+	public function emptyAll();
+
+	/**
 	 * Drop all tables.
 	 */
 	public function dropAll();

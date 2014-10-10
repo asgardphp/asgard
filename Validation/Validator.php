@@ -178,6 +178,30 @@ class Validator implements ValidatorInterface {
 	}
 
 	/**
+	 * Check if attribute exists.
+	 * @param  string  $attribute
+	 * @return boolean
+	 */
+	public function hasAttribute($attribute) {
+		if(!is_array($attribute))
+			$attribute = explode('.', $attribute);
+
+		$next = array_shift($attribute);
+		if(count($attribute) > 0) {
+			if(!isset($this->attributes[$next]))
+				return false;
+			else
+				return $this->attributes[$next]->attribute($attribute);
+		}
+		else {
+			if(!isset($this->attributes[$next]))
+				return false;
+			else
+				return true;
+		}
+	}
+
+	/**
 	 * Set an attribute validator or only return the attribute validator if no rules given.
 	 * @param  string $attribute attribute name
 	 * @param  array  $rules     attribute rules

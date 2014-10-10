@@ -720,10 +720,19 @@ class Schema implements SchemaInterface {
 	/**
 	 * {@inheritDoc}
 	 */
+	public function emptyAll() {
+		$tables = \Asgard\Common\ArrayUtils::flatten($this->db->query('SHOW TABLES')->all());
+		foreach($tables as $table)
+			$this->emptyTable($table);;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public function dropAll() {
 		$tables = \Asgard\Common\ArrayUtils::flatten($this->db->query('SHOW TABLES')->all());
 		foreach($tables as $table)
-			$this->db->query('DROP TABLE '.$table);
+			$this->drop($table);
 	}
 
 	/**

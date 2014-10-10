@@ -33,7 +33,12 @@ class CollectionORM extends ORM implements CollectionORMInterface {
 
 		parent::__construct($this->relation->getTargetDefinition(), $dataMapper, $locale, $prefix, $paginatorFactory);
 
-		$this->joinToEntity($this->relation->reverse(), $entity);
+		$reverseRelation = $this->relation->reverse();
+		if($reverseRelation->get('polymorphic')) {
+			$reverseRelation = clone($reverseRelation);
+			$reverseRelation->setTargetDefinition($entity->getDefinition());
+		}
+		$this->joinToEntity($reverseRelation, $entity);
 	}
 
 	/**

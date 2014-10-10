@@ -83,6 +83,15 @@ class ORMMigrations {
 							'default'        => null,
 							'key'            => null,
 						];
+						if($relation->get('polymorphic')) {
+							$schema[$relation->getLinkType()] = [
+								'type'           => 'varchar(50)',
+								'nullable'       => true,
+								'auto_increment' => false,
+								'default'        => null,
+								'key'            => null,
+							];
+						}
 					}
 					#HMABT relations
 					elseif($relation->type() == 'HMABT') {

@@ -422,14 +422,14 @@ class EntityDefinition {
 				if($locale == 'all') {
 					$val = [];
 					foreach($value as $one => $v)
-						$val[$one] = $this->property($name)->set($v, $entity, $name);
+						$val[$one] = $this->property($name)->setDecorator($v, $entity, $name);
 					$value = $val;
 				}
 				else
-					$value = $this->property($name)->set($value, $entity, $name);
+					$value = $this->property($name)->setDecorator($value, $entity, $name);
 			}
 			else
-				$value = $this->property($name)->set($value, $entity, $name);
+				$value = $this->property($name)->setDecorator($value, $entity, $name);
 		}
 	}
 

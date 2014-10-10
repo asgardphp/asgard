@@ -36,6 +36,11 @@ class EntityRelation {
 	 * @var array
 	 */
 	protected $params = [];
+	/**
+	 * Target entity definition. Necessary when dealing with polymorphic relations.
+	 * @var \Asgard\Entity\EntityDefinition
+	 */
+	protected $targetDefinition;
 
 	/**
 	 * Constructor.
@@ -49,8 +54,11 @@ class EntityRelation {
 		$this->entityClass      = $entityClass;
 		$this->entityDefinition = $entityDefinition;
 		$this->dataMapper       = $dataMapper;
+		if(isset($params['relation_type']) && ($params['relation_type'] == 'hasMany' || $params['relation_type'] == 'HMABT'))
+			$params['many'] = true;
 		$this->params           = $params;
 		$this->params['name']   = $this->name = $name;
+
 	}
 
 	/**
@@ -66,10 +74,20 @@ class EntityRelation {
 	 * @return string
 	 */
 	public function getLink() {
-		if($this->type() == 'hasMany')
+		if($this->get('many') && $this->type() == 'hasMany')
 			return $this->reverse()->get('name').'_id';
-		elseif($this->type() == 'belongsTo' || $this->type() == 'hasOne')
+		elseif(!$this->get('many'))
 			return $this->name.'_id';
+	}
+
+	/**
+	 * Get the relation link attribute.
+	 * @return string
+	 */
+	public function getLinkType() {
+		if(!$this->get('polymorphic'))
+			return;
+		return $this->name.'_type';
 	}
 
 	/**
@@ -116,19 +134,32 @@ class EntityRelation {
 	 * @return \Asgard\Entity\EntityDefinition
 	 */
 	public function getTargetDefinition() {
-		#todo polymorphism, only for entities with one related entity
-		// if($relation['polymorphic'])
-		// 	$relation_entity = $relation['real_entity'];
-		// else
-		// 	$relation_entity = $relation->get('entity');
+		if($this->targetDefinition)
+			return $this->targetDefinition;
+
 		return $this->entityDefinition->getEntitiesManager()->get($this->params['entity']);
 	}
 
 	/**
+	 * Set the target definition. Necessary when dealing with polymorphic relations.
+	 * @param  \Asgard\Entity\EntityDefinition $targetDefinition
+	 * @return static  $this
+	 */
+	public function setTargetDefinition(\Asgard\Entity\EntityDefinition $targetDefinition) {
+		$this->targetDefinition = $targetDefinition;
+		return $this;
+	}
+
+	/**
 	 * Get the relation type.
-	 * @return string   hasOne, belongsTo, hasMany or HMABT
+	 * @return string hasOne, belongsTo, hasMany or HMABT
 	 */
 	public function type() {
+		if($this->get('relation_type'))
+			return $this->get('relation_type');
+		elseif($this->get('poymorphic'))
+			throw new \Exception('Parameter relation_type must be provided for polymorphic relations.');
+
 		$rev = $this->reverse();
 
 		if($this->get('many')) {

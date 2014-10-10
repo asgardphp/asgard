@@ -128,10 +128,8 @@ class ORM implements ORMInterface {
 		if(is_string($relation))
 			$relation = $this->dataMapper->relation($this->definition, $relation);
 
-		if($relation->get('polymorphic')) {
-			$this->where([$relation->get('link_type') => $entity->getDefinition()->getShortName()]);
-			$relation->set('real_entity', $entity->getDefinition()->getShortName()); #todo don't record it in the relation
-		}
+		if($relation->get('polymorphic'))
+			$this->where([$relation->getLinkType() => $entity->getDefinition()->getShortName()]);
 		$this->join($relation);
 
 		$this->where([$relation->getName().'.id' => $entity->id]);
@@ -335,6 +333,7 @@ class ORM implements ORMInterface {
 	*/
 	protected function jointure(\Asgard\Db\DAL $dal, $relation, $alias, $ref_table) {
 		$relationName = $relation->getName();
+
 		$relationEntityDefinition = $relation->getTargetDefinition();
 		if($alias === null)
 			$alias = $relationName;
