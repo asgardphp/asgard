@@ -13,5 +13,10 @@
         "asgard/container": "0.*",
         "symfony/console": "2.*"
     },
-    "minimum-stability": "dev"
+    "minimum-stability": "dev",
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.2-dev"
+        }
+    }
 }

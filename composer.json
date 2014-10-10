@@ -49,5 +49,10 @@
         "asgard/templating": "self.version",
         "asgard/validation": "self.version"
     },
-    "minimum-stability": "dev"
+    "minimum-stability": "dev",
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.2-dev"
+        }
+    }
 }

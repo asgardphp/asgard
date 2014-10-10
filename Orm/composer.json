@@ -16,5 +16,10 @@
         "asgard/migration": "0.*",
         "asgard/validation": "0.*"
     },
-    "minimum-stability": "dev"
+    "minimum-stability": "dev",
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.2-dev"
+        }
+    }
 }
