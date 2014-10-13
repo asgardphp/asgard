@@ -95,8 +95,6 @@ class EntitiesManager implements EntitiesManagerInterface {
 	 * {@inheritDoc}
 	 */
 	public function getCache() {
-		if(!$this->cache)
-			$this->cache = new \Asgard\Cache\Cache;
 		return $this->cache;
 	}
 

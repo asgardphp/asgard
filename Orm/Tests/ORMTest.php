@@ -8,7 +8,6 @@ class ORMTest extends \PHPUnit_Framework_TestCase {
 		$container                  = new \Asgard\Container\Container;
 		$container['hooks']         = new \Asgard\Hook\HooksManager($container);
 		$container['config']        = new \Asgard\Config\Config;
-		$container['cache']         = new \Asgard\Cache\NullCache;
 		$container['db'] = new \Asgard\Db\DB([
 			'database' => 'asgard',
 			'user'     => 'root',

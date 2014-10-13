@@ -7,7 +7,6 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 	public static function setUpBeforeClass() {
 		$container          = new \Asgard\Container\Container;
 		$container['hooks'] = new \Asgard\Hook\HooksManager($container);
-		$container['cache'] = new \Asgard\Cache\NullCache;
 		$config = [
 			'database' => 'asgard',
 			'user'     => 'root',

@@ -32,8 +32,6 @@ class Resolver implements ResolverInterface {
 	 * @param \Asgard\Cache\CacheInterface $cache
 	 */
 	public function __construct(\Asgard\Cache\CacheInterface $cache=null) {
-		if(!$cache)
-			$cache = new \Asgard\Cache\Cache;
 		$this->cache = $cache;
 	}
 
