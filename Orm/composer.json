@@ -16,6 +16,9 @@
         "asgard/migration": "0.*",
         "asgard/validation": "0.*"
     },
+    "require-dev": {
+        "asgard/file": "0.*"
+    },
     "minimum-stability": "dev",
     "extra": {
         "branch-alias": {
