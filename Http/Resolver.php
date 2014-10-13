@@ -132,8 +132,10 @@ class Resolver implements ResolverInterface {
 	 */
 	public function getRoute(Request $request) {
 		$request_key = sha1(serialize([$request->method(), $request->url->get()]));
-
-		$results = $this->cache->fetch('Router/requests/'.$request_key);
+		$results = false;
+		
+		if($this->cache)
+			$results = $this->cache->fetch('Router/requests/'.$request_key);
 		if($results === false) {
 			/* PARSE ALL ROUTES */
 			foreach($this->routes as $r) {

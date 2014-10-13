@@ -18,15 +18,19 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 		$news = new Classes\News([
 			'title' => 'Test Title',
 			'content' => 'Test Content',
+			'published' => $date,
 			'comments' => [
 				new Classes\Comment([
-					'content' => 'foo'
+					'content' => 'foo',
+					'published' => $date
 				]),
 				new Classes\Comment([
-					'content' => 'bar'
+					'content' => 'bar',
+					'published' => $date
 				]),
 				new Classes\Comment([
-					'content' => 'baz'
+					'content' => 'baz',
+					'published' => $date
 				])
 			]
 		]);

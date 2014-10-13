@@ -7,7 +7,6 @@ class ORMTest extends \PHPUnit_Framework_TestCase {
 	public static function setUpBeforeClass() {
 		$container                  = new \Asgard\Container\Container;
 		$container['hooks']         = new \Asgard\Hook\HooksManager($container);
-		$container['config']        = new \Asgard\Config\Config;
 		$container['db'] = new \Asgard\Db\DB([
 			'database' => 'asgard',
 			'user'     => 'root',
