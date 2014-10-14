@@ -8,11 +8,11 @@ namespace Asgard\Orm;
 interface CollectionORMFactoryInterface {
 	/**
 	 * Create a new instance.
-	 * @param  string              $entityClass
-	 * @param  string              $name
-	 * @param  DataMapperInterface $dataMapper
-	 * @param  string              $locale
-	 * @param  string              $prefix
+	 * @param  \Asgard\Entity\Entity $entity
+	 * @param  string                $name
+	 * @param  DataMapperInterface   $dataMapper
+	 * @param  string                $locale
+	 * @param  string                $prefix
 	 * @return CollectionORMInterface
 	 */
 	public function create($entityClass, $name, DataMapperInterface $dataMapper, $locale=null, $prefix=null);

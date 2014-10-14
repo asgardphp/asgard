@@ -18,7 +18,7 @@ class ORMFactory implements ORMFactoryInterface {
 	 * {@inheritDoc}
 	 * @return ORM
 	 */
-	public function create($entityClass, DataMapperInterface $dataMapper, $locale=null, $prefix=null) {
-		return new ORM($entityClass, $dataMapper, $locale=null, $prefix=null, $this->paginatorFactory);
+	public function create(\Asgard\Entity\EntityDefinition $definition, DataMapperInterface $dataMapper, $locale=null, $prefix=null) {
+		return new ORM($definition, $dataMapper, $locale=null, $prefix=null, $this->paginatorFactory);
 	}
 }

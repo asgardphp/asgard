@@ -77,10 +77,7 @@ class DataMapper implements DataMapperInterface {
 	 */
 	public function orm($entityClass) {
 		$definition = $this->getEntitiesManager()->get($entityClass);
-		if($this->ormFactory)
-			return $this->ormFactory->create($definition, $this, $this->locale, $this->prefix);
-		else
-			return new ORM($definition, $this, $this->locale, $this->prefix);
+		return $this->getOrmFactory()->create($definition, $this, $this->locale, $this->prefix);
 	}
 
 	/**
@@ -344,26 +341,24 @@ class DataMapper implements DataMapperInterface {
 
 			$type = $rel->type();
 			if($rel->get('polymorphic')) {
-				#todo
+				// if() todo
 			}
 			else {
 				$reverse_rel = $rel->reverse();
+				$relation_entity = $rel->get('entity');
+				$link = $reverse_rel->getLink();
+
 				if($reverse_rel->get('polymorphic')) {
 					if($type == 'hasOne') {
-						$relation_entity = $rel->get('entity');
-						$link = $reverse_rel->getLink();
 						$linkType = $reverse_rel->getLinkType();
 						$this->orm($relation_entity)->where([$link => $entity->id, $linkType => get_class($entity)])->getDAL()->update([$link => null, $linkType => null]);
 						$this->orm($relation_entity)->where(['id' => $entity->data['properties'][$relation]->id])->getDAL()->update([$link => $entity->id, $linkType => get_class($entity)]);
 					}
-					elseif($rel->get('many')) {
-						#todo
-					}
+					elseif($rel->get('many'))
+						$this->related($entity, $relation)->sync($entity->data['properties'][$relation]->all());
 				}
 				else {
 					if($type == 'hasOne') {
-						$relation_entity = $rel->get('entity');
-						$link = $reverse_rel->getLink();
 						$this->orm($relation_entity)->where([$link => $entity->id])->getDAL()->update([$link => 0]);
 						$this->orm($relation_entity)->where(['id' => $entity->data['properties'][$relation]->id])->getDAL()->update([$link => $entity->id]);
 					}
@@ -392,16 +387,31 @@ class DataMapper implements DataMapperInterface {
 					if(!$relEntity)
 						return;
 				}
-				return $this->orm($relEntity)->where(['id' => $entity->get($link)]);
+				return $this->orm($relEntity)->where('id', $entity->get($link));
 			case 'hasMany':
 			case 'HMABT':
-				if($this->collectionOrmFactory)
-					return $this->collectionOrmFactory->create($entity, $this, $name, $this->locale, $this->prefix);
-				else
-					return new CollectionORM($entity, $name, $this, $this->locale, $this->prefix);
+				return $this->getCollectionOrmFactory()->create($entity, $name, $this, $this->locale, $this->prefix);
 			default:
 				throw new \Exception('Relation '.$rel->type().' does not exist.');
 		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getCollectionOrmFactory() {
+		if(!$this->collectionOrmFactory)
+			$this->collectionOrmFactory = new CollectionORMFactory;
+		return $this->collectionOrmFactory;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getOrmFactory() {
+		if(!$this->ormFactory)
+			$this->ormFactory = new ORMFactory;
+		return $this->ormFactory;
 	}
 
 	/**

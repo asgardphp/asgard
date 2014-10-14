@@ -19,7 +19,7 @@ class CollectionORM extends ORM implements CollectionORMInterface {
 
 	/**
 	 * Constructor.
-	 * @param \Asgar\dEntity\Entity $entity            $entity
+	 * @param \Asgard\Entity\Entity $entity            $entity
 	 * @param string                                   $relation_name
 	 * @param DataMapperInterface                      $datamapper
 	 * @param string                                   $locale        default locale
@@ -59,25 +59,41 @@ class CollectionORM extends ORM implements CollectionORMInterface {
 
 		switch($this->relation->type()) {
 			case 'hasMany':
-			$relationEntityDefinition = $this->relation->getTargetDefinition();
+				$relationEntityDefinition = $this->relation->getTargetDefinition();
 				$link = $this->relation->getLink();
 				$dal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->dataMapper->getTable($relationEntityDefinition));
-				$dal->where([$link => $this->parent->id])->update([$link => 0]);
+				if($this->relation->reverse()->get('polymorphic'))
+					$dal->where([$link => $this->parent->id, $this->relation->reverse()->getLinkType() => get_class($this->parent)])->update([$link => null, $linkType => null]);
+				else
+					$dal->where([$link => $this->parent->id])->update([$link => null]);
+
 				if($ids) {
 					$newDal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->dataMapper->getTable($relationEntityDefinition));
-					$newDal->where(['id IN ('.implode(', ', $ids).')'])->update([$link => $this->parent->id]);
+					$newDal->where('id IN ('.implode(', ', $ids).')');
+					if($this->relation->reverse()->get('polymorphic'))
+						$newDal->update([$link => $entity->id, $this->relation->reverse()->getLinkType() => get_class($this->parent)]);
+					else
+						$newDal->update([$link => $this->parent->id]);
 				}
 				break;
 			case 'HMABT':
 				$dal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->relation->getTable());
-				$dal->where([$this->relation->getLinkA() => $this->parent->id])->delete();
-				$dal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->relation->getTable());
-				$i = 1;
-				foreach($ids as $id) {
-					if($this->relation->get('sortable'))
-						$dal->insert([$this->relation->getLinkA() => $this->parent->id, $this->relation->getLinkB() => $id, $this->relation->getPositionField() => $i++]);
-					else
-						$dal->insert([$this->relation->getLinkA() => $this->parent->id, $this->relation->getLinkB() => $id]);
+				$dal->where($this->relation->getLinkA(), $this->parent->id);
+				if($this->relation->reverse()->get('polymorphic'))
+					$dal->where($this->relation->reverse()->getLinkType(), get_class($this->parent));
+				$dal->delete();
+
+				if($ids) {
+					$dal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->relation->getTable());
+					$i = 1;
+					foreach($ids as $id) {
+						$params = [$this->relation->getLinkA() => $this->parent->id, $this->relation->getLinkB() => $id];
+						if($this->relation->get('sortable'))
+							$params[$this->relation->getPositionField()] = $i++;
+						if($this->relation->reverse()->get('polymorphic'))
+							$params[$this->relation->reverse()->getLinkType()] = get_class($this->parent);
+						$dal->insert($params);
+					}
 				}
 				break;
 			default:

@@ -101,6 +101,15 @@ class Property {
 	}
 
 	/**
+	 * Set a parameter.
+	 * @param  string $path
+	 * @param  mixed  $value
+	 */
+	public function set($path, $value) {
+		\Asgard\Common\ArrayUtils::set($this->params, $path, $value);
+	}
+
+	/**
 	 * Check if has a parameter.
 	 * @param  string  $path
 	 * @return boolean

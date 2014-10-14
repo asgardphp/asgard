@@ -94,19 +94,19 @@ class ORMMigrations {
 						}
 					}
 					#HMABT relations
-					elseif($relation->type() == 'HMABT') {
+					elseif($relation->type() == 'HMABT' && !$relation->get('polymorphic')) {
 						$table_name = $relation->getTable();
 						#if table was not already created by the opposite entity
 						if(!isset($schemas[$table_name])) {
 							$arr = [
-								$relation->getLinkA() => [
+								$relation->getLinkB() => [
 									'type'           => 'int(11)',
 									'nullable'       => true,
 									'auto_increment' => false,
 									'default'        => null,
 									'key'            => null,
 								],
-								$relation->getLinkB() => [
+								$relation->getLinkA() => [
 									'type'           => 'int(11)',
 									'nullable'       => true,
 									'auto_increment' => false,
@@ -115,6 +115,15 @@ class ORMMigrations {
 								],
 							];
 							$schemas[$table_name] = $arr;
+						}
+						if($relation->reverse()->get('polymorphic')) {
+							$schemas[$table_name][$relation->reverse()->getLinkType()] = [
+								'type'           => 'varchar(50)',
+								'nullable'       => true,
+								'auto_increment' => false,
+								'default'        => null,
+								'key'            => null,
+							];
 						}
 						#sortable
 						if($relation->get('sortable')) {

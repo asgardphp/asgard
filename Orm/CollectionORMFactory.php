@@ -18,7 +18,11 @@ class CollectionORMFactory implements CollectionORMFactoryInterface {
 	 * {@inheritDoc}
 	 * @return TemplateEngine
 	 */
-	public function create($entityClass, $name, DataMapperInterface $dataMapper, $locale=null, $prefix=null) {
-		return new CollectionORM($entityClass, $name, $dataMapper, $lcoale, $prefix, $this->paginatorFactory);
+	public function create($entity, $name, DataMapperInterface $dataMapper, $locale=null, $prefix=null) {
+		$relation = $dataMapper->relation($entity->getDefinition(), $name);
+		if($relation->get('polymorphic'))
+			return new PolymorphicCollectionORM($entity, $name, $dataMapper, $locale, $prefix, $this->paginatorFactory);
+		else
+			return new CollectionORM($entity, $name, $dataMapper, $locale, $prefix, $this->paginatorFactory);
 	}
 }

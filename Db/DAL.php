@@ -192,7 +192,7 @@ class DAL {
 	protected function join($type, $table, $conditions=null) {
 		if(is_array($table)) {
 			foreach($table as $_table=>$_conditions)
-				$this->leftjoin($_table, $_conditions);
+				$this->join($type, $_table, $_conditions);
 			return $this;
 		}
 		$table_alias = explode(' ', $table);
@@ -477,7 +477,7 @@ class DAL {
 
 	/**
 	 * Format the conditions.
-	 * @param  array  $params
+	 * @param  array   $params
 	 * @param  string  $condition
 	 * @param  boolean $brackets
 	 * @param  string  $table
@@ -563,7 +563,7 @@ class DAL {
 	 * @param  string  $str
 	 * @return boolean
 	 */
-	protected static function isIdentifier($str) {
+	public static function isIdentifier($str) {
 		return preg_match('/^[a-z_][a-zA-Z0-9._]*$/', $str);
 	}
 

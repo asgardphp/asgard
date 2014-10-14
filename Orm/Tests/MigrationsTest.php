@@ -130,7 +130,7 @@ class MigrationsTest extends \PHPUnit_Framework_TestCase {
 				],
 				'category_post' => [
 					[
-						'Field' => 'post_id',
+						'Field' => 'category_id',
 						'Type' => 'int(11)',
 						'Null' => 'YES',
 						'Key' => '',
@@ -138,7 +138,7 @@ class MigrationsTest extends \PHPUnit_Framework_TestCase {
 						'Extra' => '',
 					],
 					[
-						'Field' => 'category_id',
+						'Field' => 'post_id',
 						'Type' => 'int(11)',
 						'Null' => 'YES',
 						'Key' => '',

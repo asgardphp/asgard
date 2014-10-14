@@ -111,6 +111,18 @@ interface DataMapperInterface {
 	public function related(\Asgard\Entity\Entity $entity, $name);
 
 	/**
+	 * Return an CollectionOrmFactory.
+	 * @return CollectionORMFactoryInterface
+	 */
+	public function getCollectionOrmFactory();
+
+	/**
+	 * Return an nOrmFactory.
+	 * @return ORMFactoryInterface
+	 */
+	public function getOrmFactory();
+
+	/**
 	 * Get related entities.
 	 * @param  \Asgard\Entity\Entity $entity
 	 * @param  string                $name

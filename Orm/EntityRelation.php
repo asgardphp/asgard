@@ -87,7 +87,10 @@ class EntityRelation {
 	public function getLinkType() {
 		if(!$this->get('polymorphic'))
 			return;
-		return $this->name.'_type';
+		if($this->get('as'))
+			return $this->get('as').'_type';
+		else
+			return $this->name.'_type';
 	}
 
 	/**
@@ -95,7 +98,10 @@ class EntityRelation {
 	 * @return string
 	 */
 	public function getLinkA() {
-		return $this->entityDefinition->getShortName().'_id';
+		if($this->reverse()->get('polymorphic'))
+			return $this->reverse()->get('as').'_id';
+		else
+			return $this->entityDefinition->getShortName().'_id';
 	}
 
 	/**
@@ -103,7 +109,10 @@ class EntityRelation {
 	 * @return string
 	 */
 	public function getLinkB() {
-		return $this->getTargetDefinition()->getShortName().'_id';
+		if($this->get('polymorphic'))
+			return $this->get('as').'_id';
+		else
+			return $this->getTargetDefinition()->getShortName().'_id';
 	}
 
 	/**
@@ -120,8 +129,15 @@ class EntityRelation {
 	 * @return string
 	 */
 	public function getTable($prefix=null) {
-		$entityShortName         = $this->entityDefinition->getShortName();
-		$relationEntityShortName = $this->getTargetDefinition()->getShortName();
+		if($this->reverse()->get('polymorphic'))
+			$entityShortName = $this->reverse()->get('as');
+		else
+			$entityShortName = $this->entityDefinition->getShortName();
+
+		if($this->get('polymorphic'))
+			$relationEntityShortName = $this->get('as');
+		else
+			$relationEntityShortName = $this->getTargetDefinition()->getShortName();
 
 		if($entityShortName < $relationEntityShortName)
 			return $prefix.$entityShortName.'_'.$relationEntityShortName;

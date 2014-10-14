@@ -80,15 +80,18 @@ class ORM implements ORMInterface {
 	/**
 	 * Constructor.
 	 * @param \Asgard\Entity\EntityDefinition $definition
-	 * @param DataMapperInterface                      $datamapper
-	 * @param string                          $locale           default locale
-	 * @param string                          $prefix           tables prefix
-	 * @param \Asgard\Common\PaginatorFactoryInterface       $paginatorFactory
+	 * @param DataMapperInterface             $datamapper
+	 * @param string                          $locale      default locale
+	 * @param string                          $prefix      tables prefix
+	 * @param \Asgard\Common\PaginatorFactoryInterface   $paginatorFactory
 	 */
 	public function __construct(\Asgard\Entity\EntityDefinition $definition, DataMapperInterface $datamapper, $locale=null, $prefix=null, \Asgard\Common\PaginatorFactoryInterface $paginatorFactory=null) {
 		$this->definition       = $definition;
 		$this->dataMapper       = $datamapper;
-		$this->locale           = $locale;
+		if($locale !== null)
+			$this->locale = $locale;
+		else
+			$this->locale = $definition->getEntitiesManager()->getDefaultLocale();
 		$this->prefix           = $prefix;
 		$this->paginatorFactory = $paginatorFactory;
 
@@ -129,10 +132,10 @@ class ORM implements ORMInterface {
 			$relation = $this->dataMapper->relation($this->definition, $relation);
 
 		if($relation->get('polymorphic'))
-			$this->where([$relation->getLinkType() => $entity->getDefinition()->getShortName()]);
+			$this->where($relation->getTable().'.'.$relation->getLinkType(), $entity->getDefinition()->getShortName());
 		$this->join($relation);
 
-		$this->where([$relation->getName().'.id' => $entity->id]);
+		$this->where($relation->getName().'.id', $entity->id);
 
 		return $this;
 	}
@@ -576,8 +579,15 @@ class ORM implements ORMInterface {
 	 * {@inheritDoc}
 	*/
 	public function where($conditions, $val=null) {
-		if(is_array($conditions))
+		if($val === null) {
+			if(!is_array($conditions)) {
+				if(\Asgard\Db\DAL::isIdentifier($conditions))
+					$conditions = [$conditions.' IS NULL'];
+				else
+					$conditions = [$conditions];
+			}
 			$this->where[] = $this->processConditions($conditions);
+		}
 		else
 			$this->where[] = $this->processConditions([$conditions=>$val]);
 
