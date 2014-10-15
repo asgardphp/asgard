@@ -35,7 +35,7 @@ class DB implements DBInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getDAL() {
+	public function dal() {
 		return new DAL($this);
 	}
 

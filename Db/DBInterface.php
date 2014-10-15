@@ -12,7 +12,7 @@ interface DBInterface {
 	 * @return DAL
 	 * @api
 	 */
-	public function getDAL();
+	public function dal();
 
 	/**
 	 * Return the configuration.
