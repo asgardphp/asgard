@@ -500,8 +500,12 @@ class DAL {
 
 		foreach($params as $key=>$value) {
 			if(!is_array($value)) {
-				if(is_int($key))
-					$string_conditions[] = $this->replace($value);
+				if(is_int($key)) {
+					if(static::isIdentifier($value))
+						$string_conditions[] = $this->replace($value).' IS NULL';
+					else
+						$string_conditions[] = $this->replace($value);
+				}
 				else {
 					$res = $this->replace($key);
 					if($value instanceof Raw)

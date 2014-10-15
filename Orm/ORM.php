@@ -580,12 +580,8 @@ class ORM implements ORMInterface {
 	*/
 	public function where($conditions, $val=null) {
 		if($val === null) {
-			if(!is_array($conditions)) {
-				if(\Asgard\Db\DAL::isIdentifier($conditions))
-					$conditions = [$conditions.' IS NULL'];
-				else
-					$conditions = [$conditions];
-			}
+			if(!is_array($conditions))
+				$conditions = [$conditions];
 			$this->where[] = $this->processConditions($conditions);
 		}
 		else
