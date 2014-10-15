@@ -13,9 +13,9 @@ class EntityRelation {
 	protected $entityClass;
 	/**
 	 * Entity definition.
-	 * @var \Asgard\Entity\EntityDefinition
+	 * @var \Asgard\Entity\Definition
 	 */
-	protected $entityDefinition;
+	protected $Definition;
 	/**
 	 * DataMapper.
 	 * @var DataMapperInterface
@@ -38,21 +38,21 @@ class EntityRelation {
 	protected $params = [];
 	/**
 	 * Target entity definition. Necessary when dealing with polymorphic relations.
-	 * @var \Asgard\Entity\EntityDefinition
+	 * @var \Asgard\Entity\Definition
 	 */
 	protected $targetDefinition;
 
 	/**
 	 * Constructor.
-	 * @param \Asgard\Entity\EntityDefinition $entityDefinition
+	 * @param \Asgard\Entity\Definition $Definition
 	 * @param DataMapperInterface             $dataMapper
 	 * @param string                          $name
 	 * @param array                           $params
 	 */
-	public function __construct(\Asgard\Entity\EntityDefinition $entityDefinition, DataMapperInterface $dataMapper, $name, array $params) {
-		$entityClass            = $entityDefinition->getClass();
+	public function __construct(\Asgard\Entity\Definition $Definition, DataMapperInterface $dataMapper, $name, array $params) {
+		$entityClass            = $Definition->getClass();
 		$this->entityClass      = $entityClass;
-		$this->entityDefinition = $entityDefinition;
+		$this->Definition = $Definition;
 		$this->dataMapper       = $dataMapper;
 		if(isset($params['relation_type']) && ($params['relation_type'] == 'hasMany' || $params['relation_type'] == 'HMABT'))
 			$params['many'] = true;
@@ -101,7 +101,7 @@ class EntityRelation {
 		if($this->reverse()->get('polymorphic'))
 			return $this->reverse()->get('as').'_id';
 		else
-			return $this->entityDefinition->getShortName().'_id';
+			return $this->Definition->getShortName().'_id';
 	}
 
 	/**
@@ -135,7 +135,7 @@ class EntityRelation {
 		if(!$this->get('polymorphic') && $this->reverse()->get('polymorphic'))
 			$entityShortName = $this->reverse()->get('as');
 		else
-			$entityShortName = $this->entityDefinition->getShortName();
+			$entityShortName = $this->Definition->getShortName();
 
 		if($this->get('polymorphic'))
 			$relationEntityShortName = $this->get('as');
@@ -150,21 +150,21 @@ class EntityRelation {
 
 	/**
 	 * Return the target entity definition.
-	 * @return \Asgard\Entity\EntityDefinition
+	 * @return \Asgard\Entity\Definition
 	 */
 	public function getTargetDefinition() {
 		if($this->targetDefinition)
 			return $this->targetDefinition;
 
-		return $this->entityDefinition->getEntitiesManager()->get($this->params['entity']);
+		return $this->Definition->getEntitiesManager()->get($this->params['entity']);
 	}
 
 	/**
 	 * Set the target definition. Necessary when dealing with polymorphic relations.
-	 * @param  \Asgard\Entity\EntityDefinition $targetDefinition
+	 * @param  \Asgard\Entity\Definition $targetDefinition
 	 * @return static  $this
 	 */
-	public function setTargetDefinition(\Asgard\Entity\EntityDefinition $targetDefinition) {
+	public function setTargetDefinition(\Asgard\Entity\Definition $targetDefinition) {
 		$this->targetDefinition = $targetDefinition;
 		return $this;
 	}
@@ -206,11 +206,11 @@ class EntityRelation {
 		$origEntityName = strtolower($this->entityClass);
 		$entityName = preg_replace('/^\\\/', '', $origEntityName);
 
-		$relationEntityDefinition = $this->getTargetDefinition();
+		$relationDefinition = $this->getTargetDefinition();
 		$name = $this->name;
 
 		$rev_relations = [];
-		foreach($this->dataMapper->relations($relationEntityDefinition) as $rev_rel_name=>$rev_rel) {
+		foreach($this->dataMapper->relations($relationDefinition) as $rev_rel_name=>$rev_rel) {
 			$relEntityClass = preg_replace('/^\\\/', '', strtolower($rev_rel->get('entity')));
 
 			if($relEntityClass == $entityName

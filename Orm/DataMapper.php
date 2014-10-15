@@ -454,14 +454,14 @@ class DataMapper implements DataMapperInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getTranslationTable(\Asgard\Entity\EntityDefinition $definition) {
+	public function getTranslationTable(\Asgard\Entity\Definition $definition) {
 		return $this->getTable($definition).'_translation';
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getTable(\Asgard\Entity\EntityDefinition $definition) {
+	public function getTable(\Asgard\Entity\Definition $definition) {
 		if($definition->get('table'))
 			return $this->prefix.$definition->get('table');
 		else
@@ -487,7 +487,7 @@ class DataMapper implements DataMapperInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function relations(\Asgard\Entity\EntityDefinition $definition) {
+	public function relations(\Asgard\Entity\Definition $definition) {
 		if($relations = $definition->get('relations'))
 			return $relations;
 		else {
@@ -504,14 +504,14 @@ class DataMapper implements DataMapperInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function relation(\Asgard\Entity\EntityDefinition $definition, $name) {
+	public function relation(\Asgard\Entity\Definition $definition, $name) {
 		return $this->relations($definition)[$name];
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function hasRelation(\Asgard\Entity\EntityDefinition $definition, $name) {
+	public function hasRelation(\Asgard\Entity\Definition $definition, $name) {
 		return isset($this->relations($definition)[$name]);
 	}
 

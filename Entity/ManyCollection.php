@@ -13,7 +13,7 @@ class ManyCollection implements \ArrayAccess, \Iterator, \Countable {
 	protected $elements = [];
 	/**
 	 * Entity Definition.
-	 * @var EntityDefinition
+	 * @var Definition
 	 */
 	protected $definition;
 	/**
@@ -29,7 +29,7 @@ class ManyCollection implements \ArrayAccess, \Iterator, \Countable {
 
 	/**
 	 * Constructor.
-	 * @param EntityDefinition $definition
+	 * @param Definition $definition
 	 * @param Entity           $entity
 	 * @param string           $name
 	 */

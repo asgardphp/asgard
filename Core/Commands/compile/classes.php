@@ -15,7 +15,7 @@ return array_map('realpath', [
 	$root.'/vendor/asgard/asgard/Entity/Behavior.php',
 	$root.'/vendor/asgard/asgard/Entity/EntitiesManager.php',
 	$root.'/vendor/asgard/asgard/Entity/Entity.php',
-	$root.'/vendor/asgard/asgard/Entity/EntityDefinition.php',
+	$root.'/vendor/asgard/asgard/Entity/Definition.php',
 	$root.'/vendor/asgard/asgard/Entity/EntityExceptionInterface.php',
 	$root.'/vendor/asgard/asgard/Entity/Properties/DatetimeProperty.php',
 	$root.'/vendor/asgard/asgard/Entity/Properties/IntegerProperty.php',

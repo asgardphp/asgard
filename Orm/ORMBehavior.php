@@ -19,9 +19,9 @@ class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\Pers
 
 	/**
 	 * Behavior loading.
-	 * @param  \Asgard\Entity\EntityDefinition $definition
+	 * @param  \Asgard\Entity\Definition $definition
 	 */
-	public function load(\Asgard\Entity\EntityDefinition $definition) {
+	public function load(\Asgard\Entity\Definition $definition) {
 		$this->entityClass = $definition->getClass();
 
 		if(!isset($definition->order_by))

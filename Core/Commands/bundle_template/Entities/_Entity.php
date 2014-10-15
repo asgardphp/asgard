@@ -2,7 +2,7 @@
 namespace <?=$bundle['namespace'] ?>\Entities;
 
 class <?=ucfirst($entity['meta']['name']) ?> extends \Asgard\Entity\Entity {
-	public static function definition(\Asgard\Entity\EntityDefinition $definition) {
+	public static function definition(\Asgard\Entity\Definition $definition) {
 		$definition->properties = [
 <?php foreach($entity['properties'] as $name=>$property): ?>
 		'<?=$name ?>'	=>	[

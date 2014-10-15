@@ -57,7 +57,7 @@ interface EntitiesManagerInterface {
 	/**
 	 * Get an entity definition.
 	 * @param  string $entityClass
-	 * @return EntityDefinition
+	 * @return Definition
 	 */
 	public function get($entityClass);
 

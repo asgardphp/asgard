@@ -6,7 +6,7 @@ namespace Asgard\Entity;
  * @property-write array $properties
  * @author Michel Hognerud <michel@hognerud.com>
  */
-class EntityDefinition {
+class Definition {
 	use \Asgard\Hook\HookableTrait;
 
 	/**
@@ -201,7 +201,7 @@ class EntityDefinition {
 	/**
 	 * Set the entitiesManager dependency.
 	 * @param EntitiesManagerInterface $entitiesManager
-	 * @return EntityDefinition $this
+	 * @return Definition $this
 	 */
 	public function setEntitiesManager(EntitiesManagerInterface $entitiesManager) {
 		$this->entitiesManager = $entitiesManager;
@@ -211,7 +211,7 @@ class EntityDefinition {
 	/**
 	 * Set the general hooks manager dependency.
 	 * @param \Asgard\Hook\HooksManagerInterface $generalHooksManager
-	 * @return EntityDefinition $this
+	 * @return Definition $this
 	 */
 	public function setGeneralHooksManager($generalHooksManager) {
 		$this->generalHooksManager = $generalHooksManager;

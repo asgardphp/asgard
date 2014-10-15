@@ -29,7 +29,7 @@ class ORMMigrations {
 
 	/**
 	 * Automatically migrate given entity definitions.
-	 * @param  array|\Asgard\Entity\EntityDefinition $definitions
+	 * @param  array|\Asgard\Entity\Definition $definitions
 	 * @param  \Asgard\Db\SchemaInterface                     $schema
 	 */
 	public function autoMigrate($definitions, \Asgard\Db\SchemaInterface $schema) {
@@ -40,7 +40,7 @@ class ORMMigrations {
 
 	/**
 	 * Generate a migration from given entity definitions.
-	 * @param  array|\Asgard\Entity\EntityDefinition $definitions
+	 * @param  array|\Asgard\Entity\Definition $definitions
 	 * @param  string                                $migrationName
 	 * @return string                                name of migration
 	 */

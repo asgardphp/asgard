@@ -10,7 +10,7 @@ use Jeremeamia\SuperClosure\SerializableClosure;
 class Property {
 	/**
 	 * Entity definition.
-	 * @var EntityDefinition
+	 * @var Definition
 	 */
 	protected $definition;
 	/**
@@ -71,7 +71,7 @@ class Property {
 
 	/**
 	 * Set the definition.
-	 * @param EntityDefinition $definition
+	 * @param Definition $definition
 	 */
 	public function setDefinition($definition) {
 		$this->definition = $definition;

@@ -152,7 +152,7 @@ class EntitiesManager implements EntitiesManagerInterface {
 	/**
 	 * Make a new entity definition.
 	 * @param  string $entityClass
-	 * @return EntityDefinition
+	 * @return Definition
 	 */
 	protected function makeDefinition($entityClass) {
 		if($this->has($entityClass))
@@ -163,7 +163,7 @@ class EntitiesManager implements EntitiesManagerInterface {
 		if($cache = $this->getCache())
 			$definition = $cache->fetch('entitiesmanager.'.$entityClass.'.definition');
 		if($definition === false)
-			$definition = new EntityDefinition($entityClass, $this, $hooksManager);
+			$definition = new Definition($entityClass, $this, $hooksManager);
 		$definition->setEntitiesManager($this);
 		$definition->setGeneralHooksManager($hooksManager);
 

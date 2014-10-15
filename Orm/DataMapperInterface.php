@@ -132,17 +132,17 @@ interface DataMapperInterface {
 
 	/**
 	 * Get the translations table of an entity class.
-	 * @param  \Asgard\Entity\EntityDefinition $definition
+	 * @param  \Asgard\Entity\Definition $definition
 	 * @return string
 	 */
-	public function getTranslationTable(\Asgard\Entity\EntityDefinition $definition);
+	public function getTranslationTable(\Asgard\Entity\Definition $definition);
 
 	/**
 	 * Get the table of an entity class.
-	 * @param  \Asgard\Entity\EntityDefinition $definition
+	 * @param  \Asgard\Entity\Definition $definition
 	 * @return string
 	 */
-	public function getTable(\Asgard\Entity\EntityDefinition $definition);
+	public function getTable(\Asgard\Entity\Definition $definition);
 
 	/**
 	 * Return an entity with translations.
@@ -154,26 +154,26 @@ interface DataMapperInterface {
 
 	/**
 	 * Return the entity relations objects.
-	 * @param  \Asgard\Entity\EntityDefinition $definition
+	 * @param  \Asgard\Entity\Definition $definition
 	 * @return array
 	 */
-	public function relations(\Asgard\Entity\EntityDefinition $definition);
+	public function relations(\Asgard\Entity\Definition $definition);
 
 	/**
 	 * Get a relation object.
-	 * @param  \Asgard\Entity\EntityDefinition $definition
+	 * @param  \Asgard\Entity\Definition $definition
 	 * @param  string                          $name       relation name
 	 * @return EntityRelation
 	 */
-	public function relation(\Asgard\Entity\EntityDefinition $definition, $name);
+	public function relation(\Asgard\Entity\Definition $definition, $name);
 
 	/**
 	 * Check if the definition has the relaton/
-	 * @param  \Asgard\Entity\EntityDefinition $definition
+	 * @param  \Asgard\Entity\Definition $definition
 	 * @param  string                          $name
 	 * @return boolean
 	 */
-	public function hasRelation(\Asgard\Entity\EntityDefinition $definition, $name);
+	public function hasRelation(\Asgard\Entity\Definition $definition, $name);
 
 	/**
 	 * Return the database instance.

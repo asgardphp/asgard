@@ -13,7 +13,7 @@ class Behavior {
 	protected $params;
 	/**
 	 * Entity definition.
-	 * @var EntityDefinition
+	 * @var Definition
 	 */
 	protected $definition;
 
@@ -48,15 +48,15 @@ class Behavior {
 
 	/**
 	 * Set entity definition.
-	 * @param EntityDefinition $definition
+	 * @param Definition $definition
 	 */
-	public function setDefinition(EntityDefinition $definition) {
+	public function setDefinition(Definition $definition) {
 		$this->definition = $definition;
 	}
 
 	/**
 	 * Load the bahavior.
-	 * @param  EntityDefinition $definition
+	 * @param  Definition $definition
 	 */
-	public function load(EntityDefinition $definition) {}
+	public function load(Definition $definition) {}
 }

@@ -2,7 +2,7 @@
 namespace Asgard\Orm\Tests\I18nentities;
 
 class News extends \Asgard\Entity\Entity {
-	public static function definition(\Asgard\Entity\EntityDefinition $definition) {
+	public static function definition(\Asgard\Entity\Definition $definition) {
 		$definition->properties = [
 			'title',
 			'test'	=>	[

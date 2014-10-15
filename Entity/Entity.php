@@ -17,7 +17,7 @@ abstract class Entity {
 	];
 	/**
 	 * Entity definition.
-	 * @var EntityDefinition
+	 * @var Definition
 	 */
 	protected $definition;
 	/**
@@ -50,7 +50,7 @@ abstract class Entity {
 
 	/**
 	 * Set the entity definition.
-	 * @param EntityDefinition $definition
+	 * @param Definition $definition
 	 */
 	public function setDefinition($definition) {
 		$this->definition = $definition;
@@ -122,13 +122,13 @@ abstract class Entity {
 
 	/**
 	 * Initialize the configuration. To be overwritten in the entity class.
-	 * @param  EntityDefinition $entityDefinition
+	 * @param  Definition $Definition
 	 */
-	public static function definition(EntityDefinition $entityDefinition) {}
+	public static function definition(Definition $Definition) {}
 
 	/**
 	 * Return the definition.
-	 * @return EntityDefinition
+	 * @return Definition
 	 */
 	public function getDefinition() {
 		if(isset($this->definition))
@@ -139,7 +139,7 @@ abstract class Entity {
 
 	/**
 	 * Return a static definition, if entity used like active-record.
-	 * @return EntityDefinition
+	 * @return Definition
 	 */
 	public static function getStaticDefinition() {
 		#only for entities without dependency injection, activerecord like, e.g. new Article or Article::find();

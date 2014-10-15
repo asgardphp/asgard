@@ -13,7 +13,7 @@ class ORM implements ORMInterface {
 	protected $dataMapper;
 	/**
 	 * Entity definition.
-	 * @var \Asgard\Entity\EntityDefinition
+	 * @var \Asgard\Entity\Definition
 	 */
 	protected $definition;
 	/**
@@ -79,13 +79,13 @@ class ORM implements ORMInterface {
 
 	/**
 	 * Constructor.
-	 * @param \Asgard\Entity\EntityDefinition $definition
+	 * @param \Asgard\Entity\Definition $definition
 	 * @param DataMapperInterface             $datamapper
 	 * @param string                          $locale      default locale
 	 * @param string                          $prefix      tables prefix
 	 * @param \Asgard\Common\PaginatorFactoryInterface   $paginatorFactory
 	 */
-	public function __construct(\Asgard\Entity\EntityDefinition $definition, DataMapperInterface $datamapper, $locale=null, $prefix=null, \Asgard\Common\PaginatorFactoryInterface $paginatorFactory=null) {
+	public function __construct(\Asgard\Entity\Definition $definition, DataMapperInterface $datamapper, $locale=null, $prefix=null, \Asgard\Common\PaginatorFactoryInterface $paginatorFactory=null) {
 		$this->definition       = $definition;
 		$this->dataMapper       = $datamapper;
 		if($locale !== null)
@@ -170,11 +170,11 @@ class ORM implements ORMInterface {
 	 * Converts a raw array to an entity.
 	 *
 	 * @param array                           $raw
-	 * @param \Asgard\Entity\EntityDefinition $definition The definition of the entity to be instantiated.
+	 * @param \Asgard\Entity\Definition $definition The definition of the entity to be instantiated.
 	 *
 	 * @return \Asgard\Entity\Entity
 	*/
-	protected function toEntity(array $raw, \Asgard\Entity\EntityDefinition $definition=null) {
+	protected function toEntity(array $raw, \Asgard\Entity\Definition $definition=null) {
 		if(!$definition)
 			$definition = $this->definition;
 		$new = $definition->make([], $this->locale);
@@ -289,10 +289,10 @@ class ORM implements ORMInterface {
 	 *
 	 * @param \Asgard\Db\DAL                  $dal
 	 * @param array                           $jointures Array of relations.
-	 * @param \Asgard\Entity\EntityDefinition $entityDefinition The entity class from which jointures are built.
+	 * @param \Asgard\Entity\Definition $Definition The entity class from which jointures are built.
 	 * @param string                          $table The table from which to performs jointures.
 	*/
-	protected function recursiveJointures(\Asgard\Db\DAL $dal, array $jointures, \Asgard\Entity\EntityDefinition $entityDefinition, $table) {
+	protected function recursiveJointures(\Asgard\Db\DAL $dal, array $jointures, \Asgard\Entity\Definition $Definition, $table) {
 		$alias = null;
 		foreach($jointures as $relation) {
 			if(is_array($relation)) {
@@ -301,7 +301,7 @@ class ORM implements ORMInterface {
 						if(!$v instanceof EntityRelation) {
 							if(strpos($v, ' '))
 								list($v, $alias) = explode(' ', $v);
-							$v = $this->dataMapper->relation($entityDefinition, $v);
+							$v = $this->dataMapper->relation($Definition, $v);
 						}
 						$this->jointure($dal, $v, $alias, $table);
 					}
@@ -310,7 +310,7 @@ class ORM implements ORMInterface {
 						if(strpos($relationName, ' '))
 							list($relationName, $alias) = explode(' ', $relationName);
 						$recJoins = $v;
-						$relation = $this->dataMapper->relation($entityDefinition, $relationName);
+						$relation = $this->dataMapper->relation($Definition, $relationName);
 
 						$this->jointure($dal, $relation, $alias, $table);
 						if(!is_array($recJoins))
@@ -323,7 +323,7 @@ class ORM implements ORMInterface {
 				if(!$relation instanceof EntityRelation) {
 					if(strpos($relation, ' '))
 						list($relation, $alias) = explode(' ', $relation);
-					$relation = $this->dataMapper->relation($entityDefinition, $relation);
+					$relation = $this->dataMapper->relation($Definition, $relation);
 				}
 				$this->jointure($dal, $relation, $alias, $table);
 			}
@@ -341,7 +341,7 @@ class ORM implements ORMInterface {
 	protected function jointure(\Asgard\Db\DAL $dal, $relation, $alias, $ref_table) {
 		$relationName = $relation->getName();
 
-		$relationEntityDefinition = $relation->getTargetDefinition();
+		$relationDefinition = $relation->getTargetDefinition();
 		if($alias === null)
 			$alias = $relationName;
 
@@ -349,7 +349,7 @@ class ORM implements ORMInterface {
 			case 'hasOne':
 			case 'belongsTo':
 				$link = $relation->getLink();
-				$table = $this->dataMapper->getTable($relationEntityDefinition);
+				$table = $this->dataMapper->getTable($relationDefinition);
 				$dal->rightjoin([
 					$table.' '.$alias => $this->processConditions([
 						$ref_table.'.'.$link.' = '.$alias.'.id'
@@ -358,7 +358,7 @@ class ORM implements ORMInterface {
 				break;
 			case 'hasMany':
 				$link = $relation->getLink();
-				$table = $this->dataMapper->getTable($relationEntityDefinition);
+				$table = $this->dataMapper->getTable($relationDefinition);
 				$dal->rightjoin([
 					$table.' '.$alias => $this->processConditions([
 						$ref_table.'.id'.' = '.$alias.'.'.$link
@@ -372,7 +372,7 @@ class ORM implements ORMInterface {
 					])
 				]);
 				$dal->rightjoin([
-					$this->dataMapper->getTable($relationEntityDefinition).' '.$alias => $this->processConditions([
+					$this->dataMapper->getTable($relationDefinition).' '.$alias => $this->processConditions([
 						$relation->getTable($this->prefix).'.'.$relation->getLinkB().' = '.$alias.'.id',
 					])
 				]);
@@ -381,8 +381,8 @@ class ORM implements ORMInterface {
 				break;
 		}
 
-		if($relationEntityDefinition->isI18N()) {
-			$translation_table = $this->dataMapper->getTranslationTable($relationEntityDefinition);
+		if($relationDefinition->isI18N()) {
+			$translation_table = $this->dataMapper->getTranslationTable($relationDefinition);
 			$dal->leftjoin([
 				$translation_table.' '.$relationName.'_translation' => $this->processConditions([
 					$ref_table.'.id = '.$relationName.'_translation.id',

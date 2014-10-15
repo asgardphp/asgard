@@ -2,7 +2,7 @@
 namespace Asgard\Entity\Tests\Classes;
 
 class Commenti18n extends \Asgard\Entity\Entity {
-	public static function definition(\Asgard\Entity\EntityDefinition $definition) {
+	public static function definition(\Asgard\Entity\Definition $definition) {
 		$definition->properties = [
 			'content' => [
 				'i18n' => true
