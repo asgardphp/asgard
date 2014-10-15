@@ -39,7 +39,7 @@ class RemoveCommand extends \Asgard\Console\Command {
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$migration = $this->input->getArgument('migration');
 
-		$mm = new \Asgard\Migration\MigrationsManager($this->migrationsDir);
+		$mm = new \Asgard\Migration\MigrationManager($this->migrationsDir);
 		$mm->remove($migration);
 		if($mm->has($migration))
 			$this->error('The migration could not be removed.');

@@ -225,27 +225,27 @@ class Kernel implements \ArrayAccess {
 	/**
 	 * Get the hooks annotations reader dependency.
 	 * @param  string $cache
-	 * @return \Asgard\Hook\AnnotationsReader
+	 * @return \Asgard\Hook\AnnotationReader
 	 */
-	protected function getHooksAnnotationsReader($cache) {
-		$annotationsReader = new \Asgard\Hook\AnnotationsReader();
+	protected function getHooksAnnotationReader($cache) {
+		$AnnotationReader = new \Asgard\Hook\AnnotationReader();
 		if($cache)
-			$annotationsReader->setCache($this->getCache($cache));
-		$annotationsReader->setDebug($this->getConfig()['debug']);
-		return $annotationsReader;
+			$AnnotationReader->setCache($this->getCache($cache));
+		$AnnotationReader->setDebug($this->getConfig()['debug']);
+		return $AnnotationReader;
 	}
 
 	/**
 	 * Get the controllers annotations reader dependency.
 	 * @param  string $cache
-	 * @return \Asgard\Http\AnnotationsReader
+	 * @return \Asgard\Http\AnnotationReader
 	 */
-	protected function getControllersAnnotationsReader($cache) {
-		$annotationsReader = new \Asgard\Http\AnnotationsReader();
+	protected function getControllersAnnotationReader($cache) {
+		$AnnotationReader = new \Asgard\Http\AnnotationReader();
 		if($cache)
-			$annotationsReader->setCache($this->getCache($cache));
-		$annotationsReader->setDebug($this->getConfig()['debug']);
-		return $annotationsReader;
+			$AnnotationReader->setCache($this->getCache($cache));
+		$AnnotationReader->setDebug($this->getConfig()['debug']);
+		return $AnnotationReader;
 	}
 
 	/**
@@ -308,8 +308,8 @@ class Kernel implements \ArrayAccess {
 			$c->save('bundles', $bundles);
 
 		foreach($bundles as $bundle) {
-			$bundle->setHooksAnnotationsReader($this->getHooksAnnotationsReader($cache));
-			$bundle->setControllersAnnotationsReader($this->getControllersAnnotationsReader($cache));
+			$bundle->setHooksAnnotationReader($this->getHooksAnnotationReader($cache));
+			$bundle->setControllersAnnotationReader($this->getControllersAnnotationReader($cache));
 		}
 
 		return $bundles;

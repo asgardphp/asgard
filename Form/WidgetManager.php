@@ -5,10 +5,10 @@ namespace Asgard\Form;
  * Manage widgets available for form fields.
  * @author Michel Hognerud <michel@hognerud.com>
  */
-class WidgetsManager implements WidgetsManagerInterface {
+class WidgetManager implements WidgetManagerInterface {
 	/**
 	 * Default instance.
-	 * @var WidgetsManagerInterface
+	 * @var WidgetManagerInterface
 	 */
 	protected static $instance;
 	/**
@@ -26,7 +26,7 @@ class WidgetsManager implements WidgetsManagerInterface {
 
 	/**
 	 * Singleton.
-	 * @return WidgetsManagerInterface
+	 * @return WidgetManagerInterface
 	 */
 	public static function singleton() {
 		if(!static::$instance)

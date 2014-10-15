@@ -65,7 +65,7 @@ class PolymorphicCollectionORM implements CollectionORMInterface {
 			$perclass[get_class($entity)][] = $entity;
 
 		foreach($perclass as $class=>$entities) {
-			$targetDefinition = $this->parent->getDefinition()->getEntitiesManager()->get($class);
+			$targetDefinition = $this->parent->getDefinition()->getEntityManager()->get($class);
 			$cORM = new CollectionORM($this->parent, $this->relation->getName(), $this->dataMapper, $this->locale, $this->prefix, $this->paginatorFactory, $targetDefinition);
 			$cORM->sync($entities);
 		}
@@ -173,7 +173,7 @@ class PolymorphicCollectionORM implements CollectionORMInterface {
 			throw new \Exception('Wrong relation type.');
 
 		foreach($classes as $class) {
-			$targetDefinition = $this->parent->getDefinition()->getEntitiesManager()->get($class);
+			$targetDefinition = $this->parent->getDefinition()->getEntityManager()->get($class);
 			$cORM = new CollectionORM($this->parent, $this->relation->getName(), $this->dataMapper, $this->locale, $this->prefix, $this->paginatorFactory, $targetDefinition);
 			$entities = array_merge($entities, $cORM->get());
 		}

@@ -36,10 +36,10 @@ interface HttpKernelInterface {
 
 	/**
 	 * Set Hooks manager dependency.
-	 * @param \Asgard\Hook\HooksManagerInterface $hooksManager
+	 * @param \Asgard\Hook\HookManagerInterface $HookManager
 	 * @return HttpKernelInterface $this
 	 */
-	public function setHooksManager(\Asgard\Hook\HooksManagerInterface $hooksManager);
+	public function setHookManager(\Asgard\Hook\HookManagerInterface $HookManager);
 
 	/**
 	 * Set template engine factory.
@@ -49,10 +49,10 @@ interface HttpKernelInterface {
 	public function setTemplateEngineFactory(\Asgard\Templating\TemplateEngineFactoryInterface $templateEngineFactory);
 
 	/**
-	 * Return the HooksManager.
-	 * @return \Asgard\Hook\HooksManagerInterface
+	 * Return the HookManager.
+	 * @return \Asgard\Hook\HookManagerInterface
 	 */
-	public function getHooksManager();
+	public function getHookManager();
 
 	/**
 	 * Return the resolver.
@@ -79,7 +79,7 @@ interface HttpKernelInterface {
 	public function getErrorHandler();
 
 	/**
-	 * Return the HooksManager
+	 * Return the HookManager
 	 * @return \Asgard\Templating\TemplateEngineFactoryInterface
 	 */
 	public function getTemplateEngineFactory();

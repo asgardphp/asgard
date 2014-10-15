@@ -44,34 +44,34 @@ class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\Pers
 
 	/**
 	 * Hook for the entity get method.
-	 * @param  \Asgard\Hook\HookChain $chain
+	 * @param  \Asgard\Hook\Chain $chain
 	 * @param  \Asgard\Entity\Entity  $entity
 	 * @param  string                 $name
 	 */
-	public function hookGet(\Asgard\Hook\HookChain $chain, \Asgard\Entity\Entity $entity, $name) {
+	public function hookGet(\Asgard\Hook\Chain $chain, \Asgard\Entity\Entity $entity, $name) {
 		if($this->getDataMapper()->hasRelation($this->definition, $name))
 			return $entity->{$name} = $this->getDataMapper()->getRelated($entity, $name);
 	}
 
 	/**
 	 * Hook for the entity translations get method.
-	 * @param  \Asgard\Hook\HookChain $chain
+	 * @param  \Asgard\Hook\Chain $chain
 	 * @param  \Asgard\Entity\Entity  $entity
 	 * @param  string                 $name
 	 * @param  string                 $locale
 	 */
-	public function hookgetTranslations(\Asgard\Hook\HookChain $chain, \Asgard\Entity\Entity $entity, $name, $locale) {
+	public function hookgetTranslations(\Asgard\Hook\Chain $chain, \Asgard\Entity\Entity $entity, $name, $locale) {
 		return $this->getDataMapper()->getTranslations($entity, $locale);
 	}
 
 	/**
 	 * Hook for the entity validation.
-	 * @param  \Asgard\Hook\HookChain       $chain
+	 * @param  \Asgard\Hook\Chain       $chain
 	 * @param  \Asgard\Entity\Entity        $entity
 	 * @param  AsgardValidationValidatorInterface    $validator
 	 * @param  array                        $data
 	 */
-	public function hookValidation(\Asgard\Hook\HookChain $chain, \Asgard\Entity\Entity $entity, \Asgard\Validation\ValidatorInterface $validator, array &$data) {
+	public function hookValidation(\Asgard\Hook\Chain $chain, \Asgard\Entity\Entity $entity, \Asgard\Validation\ValidatorInterface $validator, array &$data) {
 		$this->getDataMapper()->prepareValidator($entity, $validator);
 	}
 

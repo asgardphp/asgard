@@ -61,7 +61,7 @@ class Publisher {
 			return false;
 		}
 		else {
-			$mm = new \Asgard\Migration\MigrationsManager($dstDir, $this->container);
+			$mm = new \Asgard\Migration\MigrationManager($dstDir, $this->container);
 			$tracking = new \Asgard\Migration\Tracker($src);
 			foreach(array_keys($tracking->getList()) as $migration) {
 				$mm->getTracker()->add($migration);

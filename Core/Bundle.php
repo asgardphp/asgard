@@ -30,13 +30,13 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		});
 
 		#Entity
-		$container->setParentClass('entitiesmanager', 'Asgard\Entity\EntitiesManagerInterface');
-		$container->register('entitiesmanager', function($container) {
-			$entitiesManager = new \Asgard\Entity\EntitiesManager($container);
-			$entitiesManager->setHooksManager($container['hooks']);
-			$entitiesManager->setDefaultLocale($container['config']['locale']);
-			$entitiesManager->setValidatorFactory(new \Asgard\Validation\ValidatorFactory);
-			return $entitiesManager;
+		$container->setParentClass('entityManager', 'Asgard\Entity\EntityManagerInterface');
+		$container->register('entityManager', function($container) {
+			$entityManager = new \Asgard\Entity\EntityManager($container);
+			$entityManager->setHookManager($container['hooks']);
+			$entityManager->setDefaultLocale($container['config']['locale']);
+			$entityManager->setValidatorFactory(new \Asgard\Validation\ValidatorFactory);
+			return $entityManager;
 		});
 		$container->register('Asgard.Entity.PropertyType.file', function($container, $params) {
 			$prop = new \Asgard\Entity\Properties\FileProperty($params);
@@ -47,17 +47,17 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		});
 
 		#FORMInterface
-		$container->setParentClass('widgetsManager', 'Asgard\Form\WidgetsManagerInterface');
-		$container->register('widgetsManager', function() { return new \Asgard\Form\WidgetsManager; });
-		$container->setParentClass('entityFieldsSolver', 'Asgard\EntityForm\EntityFieldsSolverInterface');
-		$container->register('entityFieldsSolver', function() { return new \Asgard\Entityform\EntityFieldsSolver; });
+		$container->setParentClass('WidgetManager', 'Asgard\Form\WidgetManagerInterface');
+		$container->register('WidgetManager', function() { return new \Asgard\Form\WidgetManager; });
+		$container->setParentClass('EntityFieldSolver', 'Asgard\EntityForm\EntityFieldSolverInterface');
+		$container->register('EntityFieldSolver', function() { return new \Asgard\Entityform\EntityFieldSolver; });
 		$container->setParentClass('entityForm', 'Asgard\EntityForm\EntityFormInterface');
 		$container->register('entityForm', function($container, $entity, $params=[], $request=null) {
 			if($request === null)
 				$request = $container['httpKernel']->getRequest();
-			$entityFieldsSolver = clone $container['entityFieldsSolver'];
-			$form = new \Asgard\Entityform\EntityForm($entity, $params, $request, $entityFieldsSolver, $container['dataMapper']);
-			$form->setWidgetsManager(clone $container['widgetsManager']);
+			$EntityFieldSolver = clone $container['EntityFieldSolver'];
+			$form = new \Asgard\Entityform\EntityForm($entity, $params, $request, $EntityFieldSolver, $container['dataMapper']);
+			$form->setWidgetManager(clone $container['WidgetManager']);
 			$form->setTranslator($container['translator']);
 			$form->setContainer($container);
 			return $form;
@@ -67,15 +67,15 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			if($request === null)
 				$request = $container['httpKernel']->getRequest();
 			$form = new \Asgard\Form\Form($name, $params, $request, $fields);
-			$form->setWidgetsManager(clone $container['widgetsManager']);
+			$form->setWidgetManager(clone $container['WidgetManager']);
 			$form->setTranslator($container['translator']);
 			$form->setContainer($container);
 			return $form;
 		});
 
 		#Hook
-		$container->setParentClass('hooks', 'Asgard\Hook\HooksManagerInterface');
-		$container->register('hooks', function($container) { return new \Asgard\Hook\HooksManager($container); } );
+		$container->setParentClass('hooks', 'Asgard\Hook\HookManagerInterface');
+		$container->register('hooks', function($container) { return new \Asgard\Hook\HookManager($container); } );
 
 		#Http
 		$container->setParentClass('httpKernel', 'Asgard\Http\HttpKernelInterface');
@@ -84,7 +84,7 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			$httpKernel->setDebug($container['config']['debug']);
 			if($container->has('templateEngine_factory'))
 				$httpKernel->setTemplateEngineFactory($container['templateEngine_factory']);
-			$httpKernel->setHooksManager($container['hooks']);
+			$httpKernel->setHookManager($container['hooks']);
 			$httpKernel->setErrorHandler($container['errorHandler']);
 			$httpKernel->setTranslator($container['translator']);
 			$httpKernel->setResolver($container['resolver']);
@@ -117,9 +117,9 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		});
 
 		#Migration
-		$container->setParentClass('migrationsManager', 'Asgard\Migration\MigrationsManagerInterface');
-		$container->register('migrationsManager', function($container) {
-			$mm = new \Asgard\Migration\MigrationsManager($container['kernel']['root'].'/migrations/', $container);
+		$container->setParentClass('MigrationManager', 'Asgard\Migration\MigrationManagerInterface');
+		$container->register('MigrationManager', function($container) {
+			$mm = new \Asgard\Migration\MigrationManager($container['kernel']['root'].'/migrations/', $container);
 			if($container->has('db'))
 				$mm->setDB($container['db']);
 			if($container->has('schema'))
@@ -170,7 +170,7 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		$container->register('datamapper', function($container) {
 			return new \Asgard\Orm\DataMapper(
 				$container['db'],
-				$container['entitiesManager'],
+				$container['entityManager'],
 				$container['config']['locale'],
 				$container['config']['database/prefix'],
 				$container['orm_factory'],
@@ -219,8 +219,8 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		if($container->has('console')) {
 			$root = $container['kernel']['root'];
 
-			$em = $container['entitiesManager'];
-			$mm = $container['migrationsManager'];
+			$em = $container['entityManager'];
+			$mm = $container['MigrationManager'];
 
 			#if database is available
 			try {

@@ -11,14 +11,14 @@ class Definition {
 
 	/**
 	 * Entities manager dependency.
-	 * @var EntitiesManagerInterface
+	 * @var EntityManagerInterface
 	 */
-	protected $entitiesManager;
+	protected $entityManager;
 	/**
 	 * General hooks manager dependency.
-	 * @var \Asgard\Hook\HooksManagerInterface
+	 * @var \Asgard\Hook\HookManagerInterface
 	 */
-	protected $generalHooksManager;
+	protected $generalHookManager;
 	/**
 	 * Entity class.
 	 * @var string
@@ -68,17 +68,17 @@ class Definition {
 	/**
 	 * Constructor.
 	 * @param string                    $entityClass
-	 * @param EntitiesManagerInterface           $entitiesManager
-	 * @param \Asgard\Hook\HooksManagerInterface $generalHooksManager
+	 * @param EntityManagerInterface           $entityManager
+	 * @param \Asgard\Hook\HookManagerInterface $generalHookManager
 	 */
-	public function __construct($entityClass, EntitiesManagerInterface $entitiesManager, \Asgard\Hook\HooksManagerInterface $generalHooksManager=null) {
+	public function __construct($entityClass, EntityManagerInterface $entityManager, \Asgard\Hook\HookManagerInterface $generalHookManager=null) {
 		$reflectionClass = new \ReflectionClass($entityClass);
 		if(!$reflectionClass->IsInstantiable())
 			return;
 
 		$this->entityClass = $entityClass;
-		$this->entitiesManager = $entitiesManager;
-		$this->generalHooksManager = $generalHooksManager;
+		$this->entityManager = $entityManager;
+		$this->generalHookManager = $generalHookManager;
 
 		$this->addProperty('id', [
 			'type'     => 'text',
@@ -96,8 +96,8 @@ class Definition {
 
 		$entityClass::definition($this);
 
-		if($generalHooksManager !== null)
-			$generalHooksManager->trigger('Asgard.Entity.Definition', [$this]);
+		if($generalHookManager !== null)
+			$generalHookManager->trigger('Asgard.Entity.Definition', [$this]);
 
 		$behaviors = $this->behaviors;
 		$this->behaviors = [];
@@ -109,7 +109,7 @@ class Definition {
 	 * @return \Asgard\Container\ContainerInterface
 	 */
 	public function getContainer() {
-		return $this->entitiesManager->getContainer();
+		return $this->entityManager->getContainer();
 	}
 
 	/**
@@ -199,31 +199,31 @@ class Definition {
 	}
 
 	/**
-	 * Set the entitiesManager dependency.
-	 * @param EntitiesManagerInterface $entitiesManager
+	 * Set the entityManager dependency.
+	 * @param EntityManagerInterface $entityManager
 	 * @return Definition $this
 	 */
-	public function setEntitiesManager(EntitiesManagerInterface $entitiesManager) {
-		$this->entitiesManager = $entitiesManager;
+	public function setEntityManager(EntityManagerInterface $entityManager) {
+		$this->entityManager = $entityManager;
 		return $this;
 	}
 
 	/**
 	 * Set the general hooks manager dependency.
-	 * @param \Asgard\Hook\HooksManagerInterface $generalHooksManager
+	 * @param \Asgard\Hook\HookManagerInterface $generalHookManager
 	 * @return Definition $this
 	 */
-	public function setGeneralHooksManager($generalHooksManager) {
-		$this->generalHooksManager = $generalHooksManager;
+	public function setGeneralHookManager($generalHookManager) {
+		$this->generalHookManager = $generalHookManager;
 		return $this;
 	}
 
 	/**
-	 * Return the entitiesManager dependency.
-	 * @return EntitiesManagerInterface
+	 * Return the entityManager dependency.
+	 * @return EntityManagerInterface
 	 */
-	public function getEntitiesManager() {
-		return $this->entitiesManager;
+	public function getEntityManager() {
+		return $this->entityManager;
 	}
 
 	/**
@@ -231,8 +231,8 @@ class Definition {
 	 * @param  array $behaviors
 	 */
 	public function loadBehaviors($behaviors) {
-		if($this->generalHooksManager !== null)
-			$this->generalHooksManager->trigger('Asgard.Entity.LoadBehaviors', [&$behaviors]);
+		if($this->generalHookManager !== null)
+			$this->generalHookManager->trigger('Asgard.Entity.LoadBehaviors', [&$behaviors]);
 
 		foreach($behaviors as $behavior)
 			$this->loadBehavior($behavior);

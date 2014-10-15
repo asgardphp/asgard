@@ -10,18 +10,18 @@ class MigrationsTest extends \PHPUnit_Framework_TestCase {
 			'password' => '',
 			'database' => 'asgard'
 		]);
-		$container['hooks'] = new \Asgard\Hook\HooksManager;
-		$container['entitiesManager'] = $entitiesManager = new \Asgard\Entity\EntitiesManager($container);
-		$dataMapper = new \Asgard\Orm\DataMapper($container['db'], $container['entitiesManager']);
+		$container['hooks'] = new \Asgard\Hook\HookManager;
+		$container['entityManager'] = $entityManager = new \Asgard\Entity\EntityManager($container);
+		$dataMapper = new \Asgard\Orm\DataMapper($container['db'], $container['entityManager']);
 
 		$ormm = new \Asgard\Orm\ORMMigrations($dataMapper);
 		$schema = new \Asgard\Db\Schema($container['db']);
 		$schema->dropAll();
 
 		$ormm->autoMigrate([
-			$entitiesManager->get('Asgard\Orm\Tests\Fixtures\Post'),
-			$entitiesManager->get('Asgard\Orm\Tests\Fixtures\Category'),
-			$entitiesManager->get('Asgard\Orm\Tests\Fixtures\Author')
+			$entityManager->get('Asgard\Orm\Tests\Fixtures\Post'),
+			$entityManager->get('Asgard\Orm\Tests\Fixtures\Category'),
+			$entityManager->get('Asgard\Orm\Tests\Fixtures\Author')
 		], $schema);
 
 		$tables = [];
@@ -159,16 +159,16 @@ class MigrationsTest extends \PHPUnit_Framework_TestCase {
 			'password' => '',
 			'database' => 'asgard'
 		]);
-		$entitiesManager = new \Asgard\Entity\EntitiesManager;
-		$dataMapper = new \Asgard\Orm\DataMapper($db, $entitiesManager);
+		$entityManager = new \Asgard\Entity\EntityManager;
+		$dataMapper = new \Asgard\Orm\DataMapper($db, $entityManager);
 		$schema = new \Asgard\Db\Schema($db);
 		$schema->dropAll();
 
-		$ormm = new \Asgard\Orm\ORMMigrations($dataMapper, new \Asgard\Migration\MigrationsManager(__DIR__.'/migrations/'));
+		$ormm = new \Asgard\Orm\ORMMigrations($dataMapper, new \Asgard\Migration\MigrationManager(__DIR__.'/migrations/'));
 		$ormm->generateMigration([
-			$entitiesManager->get('Asgard\Orm\Tests\Fixtures\Post'),
-			$entitiesManager->get('Asgard\Orm\Tests\Fixtures\Author'),
-			$entitiesManager->get('Asgard\Orm\Tests\Fixtures\Category')
+			$entityManager->get('Asgard\Orm\Tests\Fixtures\Post'),
+			$entityManager->get('Asgard\Orm\Tests\Fixtures\Author'),
+			$entityManager->get('Asgard\Orm\Tests\Fixtures\Category')
 		], 'Post');
 
 		$this->assertRegExp('/\{'."\n".

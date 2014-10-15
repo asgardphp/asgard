@@ -1,14 +1,14 @@
 <?php
 namespace Asgard\Hook\Tests;
 
-use \Asgard\Hook\HooksManager;
-use \Asgard\Hook\HookChain;
+use \Asgard\Hook\HookManager;
+use \Asgard\Hook\Chain;
 use \Asgard\Hook\HookableTrait;
-use \Asgard\Hook\HooksContainer;
+use \Asgard\Hook\HookContainer;
 
 class HookTest extends \PHPUnit_Framework_TestCase {
 	public function testHook() {
-		$hooks = new HooksManager;
+		$hooks = new HookManager;
 
 		$hooks->hook('test', function() {
 			return 'hello';
@@ -31,7 +31,7 @@ class HookTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testHooks() {
-		$hooks = new HooksManager;
+		$hooks = new HookManager;
 
 		$mock = $this->getMock('StdClass', ['on', 'after']);
 		$mock->expects($this->once())->method('on');
@@ -47,7 +47,7 @@ class HookTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testExecuted() {
-		$hooks = new HooksManager;
+		$hooks = new HookManager;
 
 		$hooks->hooks([
 			'foo' => [
@@ -60,7 +60,7 @@ class HookTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testChainStop() {
-		$hooks = new HooksManager;
+		$hooks = new HookManager;
 
 		$hooks->hooks([
 			'foo' => [
@@ -72,11 +72,11 @@ class HookTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals(1, $chain->executed());
 	}
 
-	public function testHooksContainer() {
-		$hooks = new HooksManager();
+	public function testHookContainer() {
+		$hooks = new HookManager();
 
-		$annotationsReader = new \Asgard\Hook\AnnotationsReader;
-		$fhooks = $annotationsReader->fetchHooks('Asgard\Hook\Tests\Fixtures\Hooks');
+		$AnnotationReader = new \Asgard\Hook\AnnotationReader;
+		$fhooks = $AnnotationReader->fetchHooks('Asgard\Hook\Tests\Fixtures\Hooks');
 
 		$hooks->hooks($fhooks);
 

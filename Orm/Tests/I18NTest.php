@@ -6,7 +6,7 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 
 	public static function setUpBeforeClass() {
 		$container          = new \Asgard\Container\Container;
-		$container['hooks'] = new \Asgard\Hook\HooksManager($container);
+		$container['hooks'] = new \Asgard\Hook\HookManager($container);
 		$config = [
 			'database' => 'asgard',
 			'user'     => 'root',
@@ -15,13 +15,13 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 		];
 		$container['db'] = new \Asgard\Db\DB($config);
 
-		$entitiesManager = $container['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($container);
-		$entitiesManager->setDefaultLocale('en');
+		$entityManager = $container['entityManager'] = new \Asgard\Entity\EntityManager($container);
+		$entityManager->setDefaultLocale('en');
 
 		$container->register('datamapper', function($container) {
 			return new \Asgard\Orm\DataMapper(
 				$container['db'],
-				$container['entitiesManager']
+				$container['entityManager']
 			);
 		});
 

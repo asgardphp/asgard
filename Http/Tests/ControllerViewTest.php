@@ -11,7 +11,7 @@ use \Asgard\Http\Request;
 class ControllerViewTest extends \PHPUnit_Framework_TestCase {
 	public function testReturnTemplate() {
 		$kernel = new HttpKernel;
-		$kernel->setHooksManager(new \Asgard\Hook\HooksManager);
+		$kernel->setHookManager(new \Asgard\Hook\HookManager);
 		$kernel->setTemplateEngineFactory(new Fixtures\Templates\TemplateEngineFactory);
 
 		$resolver = $this->getMock('Asgard\Http\Resolver', ['getRoute']);
@@ -23,7 +23,7 @@ class ControllerViewTest extends \PHPUnit_Framework_TestCase {
 
 	public function testTemplateEngine() {
 		$kernel = new HttpKernel;
-		$kernel->setHooksManager(new \Asgard\Hook\HooksManager);
+		$kernel->setHookManager(new \Asgard\Hook\HookManager);
 		$kernel->setTemplateEngineFactory(new Fixtures\Templates\TemplateEngineFactory);
 
 		$resolver = $this->getMock('Asgard\Http\Resolver', ['getRoute']);

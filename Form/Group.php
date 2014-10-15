@@ -8,9 +8,9 @@ namespace Asgard\Form;
 class Group implements GroupInterface {
 	/**
 	 * Widgets manager.
-	 * @var WidgetsManagerInterface
+	 * @var WidgetManagerInterface
 	 */
-	protected $widgetsManager;
+	protected $WidgetManager;
 	/**
 	 * name
 	 * @var string
@@ -140,26 +140,26 @@ class Group implements GroupInterface {
 	 * {@inheritDoc}
 	 */
 	public function getWidget($widget, $name, $value, array $options=[]) {
-		return $this->getWidgetsManager()->getWidget($widget, $name, $value, $options, $this);
+		return $this->getWidgetManager()->getWidget($widget, $name, $value, $options, $this);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getWidgetsManager() {
+	public function getWidgetManager() {
 		if($this->parent)
-			return $this->parent->getWidgetsManager();
-		elseif($this->widgetsManager)
-			return $this->widgetsManager;
+			return $this->parent->getWidgetManager();
+		elseif($this->WidgetManager)
+			return $this->WidgetManager;
 		else
-			return $this->widgetsManager = new WidgetsManager;
+			return $this->WidgetManager = new WidgetManager;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function setWidgetsManager(WidgetsManager $widgetsManager) {
-		$this->widgetsManager = $widgetsManager;
+	public function setWidgetManager(WidgetManager $WidgetManager) {
+		$this->WidgetManager = $WidgetManager;
 		return $this;
 	}
 

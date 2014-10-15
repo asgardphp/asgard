@@ -15,14 +15,14 @@ class BundleLoader {
 	protected $path;
 	/**
 	 * Hooks annotations reader.
-	 * @var \Asgard\Hook\AnnotationsReader
+	 * @var \Asgard\Hook\AnnotationReader
 	 */
-	protected $hooksAnnotationsReader;
+	protected $hooksAnnotationReader;
 	/**
 	 * Controllers annotations reader.
-	 * @var \Asgard\Http\AnnotationsReader
+	 * @var \Asgard\Http\AnnotationReader
 	 */
-	protected $controllersAnnotationsReader;
+	protected $controllersAnnotationReader;
 
 	/**
 	 * Constructor.
@@ -34,19 +34,19 @@ class BundleLoader {
 
 	/**
 	 * Set hooks annotations reader dependency.
-	 * @param \Asgard\Hook\AnnotationsReader $hooksAnnotationsReader
+	 * @param \Asgard\Hook\AnnotationReader $hooksAnnotationReader
 	 */
-	public function setHooksAnnotationsReader($hooksAnnotationsReader) {
-		$this->hooksAnnotationsReader = $hooksAnnotationsReader;
+	public function setHooksAnnotationReader($hooksAnnotationReader) {
+		$this->hooksAnnotationReader = $hooksAnnotationReader;
 		return $this;
 	}
 
 	/**
 	 * Set controllers annotations reader dependency.
-	 * @param \Asgard\Http\AnnotationsReader $controllersAnnotationsReader
+	 * @param \Asgard\Http\AnnotationReader $controllersAnnotationReader
 	 */
-	public function setControllersAnnotationsReader($controllersAnnotationsReader) {
-		$this->controllersAnnotationsReader = $controllersAnnotationsReader;
+	public function setControllersAnnotationReader($controllersAnnotationReader) {
+		$this->controllersAnnotationReader = $controllersAnnotationReader;
 		return $this;
 	}
 
@@ -104,19 +104,19 @@ class BundleLoader {
 
 		if($container->has('console')) {
 			$this->loadCommands($container['console']);
-			$this->loadEntities($container['entitiesManager']);
+			$this->loadEntities($container['entityManager']);
 		}
 	}
 
 	/**
 	 * Load bundle's entities.
-	 * @param  \Asgard\Entity\EntitiesManagerInterface $entitiesManager
+	 * @param  \Asgard\Entity\EntityManagerInterface $entityManager
 	 */
-	protected function loadEntities($entitiesManager) {
+	protected function loadEntities($entityManager) {
 		foreach(glob($this->getPath().'/Entities/*.php') as $file) {
 			$class = \Asgard\Common\Tools::loadClassFile($file);
 			if(is_subclass_of($class, 'Asgard\Entity\Entity'))
-				$entitiesManager->get($class);
+				$entityManager->get($class);
 		}
 	}
 
@@ -155,8 +155,8 @@ class BundleLoader {
 		if(file_exists($this->getPath().'/Hooks/')) {
 			foreach(glob($this->getPath().'/Hooks/*.php') as $filename) {
 				$class = \Asgard\Common\Tools::loadClassFile($filename);
-				if(is_subclass_of($class, 'Asgard\Hook\HooksContainer'))
-					$hooks = array_merge_recursive($hooks, $this->hooksAnnotationsReader->fetchHooks($class));
+				if(is_subclass_of($class, 'Asgard\Hook\HookContainer'))
+					$hooks = array_merge_recursive($hooks, $this->hooksAnnotationReader->fetchHooks($class));
 			}
 		}
 		return $hooks;
@@ -172,7 +172,7 @@ class BundleLoader {
 			foreach(glob($this->getPath().'/Controllers/*.php') as $filename) {
 				$class = \Asgard\Common\Tools::loadClassFile($filename);
 				if(is_subclass_of($class, 'Asgard\Http\Controller'))
-					$routes = array_merge($routes, $this->controllersAnnotationsReader->fetchRoutes($class));
+					$routes = array_merge($routes, $this->controllersAnnotationReader->fetchRoutes($class));
 			}
 		}
 		return $routes;

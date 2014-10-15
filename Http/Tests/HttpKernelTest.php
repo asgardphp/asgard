@@ -7,7 +7,7 @@ use \Asgard\Http\Request;
 class HttpKernelTest extends \PHPUnit_Framework_TestCase {
 	public function testRunAndLastRequest() {
 		$kernel = new HttpKernel;
-		$kernel->setHooksManager(new \Asgard\Hook\HooksManager);
+		$kernel->setHookManager(new \Asgard\Hook\HookManager);
 
 		$resolver = $this->getMock('Asgard\Http\Resolver', ['getRoute']);
 		$resolver->expects($this->once())->method('getRoute')->will($this->returnValue(new \Asgard\Http\Route('', 'Asgard\Http\Tests\Fixtures\HomeController', 'home')));
@@ -18,7 +18,7 @@ class HttpKernelTest extends \PHPUnit_Framework_TestCase {
 
 	public function testLambdaController() {
 		$kernel = new HttpKernel;
-		$kernel->setHooksManager(new \Asgard\Hook\HooksManager);
+		$kernel->setHookManager(new \Asgard\Hook\HookManager);
 
 		$resolver = $this->getMock('Asgard\Http\Resolver', ['getRoute']);
 		$resolver->expects($this->once())->method('getRoute')->will($this->returnValue(new \Asgard\Http\Route('', 'Asgard\Http\LambdaController', function($request) { return '<h1>Asgard</h1><p>Hello!</p>'; })));
@@ -32,7 +32,7 @@ class HttpKernelTest extends \PHPUnit_Framework_TestCase {
 		$resolver->expects($this->once())->method('getRoute')->will($this->returnValue(new \Asgard\Http\Route('', 'Asgard\Http\Tests\Fixtures\HomeController', 'error')));
 
 		$kernel = new HttpKernel;
-		$kernel->setHooksManager(new \Asgard\Hook\HooksManager);
+		$kernel->setHookManager(new \Asgard\Hook\HookManager);
 		$kernel->setDebug(true);
 		$kernel->setResolver($resolver);
 		$kernel->setErrorHandler(new \Asgard\Debug\ErrorHandler);
@@ -46,7 +46,7 @@ class HttpKernelTest extends \PHPUnit_Framework_TestCase {
 		$resolver->expects($this->once())->method('getRoute')->will($this->returnValue(new \Asgard\Http\Route('', 'Asgard\Http\Tests\Fixtures\HomeController', 'error')));
 
 		$kernel = new HttpKernel;
-		$kernel->setHooksManager(new \Asgard\Hook\HooksManager);
+		$kernel->setHookManager(new \Asgard\Hook\HookManager);
 		$kernel->setDebug(false);
 		$kernel->setResolver($resolver);
 		$kernel->setErrorHandler(new \Asgard\Debug\ErrorHandler);
@@ -59,12 +59,12 @@ class HttpKernelTest extends \PHPUnit_Framework_TestCase {
 		$resolver = $this->getMock('Asgard\Http\Resolver', ['getRoute']);
 		$resolver->expects($this->once())->method('getRoute')->will($this->returnValue(new \Asgard\Http\Route('', 'Asgard\Http\Tests\Fixtures\HomeController', 'exception')));
 
-		$hooks = new \Asgard\Hook\HooksManager;
+		$hooks = new \Asgard\Hook\HookManager;
 		$hooks->hook('Asgard.Http.Exception.Asgard\Http\Tests\NotFoundException', function($chain, $e, &$response, $request) {
 			$response = 'plplpl';
 		});
 		$kernel = new HttpKernel;
-		$kernel->setHooksManager($hooks);
+		$kernel->setHookManager($hooks);
 		$kernel->setResolver($resolver);
 		$kernel->setDebug(false);
 		$kernel->setErrorHandler(new \Asgard\Debug\ErrorHandler);

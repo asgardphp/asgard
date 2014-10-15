@@ -5,12 +5,12 @@ namespace Asgard\Entityform;
  * Solve form fields from entity properties.
  * @author Michel Hognerud <michel@hognerud.com>
  */
-interface EntityFieldsSolverInterface {
+interface EntityFieldSolverInterface {
 	/**
 	 * Add a nested solver.
-	 * @param EntityFieldsSolverInterface $solver
+	 * @param EntityFieldSolverInterface $solver
 	 */
-	public function addSolver(EntityFieldsSolverInterface $solver);
+	public function addSolver(EntityFieldSolverInterface $solver);
 
 	/**
 	 * Add a callback.

@@ -44,7 +44,7 @@ abstract class Entity {
 	 */
 	public function getLocale() {
 		if($this->locale === null)
-			$this->locale = $this->getDefinition()->getEntitiesManager()->getDefaultLocale();
+			$this->locale = $this->getDefinition()->getEntityManager()->getDefaultLocale();
 		return $this->locale;
 	}
 
@@ -143,7 +143,7 @@ abstract class Entity {
 	 */
 	public static function getStaticDefinition() {
 		#only for entities without dependency injection, activerecord like, e.g. new Article or Article::find();
-		return EntitiesManager::singleton()->get(get_called_class());
+		return EntityManager::singleton()->get(get_called_class());
 	}
 
 	/**
@@ -178,7 +178,7 @@ abstract class Entity {
 	 * @return \Asgard\Validation\ValidatorInterface
 	 */
 	public function getValidator(array $locales=[]) {
-		$validator = $this->getDefinition()->getEntitiesManager()->createValidator();
+		$validator = $this->getDefinition()->getEntityManager()->createValidator();
 		return $this->prepareValidator($validator, $locales);
 	}
 

@@ -91,7 +91,7 @@ class ORM implements ORMInterface {
 		if($locale !== null)
 			$this->locale = $locale;
 		else
-			$this->locale = $definition->getEntitiesManager()->getDefaultLocale();
+			$this->locale = $definition->getEntityManager()->getDefaultLocale();
 		$this->prefix           = $prefix;
 		$this->paginatorFactory = $paginatorFactory;
 

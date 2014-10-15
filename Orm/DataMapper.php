@@ -8,9 +8,9 @@ namespace Asgard\Orm;
 class DataMapper implements DataMapperInterface {
 	/**
 	 * Entities Manager.
-	 * @var \Asgard\Entity\EntitiesManagerInterface
+	 * @var \Asgard\Entity\EntityManagerInterface
 	 */
-	protected $entitiesManager;
+	protected $entityManager;
 	/**
 	 * Database access.
 	 * @var \Asgard\Db\DBInterface
@@ -40,15 +40,15 @@ class DataMapper implements DataMapperInterface {
 	/**
 	 * Constructor.
 	 * @param \Asgard\Db\DBInterface                  $db
-	 * @param \Asgard\Entity\EntitiesManagerInterface $entitiesManager
+	 * @param \Asgard\Entity\EntityManagerInterface $entityManager
 	 * @param string                                  $locale    Default locale.
 	 * @param string                                  $prefix    Tables prefix.
 	 * @param ORMFactoryInterface                     $ormFactory
 	 * @param CollectionORMFactoryInterface           $collectionOrmFactory
 	 */
-	public function __construct(\Asgard\Db\DBInterface $db, \Asgard\Entity\EntitiesManagerInterface $entitiesManager=null, $locale='en', $prefix=null, ORMFactoryInterface $ormFactory=null, CollectionORMFactoryInterface $collectionOrmFactory=null) {
+	public function __construct(\Asgard\Db\DBInterface $db, \Asgard\Entity\EntityManagerInterface $entityManager=null, $locale='en', $prefix=null, ORMFactoryInterface $ormFactory=null, CollectionORMFactoryInterface $collectionOrmFactory=null) {
 		$this->db                   = $db;
-		$this->entitiesManager      = $entitiesManager;
+		$this->entityManager      = $entityManager;
 		$this->locale               = $locale;
 		$this->prefix               = $prefix;
 		$this->ormFactory           = $ormFactory;
@@ -62,7 +62,7 @@ class DataMapper implements DataMapperInterface {
 		if(!ctype_digit($id) && !is_int($id))
 			return;
 
-		$entity = $this->getEntitiesManager()->make($entityClass);
+		$entity = $this->getEntityManager()->make($entityClass);
 		$res = $this->orm($entityClass)->where(['id' => $id])->getDAL()->first();
 		if($res)
 			$entity->_set(static::unserialize($entity, $res));
@@ -76,7 +76,7 @@ class DataMapper implements DataMapperInterface {
 	 * {@inheritDoc}
 	 */
 	public function orm($entityClass) {
-		$definition = $this->getEntitiesManager()->get($entityClass);
+		$definition = $this->getEntityManager()->get($entityClass);
 		return $this->getOrmFactory()->create($definition, $this, $this->locale, $this->prefix);
 	}
 
@@ -152,17 +152,17 @@ class DataMapper implements DataMapperInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getEntitiesManager() {
-		if(!$this->entitiesManager)
-			$this->entitiesManager = new \Asgard\Entity\EntitiesManager;
-		return $this->entitiesManager;
+	public function getEntityManager() {
+		if(!$this->entityManager)
+			$this->entityManager = new \Asgard\Entity\EntityManager;
+		return $this->entityManager;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function create($entityClass, $values=null, $force=false) {
-		$m = $this->getEntitiesManager()->get($entityClass)->make();
+		$m = $this->getEntityManager()->get($entityClass)->make();
 		$this->save($m, $values, $force);
 		return $m;
 	}
@@ -171,7 +171,7 @@ class DataMapper implements DataMapperInterface {
 	 * {@inheritDoc}
 	 */
 	public function getValidator(\Asgard\Entity\Entity $entity) {
-		$validator = $entity->getDefinition()->getEntitiesManager()->createValidator();
+		$validator = $entity->getDefinition()->getEntityManager()->createValidator();
 		$validator->set('dataMapper', $this);
 		$entity->prepareValidator($validator);
 		$this->prepareValidator($entity, $validator);

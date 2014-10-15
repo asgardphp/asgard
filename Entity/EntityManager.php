@@ -5,12 +5,12 @@ namespace Asgard\Entity;
  * Manage entities.
  * @author Michel Hognerud <michel@hognerud.com>
  */
-class EntitiesManager implements EntitiesManagerInterface {
+class EntityManager implements EntityManagerInterface {
 	use \Asgard\Container\ContainerAwareTrait;
 
 	/**
 	 * Default instance.
-	 * @var EntitiesManagerInterface
+	 * @var EntityManagerInterface
 	 */
 	protected static $singleton;
 	/**
@@ -35,9 +35,9 @@ class EntitiesManager implements EntitiesManagerInterface {
 	protected $validatorFactory;
 	/**
 	 * Hooks manager.
-	 * @var \Asgard\Hook\HooksManagerInterface
+	 * @var \Asgard\Hook\HookManagerInterface
 	 */
-	protected $hooksManager;
+	protected $HookManager;
 
 	/**
 	 * Constructor.
@@ -51,17 +51,17 @@ class EntitiesManager implements EntitiesManagerInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getHooksManager() {
-		if(!$this->hooksManager)
-			$this->hooksManager = new \Asgard\Hook\HooksManager;
-		return $this->hooksManager;
+	public function getHookManager() {
+		if(!$this->HookManager)
+			$this->HookManager = new \Asgard\Hook\HookManager;
+		return $this->HookManager;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function setHooksManager(\Asgard\Hook\HooksManagerInterface $hooksManager) {
-		$this->hooksManager = $hooksManager;
+	public function setHookManager(\Asgard\Hook\HookManagerInterface $HookManager) {
+		$this->HookManager = $HookManager;
 		return $this;
 	}
 
@@ -100,7 +100,7 @@ class EntitiesManager implements EntitiesManagerInterface {
 
 	/**
 	 * Return the default instance.
-	 * @return EntitiesManagerInterface
+	 * @return EntityManagerInterface
 	 */
 	public static function singleton() {
 		if(!static::$singleton)
@@ -110,7 +110,7 @@ class EntitiesManager implements EntitiesManagerInterface {
 
 	/**
 	 * Set default instance.
-	 * @param EntitiesManagerInterface $instance
+	 * @param EntityManagerInterface $instance
 	 */
 	public static function setInstance($instance) {
 		static::$singleton = $instance;
@@ -158,14 +158,14 @@ class EntitiesManager implements EntitiesManagerInterface {
 		if($this->has($entityClass))
 			return $this->definitions[$entityClass];
 
-		$hooksManager = $this->getHooksManager();
+		$HookManager = $this->getHookManager();
 		$definition = false;
 		if($cache = $this->getCache())
-			$definition = $cache->fetch('entitiesmanager.'.$entityClass.'.definition');
+			$definition = $cache->fetch('entityManager.'.$entityClass.'.definition');
 		if($definition === false)
-			$definition = new Definition($entityClass, $this, $hooksManager);
-		$definition->setEntitiesManager($this);
-		$definition->setGeneralHooksManager($hooksManager);
+			$definition = new Definition($entityClass, $this, $HookManager);
+		$definition->setEntityManager($this);
+		$definition->setGeneralHookManager($HookManager);
 
 		$this->definitions[$entityClass] = $definition;
 

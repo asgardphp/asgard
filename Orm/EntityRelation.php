@@ -156,7 +156,7 @@ class EntityRelation {
 		if($this->targetDefinition)
 			return $this->targetDefinition;
 
-		return $this->Definition->getEntitiesManager()->get($this->params['entity']);
+		return $this->Definition->getEntityManager()->get($this->params['entity']);
 	}
 
 	/**

@@ -5,13 +5,13 @@ namespace Asgard\Hook;
  * Hooks Manager.
  * @author Michel Hognerud <michel@hognerud.com>
  */
-interface HooksManagerInterface {
+interface HookManagerInterface {
 	/**
 	 * Trigger a hook.
 	 * @param string    $name
 	 * @param array     $args
 	 * @param callable  $cb Default callback.
-	 * @param HookChain $chain
+	 * @param Chain $chain
 	 * @param HooksChain
 	*/
 	public function trigger($name, array $args=[], $cb=null, &$chain=null);

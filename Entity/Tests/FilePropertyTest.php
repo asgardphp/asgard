@@ -6,7 +6,7 @@ class FilePropertyTest extends \PHPUnit_Framework_TestCase {
 
 	public static function setUpBeforeClass() {
 		$container = new \Asgard\Container\Container;
-		$container['hooks'] = new \Asgard\Hook\HooksManager($container);
+		$container['hooks'] = new \Asgard\Hook\HookManager($container);
 		$container['httpKernel'] = new \Asgard\Http\HttpKernel;
 		$request = new \Asgard\Http\Request;
 		$request->url->setHost('localhost');
@@ -19,12 +19,12 @@ class FilePropertyTest extends \PHPUnit_Framework_TestCase {
 			return $prop;
 		});
 
-		$entitiesManager = $container['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($container);
+		$entityManager = $container['entityManager'] = new \Asgard\Entity\EntityManager($container);
 		$rulesRegistry = new \Asgard\Validation\RulesRegistry;
 		$rulesRegistry->registerNamespace('Asgard\File\Rules');
-		$entitiesManager->setValidatorFactory(new \Asgard\Validation\ValidatorFactory($rulesRegistry));
-		#set the EntitiesManager static instance for activerecord-like entities (e.g. new Article or Article::find())
-		\Asgard\Entity\EntitiesManager::setInstance($entitiesManager);
+		$entityManager->setValidatorFactory(new \Asgard\Validation\ValidatorFactory($rulesRegistry));
+		#set the EntityManager static instance for activerecord-like entities (e.g. new Article or Article::find())
+		\Asgard\Entity\EntityManager::setInstance($entityManager);
 	}
 
 	public function testSet() {

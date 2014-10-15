@@ -1,7 +1,7 @@
 <?php
 namespace Asgard\Hook\Tests\Fixtures;
 
-class Hooks extends \Asgard\Hook\HooksContainer {
+class Hooks extends \Asgard\Hook\HookContainer {
 	/**
 	 * @Hook("test")
 	*/

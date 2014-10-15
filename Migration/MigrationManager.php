@@ -5,7 +5,7 @@ namespace Asgard\Migration;
  * Manage the migrations.
  * @author Michel Hognerud <michel@hognerud.com>
  */
-class MigrationsManager implements MigrationsManagerInterface {
+class MigrationManager implements MigrationManagerInterface {
 	use \Asgard\Container\ContainerAwareTrait;
 
 	/**

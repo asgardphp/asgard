@@ -8,16 +8,16 @@ namespace Asgard\Entityform;
 interface EntityFormInterface extends \Asgard\Form\FormInterface {
 	/**
 	 * Add another nested fields solver.
-	 * @param EntityFieldsSolverInterface $entityFieldsSolver
+	 * @param EntityFieldSolverInterface $EntityFieldSolver
 	 * @return EntityFormInterface
 	 */
-	public function addEntityFieldsSolver($entityFieldsSolver);
+	public function addEntityFieldSolver($EntityFieldSolver);
 
 	/**
 	 * Return the main fields solver.
-	 * @return EntityFieldsSolverInterface
+	 * @return EntityFieldSolverInterface
 	 */
-	public function getEntityFieldsSolver();
+	public function getEntityFieldSolver();
 
 	/**
 	 * Set DataMapper dependency.

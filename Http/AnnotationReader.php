@@ -1,14 +1,15 @@
 <?php
-namespace Asgard\Hook;
+namespace Asgard\Http;
 
 #For doctrine, which does not autoload classes...
-require_once __DIR__.'/Annotations/Hook.php';
+require_once __DIR__.'/Annotations/Prefix.php';
+require_once __DIR__.'/Annotations/Route.php';
 
 /**
  * Annotations reader.
  * @author Michel Hognerud <michel@hognerud.net>
 */
-class AnnotationsReader {
+class AnnotationReader {
 	/**
 	 * Cache instance.
 	 * @var \Doctrine\Common\Cache\Cache
@@ -21,15 +22,15 @@ class AnnotationsReader {
 	protected $debug = false;
 
 	/**
-	 * Return the hooks of a container.
-	 * @param string $class HooksContainer class.
+	 * Return the routes of a controller.
+	 * @param string $class
 	 * @return array
 	*/
-	public function fetchHooks($class) {
-		$hooks = [];
+	public function fetchRoutes($class) {
+		$routes = [];
 
 		$reader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
-		$reader->addNamespace('Asgard\Hook\Annotations');
+		$reader->addNamespace('Asgard\Http\Annotations');
 		if($this->cache) {
 			$reader = new \Doctrine\Common\Annotations\CachedReader(
 				$reader,
@@ -39,15 +40,30 @@ class AnnotationsReader {
 		}
 
 		$reflection = new \ReflectionClass($class);
+		$prefix = $reader->getClassAnnotation($reflection, 'Asgard\Http\Annotations\Prefix');
+		$prefix = $prefix !== null ? $prefix->value:'';
+
 		foreach($reflection->getMethods() as $method) {
-			$hookAnnot = $reader->getMethodAnnotation($method, 'Asgard\Hook\Annotations\Hook');
-			if($hookAnnot !== null) {
-				$hook = $hookAnnot->value;
-				$hooks[$hook][] = [$class, $method->getName()];
+			if(!preg_match('/Action$/i', $method->getName()))
+				continue;
+			$routeAnnot = $reader->getMethodAnnotation($method, 'Asgard\Http\Annotations\Route');
+			if($routeAnnot !== null) {
+				$route = trim($prefix.'/'.$routeAnnot->value, '/');
+				$routes[] = new Route(
+					$route,
+					$class,
+					preg_replace('/Action$/i', '', $method->getName()),
+					[
+						'host' => $routeAnnot->host,
+						'requirements' => $routeAnnot->requirements,
+						'method' => $routeAnnot->method,
+						'name'	=>	$routeAnnot->name
+					]
+				);
 			}
 		}
 
-		return $hooks;
+		return $routes;
 	}
 
 	/**

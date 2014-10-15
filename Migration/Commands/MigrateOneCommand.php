@@ -38,7 +38,7 @@ class MigrateOneCommand extends \Asgard\Console\Command {
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$migration = $this->input->getArgument('migration');
-		$mm = new \Asgard\Migration\MigrationsManager($this->migrationsDir, $this->getContainer());
+		$mm = new \Asgard\Migration\MigrationManager($this->migrationsDir, $this->getContainer());
 
 		if($mm->migrate($migration, true))
 			$this->info('Migration succeded.');

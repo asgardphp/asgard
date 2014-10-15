@@ -5,7 +5,7 @@ namespace Asgard\Hook;
  * Chain of hooks to be executed.
  * @author Michel Hognerud <michel@hognerud.net>
 */
-class HookChain {
+class Chain {
 	use \Asgard\Container\ContainerAwareTrait;
 
 	/**

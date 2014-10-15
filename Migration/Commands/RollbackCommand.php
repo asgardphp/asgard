@@ -36,7 +36,7 @@ class RollbackCommand extends \Asgard\Console\Command {
 	 * {@inheritDoc}
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
-		$mm = new \Asgard\Migration\MigrationsManager($this->migrationsDir);
+		$mm = new \Asgard\Migration\MigrationManager($this->migrationsDir);
 		if($mm->rollback())
 			$this->info('Rollback successful.');
 		else

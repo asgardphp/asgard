@@ -7,12 +7,12 @@ use Jeremeamia\SuperClosure\SerializableClosure;
  * The hooks manager.
  * @author Michel Hognerud <michel@hognerud.net>
 */
-class HooksManager implements HooksManagerInterface {
+class HookManager implements HookManagerInterface {
 	use \Asgard\Container\ContainerAwareTrait;
 
 	/**
 	 * Static instance.
-	 * @var HooksManagerInterface
+	 * @var HookManagerInterface
 	 */
 	protected static $instance;
 	/**
@@ -23,7 +23,7 @@ class HooksManager implements HooksManagerInterface {
 
 	/**
 	 * Return a static instance.
-	 * @return HooksManagerInterface
+	 * @return HookManagerInterface
 	 */
 	public static function singleton() {
 		if(!static::$instance)
@@ -43,7 +43,7 @@ class HooksManager implements HooksManagerInterface {
 	 * {@inheritDoc}
 	*/
 	public function trigger($name, array $args=[], $cb=null, &$chain=null) {
-		$chain = new HookChain($this->container);
+		$chain = new Chain($this->container);
 
 		$chain->setCalls(array_merge(
 			$this->get($name.'.before'),

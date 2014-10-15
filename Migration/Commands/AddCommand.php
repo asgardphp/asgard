@@ -39,7 +39,7 @@ class AddCommand extends \Asgard\Console\Command {
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$src = $this->input->getArgument('src');
 
-		$mm = new \Asgard\Migration\MigrationsManager($this->migrationsDir);
+		$mm = new \Asgard\Migration\MigrationManager($this->migrationsDir);
 		$migration = $mm->add($src);
 		if($mm->has($migration))
 			$this->info('The migration was successfully added.');

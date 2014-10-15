@@ -36,7 +36,7 @@ class MigrateCommand extends \Asgard\Console\Command {
 	 * {@inheritDoc}
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
-		$mm = new \Asgard\Migration\MigrationsManager($this->migrationsDir, $this->getContainer());
+		$mm = new \Asgard\Migration\MigrationManager($this->migrationsDir, $this->getContainer());
 
 		if(!$mm->getTracker()->getDownList())
 			$this->output->writeln('Nothing to migrate.');

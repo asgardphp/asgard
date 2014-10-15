@@ -20,14 +20,14 @@ class AutoMigrateCommand extends \Asgard\Console\Command {
 	protected $description = 'Generate and run a migration from ORM entities';
 	/**
 	 * Entities manager dependency.
-	 * @var \Asgard\Entity\EntitiesManagerInterface
+	 * @var \Asgard\Entity\EntityManagerInterface
 	 */
-	protected $entitiesManager;
+	protected $entityManager;
 	/**
 	 * Migrations manager dependency.
-	 * @var \Asgard\Migration\MigrationsManagerInterface
+	 * @var \Asgard\Migration\MigrationManagerInterface
 	 */
-	protected $migrationsManager;
+	protected $MigrationManager;
 	/**
 	 * DataMapper dependency.
 	 * @var \Asgard\Orm\DataMapperInterface
@@ -36,13 +36,13 @@ class AutoMigrateCommand extends \Asgard\Console\Command {
 
 	/**
 	 * Constructor.
-	 * @param \Asgard\Entity\EntitiesManagerInterface      $entitiesManager
-	 * @param \Asgard\Migration\MigrationsManagerInterface $migrationsManager
+	 * @param \Asgard\Entity\EntityManagerInterface      $entityManager
+	 * @param \Asgard\Migration\MigrationManagerInterface $MigrationManager
 	 * @param \Asgard\Orm\DataMapperInterface              $dataMapper
 	 */
-	public function __construct(\Asgard\Entity\EntitiesManagerInterface $entitiesManager, \Asgard\Migration\MigrationsManagerInterface $migrationsManager, \Asgard\Orm\DataMapperInterface $dataMapper) {
-		$this->entitiesManager = $entitiesManager;
-		$this->migrationsManager = $migrationsManager;
+	public function __construct(\Asgard\Entity\EntityManagerInterface $entityManager, \Asgard\Migration\MigrationManagerInterface $MigrationManager, \Asgard\Orm\DataMapperInterface $dataMapper) {
+		$this->entityManager = $entityManager;
+		$this->MigrationManager = $MigrationManager;
 		$this->dataMapper = $dataMapper;
 		parent::__construct();
 	}
@@ -54,11 +54,11 @@ class AutoMigrateCommand extends \Asgard\Console\Command {
 		$migration = $this->input->getArgument('migration') ? $this->input->getArgument('migration'):'Automigrate';
 
 		$dm = $this->dataMapper;
-		$mm = $this->migrationsManager;
+		$mm = $this->MigrationManager;
 		$om = new \Asgard\Orm\ORMMigrations($dm, $mm);
 
 		$definitions = [];
-		foreach($this->entitiesManager->getDefinitions() as $definition) {
+		foreach($this->entityManager->getDefinitions() as $definition) {
 			if($definition->get('ormMigrate'))
 				$definitions[] = $definition;
 		}

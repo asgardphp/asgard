@@ -5,7 +5,7 @@ class BrowserTest extends \PHPUnit_Framework_TestCase {
 	public function testAddMigration() {
 		\Asgard\File\FileSystem::delete(__DIR__.'/migrations');
 		\Asgard\File\FileSystem::copy(__DIR__.'/fixtures/migrations', __DIR__.'/migrations');
-		$mm = new \Asgard\Migration\MigrationsManager(__DIR__.'/migrations/');
+		$mm = new \Asgard\Migration\MigrationManager(__DIR__.'/migrations/');
 		$mm->add(__DIR__.'/fixtures/Migration.php');
 		$this->assertTrue(file_exists(__DIR__.'/migrations/Migration.php'));
 		$this->assertRegExp('/\{'."\n".
@@ -18,7 +18,7 @@ class BrowserTest extends \PHPUnit_Framework_TestCase {
 	public function testCreateAndRemoveMigration() {
 		\Asgard\File\FileSystem::delete(__DIR__.'/migrations');
 		\Asgard\File\FileSystem::copy(__DIR__.'/fixtures/migrations', __DIR__.'/migrations');
-		$mm = new \Asgard\Migration\MigrationsManager(__DIR__.'/migrations/');
+		$mm = new \Asgard\Migration\MigrationManager(__DIR__.'/migrations/');
 		$mm->create('up();', 'down();', 'Amigration');
 		$this->assertTrue(file_exists(__DIR__.'/migrations/Amigration.php'));
 		$this->assertEquals('<?php'."\n".
@@ -44,7 +44,7 @@ class BrowserTest extends \PHPUnit_Framework_TestCase {
 	public function testMigrate() {
 		\Asgard\File\FileSystem::delete(__DIR__.'/migrations');
 		\Asgard\File\FileSystem::copy(__DIR__.'/fixtures/migrations_migrate', __DIR__.'/migrations');
-		$mm = new \Asgard\Migration\MigrationsManager(__DIR__.'/migrations/');
+		$mm = new \Asgard\Migration\MigrationManager(__DIR__.'/migrations/');
 		$mm->migrate('Migration', true);
 		$this->assertTrue(\Migration::$migrated);
 
@@ -58,7 +58,7 @@ class BrowserTest extends \PHPUnit_Framework_TestCase {
 	public function testMigrateAll() {
 		\Asgard\File\FileSystem::delete(__DIR__.'/migrations');
 		\Asgard\File\FileSystem::copy(__DIR__.'/fixtures/migrations_all', __DIR__.'/migrations');
-		$mm = new \Asgard\Migration\MigrationsManager(__DIR__.'/migrations/');
+		$mm = new \Asgard\Migration\MigrationManager(__DIR__.'/migrations/');
 		$mm->migrateAll(true);
 
 		$this->assertTrue(\Migration1::$migrated);
@@ -77,7 +77,7 @@ class BrowserTest extends \PHPUnit_Framework_TestCase {
 	public function testRollback() {
 		\Asgard\File\FileSystem::delete(__DIR__.'/migrations');
 		\Asgard\File\FileSystem::copy(__DIR__.'/fixtures/migrations_last', __DIR__.'/migrations');
-		$mm = new \Asgard\Migration\MigrationsManager(__DIR__.'/migrations/');
+		$mm = new \Asgard\Migration\MigrationManager(__DIR__.'/migrations/');
 		$mm->rollback();
 		$this->assertTrue(\MigrationLast::$unmigrated);
 		$this->assertFalse(class_exists('MigrationDoNot') && \MigrationDoNot::$unmigrated);
@@ -92,7 +92,7 @@ class BrowserTest extends \PHPUnit_Framework_TestCase {
 	public function testRollbackUntil() {
 		\Asgard\File\FileSystem::delete(__DIR__.'/migrations');
 		\Asgard\File\FileSystem::copy(__DIR__.'/fixtures/migrations_until', __DIR__.'/migrations');
-		$mm = new \Asgard\Migration\MigrationsManager(__DIR__.'/migrations/');
+		$mm = new \Asgard\Migration\MigrationManager(__DIR__.'/migrations/');
 		$mm->rollbackUntil('MigrationUntil');
 		$this->assertTrue(\MigrationUntil::$unmigrated);
 		$this->assertTrue(\Migration4::$unmigrated);

@@ -9,8 +9,8 @@ use \Asgard\Http\Request;
 
 class ControllerTest extends \PHPUnit_Framework_TestCase {
 	public function testAnnotationsAndRouteFor() {
-		$annotationsReader = new \Asgard\Http\AnnotationsReader;
-		$routes = $annotationsReader->fetchRoutes('Asgard\Http\Tests\Fixtures\Controllers\FooController');
+		$AnnotationReader = new \Asgard\Http\AnnotationReader;
+		$routes = $AnnotationReader->fetchRoutes('Asgard\Http\Tests\Fixtures\Controllers\FooController');
 		$route = $routes[0];
 		$this->assertEquals('page/:id', $route->getRoute());
 		$this->assertEquals('example.com', $route->get('host'));
@@ -21,7 +21,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase {
 
 	public function testFilters() {
 		$container = new \Asgard\Container\Container;
-		$container['hooks'] = new \Asgard\Hook\HooksManager($container);
+		$container['hooks'] = new \Asgard\Hook\HookManager($container);
 		$controller = new \Asgard\Http\Tests\Fixtures\Controllers\FooController();
 		$controller->addFilter(new _Filter);
 		$controller->run('page', new Request);
@@ -40,7 +40,7 @@ class ControllerTest extends \PHPUnit_Framework_TestCase {
 		$action = $route->getAction();
 
 		$container = new \Asgard\Container\Container;
-		$container['hooks'] = new \Asgard\Hook\HooksManager($container);
+		$container['hooks'] = new \Asgard\Hook\HookManager($container);
 
 		$controller = new $controller();
 		$controller->setContainer($container);

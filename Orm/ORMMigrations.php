@@ -7,10 +7,10 @@ namespace Asgard\Orm;
  */
 class ORMMigrations {
 	/**
-	 * MigrationsManager dependency.
-	 * @var \Asgard\Migration\MigrationsManagerInterface
+	 * MigrationManager dependency.
+	 * @var \Asgard\Migration\MigrationManagerInterface
 	 */
-	protected $migrationsManager;
+	protected $MigrationManager;
 	/**
 	 * DataMapper dependency.
 	 * @var DataMapperInterface
@@ -20,11 +20,11 @@ class ORMMigrations {
 	/**
 	 * Constructor.
 	 * @param DataMapperInterface                          $dataMapper
-	 * @param \Asgard\Migration\MigrationsManagerInterface $migrationsManager
+	 * @param \Asgard\Migration\MigrationManagerInterface $MigrationManager
 	 */
-	public function __construct(DataMapperInterface $dataMapper, \Asgard\Migration\MigrationsManagerInterface $migrationsManager=null) {
+	public function __construct(DataMapperInterface $dataMapper, \Asgard\Migration\MigrationManagerInterface $MigrationManager=null) {
 		$this->dataMapper = $dataMapper;
-		$this->migrationsManager = $migrationsManager;
+		$this->MigrationManager = $MigrationManager;
 	}
 
 	/**
@@ -51,7 +51,7 @@ class ORMMigrations {
 		$sqlSchemas = $this->getSQLSchemas($this->dataMapper->getDB());
 		$up = $this->buildMigration($entitiesSchemas, $sqlSchemas, false);
 		$down = $this->buildMigration($sqlSchemas, $entitiesSchemas, true);
-		return $this->migrationsManager->create($up, $down, $migrationName, '\Asgard\Migration\DBMigration');
+		return $this->MigrationManager->create($up, $down, $migrationName, '\Asgard\Migration\DBMigration');
 	}
 
 	/**

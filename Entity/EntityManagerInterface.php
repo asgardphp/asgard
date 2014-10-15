@@ -5,18 +5,18 @@ namespace Asgard\Entity;
  * Manage entities.
  * @author Michel Hognerud <michel@hognerud.com>
  */
-interface EntitiesManagerInterface {
+interface EntityManagerInterface {
 	/**
 	 * Return the hooks manager.
-	 * @return \Asgard\Hook\HooksManagerInterface
+	 * @return \Asgard\Hook\HookManagerInterface
 	 */
-	public function getHooksManager();
+	public function getHookManager();
 
 	/**
 	 * Set the hooks manager.
-	 * @param \Asgard\Hook\HooksManagerInterface $hooksManager
+	 * @param \Asgard\Hook\HookManagerInterface $HookManager
 	 */
-	public function setHooksManager(\Asgard\Hook\HooksManagerInterface $hooksManager);
+	public function setHookManager(\Asgard\Hook\HookManagerInterface $HookManager);
 
 	/**
 	 * Set the validator factory.

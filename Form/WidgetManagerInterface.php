@@ -4,7 +4,7 @@ namespace Asgard\Form;
 /**
  * Manage widgets available for form fields.
  */
-interface WidgetsManagerInterface {
+interface WidgetManagerInterface {
 	/**
 	 * Register a widget.
 	 * @param string          $widget

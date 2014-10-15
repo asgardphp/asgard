@@ -1,15 +1,14 @@
 <?php
-namespace Asgard\Http;
+namespace Asgard\Hook;
 
 #For doctrine, which does not autoload classes...
-require_once __DIR__.'/Annotations/Prefix.php';
-require_once __DIR__.'/Annotations/Route.php';
+require_once __DIR__.'/Annotations/Hook.php';
 
 /**
  * Annotations reader.
  * @author Michel Hognerud <michel@hognerud.net>
 */
-class AnnotationsReader {
+class AnnotationReader {
 	/**
 	 * Cache instance.
 	 * @var \Doctrine\Common\Cache\Cache
@@ -22,15 +21,15 @@ class AnnotationsReader {
 	protected $debug = false;
 
 	/**
-	 * Return the routes of a controller.
-	 * @param string $class
+	 * Return the hooks of a container.
+	 * @param string $class HookContainer class.
 	 * @return array
 	*/
-	public function fetchRoutes($class) {
-		$routes = [];
+	public function fetchHooks($class) {
+		$hooks = [];
 
 		$reader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
-		$reader->addNamespace('Asgard\Http\Annotations');
+		$reader->addNamespace('Asgard\Hook\Annotations');
 		if($this->cache) {
 			$reader = new \Doctrine\Common\Annotations\CachedReader(
 				$reader,
@@ -40,30 +39,15 @@ class AnnotationsReader {
 		}
 
 		$reflection = new \ReflectionClass($class);
-		$prefix = $reader->getClassAnnotation($reflection, 'Asgard\Http\Annotations\Prefix');
-		$prefix = $prefix !== null ? $prefix->value:'';
-
 		foreach($reflection->getMethods() as $method) {
-			if(!preg_match('/Action$/i', $method->getName()))
-				continue;
-			$routeAnnot = $reader->getMethodAnnotation($method, 'Asgard\Http\Annotations\Route');
-			if($routeAnnot !== null) {
-				$route = trim($prefix.'/'.$routeAnnot->value, '/');
-				$routes[] = new Route(
-					$route,
-					$class,
-					preg_replace('/Action$/i', '', $method->getName()),
-					[
-						'host' => $routeAnnot->host,
-						'requirements' => $routeAnnot->requirements,
-						'method' => $routeAnnot->method,
-						'name'	=>	$routeAnnot->name
-					]
-				);
+			$hookAnnot = $reader->getMethodAnnotation($method, 'Asgard\Hook\Annotations\Hook');
+			if($hookAnnot !== null) {
+				$hook = $hookAnnot->value;
+				$hooks[$hook][] = [$class, $method->getName()];
 			}
 		}
 
-		return $routes;
+		return $hooks;
 	}
 
 	/**

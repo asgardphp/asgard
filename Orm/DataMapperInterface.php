@@ -52,9 +52,9 @@ interface DataMapperInterface {
 
 	/**
 	 * Return the entities manager instance.
-	 * @return \Asgard\Entity\EntitiesManagerInterface
+	 * @return \Asgard\Entity\EntityManagerInterface
 	 */
-	public function getEntitiesManager();
+	public function getEntityManager();
 
 	/**
 	 * Create and store an entity.

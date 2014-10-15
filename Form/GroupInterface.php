@@ -66,15 +66,15 @@ interface GroupInterface extends \ArrayAccess, \Iterator {
 
 	/**
 	 * Return the widgets manager.
-	 * @return WidgetsManagerInterface
+	 * @return WidgetManagerInterface
 	 */
-	public function getWidgetsManager();
+	public function getWidgetManager();
 
 	/**
 	 * Set the widgets manager.
-	 * @param WidgetsManager $widgetsManager
+	 * @param WidgetManager $WidgetManager
 	 */
-	public function setWidgetsManager(WidgetsManager $widgetsManager);
+	public function setWidgetManager(WidgetManager $WidgetManager);
 
 	/**
 	 * Render a field.

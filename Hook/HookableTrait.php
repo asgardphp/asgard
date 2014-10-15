@@ -7,10 +7,10 @@ namespace Asgard\Hook;
 */
 trait HookableTrait {
 	/**
-	 * HooksManager dependency.
-	 * @var HooksManagerInterface
+	 * HookManager dependency.
+	 * @var HookManagerInterface
 	 */
-	protected $hooksManager;
+	protected $HookManager;
 
 	/**
 	 * Check if has a hook.
@@ -18,9 +18,9 @@ trait HookableTrait {
 	 * @return boolean
 	*/
 	public function hasHook($name) {
-		if(!$this->getHooksManager())
+		if(!$this->getHookManager())
 			return false;
-		return $this->getHooksManager()->has($name);
+		return $this->getHookManager()->has($name);
 	}
 
 	/**
@@ -28,13 +28,13 @@ trait HookableTrait {
 	 * @param string    $name
 	 * @param array     $args
 	 * @param callable  $cb
-	 * @param HookChain $chain
+	 * @param Chain $chain
 	 * @return mixed
 	*/
 	public function trigger($name, array $args=[], $cb=null, &$chain=null) {
-		if(!$this->getHooksManager())
+		if(!$this->getHookManager())
 			return;
-		return $this->getHooksManager()->trigger($name, $args, $cb, $chain);
+		return $this->getHookManager()->trigger($name, $args, $cb, $chain);
 	}
 
 	/**
@@ -45,7 +45,7 @@ trait HookableTrait {
 	*/
 	public function hook($hookName, $cb) {
 		$args = [$hookName, $cb];
-		return call_user_func_array([$this->getHooksManager(), 'hook'], $args);
+		return call_user_func_array([$this->getHookManager(), 'hook'], $args);
 	}
 
 	/**
@@ -56,7 +56,7 @@ trait HookableTrait {
 	*/
 	public function hookBefore($hookName, $cb) {
 		$args = [$hookName, $cb];
-		return call_user_func_array([$this->getHooksManager(), 'hookBefore'], $args);
+		return call_user_func_array([$this->getHookManager(), 'hookBefore'], $args);
 	}
 
 	/**
@@ -68,24 +68,24 @@ trait HookableTrait {
 	*/
 	public function hookAfter($hookName, $cb) {
 		$args = [$hookName, $cb];
-		return call_user_func_array([$this->getHooksManager(), 'hookAfter'], $args);
+		return call_user_func_array([$this->getHookManager(), 'hookAfter'], $args);
 	}
 
 	/**
 	 * Get the hooks manager.
-	 * @return HooksManagerInterface
+	 * @return HookManagerInterface
 	*/
-	public function getHooksManager() {
-		if(!$this->hooksManager)
-			$this->hooksManager = new \Asgard\Hook\HooksManager;
-		return $this->hooksManager;
+	public function getHookManager() {
+		if(!$this->HookManager)
+			$this->HookManager = new \Asgard\Hook\HookManager;
+		return $this->HookManager;
 	}
 
 	/**
 	 * Set the hooks manager.
-	 * @param HooksManagerInterface $hooksManager
+	 * @param HookManagerInterface $HookManager
 	*/
-	public function setHooksManager(HooksManagerInterface $hooksManager) {
-		$this->hooksManager = $hooksManager;
+	public function setHookManager(HookManagerInterface $HookManager) {
+		$this->HookManager = $HookManager;
 	}
 }

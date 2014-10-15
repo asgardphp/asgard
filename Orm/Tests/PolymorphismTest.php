@@ -14,7 +14,7 @@ class PolymorphismTest extends \PHPUnit_Framework_TestCase {
 			'password' => '',
 			'database' => 'asgard_test'
 		]);
-		static::$em = new \Asgard\Entity\EntitiesManager;
+		static::$em = new \Asgard\Entity\EntityManager;
 		static::$dm = new \Asgard\Orm\DataMapper($db);
 		static::$ormm  = new \Asgard\Orm\ORMMigrations(static::$dm);
 		static::$schema = new \Asgard\Db\Schema($db);

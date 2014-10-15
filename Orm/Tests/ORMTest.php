@@ -6,7 +6,7 @@ class ORMTest extends \PHPUnit_Framework_TestCase {
 
 	public static function setUpBeforeClass() {
 		$container                  = new \Asgard\Container\Container;
-		$container['hooks']         = new \Asgard\Hook\HooksManager($container);
+		$container['hooks']         = new \Asgard\Hook\HookManager($container);
 		$container['db'] = new \Asgard\Db\DB([
 			'database' => 'asgard',
 			'user'     => 'root',
@@ -23,14 +23,14 @@ class ORMTest extends \PHPUnit_Framework_TestCase {
 			return new \Asgard\Orm\CollectionORM($entityClass, $name, $locale, $prefix, $dataMapper, $container->createFactory('paginator'));
 		});
 
-		$entitiesManager = $container['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($container);
-		$entitiesManager->setValidatorFactory(new \Asgard\Validation\ValidatorFactory);
-		#set the EntitiesManager static instance for activerecord-like entities (e.g. new Article or Article::find())
-		\Asgard\Entity\EntitiesManager::setInstance($entitiesManager);
+		$entityManager = $container['entityManager'] = new \Asgard\Entity\EntityManager($container);
+		$entityManager->setValidatorFactory(new \Asgard\Validation\ValidatorFactory);
+		#set the EntityManager static instance for activerecord-like entities (e.g. new Article or Article::find())
+		\Asgard\Entity\EntityManager::setInstance($entityManager);
 
 		$container->register('datamapper', function($container) {
 			return new \Asgard\Orm\DataMapper(
-				$container['entitiesManager'],
+				$container['entityManager'],
 				$container['db'],
 				'en',
 				'',
@@ -51,7 +51,7 @@ class ORMTest extends \PHPUnit_Framework_TestCase {
 			'password' => '',
 			'database' => 'asgard'
 		]);
-		$em = new \Asgard\Entity\EntitiesManager;
+		$em = new \Asgard\Entity\EntityManager;
 		$dataMapper = new \Asgard\Orm\DataMapper($db, $em);
 
 		#DB
@@ -108,7 +108,7 @@ class ORMTest extends \PHPUnit_Framework_TestCase {
 		// $container['rulesRegistry'] = new \Asgard\Validation\RulesRegistry;
 		// $container['rulesRegistry']->registerNamespace('Asgard\Orm\Rules');
 		#todo should i use full classnames?
-		$em = new \Asgard\Entity\EntitiesManager;
+		$em = new \Asgard\Entity\EntityManager;
 		$rulesRegistry = new \Asgard\Validation\RulesRegistry;
 		$rulesRegistry->registerNamespace('Asgard\Orm\Rules');
 		$em->setValidatorFactory(new \Asgard\Validation\ValidatorFactory($rulesRegistry));

@@ -6,11 +6,11 @@ class MultipleTest extends \PHPUnit_Framework_TestCase {
 
 	public static function setUpBeforeClass() {
 		$container = new \Asgard\Container\Container;
-		$container['hooks'] = new \Asgard\Hook\HooksManager($container);
+		$container['hooks'] = new \Asgard\Hook\HookManager($container);
 
-		$entitiesManager = $container['entitiesmanager'] = new \Asgard\Entity\EntitiesManager($container);
-		#set the EntitiesManager static instance for activerecord-like entities (e.g. new Article or Article::find())
-		\Asgard\Entity\EntitiesManager::setInstance($entitiesManager);
+		$entityManager = $container['entityManager'] = new \Asgard\Entity\EntityManager($container);
+		#set the EntityManager static instance for activerecord-like entities (e.g. new Article or Article::find())
+		\Asgard\Entity\EntityManager::setInstance($entityManager);
 
 		static::$container = $container;
 	}

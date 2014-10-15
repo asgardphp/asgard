@@ -50,9 +50,9 @@ class HttpKernel implements HttpKernelInterface {
 	protected $afterFilters = [];
 	/**
 	 * Hooks manager dependency.
-	 * @var \Asgard\Hook\HooksManagerInterface
+	 * @var \Asgard\Hook\HookManagerInterface
 	 */
-	protected $hooksManager;
+	protected $HookManager;
 	/**
 	 * Error handler dependency.
 	 * @var \Asgard\Debug\ErrorHandler
@@ -122,8 +122,8 @@ class HttpKernel implements HttpKernelInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function setHooksManager(\Asgard\Hook\HooksManagerInterface $hooksManager) {
-		$this->hooksManager = $hooksManager;
+	public function setHookManager(\Asgard\Hook\HookManagerInterface $HookManager) {
+		$this->HookManager = $HookManager;
 		return $this;
 	}
 
@@ -138,8 +138,8 @@ class HttpKernel implements HttpKernelInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getHooksManager() {
-		return $this->hooksManager;
+	public function getHookManager() {
+		return $this->HookManager;
 	}
 
 	/**
@@ -202,7 +202,7 @@ class HttpKernel implements HttpKernelInterface {
 
 		$response = $this->process($request);
 
-		$this->hooksManager->trigger('Asgard.Http.Output', [$response, $request]);
+		$this->HookManager->trigger('Asgard.Http.Output', [$response, $request]);
 		return $response;
 	}
 
@@ -242,7 +242,7 @@ class HttpKernel implements HttpKernelInterface {
 					$this->errorHandler->logException($e);
 				}
 
-				$this->hooksManager->trigger('Asgard.Http.Exception.'.get_class($e), [$e, &$response, $request]);
+				$this->HookManager->trigger('Asgard.Http.Exception.'.get_class($e), [$e, &$response, $request]);
 				if($response === null)
 					$response = $this->getExceptionResponse($e);
 			}
@@ -251,7 +251,7 @@ class HttpKernel implements HttpKernelInterface {
 		try {
 			if($this->end !== null)
 				include $this->end;
-			$this->hooksManager->trigger('Asgard.Http.End', [$response]);
+			$this->HookManager->trigger('Asgard.Http.End', [$response]);
 		} catch(\Exception $e) {
 			$this->errorHandler->logException($e);
 		}
@@ -281,7 +281,7 @@ class HttpKernel implements HttpKernelInterface {
 		$resolver = $this->getResolver();
 		$resolver->sortRoutes();
 
-		if($response = $this->hooksManager->trigger('Asgard.Http.Start', [$request]))
+		if($response = $this->HookManager->trigger('Asgard.Http.Start', [$request]))
 			return $response;
 		if($this->start !== null) {
 			$container = $this->container;

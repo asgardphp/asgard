@@ -13,7 +13,7 @@ class FiltersTest extends \PHPUnit_Framework_TestCase {
 		$resolver = new \Asgard\Http\Resolver;
 		$httpKernel = new HttpKernel;
 		$httpKernel->setResolver($resolver);
-		$httpKernel->setHooksManager(new \Asgard\Hook\HooksManager);
+		$httpKernel->setHookManager(new \Asgard\Hook\HookManager);
 
 		$httpKernel->filterAll('Asgard\Http\Tests\Fixtures\Filter');
 		$resolver->addRoute(new Route('home', 'Asgard\Http\Tests\Fixtures\HomeController', 'home'));
@@ -26,7 +26,7 @@ class FiltersTest extends \PHPUnit_Framework_TestCase {
 		$resolver = new \Asgard\Http\Resolver;
 		$httpKernel = new HttpKernel;
 		$httpKernel->setResolver($resolver);
-		$httpKernel->setHooksManager(new \Asgard\Hook\HooksManager);
+		$httpKernel->setHookManager(new \Asgard\Hook\HookManager);
 
 		$httpKernel->filter(['route'=>'home'], 'Asgard\Http\Tests\Fixtures\Filter');
 		$resolver->addRoute(new Route('home', 'Asgard\Http\Tests\Fixtures\HomeController', 'home'));
@@ -39,7 +39,7 @@ class FiltersTest extends \PHPUnit_Framework_TestCase {
 		$resolver = new \Asgard\Http\Resolver;
 		$httpKernel = new HttpKernel;
 		$httpKernel->setResolver($resolver);
-		$httpKernel->setHooksManager(new \Asgard\Hook\HooksManager);
+		$httpKernel->setHookManager(new \Asgard\Hook\HookManager);
 
 		$httpKernel->filterBeforeAll(function(){return 'foo!';});
 		$resolver->addRoute(new Route('home', 'Asgard\Http\Tests\Fixtures\HomeController', 'home'));
@@ -52,7 +52,7 @@ class FiltersTest extends \PHPUnit_Framework_TestCase {
 		$resolver = new \Asgard\Http\Resolver;
 		$httpKernel = new HttpKernel;
 		$httpKernel->setResolver($resolver);
-		$httpKernel->setHooksManager(new \Asgard\Hook\HooksManager);
+		$httpKernel->setHookManager(new \Asgard\Hook\HookManager);
 
 		$httpKernel->filterBefore(['Asgard\Http\Tests\Fixtures\HomeController::home'], function(){return 'foo!';});
 		$resolver->addRoute(new Route('home', 'Asgard\Http\Tests\Fixtures\HomeController', 'home'));
@@ -65,7 +65,7 @@ class FiltersTest extends \PHPUnit_Framework_TestCase {
 		$resolver = new \Asgard\Http\Resolver;
 		$httpKernel = new HttpKernel;
 		$httpKernel->setResolver($resolver);
-		$httpKernel->setHooksManager(new \Asgard\Hook\HooksManager);
+		$httpKernel->setHookManager(new \Asgard\Hook\HookManager);
 
 		$httpKernel->filterAfterAll(function($controller, $request, &$result){$result = 'foo!';});
 		$resolver->addRoute(new Route('home', 'Asgard\Http\Tests\Fixtures\HomeController', 'home'));
@@ -78,7 +78,7 @@ class FiltersTest extends \PHPUnit_Framework_TestCase {
 		$resolver = new \Asgard\Http\Resolver;
 		$httpKernel = new HttpKernel;
 		$httpKernel->setResolver($resolver);
-		$httpKernel->setHooksManager(new \Asgard\Hook\HooksManager);
+		$httpKernel->setHookManager(new \Asgard\Hook\HookManager);
 
 		$httpKernel->filterAfter(['actions'=>'Asgard\Http\Tests\Fixtures'], function($controller, $request, &$result){$result = 'foo!';});
 		$resolver->addRoute(new Route('home', 'Asgard\Http\Tests\Fixtures\HomeController', 'home'));
