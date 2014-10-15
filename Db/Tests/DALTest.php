@@ -40,11 +40,11 @@ class DALTest extends \PHPUnit_Framework_TestCase {
 
 		/* SELECT / FROM */
 		$this->assertEquals('SELECT `title` FROM `news`', $this->getDAL()->from('news')->select('title')->buildSQL());
-		$this->assertEquals('SELECT `title` AS `t` FROM `news`', $this->getDAL()->from('news')->select('title t')->buildSQL());
-		$this->assertEquals('SELECT COUNT(*) AS `c` FROM `news`', $this->getDAL()->from('news')->select('COUNT(*) c')->buildSQL());
-		$this->assertEquals('SELECT `id` AS `i`, `title` AS `t` FROM `news`', $this->getDAL()->from('news')->select('id i, title t')->buildSQL());
-		$this->assertEquals('SELECT `id` AS `i` FROM `news`', $this->getDAL()->from('news')->select('id i, title t')->removeSelect('t')->buildSQL());
-		$this->assertEquals('SELECT `id` AS `i`, `title` AS `t` FROM `news`', $this->getDAL()->from('news')->select('id i')->addSelect('title t')->buildSQL());
+		$this->assertEquals('SELECT `title` AS `t` FROM `news`', $this->getDAL()->from('news')->select('title as t')->buildSQL());
+		$this->assertEquals('SELECT COUNT(*) AS `c` FROM `news`', $this->getDAL()->from('news')->select('COUNT(*) as c')->buildSQL());
+		$this->assertEquals('SELECT `id` AS `i`, `title` AS `t` FROM `news`', $this->getDAL()->from('news')->select('id as i, title as t')->buildSQL());
+		$this->assertEquals('SELECT `id` AS `i` FROM `news`', $this->getDAL()->from('news')->select('id as i, title as t')->removeSelect('t')->buildSQL());
+		$this->assertEquals('SELECT `id` AS `i`, `title` AS `t` FROM `news`', $this->getDAL()->from('news')->select('id as i')->addSelect('title as t')->buildSQL());
 
 		/* OFFSET */
 		$this->assertEquals('SELECT * FROM `news` LIMIT 10, '.PHP_INT_MAX, $this->getDAL()->from('news')->offset(10)->buildSQL());

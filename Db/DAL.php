@@ -368,7 +368,7 @@ class DAL {
 		foreach($columns as $columnstr) {
 			$columnstr = trim($columnstr);
 
-			preg_match('/(.*?) ([a-z_][a-zA-Z0-9_]*)?$/i', $columnstr, $matches);
+			preg_match('/(.*?)\s*as\s*([a-z_][a-zA-Z0-9_]*)?$/i', $columnstr, $matches);
 			if(isset($matches[2])) {
 				$alias = $matches[2];
 				$column = $matches[1];
@@ -377,7 +377,7 @@ class DAL {
 				$alias = $column = $columnstr;
 
 			if(isset($this->columns[$alias]))
-				throw new \Exception('Column alias '.$alias.' is not already used.');
+				throw new \Exception('Column alias '.$alias.' is already used.');
 			$this->columns[$alias] = $column;
 		}
 

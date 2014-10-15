@@ -26,10 +26,16 @@ class CollectionORM extends ORM implements CollectionORMInterface {
 	 * @param string                                   $prefix        tables prefix
 	 * @param \Asgard\Common\PaginatorFactoryInterface $paginatorFactory
 	 */
-	public function __construct(\Asgard\Entity\Entity $entity, $relationName, DataMapperInterface $dataMapper, $locale=null, $prefix=null, \Asgard\Common\PaginatorFactoryInterface $paginatorFactory=null) {
+	public function __construct(\Asgard\Entity\Entity $entity, $relationName, DataMapperInterface $dataMapper, $locale=null, $prefix=null, \Asgard\Common\PaginatorFactoryInterface $paginatorFactory=null, \Asgard\Entity\EntityDefinition $targetDefinition=null) {
 		$this->parent = $entity;
 
 		$this->relation = $dataMapper->relation($entity->getDefinition(), $relationName);
+
+		if($targetDefinition !== null) {
+			$relation = clone($this->relation);
+			$relation->setTargetDefinition($targetDefinition);
+			$this->relation = $relation;
+		}
 
 		parent::__construct($this->relation->getTargetDefinition(), $dataMapper, $locale, $prefix, $paginatorFactory);
 
@@ -53,8 +59,10 @@ class CollectionORM extends ORM implements CollectionORMInterface {
 			if($v instanceof \Asgard\Entity\Entity) {
 				if($v->isNew())
 					$this->dataMapper->save($v, null, $force);
-				$ids[$k] = (int)$v->id;
+				$ids[$k] = ['id'=>(int)$v->id, 'class'=>get_class($v)];
 			}
+			else
+				$ids[$k] = ['id'=>(int)$v, 'class'=>$this->relation->getTargetDefinition()->getClass()];
 		}
 
 		switch($this->relation->type()) {
@@ -62,16 +70,20 @@ class CollectionORM extends ORM implements CollectionORMInterface {
 				$relationEntityDefinition = $this->relation->getTargetDefinition();
 				$link = $this->relation->getLink();
 				$dal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->dataMapper->getTable($relationEntityDefinition));
-				if($this->relation->reverse()->get('polymorphic'))
-					$dal->where([$link => $this->parent->id, $this->relation->reverse()->getLinkType() => get_class($this->parent)])->update([$link => null, $linkType => null]);
+				if($this->relation->reverse()->get('polymorphic')) {
+					$linkType = $this->relation->reverse()->getLinkType();
+					$dal->where([$link => $this->parent->id, $linkType => get_class($this->parent)])->update([$link => null, $linkType => null]);
+				}
 				else
 					$dal->where([$link => $this->parent->id])->update([$link => null]);
 
 				if($ids) {
+					foreach($ids as $k=>$v)
+						$ids[$k] = $v['id'];
 					$newDal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->dataMapper->getTable($relationEntityDefinition));
 					$newDal->where('id IN ('.implode(', ', $ids).')');
 					if($this->relation->reverse()->get('polymorphic'))
-						$newDal->update([$link => $entity->id, $this->relation->reverse()->getLinkType() => get_class($this->parent)]);
+						$newDal->update([$link => $this->parent->id, $linkType => get_class($this->parent)]);
 					else
 						$newDal->update([$link => $this->parent->id]);
 				}
@@ -86,12 +98,14 @@ class CollectionORM extends ORM implements CollectionORMInterface {
 				if($ids) {
 					$dal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->relation->getTable());
 					$i = 1;
-					foreach($ids as $id) {
-						$params = [$this->relation->getLinkA() => $this->parent->id, $this->relation->getLinkB() => $id];
+					foreach($ids as $entity) {
+						$params = [$this->relation->getLinkA() => $this->parent->id, $this->relation->getLinkB() => $entity['id']];
 						if($this->relation->get('sortable'))
 							$params[$this->relation->getPositionField()] = $i++;
 						if($this->relation->reverse()->get('polymorphic'))
 							$params[$this->relation->reverse()->getLinkType()] = get_class($this->parent);
+						elseif($this->relation->get('polymorphic'))
+							$params[$this->relation->getLinkType()] = $entity['class'];
 						$dal->insert($params);
 					}
 				}

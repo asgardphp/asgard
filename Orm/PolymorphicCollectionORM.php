@@ -16,6 +16,26 @@ class PolymorphicCollectionORM implements CollectionORMInterface {
 	 * @var EntityRelation
 	 */
 	protected $relation;
+	/**
+	 * DataMapper dependency.
+	 * @var DataMapperInterface
+	 */
+	protected $dataMapper;
+	/**
+	 * Paginator factory dependency.
+	 * @var \Asgard\Common\PaginatorFactoryInterface
+	 */
+	protected $paginatorFactory;
+	/**
+	 * Locale.
+	 * @var string
+	 */
+	protected $locale;
+	/**
+	 * Tables prefix.
+	 * @var string
+	 */
+	protected $prefix;
 
 	/**
 	 * Constructor.
@@ -29,13 +49,28 @@ class PolymorphicCollectionORM implements CollectionORMInterface {
 	public function __construct(\Asgard\Entity\Entity $entity, $relationName, DataMapperInterface $dataMapper, $locale=null, $prefix=null, \Asgard\Common\PaginatorFactoryInterface $paginatorFactory=null) {
 		$this->parent = $entity;
 		$this->relation = $dataMapper->relation($entity->getDefinition(), $relationName);
+		$this->dataMapper = $dataMapper;
+		$this->locale = $locale;
+		$this->prefix = $prefix;
+		$this->paginatorFactory = $paginatorFactory;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function sync($ids, $force=false) {
-		throw new \Exception('Not implemented'); 
+	public function sync($entities, $force=false) {
+		$perclass = [];
+
+		foreach($entities as $entity)
+			$perclass[get_class($entity)][] = $entity;
+
+		foreach($perclass as $class=>$entities) {
+			$targetDefinition = $this->parent->getDefinition()->getEntitiesManager()->get($class);
+			$cORM = new CollectionORM($this->parent, $this->relation->getName(), $this->dataMapper, $this->locale, $this->prefix, $this->paginatorFactory, $targetDefinition);
+			$cORM->sync($entities);
+		}
+
+		return $this;
 	}
 
 	/**
@@ -123,7 +158,27 @@ class PolymorphicCollectionORM implements CollectionORMInterface {
 	 * {@inheritDoc}
 	 */
 	public function get() {
-		d('TODO');
+		$entities = [];
+		$classes = [];
+
+		if($this->relation->type() == 'HMABT') {
+			$dal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->relation->getTable());
+			$types = $dal->select('DISTINCT '.$this->relation->getLinkType().' as class')->get();
+			foreach($types as $type)
+				$classes[] = $type['class'];
+		}
+		elseif($this->relation->type() == 'hasMany')
+			$classes = $this->relation->get('classes');
+		else
+			throw new \Exception('Wrong relation type.');
+
+		foreach($classes as $class) {
+			$targetDefinition = $this->parent->getDefinition()->getEntitiesManager()->get($class);
+			$cORM = new CollectionORM($this->parent, $this->relation->getName(), $this->dataMapper, $this->locale, $this->prefix, $this->paginatorFactory, $targetDefinition);
+			$entities = array_merge($entities, $cORM->get());
+		}
+
+		return $entities;
 	}
 
 	/**

@@ -129,7 +129,10 @@ class EntityRelation {
 	 * @return string
 	 */
 	public function getTable($prefix=null) {
-		if($this->reverse()->get('polymorphic'))
+		if($this->type() !== 'HMABT')
+			throw new \Exception('Association table can only be used for HMABT relations.');
+
+		if(!$this->get('polymorphic') && $this->reverse()->get('polymorphic'))
 			$entityShortName = $this->reverse()->get('as');
 		else
 			$entityShortName = $this->entityDefinition->getShortName();

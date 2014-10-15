@@ -131,8 +131,12 @@ class ORM implements ORMInterface {
 		if(is_string($relation))
 			$relation = $this->dataMapper->relation($this->definition, $relation);
 
-		if($relation->get('polymorphic'))
-			$this->where($relation->getTable().'.'.$relation->getLinkType(), $entity->getDefinition()->getShortName());
+		if($relation->get('polymorphic')) {
+			if($relation->type() == 'hasMany')
+				$this->where($this->dataMapper->getTable($entity->getDefinition()).'.'.$relation->getLinkType(), $entity->getDefinition()->getShortName());
+			if($relation->type() == 'HMABT')
+				$this->where($relation->getTable().'.'.$relation->getLinkType(), $entity->getDefinition()->getShortName());
+		}
 		$this->join($relation);
 
 		$this->where($relation->getName().'.id', $entity->id);
@@ -463,7 +467,7 @@ class ORM implements ORMInterface {
 
 						if(is_callable($closure))
 							$closure($orm);
-						$res = $orm->getDAL()->addSelect($joinTable.'.'.$currentEntityIdfield.' __ormrelid')->groupBy(null)->get();
+						$res = $orm->getDAL()->addSelect($joinTable.'.'.$currentEntityIdfield.' as __ormrelid')->groupBy(null)->get();
 						foreach($entities as $entity) {
 							$id = $entity->id;
 							$filter = array_filter($res, function($result) use ($id) {

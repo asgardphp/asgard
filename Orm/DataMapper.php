@@ -340,30 +340,43 @@ class DataMapper implements DataMapperInterface {
 			$rel = $this->relation($entity->getDefinition(), $relation);
 
 			$type = $rel->type();
-			if($rel->get('polymorphic')) {
-				// if() todo
-			}
-			else {
-				$reverse_rel = $rel->reverse();
-				$relation_entity = $rel->get('entity');
-				$link = $reverse_rel->getLink();
+			if($type !== 'belongsTo') {
+				if($rel->get('polymorphic')) {
 
-				if($reverse_rel->get('polymorphic')) {
 					if($type == 'hasOne') {
-						$linkType = $reverse_rel->getLinkType();
-						$this->orm($relation_entity)->where([$link => $entity->id, $linkType => get_class($entity)])->getDAL()->update([$link => null, $linkType => null]);
-						$this->orm($relation_entity)->where(['id' => $entity->data['properties'][$relation]->id])->getDAL()->update([$link => $entity->id, $linkType => get_class($entity)]);
+						#todo comment trouver l'ancien entity?
+						// $reverse_rel = $rel->reverse();
+						// $relation_entity = $rel->get('entity');
+						// $link = $reverse_rel->getLink();
+						
+						// $this->orm($relation_entity)->where([$link => $entity->id])->getDAL()->update([$link => 0]);
+						// $this->orm($relation_entity)->where(['id' => $entity->data['properties'][$relation]->id])->getDAL()->update([$link => $entity->id]);
 					}
 					elseif($rel->get('many'))
 						$this->related($entity, $relation)->sync($entity->data['properties'][$relation]->all());
 				}
 				else {
-					if($type == 'hasOne') {
-						$this->orm($relation_entity)->where([$link => $entity->id])->getDAL()->update([$link => 0]);
-						$this->orm($relation_entity)->where(['id' => $entity->data['properties'][$relation]->id])->getDAL()->update([$link => $entity->id]);
+					$reverse_rel = $rel->reverse();
+					$relation_entity = $rel->get('entity');
+					$link = $reverse_rel->getLink();
+
+					if($reverse_rel->get('polymorphic')) {
+						if($type == 'hasOne') {
+							$linkType = $reverse_rel->getLinkType();
+							$this->orm($relation_entity)->where([$link => $entity->id, $linkType => get_class($entity)])->getDAL()->update([$link => null, $linkType => null]);
+							$this->orm($relation_entity)->where(['id' => $entity->data['properties'][$relation]->id])->getDAL()->update([$link => $entity->id, $linkType => get_class($entity)]);
+						}
+						elseif($rel->get('many'))
+							$this->related($entity, $relation)->sync($entity->data['properties'][$relation]->all());
 					}
-					elseif($rel->get('many'))
-						$this->related($entity, $relation)->sync($entity->data['properties'][$relation]->all());
+					else {
+						if($type == 'hasOne') {
+							$this->orm($relation_entity)->where([$link => $entity->id])->getDAL()->update([$link => 0]);
+							$this->orm($relation_entity)->where(['id' => $entity->data['properties'][$relation]->id])->getDAL()->update([$link => $entity->id]);
+						}
+						elseif($rel->get('many'))
+							$this->related($entity, $relation)->sync($entity->data['properties'][$relation]->all());
+					}
 				}
 			}
 		}
