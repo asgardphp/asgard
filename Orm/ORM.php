@@ -133,9 +133,9 @@ class ORM implements ORMInterface {
 
 		if($relation->get('polymorphic')) {
 			if($relation->type() == 'hasMany')
-				$this->where($this->dataMapper->getTable($entity->getDefinition()).'.'.$relation->getLinkType(), $entity->getDefinition()->getShortName());
+				$this->where($this->dataMapper->getTable($entity->getDefinition()).'.'.$relation->getLinkType(), $entity->getDefinition()->getClass());
 			if($relation->type() == 'HMABT')
-				$this->where($relation->getTable().'.'.$relation->getLinkType(), $entity->getDefinition()->getShortName());
+				$this->where($relation->getTable().'.'.$relation->getLinkType(), $entity->getDefinition()->getClass());
 		}
 		$this->join($relation);
 
