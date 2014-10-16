@@ -135,7 +135,7 @@ class ORM implements ORMInterface {
 			if($relation->type() == 'hasMany')
 				$this->where($this->dataMapper->getTable($entity->getDefinition()).'.'.$relation->getLinkType(), $entity->getDefinition()->getClass());
 			if($relation->type() == 'HMABT')
-				$this->where($relation->getTable().'.'.$relation->getLinkType(), $entity->getDefinition()->getClass());
+				$this->where($relation->getAssociationTable().'.'.$relation->getLinkType(), $entity->getDefinition()->getClass());
 		}
 		$this->join($relation);
 
@@ -367,17 +367,17 @@ class ORM implements ORMInterface {
 				break;
 			case 'HMABT':
 				$dal->rightjoin([
-					$relation->getTable($this->prefix) => $this->processConditions([
-						$relation->getTable($this->prefix).'.'.$relation->getLinkA().' = '.$ref_table.'.id',
+					$relation->getAssociationTable($this->prefix) => $this->processConditions([
+						$relation->getAssociationTable($this->prefix).'.'.$relation->getLinkA().' = '.$ref_table.'.id',
 					])
 				]);
 				$dal->rightjoin([
 					$this->dataMapper->getTable($relationDefinition).' '.$alias => $this->processConditions([
-						$relation->getTable($this->prefix).'.'.$relation->getLinkB().' = '.$alias.'.id',
+						$relation->getAssociationTable($this->prefix).'.'.$relation->getLinkB().' = '.$alias.'.id',
 					])
 				]);
 				if($relation->reverse()->get('sortable'))
-					$dal->orderBy($relation->getTable($this->prefix).'.'.$relation->reverse()->getPositionField().' ASC');
+					$dal->orderBy($relation->getAssociationTable($this->prefix).'.'.$relation->reverse()->getPositionField().' ASC');
 				break;
 		}
 
@@ -454,7 +454,7 @@ class ORM implements ORMInterface {
 						}
 						break;
 					case 'HMABT':
-						$joinTable = $rel->getTable();
+						$joinTable = $rel->getAssociationTable();
 						$currentEntityIdfield = $rel->getLinkA();
 						$reverseRelationName = $rel->reverse()->get('name');
 

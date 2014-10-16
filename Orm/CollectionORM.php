@@ -89,14 +89,14 @@ class CollectionORM extends ORM implements CollectionORMInterface {
 				}
 				break;
 			case 'HMABT':
-				$dal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->relation->getTable());
+				$dal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->relation->getAssociationTable());
 				$dal->where($this->relation->getLinkA(), $this->parent->id);
 				if($this->relation->reverse()->get('polymorphic'))
 					$dal->where($this->relation->reverse()->getLinkType(), get_class($this->parent));
 				$dal->delete();
 
 				if($ids) {
-					$dal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->relation->getTable());
+					$dal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->relation->getAssociationTable());
 					$i = 1;
 					foreach($ids as $entity) {
 						$params = [$this->relation->getLinkA() => $this->parent->id, $this->relation->getLinkB() => $entity['id']];
@@ -189,7 +189,7 @@ class CollectionORM extends ORM implements CollectionORMInterface {
 					$dal->reset()->where(['id' => $id])->update([$this->relation->getLink() => 0]);
 				break;
 			case 'HMABT':
-				$dal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->relation->getTable());
+				$dal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->relation->getAssociationTable());
 				foreach($ids as $id)
 					$dal->reset()->where([$this->relation->getLinkA() => $this->parent->id, $this->relation->getLinkB() => $id])->delete();
 				break;

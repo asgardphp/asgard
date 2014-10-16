@@ -128,7 +128,7 @@ class EntityRelation {
 	 * @param  string $prefix table prefix
 	 * @return string
 	 */
-	public function getTable($prefix=null) {
+	public function getAssociationTable($prefix=null) {
 		if($this->type() !== 'HMABT')
 			throw new \Exception('Association table can only be used for HMABT relations.');
 

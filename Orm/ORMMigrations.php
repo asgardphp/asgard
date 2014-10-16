@@ -95,7 +95,7 @@ class ORMMigrations {
 					}
 					#HMABT relations
 					elseif($relation->type() == 'HMABT' && !$relation->get('polymorphic')) {
-						$table_name = $relation->getTable();
+						$table_name = $relation->getAssociationTable();
 						#if table was not already created by the opposite entity
 						if(!isset($schemas[$table_name])) {
 							$arr = [

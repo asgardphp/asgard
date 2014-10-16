@@ -162,7 +162,7 @@ class PolymorphicCollectionORM implements CollectionORMInterface {
 		$classes = [];
 
 		if($this->relation->type() == 'HMABT') {
-			$dal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->relation->getTable());
+			$dal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->relation->getAssociationTable());
 			$types = $dal->select('DISTINCT '.$this->relation->getLinkType().' as class')->get();
 			foreach($types as $type)
 				$classes[] = $type['class'];
