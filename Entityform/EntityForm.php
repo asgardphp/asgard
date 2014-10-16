@@ -20,7 +20,7 @@ class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 	 * Fields solver.
 	 * @var EntityFieldSolverInterface
 	 */
-	protected $EntityFieldSolver;
+	protected $entityFieldSolver;
 	/**
 	 * Datamapper dependency.
 	 * @var \Asgard\Orm\DataMapperInterface

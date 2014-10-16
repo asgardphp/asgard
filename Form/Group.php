@@ -10,7 +10,7 @@ class Group implements GroupInterface {
 	 * Widgets manager.
 	 * @var WidgetManagerInterface
 	 */
-	protected $WidgetManager;
+	protected $widgetManager;
 	/**
 	 * name
 	 * @var string
@@ -149,17 +149,17 @@ class Group implements GroupInterface {
 	public function getWidgetManager() {
 		if($this->parent)
 			return $this->parent->getWidgetManager();
-		elseif($this->WidgetManager)
-			return $this->WidgetManager;
+		elseif($this->widgetManager)
+			return $this->widgetManager;
 		else
-			return $this->WidgetManager = new WidgetManager;
+			return $this->widgetManager = new WidgetManager;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function setWidgetManager(WidgetManager $WidgetManager) {
-		$this->WidgetManager = $WidgetManager;
+		$this->widgetManager = $WidgetManager;
 		return $this;
 	}
 
