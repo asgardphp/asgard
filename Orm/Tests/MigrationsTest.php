@@ -2,32 +2,37 @@
 namespace Asgard\Orm\Tests;
 
 class MigrationsTest extends \PHPUnit_Framework_TestCase {
-	public function testAutoMigrate() {
-		$container = new \Asgard\Container\Container;
-		$container['db'] = new \Asgard\Db\DB([
+	protected static $ormm;
+	protected static $em;
+	protected static $schema;
+	protected static $db;
+
+	public static function setUpBeforeClass() {
+		\Asgard\File\FileSystem::delete(__DIR__.'/migrations/');
+		static::$db = $db = new \Asgard\Db\DB([
 			'host' => 'localhost',
 			'user' => 'root',
 			'password' => '',
 			'database' => 'asgard'
 		]);
-		$container['hooks'] = new \Asgard\Hook\HookManager;
-		$container['entityManager'] = $entityManager = new \Asgard\Entity\EntityManager($container);
-		$dataMapper = new \Asgard\Orm\DataMapper($container['db'], $container['entityManager']);
+		static::$em = $entityManager = new \Asgard\Entity\EntityManager;
+		$dataMapper = new \Asgard\Orm\DataMapper($db, $entityManager);
+		static::$schema = new \Asgard\Db\Schema($db);
+		static::$ormm = new \Asgard\Orm\ORMMigrations($dataMapper, new \Asgard\Migration\MigrationManager(__DIR__.'/migrations/'));
+	}
 
-		$ormm = new \Asgard\Orm\ORMMigrations($dataMapper);
-		$schema = new \Asgard\Db\Schema($container['db']);
-		$schema->dropAll();
-
-		$ormm->autoMigrate([
-			$entityManager->get('Asgard\Orm\Tests\Fixtures\Post'),
-			$entityManager->get('Asgard\Orm\Tests\Fixtures\Category'),
-			$entityManager->get('Asgard\Orm\Tests\Fixtures\Author')
-		], $schema);
+	public function testAutoMigrate() {
+		static::$schema->dropAll();
+		static::$ormm->autoMigrate([
+			static::$em->get('Asgard\Orm\Tests\Fixtures\Migrations\Post'),
+			static::$em->get('Asgard\Orm\Tests\Fixtures\Migrations\Category'),
+			static::$em->get('Asgard\Orm\Tests\Fixtures\Migrations\Author')
+		], static::$schema);
 
 		$tables = [];
-		foreach($container['db']->query('SHOW TABLES')->all() as $v) {
+		foreach(static::$db->query('SHOW TABLES')->all() as $v) {
 			$table = array_values($v)[0];
-			$tables[$table] = $container['db']->query('Describe `'.$table.'`')->all();
+			$tables[$table] = static::$db->query('Describe `'.$table.'`')->all();
 		}
 
 		$this->assertEquals(
@@ -152,23 +157,11 @@ class MigrationsTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testGenerateMigration() {
-		\Asgard\File\FileSystem::delete(__DIR__.'/migrations/');
-		$db = new \Asgard\Db\DB([
-			'host' => 'localhost',
-			'user' => 'root',
-			'password' => '',
-			'database' => 'asgard'
-		]);
-		$entityManager = new \Asgard\Entity\EntityManager;
-		$dataMapper = new \Asgard\Orm\DataMapper($db, $entityManager);
-		$schema = new \Asgard\Db\Schema($db);
-		$schema->dropAll();
-
-		$ormm = new \Asgard\Orm\ORMMigrations($dataMapper, new \Asgard\Migration\MigrationManager(__DIR__.'/migrations/'));
-		$ormm->generateMigration([
-			$entityManager->get('Asgard\Orm\Tests\Fixtures\Post'),
-			$entityManager->get('Asgard\Orm\Tests\Fixtures\Author'),
-			$entityManager->get('Asgard\Orm\Tests\Fixtures\Category')
+		static::$schema->dropAll();
+		static::$ormm->generateMigration([
+			static::$em->get('Asgard\Orm\Tests\Fixtures\Migrations\Post'),
+			static::$em->get('Asgard\Orm\Tests\Fixtures\Migrations\Author'),
+			static::$em->get('Asgard\Orm\Tests\Fixtures\Migrations\Category')
 		], 'Post');
 
 		$this->assertRegExp('/\{'."\n".
@@ -177,7 +170,7 @@ class MigrationsTest extends \PHPUnit_Framework_TestCase {
 '    \}'."\n".
 '\}/', file_get_contents(__DIR__.'/migrations/migrations.json'));
 
-		$this->assertEquals(self::lines(file_get_contents(__DIR__.'/Fixtures/migrations/Post.php')), self::lines(file_get_contents(__DIR__.'/migrations/Post.php')));
+		$this->assertEquals(self::lines(file_get_contents(__DIR__.'/Fixtures/Migrations/Post_2.php')), self::lines(file_get_contents(__DIR__.'/migrations/Post.php')));
 	}
 
 	private static function lines($s) {

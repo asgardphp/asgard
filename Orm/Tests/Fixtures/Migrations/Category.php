@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\Orm\Tests\Fixtures;
+namespace Asgard\Orm\Tests\Fixtures\Migrations;
 
 class Category extends \Asgard\Entity\Entity {
 	public static function definition(\Asgard\Entity\Definition $definition) {
@@ -7,7 +7,7 @@ class Category extends \Asgard\Entity\Entity {
 			'name',
 			'posts' => [
 				'type' => 'entity',
-				'entity' => 'Asgard\Orm\Tests\Fixtures\Post',
+				'entity' => 'Asgard\Orm\Tests\Fixtures\Migrations\Post',
 				'many' => true,
 			]
 		];

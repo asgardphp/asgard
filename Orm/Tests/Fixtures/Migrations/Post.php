@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\Orm\Tests\Fixtures;
+namespace Asgard\Orm\Tests\Fixtures\Migrations;
 
 class Post extends \Asgard\Entity\Entity {
 	public static function definition(\Asgard\Entity\Definition $definition) {
@@ -18,11 +18,11 @@ class Post extends \Asgard\Entity\Entity {
 			],
 			'author' => [
 				'type' => 'entity',
-				'entity' => 'Asgard\Orm\Tests\Fixtures\Author',
+				'entity' => 'Asgard\Orm\Tests\Fixtures\Migrations\Author',
 			],
 			'categories' => [
 				'type' => 'entity',
-				'entity' => 'Asgard\Orm\Tests\Fixtures\Category',
+				'entity' => 'Asgard\Orm\Tests\Fixtures\Migrations\Category',
 				'many' => true,
 			],
 		];

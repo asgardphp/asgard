@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\Orm\Tests\Entities;
+namespace Asgard\Orm\Tests\Fixtures\ORM;
 
 class News extends \Asgard\Entity\Entity {
 	public static function definition(\Asgard\Entity\Definition $definition) {
@@ -9,11 +9,11 @@ class News extends \Asgard\Entity\Entity {
 			'score' => 'integer',
 			'category' => [
 				'type' => 'entity',
-				'entity' => 'Asgard\Orm\Tests\Entities\Category',
+				'entity' => 'Asgard\Orm\Tests\Fixtures\ORM\Category',
 			],
 			'author' => [
 				'type' => 'entity',
-				'entity' => 'Asgard\Orm\Tests\Entities\Author',
+				'entity' => 'Asgard\Orm\Tests\Fixtures\ORM\Author',
 			],
 		];
 	}

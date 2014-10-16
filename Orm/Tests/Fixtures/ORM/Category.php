@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\Orm\Tests\Entities;
+namespace Asgard\Orm\Tests\Fixtures\ORM;
 
 class Category extends \Asgard\Entity\Entity {
 	public static function definition(\Asgard\Entity\Definition $definition) {
@@ -8,7 +8,7 @@ class Category extends \Asgard\Entity\Entity {
 			'description',
 			'news' => [
 				'type' => 'entity',
-				'entity' => 'Asgard\Orm\Tests\Entities\News',
+				'entity' => 'Asgard\Orm\Tests\Fixtures\ORM\News',
 				'many' => true,
 				'ormValidation' => [
 					'relationrequired',

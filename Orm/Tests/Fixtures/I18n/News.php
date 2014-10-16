@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\Orm\Tests\I18nentities;
+namespace Asgard\Orm\Tests\Fixtures\I18n;
 
 class News extends \Asgard\Entity\Entity {
 	public static function definition(\Asgard\Entity\Definition $definition) {
@@ -13,7 +13,7 @@ class News extends \Asgard\Entity\Entity {
 			],
 			'comments'	=>	[
 				'type' => 'entity',
-				'entity'	=>	'\Asgard\Orm\Tests\I18nentities\Comment',
+				'entity'	=>	'\Asgard\Orm\Tests\Fixtures\I18n\Comment',
 				'many' => true,
 			],
 		];

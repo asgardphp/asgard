@@ -4,7 +4,6 @@ namespace Asgard\Orm\Tests;
 class UniqueTest extends \PHPUnit_Framework_TestCase {
 	public function test1() {
 		#Dependencies
-		$container = new \Asgard\Container\Container;
 		$em = new \Asgard\Entity\EntityManager;
 		$rulesRegistry = new \Asgard\Validation\RulesRegistry;
 		$rulesRegistry->register('unique', 'Asgard\Orm\Rules\Unique');

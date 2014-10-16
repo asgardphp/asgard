@@ -1,19 +1,15 @@
 <?php
-namespace Asgard\Orm\Tests\Fixtures;
+namespace Asgard\Orm\Tests\Fixtures\ORM;
 
 class Author extends \Asgard\Entity\Entity {
 	public static function definition(\Asgard\Entity\Definition $definition) {
 		$definition->properties = [
 			'name',
-			'post' => [
+			'news' => [
 				'type' => 'entity',
-				'entity' => 'Asgard\Orm\Tests\Fixtures\Post',
+				'entity' => 'Asgard\Orm\Tests\Fixtures\ORM\News',
 				'many' => true,
-			]
-		];
-
-		$definition->behaviors = [
-			new \Asgard\Orm\ORMBehavior
+			],
 		];
 	}
 }

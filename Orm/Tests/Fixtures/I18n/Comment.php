@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\Orm\Tests\I18nentities;
+namespace Asgard\Orm\Tests\Fixtures\I18n;
 
 class Comment extends \Asgard\Entity\Entity {
 	public static function definition(\Asgard\Entity\Definition $definition) {
@@ -7,7 +7,7 @@ class Comment extends \Asgard\Entity\Entity {
 			'title',
 			'news'	=>	[
 				'type' => 'entity',
-				'entity'	=>	'\Asgard\Orm\Tests\I18nentities\News',
+				'entity'	=>	'\Asgard\Orm\Tests\Fixtures\I18n\News',
 			],
 		];
 	}
