@@ -22,13 +22,27 @@ class RefreshCommand extends \Asgard\Console\Command {
 	 * @var string
 	 */
 	protected $migrationsDir;
+	/**
+	 * DB dependency.
+	 * @var string
+	 */
+	protected $db;
+	/**
+	 * Schema dependency.
+	 * @var string
+	 */
+	protected $schema;
 
 	/**
 	 * Constructor.
-	 * @param string $migrationsDir
+	 * @param string                     $migrationsDir
+	 * @param \Asgard\Db\DbInterface     $db
+	 * @param \Asgard\Db\SchemaInterface $schema
 	 */
-	public function __construct($migrationsDir) {
+	public function __construct($migrationsDir, \Asgard\Db\DBInterface $db, \Asgard\Db\SchemaInterface $schema) {
 		$this->migrationsDir = $migrationsDir;
+		$this->db            = $db;
+		$this->schema        = $schema;
 		parent::__construct();
 	}
 
@@ -37,12 +51,12 @@ class RefreshCommand extends \Asgard\Console\Command {
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$mm = new \Asgard\Migration\MigrationManager($this->migrationsDir, $this->getContainer());
+		if($this->db)
+			$mm->setDB($this->db);
+		if($this->schema)
+			$mm->setSchema($this->schema);
 
-		$mm->reset();
-
-		if(!$mm->getTracker()->getDownList())
-			$this->output->writeln('Nothing to migrate.');
-		elseif($mm->migrateAll(true))
+		if($mm->reset())
 			$this->info('Refresh succeded.');
 		else
 			$this->error('Refresh failed.');

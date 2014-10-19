@@ -8,7 +8,6 @@ class Article2 extends \Asgard\Entity\Entity {
 			'author' => [
 				'type'        => 'entity',
 				'entity'      => 'Asgard\Orm\Tests\Fixtures\Polymorphism\Author',
-				'relation_type' => 'hasOne'
 			]
 		];
 	}

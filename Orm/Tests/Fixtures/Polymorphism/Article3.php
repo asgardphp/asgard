@@ -9,7 +9,6 @@ class Article3 extends \Asgard\Entity\Entity {
 				'type'          => 'entity',
 				'entity'        => 'Asgard\Orm\Tests\Fixtures\Polymorphism\Category',
 				'many'          => true,
-				'relation_type' => 'HMABT'
 			]
 		];
 	}

@@ -40,7 +40,7 @@ class CollectionORM extends ORM implements CollectionORMInterface {
 		parent::__construct($this->relation->getTargetDefinition(), $dataMapper, $locale, $prefix, $paginatorFactory);
 
 		$reverseRelation = $this->relation->reverse();
-		if($reverseRelation->get('polymorphic')) {
+		if($reverseRelation->isPolymorphic()) {
 			$reverseRelation = clone($reverseRelation);
 			$reverseRelation->setTargetDefinition($entity->getDefinition());
 		}
@@ -70,7 +70,7 @@ class CollectionORM extends ORM implements CollectionORMInterface {
 				$relationDefinition = $this->relation->getTargetDefinition();
 				$link = $this->relation->getLink();
 				$dal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->dataMapper->getTable($relationDefinition));
-				if($this->relation->reverse()->get('polymorphic')) {
+				if($this->relation->reverse()->isPolymorphic()) {
 					$linkType = $this->relation->reverse()->getLinkType();
 					$dal->where([$link => $this->parent->id, $linkType => get_class($this->parent)])->update([$link => null, $linkType => null]);
 				}
@@ -82,7 +82,7 @@ class CollectionORM extends ORM implements CollectionORMInterface {
 						$ids[$k] = $v['id'];
 					$newDal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->dataMapper->getTable($relationDefinition));
 					$newDal->where('id IN ('.implode(', ', $ids).')');
-					if($this->relation->reverse()->get('polymorphic'))
+					if($this->relation->reverse()->isPolymorphic())
 						$newDal->update([$link => $this->parent->id, $linkType => get_class($this->parent)]);
 					else
 						$newDal->update([$link => $this->parent->id]);
@@ -91,7 +91,7 @@ class CollectionORM extends ORM implements CollectionORMInterface {
 			case 'HMABT':
 				$dal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->relation->getAssociationTable());
 				$dal->where($this->relation->getLinkA(), $this->parent->id);
-				if($this->relation->reverse()->get('polymorphic'))
+				if($this->relation->reverse()->isPolymorphic())
 					$dal->where($this->relation->reverse()->getLinkType(), get_class($this->parent));
 				$dal->delete();
 
@@ -102,9 +102,9 @@ class CollectionORM extends ORM implements CollectionORMInterface {
 						$params = [$this->relation->getLinkA() => $this->parent->id, $this->relation->getLinkB() => $entity['id']];
 						if($this->relation->get('sortable'))
 							$params[$this->relation->getPositionField()] = $i++;
-						if($this->relation->reverse()->get('polymorphic'))
+						if($this->relation->reverse()->isPolymorphic())
 							$params[$this->relation->reverse()->getLinkType()] = get_class($this->parent);
-						elseif($this->relation->get('polymorphic'))
+						elseif($this->relation->isPolymorphic())
 							$params[$this->relation->getLinkType()] = $entity['class'];
 						$dal->insert($params);
 					}
@@ -127,18 +127,19 @@ class CollectionORM extends ORM implements CollectionORMInterface {
 			if($id instanceof \Asgard\Entity\Entity)
 				$ids[$k] = (int)$id->id;
 
-		switch($this->relation['type']) {
+		$dal = $this->dataMapper->getDB()->dal();
+		switch($this->relation->type()) {
 			case 'hasMany':
 				$relationDefinition = $this->relation->getTargetDefinition();
-				$dal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->dataMapper->getTable($relationDefinition));
+				$table = $this->dataMapper->getTable($relationDefinition);
 				foreach($ids as $id)
-					$dal->reset()->where(['id' => $id])->update([$this->relation->getLink() => $this->parent->id]);
+					$dal->reset()->from($table)->where(['id' => $id])->update([$this->relation->getLink() => $this->parent->id]);
 				break;
 			case 'HMABT':
-				$dal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->relation['join_table']);
+				$table = $this->relation->getAssociationTable();
 				$i = 1;
 				foreach($ids as $id) {
-					$dal->reset()->where([$this->relation->getLinkA() => $this->parent->id, $this->relation->getLinkB() => $id])->delete();
+					$dal->reset()->from($table)->where([$this->relation->getLinkA() => $this->parent->id, $this->relation->getLinkB() => $id])->delete();
 					if($this->relation->get('sortable'))
 						$dal->insert([$this->relation->getLinkA() => $this->parent->id, $this->relation->getLinkB() => $id, $this->relation->getPositionField() => $i++]);
 					else

@@ -7,8 +7,7 @@ class Tag extends \Asgard\Entity\Entity {
 			'name',
 			'article' => [
 				'type'        => 'entity',
-				'polymorphic' => true,
-				'relation_type' => 'belongsTo'
+				'entities' => ['Asgard\Orm\Tests\Fixtures\Polymorphism\Article'],
 			]
 		];
 	}

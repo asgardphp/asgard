@@ -51,6 +51,10 @@ class ORMMigrations {
 		$sqlSchemas = $this->getSQLSchemas($this->dataMapper->getDB());
 		$up = $this->buildMigration($entitiesSchemas, $sqlSchemas, false);
 		$down = $this->buildMigration($sqlSchemas, $entitiesSchemas, true);
+
+		if($up == '' && $down == '')
+			return;
+
 		return $this->MigrationManager->create($up, $down, $migrationName, '\Asgard\Migration\DBMigration');
 	}
 
@@ -63,28 +67,31 @@ class ORMMigrations {
 		$dataMapper = $this->dataMapper;
 		$schemas = [];
 		foreach($definitions as $definition) {
-			$schema = [];
+			$schema = [
+				'columns' => [],
+				'indexes' => [],
+			];
 
 			foreach($definition->properties() as $name=>$prop) {
-				if(!$prop->get('orm'))
-					$col = [];
-				else
+				if($prop->get('orm'))
 					$col = $prop->get('orm');
+				else
+					$col = [];
 
 				#relations
 				if($prop->get('type') == 'entity') {
 					$relation = $dataMapper->relation($definition, $name);
 					#relations with one entity
 					if(!$relation->get('many')) {
-						$schema[$relation->getLink()] = [
+						$schema['columns'][$relation->getLink()] = [
 							'type'           => 'int(11)',
 							'nullable'       => true,
 							'auto_increment' => false,
 							'default'        => null,
 							'key'            => null,
 						];
-						if($relation->get('polymorphic')) {
-							$schema[$relation->getLinkType()] = [
+						if($relation->isPolymorphic()) {
+							$schema['columns'][$relation->getLinkType()] = [
 								'type'           => 'varchar(50)',
 								'nullable'       => true,
 								'auto_increment' => false,
@@ -94,7 +101,7 @@ class ORMMigrations {
 						}
 					}
 					#HMABT relations
-					elseif($relation->type() == 'HMABT' && !$relation->get('polymorphic')) {
+					elseif($relation->type() == 'HMABT' && !$relation->isPolymorphic()) {
 						$table_name = $relation->getAssociationTable();
 						#if table was not already created by the opposite entity
 						if(!isset($schemas[$table_name])) {
@@ -114,10 +121,13 @@ class ORMMigrations {
 									'key'            => null,
 								],
 							];
-							$schemas[$table_name] = $arr;
+							$schemas[$table_name] = [
+								'columns' => $arr,
+								'indexes' => [],
+							];
 						}
-						if($relation->reverse()->get('polymorphic')) {
-							$schemas[$table_name][$relation->reverse()->getLinkType()] = [
+						if($relation->reverse()->isPolymorphic()) {
+							$schemas[$table_name]['columns'][$relation->reverse()->getLinkType()] = [
 								'type'           => 'varchar(50)',
 								'nullable'       => true,
 								'auto_increment' => false,
@@ -127,7 +137,7 @@ class ORMMigrations {
 						}
 						#sortable
 						if($relation->get('sortable')) {
-							$schemas[$table_name][$relation->getPositionField()] = [
+							$schemas[$table_name]['columns'][$relation->getPositionField()] = [
 								'type'           => 'int(11)',
 								'nullable'       => true,
 								'auto_increment' => false,
@@ -153,20 +163,21 @@ class ORMMigrations {
 				if(!isset($col['nullable']))
 					$col['nullable'] = true;
 				if(!isset($col['key']))
-					$col['key'] = '';
+					$col['key'] = null;
 				if(!isset($col['auto_increment']))
 					$col['auto_increment'] = false;
 				$col['position'] = $prop->getPosition('position');
 
 				if($prop->get('i18n')) {
 					if(!isset($schemas[$dataMapper->getTranslationTable($definition)])) {
-						$schemas[$dataMapper->getTranslationTable($definition)] = [
+						$schemas[$dataMapper->getTranslationTable($definition)]['columns'] = [
 							'id' => [
 								'type'           => 'int(11)',
 								'nullable'       => false,
 								'auto_increment' => false,
 								'default'        => null,
 								'key'            => null,
+								'position'       => 0,
 							],
 							'locale' => [
 								'type'           => 'varchar(50)',
@@ -174,16 +185,52 @@ class ORMMigrations {
 								'auto_increment' => false,
 								'default'        => null,
 								'key'            => null,
+								'position'       => 1,
 							],
 						];
 					}
-					$schemas[$dataMapper->getTranslationTable($definition)][$name] = $col;
+					$schemas[$dataMapper->getTranslationTable($definition)]['columns'][$name] = $col;
 				}
 				else
-					$schema[$name] = $col;
+					$schema['columns'][$name] = $col;
 			}
 
-			uasort($schema, function($a, $b) {
+			if(isset($definition->get('orm')['indexes'])) {
+				foreach($definition->get('orm')['indexes'] as $index) {
+					if(count($index['columns']) === 1) {
+						$column = $index['columns'][0];
+						$schema[$column]['key'] = $index['type'];
+						#todo column index length
+					}
+					else {
+						foreach($index['columns'] as $k=>$v) {
+							if(!isset($index['lengths'][$k])) {
+								if($schema['columns'][$v]['type'] === 'text')
+									$index['lengths'][$k] = '255';
+								else
+									$index['lengths'][$k] = null;
+							}
+						}
+
+						$index['type'] = strtoupper($index['type']);
+
+						if($index['type'] == 'PRIMARY')
+							$indexName = 'PRIMARY';
+						else
+							$indexName = $_indexName = implode('_', $index['columns']);
+						$i = 1;
+						while(isset($schema['indexes'][$indexName]))
+							$indexName = $_indexName.$i++;
+						$schema['indexes'][$indexName] = $index;
+					}
+				}
+			}
+
+			$schemas[$dataMapper->getTable($definition)] = $schema;
+		}
+
+		foreach($schemas as &$schema) {
+			uasort($schema['columns'], function($a, $b) {
 				if(!isset($a['position']))
 					return 1;
 				if(!isset($b['position']))
@@ -194,10 +241,8 @@ class ORMMigrations {
 			});
 
 			$i = 0;
-			foreach($schema as $k=>$col)
-				$schema[$k]['position'] = $i++;
-
-			$schemas[$dataMapper->getTable($definition)] = $schema;
+			foreach($schema['columns'] as $k=>$col)
+				$schema['columns'][$k]['position'] = $i++;
 		}
 
 		return $schemas;
@@ -209,22 +254,32 @@ class ORMMigrations {
 	 * @param  \Asgard\Db\SchemaInterface $s
 	 */
 	protected function processSchemas(array $schemas, \Asgard\Db\SchemaInterface $s) {
-		foreach($schemas as $tableName=>$cols) {
-			$s->create($tableName, function($table) use($cols) {
+		foreach($schemas as $tableName=>$table) {
+			$cols = $table['columns'];
+			$indexes = isset($table['indexes']) ? $table['indexes']:[];
+
+			$s->create($tableName, function($table) use($cols, $indexes) {
 				foreach($cols as $col=>$params) {
 					$c = $table->add($col, $params['type']);
+					if($params['key'] === 'PRIMARY')
+						$c->primary();
+					elseif($params['key'] === 'UNIQUE')
+						$c->unique();
 					if($params['nullable'])
 						$c->nullable();
 					if($params['auto_increment'])
 						$c->autoincrement();
 					if($params['default'] !== null)
 						$c->def($params['default']);
-					if($params['key'] == 'PRI')
-						$c->primary();
-					elseif($params['key'] == 'UNI')
-						$c->unique();
-					elseif($params['key'] == 'MUL')
-						$c->index();
+				}
+
+				foreach($indexes as $indexName=>$index) {
+					if($index['type'] == 'PRIMARY')
+						$table->setPrimary($index, $indexName);
+					else {
+						$method = 'add'.ucfirst(strtolower($index['type']));
+						$table->{$method}($index, $indexName);
+					}
 				}
 			});
 		}
@@ -239,23 +294,55 @@ class ORMMigrations {
 		$tables = [];
 		foreach($db->query('SHOW TABLES')->all() as $v) {
 			$table = array_values($v)[0];
-			$description = $db->query('Describe `'.$table.'`')->all();
+
+			$description = [];
 			$pos = 0;
-			foreach($description as $k=>$v) {
+			foreach($db->query('Describe `'.$table.'`')->all() as $row) {
 				$params = [];
-				$name = $v['Field'];
-				$params['type'] = $v['Type'];
-				$params['nullable'] = ($v['Null'] == 'YES');
-				$params['key'] = $v['Key'];
-				$params['default'] = $v['Default'];
-				$params['auto_increment'] = (strpos($v['Extra'], 'auto_increment') !== false);
+				$name = $row['Field'];
+				$params['type'] = $row['Type'];
+				$params['nullable'] = ($row['Null'] == 'YES');
+				if($row['Key'] == 'PRI')
+					$params['key'] = 'PRIMARY';
+				elseif($row['Key'] == 'UNI')
+					$params['key'] = 'UNIQUE';
+				else
+					$params['key'] = null;
+				$params['default'] = $row['Default'];
+				$params['auto_increment'] = (strpos($row['Extra'], 'auto_increment') !== false);
 				$params['position'] = $pos++;
 
 				$description[$name] = $params;
-				unset($description[$k]);
 			}
-			$tables[$table] = $description;
+
+			$indexes = [];
+			foreach ($db->query('SHOW INDEX FROM `'.$table.'`')->all() as $row) {
+				$indexes[$row['Key_name']]['type'] = (
+					$row['Key_name'] == 'PRIMARY' ? 'PRIMARY' : 
+						($row['Index_type'] == 'FULLTEXT' ? 'FULLTEXT' : 
+							($row['Non_unique'] ? 'INDEX' : 'UNIQUE')
+						)
+				);
+				$indexes[$row['Key_name']]['columns'][] = $row['Column_name'];
+				$indexes[$row['Key_name']]['lengths'][] = $row['Sub_part'];
+			}
+
+			foreach($indexes as $indexName=>$index) {
+				if(count($index['columns']) === 1 && ($index['type'] === 'PRIMARY' || $index['type'] === 'UNIQUE')) {
+					$column = $index['columns'][0];
+					$descriptions[$column]['key'] = $index['type'];
+					#todo column index length
+					
+					unset($indexes[$indexName]);
+				}
+			}
+
+			$tables[$table] = [
+				'columns' => $description,
+				'indexes' => $indexes
+			];
 		}
+
 		return $tables;
 	}
 
@@ -274,28 +361,48 @@ class ORMMigrations {
 					$res .= $this->createTable($table, $newSchema);
 				continue;
 			}
+			$newColumns = $newSchema['columns'];
+			$newIndexes = $newSchema['indexes'];
+
 			$oldSchema = $oldSchemas[$table];
+			$oldColumns = $oldSchema['columns'];
+			$oldIndexes = $oldSchema['indexes'];
+
+			#Columns
 			$colsRes = '';
-			foreach(array_keys($newSchema) as $k=>$col) {
-				if(!in_array($col, array_keys($oldSchema)))
-					$colsRes .=  $this->createColumn($col, $newSchema[$col]);
+			foreach(array_keys($newColumns) as $k=>$col) {
+				if(!in_array($col, array_keys($oldColumns)))
+					$colsRes .= $this->createColumn($col, $newColumns[$col]);
 				else {
-					$diff = array_diff_assoc($newSchema[$col], $oldSchema[$col]);
+					$diff = array_diff_assoc($newColumns[$col], $oldColumns[$col]);
 					if(isset($diff['position'])) {
 						if($k === 0)
 							$diff['after'] = false;
 						else
-							$diff['after'] = array_keys($newSchema)[$k-1];
+							$diff['after'] = array_keys($newColumns)[$k-1];
 						unset($diff['position']);
 					}
 					if($diff)
 						$colsRes .=  $this->updateColumn($col, $diff);
 				}
 			}
-			foreach($oldSchema as $col=>$params) {
-				if(!in_array($col, array_keys($newSchema)))
+			foreach($oldColumns as $col=>$params) {
+				if(!in_array($col, array_keys($newColumns)))
 					$colsRes .= $this->dropColumn($col);
 			}
+
+			#Indexes
+			foreach($newIndexes as $indexName=>$index) {
+				#if the index or its name is not in the old indexes
+				if(!in_array($index, $oldIndexes) || !in_array($indexName, array_keys($oldIndexes)))
+					$colsRes .=  $this->createIndex($indexName, $index);
+			}
+			foreach($oldIndexes as $indexName=>$index) {
+				#if the index or its name is only in the old indexes
+				if(!in_array($index, $newIndexes) || !in_array($indexName, array_keys($newIndexes)))
+					$colsRes .=  $this->dropIndex($indexName);
+			}
+
 			if($colsRes)
 				$res .= "\$this->container['schema']->table('$table', function(\$table) {".$colsRes."\n});\n\n";
 		}
@@ -335,10 +442,17 @@ class ORMMigrations {
 	 * @param  array $cols
 	 * @return string
 	 */
-	protected function createTable($table, $cols) {
-		$res = "\$this->container['schema']->create('$table', function(\$table) {";
+	protected function createTable($tableName, $table) {
+		$res = "\$this->container['schema']->create('$tableName', function(\$table) {";
+
+		$cols = $table['columns'];
 		foreach($cols as $col=>$params)
 			$res .= $this->createColumn($col, $params);
+
+		$indexes = isset($table['indexes']) ? $table['indexes']:[];
+		foreach($indexes as $indexName=>$index)
+			$res .= $this->createIndex($indexName, $index);
+
 		$res .= "\n});\n\n";
 
 		return $res;
@@ -352,43 +466,41 @@ class ORMMigrations {
 	 */
 	protected function updateColumn($col, $params) {
 		$res = "\n\t\$table->col('$col')";
-		if(isset($params['type']))
+		if(array_key_exists('type', $params))
 			$res .= "\n		->type('$params[type]')";
-		if(isset($params['after'])) {
+		if(array_key_exists('after', $params)) {
 			if($params['after'] === false)
 				$res .= "\n		->first()";
 			else
 				$res .= "\n		->after('$params[after]')";
 		}
-		if(isset($params['nullable'])) {
+		if(array_key_exists('nullable', $params)) {
 			if($params['nullable'])
 				$res .= "\n		->nullable()";
 			else
 				$res .= "\n		->NotNullable()";
 		}
-		if(isset($params['key'])) {
-			if($params['key'] == 'PRI')
+		if(array_key_exists('key', $params)) {
+			if($params['key'] === 'PRIMARY')
 				$res .= "\n		->primary()";
-			elseif($params['key']=='UNI')
+			elseif($params['key'] === 'UNIQUE')
 				$res .= "\n		->unique()";
-			elseif($params['key']=='MUL')
-				$res .= "\n		->index()";
-			else
+			elseif($params['key'] === null)
 				$res .= "\n		->dropIndex()";
 		}
-		if(isset($params['auto_increment'])) {
+		if(array_key_exists('auto_increment', $params)) {
 			if($params['auto_increment'])
 				$res .= "\n		->autoincrement()";
 			else
 				$res .= "\n		->notAutoincrement()";
 		}
-		if(isset($params['default'])) {
+		if(array_key_exists('default', $params)) {
 			if($params['default'] === false)
 				$res .= "\n		->def(false)";
 			else
 				$res .= "\n		->def('$params[default]')";
 		}
-		$res .= ";";
+		$res .= ';';
 
 		return $res;
 	}
@@ -403,18 +515,72 @@ class ORMMigrations {
 		$res = "\n\t\$table->add('$col', '$params[type]')";
 		if($params['nullable'])
 			$res .= "\n		->nullable()";
-		if($params['key'] == 'PRI')
+		if($params['key'] === 'PRIMARY')
 			$res .= "\n		->primary()";
-		if($params['key'] == 'UNI')
+		elseif($params['key'] === 'UNIQUE')
 			$res .= "\n		->unique()";
-		if($params['key'] == 'MUL')
-			$res .= "\n		->index()";
 		if($params['auto_increment'])
 			$res .= "\n		->autoincrement()";
 		if($params['default'])
 			$res .= "\n		->def('$params[default]')";
-		$res .= ";";
+		$res .= ';';
 
 		return $res;
+	}
+
+	/**
+	 * Build an index.
+	 * @param  string $indexName
+	 * @param  array  $index
+	 * @return string
+	 */
+	protected function createIndex($indexName, $index) {
+		if($index['type'] == 'PRIMARY')
+			$res = "\n\t\$table->setPrimary(";
+		else
+			$res = "\n\t\$table->add".ucfirst(strtolower($index['type']))."(";
+		unset($index['type']);
+		$res .= $this->outputPHP($index, 1);
+		$res .= ', \''.$indexName.'\');';
+
+		return $res;
+	}
+
+	/**
+	 * Drop an index.
+	 * @param  string $indexName
+	 * @return string
+	 */
+	protected function dropIndex($indexName) {
+		return "\n\t\$table->dropIndex('$indexName');";
+	}
+
+	/**
+	 * Format PHP variables to string.
+	 * @param  mixed $v
+	 * @return string
+	 */
+	public function outputPHP($v, $tabs=0, $line=false) {
+		$r = '';
+
+		if($line)
+			$r .= "\n".str_repeat("\t", $tabs);
+
+		if(is_array($v)) {
+			$r .= '[';
+			if($v === array_values($v)) {
+				foreach($v as $_v)
+					$r .= $this->outputPHP($_v, $tabs+1, true).",";
+			}
+			else {
+				foreach($v as $_k=>$_v)
+					$r .= $this->outputPHP($_k, $tabs+1, true).' => '.$this->outputPHP($_v, $tabs+1).",";
+			}
+			$r .= "\n".str_repeat("\t", $tabs).']';
+
+			return $r;
+		}
+		else
+			return $r.var_export($v, true);
 	}
 }

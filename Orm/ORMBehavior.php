@@ -49,8 +49,12 @@ class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\Pers
 	 * @param  string                 $name
 	 */
 	public function hookGet(\Asgard\Hook\Chain $chain, \Asgard\Entity\Entity $entity, $name) {
-		if($this->getDataMapper()->hasRelation($this->definition, $name))
-			return $entity->{$name} = $this->getDataMapper()->getRelated($entity, $name);
+		if($this->getDataMapper()->hasRelation($this->definition, $name)) {
+			if($entity->data['properties'][$name] === null) {
+				$entity->set($name, $this->getDataMapper()->getRelated($entity, $name));
+				return $entity->data['properties'][$name];
+			}
+		}
 	}
 
 	/**

@@ -146,8 +146,9 @@ class Tools {
 		$after = array_merge(get_declared_classes(), get_declared_interfaces());
 
 		$diff = array_diff($after, $before);
-		$result = array_values($diff)[count($diff)-1];
-		if(!$result) {
+
+		#class was maybe already loaded
+		if(!$diff) {
 			foreach(array_merge(get_declared_classes(), get_declared_interfaces()) as $class) {
 				$reflector = new \ReflectionClass($class);
 				if($reflector->getFileName() == realpath($file)) {
@@ -155,7 +156,11 @@ class Tools {
 					break;
 				}
 			}
+			if(!isset($result))
+				throw new \Exception('File '.$file.' does not contain any class.');
 		}
+		else
+			$result = array_values($diff)[count($diff)-1];
 
 		return $result;
 	}

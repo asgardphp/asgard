@@ -89,7 +89,7 @@ class Definition {
 			'orm'      => [
 				'type'           => 'int(11)',
 				'auto_increment' => true,
-				'key'            => 'PRI',
+				'key'            => 'PRIMARY',
 				'nullable'       => false,
 			],
 		]);
@@ -143,6 +143,16 @@ class Definition {
 		}
 		else
 			$this->set($name, $value);
+	}
+
+	/**
+	 * __call magic method. For behaviors static methods.
+	 * @param  string $name
+	 * @param  array  $arguments
+	 * @return mixed
+	 */
+	public function __call($name, array $arguments) {
+		return $this->callStatic($name, $arguments);
 	}
 
 	/**
@@ -232,7 +242,7 @@ class Definition {
 	 */
 	public function loadBehaviors($behaviors) {
 		if($this->generalHookManager !== null)
-			$this->generalHookManager->trigger('Asgard.Entity.LoadBehaviors', [&$behaviors]);
+			$this->generalHookManager->trigger('Asgard.Entity.LoadBehaviors', [$this, &$behaviors]);
 
 		foreach($behaviors as $behavior)
 			$this->loadBehavior($behavior);

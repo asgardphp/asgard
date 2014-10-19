@@ -9,9 +9,9 @@ class Post extends \Asgard\Migration\DBMigration {
 		});
 		
 		$this->container['schema']->create('category_post', function($table) {
-			$table->add('category_id', 'int(11)')
+			$table->add('categories_id', 'int(11)')
 				->nullable();
-			$table->add('post_id', 'int(11)')
+			$table->add('posts_id', 'int(11)')
 				->nullable();
 		});
 		

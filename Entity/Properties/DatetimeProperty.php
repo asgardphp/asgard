@@ -46,7 +46,8 @@ class DatetimeProperty extends \Asgard\Entity\Property {
 	 * {@inheritDoc}
 	 */
 	protected function doUnserialize($str) {
-		return \Asgard\Common\Datetime::createFromFormat('Y-m-d H:i:s', $str);
+		if($str)
+			return \Asgard\Common\Datetime::createFromFormat('Y-m-d H:i:s', $str);
 	}
 
 	/**

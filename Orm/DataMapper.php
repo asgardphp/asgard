@@ -284,12 +284,12 @@ class DataMapper implements DataMapperInterface {
 						if($relatedEntity->isNew())
 							$this->save($relatedEntity, null, $force);
 						$vars[$link] = $relatedEntity->id;
-						if($rel->get('polymorphic'))
+						if($rel->isPolymorphic())
 							$vars[$rel->getLinkType()] = get_class($relatedEntity);
 					}
 					else {
 						#array with class and id
-						if($rel->get('polymorphic')) {
+						if($rel->isPolymorphic()) {
 							$vars[$rel->getLinkType()] = $relatedEntity[0];
 							$vars[$link] = $relatedEntity[1];
 						}
@@ -341,7 +341,7 @@ class DataMapper implements DataMapperInterface {
 
 			$type = $rel->type();
 			if($type !== 'belongsTo') {
-				if($rel->get('polymorphic')) {
+				if($rel->isPolymorphic()) {
 
 					if($type == 'hasOne') {
 						#todo comment trouver l'ancien entity?
@@ -360,7 +360,7 @@ class DataMapper implements DataMapperInterface {
 					$relation_entity = $rel->get('entity');
 					$link = $reverse_rel->getLink();
 
-					if($reverse_rel->get('polymorphic')) {
+					if($reverse_rel->isPolymorphic()) {
 						if($type == 'hasOne') {
 							$linkType = $reverse_rel->getLinkType();
 							$this->orm($relation_entity)->where([$link => $entity->id, $linkType => get_class($entity)])->getDAL()->update([$link => null, $linkType => null]);
@@ -389,17 +389,18 @@ class DataMapper implements DataMapperInterface {
 	 */
 	public function related(\Asgard\Entity\Entity $entity, $name) {
 		$rel = $this->relation($entity->getDefinition(), $name);
-		$relEntity = $rel->get('entity');
 
 		switch($rel->type()) {
 			case 'hasOne':
 			case 'belongsTo':
 				$link = $rel->getLink();
-				if($rel->get('polymorphic')) {
+				if($rel->isPolymorphic()) {
 					$relEntity = $entity->get($rel->getLinkType());
 					if(!$relEntity)
 						return;
 				}
+				else
+					$relEntity = $rel->get('entity');
 				return $this->orm($relEntity)->where('id', $entity->get($link));
 			case 'hasMany':
 			case 'HMABT':

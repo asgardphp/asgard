@@ -63,7 +63,10 @@ class GenerateMigrationCommand extends \Asgard\Console\Command {
 				$definitions[] = $definition;
 		}
 		$migration = $om->generateMigration($definitions, $migration);
-		if($mm->has($migration))
+
+		if($migration === null)
+			$this->comment('There is nothing to migrate.');
+		elseif($mm->has($migration))
 			$this->info('The migration was successfully generated.');
 		else
 			$this->error('The migration could not be generated.');

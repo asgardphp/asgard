@@ -9,7 +9,6 @@ class Article extends \Asgard\Entity\Entity {
 				'type'        => 'entity',
 				'entity'      => 'Asgard\Orm\Tests\Fixtures\Polymorphism\Tag',
 				'many'        => true,
-				'relation_type' => 'hasMany'
 			]
 		];
 	}

@@ -23,12 +23,24 @@ class UnmigrateCommand extends \Asgard\Console\Command {
 	 * @var string
 	 */
 	protected $migrationsDir;
+	/**
+	 * DB dependency.
+	 * @var string
+	 */
+	protected $db;
+	/**
+	 * Schema dependency.
+	 * @var string
+	 */
+	protected $schema;
 
 	/**
 	 * Constructor.
-	 * @param string $migrationsDir
+	 * @param string                     $migrationsDir
+	 * @param \Asgard\Db\DbInterface     $db
+	 * @param \Asgard\Db\SchemaInterface $schema
 	 */
-	public function __construct($migrationsDir) {
+	public function __construct($migrationsDir, \Asgard\Db\DBInterface $db, \Asgard\Db\SchemaInterface $schema) {
 		$this->migrationsDir = $migrationsDir;
 		parent::__construct();
 	}
@@ -39,6 +51,10 @@ class UnmigrateCommand extends \Asgard\Console\Command {
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$migration = $this->input->getArgument('migration');
 		$mm = new \Asgard\Migration\MigrationManager($this->migrationsDir, $this->getContainer());
+		if($this->db)
+			$mm->setDB($this->db);
+		if($this->schema)
+			$mm->setSchema($this->schema);
 
 		if($mm->unmigrate($migration))
 			$this->info('Unmigration succeded.');

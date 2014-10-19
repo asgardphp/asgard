@@ -8,7 +8,7 @@ class Post extends \Asgard\Entity\Entity {
 				'orm' => [
 					'default' => 'a',
 					'nullable' => false,
-					'key' => 'UNI'
+					'key' => 'UNIQUE'
 				]
 			],
 			'posted' => 'date',

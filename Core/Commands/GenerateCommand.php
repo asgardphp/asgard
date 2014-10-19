@@ -34,11 +34,12 @@ class GenerateCommand extends \Asgard\Console\Command {
 			throw new \Exception($path.' is invalid.');
 		$bundles = [];
 
-		$overrideFiles = $this->input->getOption('override-bundles');
+		$overrideFiles = $this->input->getOption('override-files');
 		$generator = new Generator($asgard);
 		$generator->setOverrideFiles($overrideFiles);
 
 		foreach($raw as $bundle_name=>$bundle) {
+			$bundle_name = ucfirst(strtolower($bundle_name));
 			if(file_exists($root.'app/'.$bundle_name.'/')) {
 				if($this->input->getOption('override-bundles'))
 					\Asgard\File\FileSystem::delete($root.'app/'.$bundle_name.'/');
@@ -46,8 +47,8 @@ class GenerateCommand extends \Asgard\Console\Command {
 					continue;
 			}
 
-			$bundle['name'] = strtolower($bundle_name);
-			$bundle['namespace'] = ucfirst($bundle['name']);
+			$bundle['name'] = $bundle_name;
+			$bundle['namespace'] = $bundle['name'];
 
 			if(!isset($bundle['entities']))
 				$bundle['entities'] = [];
@@ -89,6 +90,8 @@ class GenerateCommand extends \Asgard\Console\Command {
 					$bundle['entities'][$name]['relations'] = [];
 				if(!isset($bundle['entities'][$name]['behaviors']))
 					$bundle['entities'][$name]['behaviors'] = [];
+				if(!isset($bundle['entities'][$name]['metas']))
+					$bundle['entities'][$name]['metas'] = [];
 
 				foreach($bundle['entities'][$name]['properties'] as $k=>$v) {
 					if(!$v)

@@ -168,7 +168,7 @@ class PolymorphicCollectionORM implements CollectionORMInterface {
 				$classes[] = $type['class'];
 		}
 		elseif($this->relation->type() == 'hasMany')
-			$classes = $this->relation->get('classes');
+			$classes = $this->relation->get('entities');
 		else
 			throw new \Exception('Wrong relation type.');
 

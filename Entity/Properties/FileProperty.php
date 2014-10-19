@@ -42,7 +42,8 @@ class FileProperty extends \Asgard\Entity\Property {
 	 * {@inheritDoc}
 	 */
 	public function __construct($params) {
-		$params['extensions'] = static::$defaultExtensions;
+		if(!isset($params['extensions']))
+			$params['extensions'] = static::$defaultExtensions;
 		parent::__construct($params);
 	}
 

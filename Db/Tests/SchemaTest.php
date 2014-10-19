@@ -195,13 +195,12 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 		$schema = new \Asgard\Db\Schema($this->getDB());
 		$schema->create('test', function($table) {
 			$table->add('id', 'int', 11)
+				->primary()
 				->autoincrement();
 			$table->add('title', 'varchar', 50)
+				->unique()
 				->nullable()
 				->def('The title');
-
-			$table->primary('id');
-			$table->unique('title');
 		});
 	}
 
@@ -307,7 +306,7 @@ class SchemaTest extends \PHPUnit_Framework_TestCase {
 		});
 
 		$schema->table('test', function($table) {
-			$table->primary(['id', 'title']);
+			$table->primary(['columns' => ['id', 'title']]);
 		});
 	}
 }

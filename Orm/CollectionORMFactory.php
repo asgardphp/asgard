@@ -20,7 +20,7 @@ class CollectionORMFactory implements CollectionORMFactoryInterface {
 	 */
 	public function create($entity, $name, DataMapperInterface $dataMapper, $locale=null, $prefix=null) {
 		$relation = $dataMapper->relation($entity->getDefinition(), $name);
-		if($relation->get('polymorphic'))
+		if($relation->isPolymorphic())
 			return new PolymorphicCollectionORM($entity, $name, $dataMapper, $locale, $prefix, $this->paginatorFactory);
 		else
 			return new CollectionORM($entity, $name, $dataMapper, $locale, $prefix, $this->paginatorFactory);

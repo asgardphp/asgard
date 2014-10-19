@@ -57,6 +57,22 @@ class BuildCol {
 	}
 
 	/**
+	 * Return the column name.
+	 * @return string
+	 */
+	public function getName() {
+		return $this->name;
+	}
+
+	/**
+	 * Return the column type.
+	 * @return string
+	 */
+	public function getType() {
+		return preg_replace('/\(.*?\)/', '', $this->type);
+	}
+
+	/**
 	 * Set autocrement.
 	 * @return BuildCol $this
 	 */
@@ -89,7 +105,7 @@ class BuildCol {
 	 * @return  BuildCol $this
 	 */
 	public function primary() {
-		$this->table->addPrimary($this->name);
+		$this->table->setPrimary(['columns'=>[$this->name]], $this->name);
 		return $this;
 	}
 
@@ -98,7 +114,7 @@ class BuildCol {
 	 * @return  BuildCol $this
 	 */
 	public function unique() {
-		$this->table->addUnique($this->name);
+		$this->table->addUnique(['columns'=>[$this->name]], $this->name);
 		return $this;
 	}
 
@@ -107,7 +123,7 @@ class BuildCol {
 	 * @return  BuildCol $this
 	 */
 	public function index() {
-		$this->table->addIndex($this->name);
+		$this->table->addIndex(['columns'=>[$this->name]], $this->name);
 		return $this;
 	}
 
@@ -152,20 +168,15 @@ class BuildTable {
 	 */
 	protected $cols = [];
 	/**
-	 * Table primary keys.
-	 * @var array
+	 * Table primary key.
+	 * @var string
 	 */
-	protected $primary = [];
+	protected $primary;
 	/**
 	 * Table index keys.
 	 * @var array
 	 */
 	protected $indexes = [];
-	/**
-	 * Table unique keys.
-	 * @var array
-	 */
-	protected $uniques = [];
 
 	/**
 	 * Constructor.
@@ -176,63 +187,75 @@ class BuildTable {
 	}
 
 	/**
-	 * Set table unique keys.
-	 * @param  array      $keys
-	 * @return BuildTable $this
-	 */
-	public function unique($keys) {
-		$this->uniques = $keys;
-		return $this;
-	}
-
-	/**
-	 * Set table indexes.
-	 * @param  array      $keys
-	 * @return BuildTable $this
-	 */
-	public function index($keys) {
-		$this->indexes = $keys;
-		return $this;
-	}
-
-	/**
 	 * Set table primary keys.
-	 * @param  array      $keys
-	 * @return BuildTable $this
+	 * @param  string|array $index
+	 * @return BuildTable   $this
 	 */
-	public function primary($keys) {
-		$this->primary = $keys;
+	public function setPrimary($index) {
+		if(!is_array($index))
+			$index = ['columns' => [$index]];
+		foreach($index['columns'] as $k=>$v) {
+			if(!isset($index['lengths'][$k]))
+				$index['lengths'][$k] = null;
+		}
+
+		$this->primary = $index;
 		return $this;
 	}
 
 	/**
-	 * Add a primary key.
-	 * @param string $key
+	 * Add the new index to the table.
+	 * @param  string $type
+	 * @param  array  $index
+	 * @param  string $name
 	 * @return BuildTable $this
 	 */
-	public function addPrimary($key) {
-		$this->primary[] = $key;
+	protected function createIndex($type, $index, $name=null) {
+		if($name === null)
+			$name = implode('_', $index['columns']);
+
+		if(!is_array($index))
+			$index = ['columns' => [$index]];
+		foreach($index['columns'] as $k=>$v) {
+			if(!isset($index['lengths'][$k])) {
+				if($this->cols[$v]->getType() === 'text')
+					$index['lengths'][$k] = 255;
+				else
+					$index['lengths'][$k] = null;
+			}
+		}
+
+		$index['type'] = $type;
+		$this->indexes[$name] = $index;
+
 		return $this;
 	}
 
 	/**
 	 * Add an index.
-	 * @param string      $key
+	 * @param string      $index
 	 * @return BuildTable $this
 	 */
-	public function addIndex($key) {
-		$this->indexes[] = $key;
-		return $this;
+	public function addIndex($index, $name=null) {
+		return $this->createIndex('INDEX', $index, $name);
 	}
 
 	/**
 	 * Add an unique key.
-	 * @param string      $key
+	 * @param string      $index
 	 * @return BuildTable $this
 	 */
-	public function addUnique($key) {
-		$this->uniques[] = $key;
-		return $this;
+	public function addUnique($index, $name=null) {
+		return $this->createIndex('UNIQUE', $index, $name);
+	}
+
+	/**
+	 * Add an unique key.
+	 * @param string      $index
+	 * @return BuildTable $this
+	 */
+	public function addFulltext($index, $name=null) {
+		return $this->createIndex('FULLTEXT', $index, $name);
 	}
 
 	/**
@@ -244,7 +267,7 @@ class BuildTable {
 	 */
 	public function add($colName, $colType, $colLength=null) {
 		$col = new BuildCol($this, $colName, $colType, $colLength);
-		$this->cols[] = $col;
+		$this->cols[$col->getName()] = $col;
 		return $col;
 	}
 
@@ -264,34 +287,19 @@ class BuildTable {
 
 		if($this->primary) {
 			$sql .= ",\n".'PRIMARY KEY (';
-			if(is_array($this->primary)) {
-				foreach($this->primary as $v)
-					$sql .= '`'.$v.'`';
-			}
-			else
-				$sql .= '`'.$this->primary.'`';
+			$keys = [];
+			foreach($this->primary['columns'] as $k=>$col)
+				$keys[] = '`'.$col.'`'.(isset($index['lengths'][$k]) ? '('.$index['lengths'][$k].')':'');
+			$sql .= implode(', ', $keys);
 			$sql .= ')';
 		}
 
-		if($this->indexes) {
-			$sql .= ",\n".'INDEX KEY (';
-			if(is_array($this->indexes)) {
-				foreach($this->indexes as $v)
-					$sql .= '`'.$v.'`';
-			}
-			else
-				$sql .= '`'.$this->indexes.'`';
-			$sql .= ')';
-		}
-
-		if($this->uniques) {
-			$sql .= ",\n".'UNIQUE KEY (';
-			if(is_array($this->uniques)) {
-				foreach($this->uniques as $v)
-					$sql .= '`'.$v.'`';
-			}
-			else
-				$sql .= '`'.$this->uniques.'`';
+		foreach($this->indexes as $name=>$index) {
+			$sql .= ",\n".$index['type'].' KEY `'.$name.'` (';
+			$keys = [];
+			foreach($index['columns'] as $k=>$col)
+				$keys[] = '`'.$col.'`'.(isset($index['lengths'][$k]) ? '('.$index['lengths'][$k].')':'');
+			$sql .= implode(', ', $keys);
 			$sql .= ')';
 		}
 
@@ -361,25 +369,70 @@ class Table {
 	}
 
 	/**
-	 * Set the primary keys.
-	 * @param  array $keys
-	 * @return Table $this
+	 * Drop an index.
+	 * @param  string $name
+	 * @return Table
 	 */
-	public function primary($keys) {
+	public function dropIndex($name) {
+		$sql = 'ALTER TABLE `'.$this->name.'` DROP INDEX `'.$name.'`';
 		try {
-			$this->db->query('ALTER TABLE  `'.$this->name.'` DROP PRIMARY KEY');
+			$this->db->query($sql);
 		} catch(\Asgard\Db\DBException $e) {}
 
-		if(!is_array($keys))
-			$keys = [$keys];
-		$sql = 'ALTER TABLE  `'.$this->name.'` ADD PRIMARY KEY (';
-		foreach($keys as $k=>$v)
-			$keys[$k] = '`'.$v.'`';
+		return $this;
+	}
+
+	public function addIndex($index, $name=null) {
+		return $this->createIndex($index, 'INDEX', $name);
+	}
+
+	public function addFulltext($index, $name=null) {
+		return $this->createIndex($index, 'FULLTEXT', $name);
+	}
+
+	public function addUnique($index, $name=null) {
+		return $this->createIndex($index, 'UNIQUE', $name);
+	}
+
+	protected function createIndex($index, $type, $name=null) {
+		if(!is_array($index))
+			$index = ['columns' => [$index]];
+		foreach($index['columns'] as $k=>$v) {
+			if(!isset($index['lengths'][$k]))
+				$index['lengths'][$k] = null;
+		}
+
+		if($name === null) {
+			if($type === 'PRIMARY')
+				$name = 'PRIMARY';
+			else
+				$name = implode('_', $index['columns']);
+		}
+
+		if($name !== 'PRIMARY')
+			$name = '`'.$name.'`';
+		else
+			$name = '';
+
+		$sql = 'ALTER TABLE  `'.$this->name.'` ADD '.$type.' KEY '.$name.' (';
+		foreach($index['columns'] as $k=>$col)
+			$keys[] = '`'.$col.'`'.(isset($index['lengths'][$k]) ? '('.$index['lengths'][$k].')':'');
 		$sql .= implode(', ', $keys);
 		$sql .= ')';
 		$this->db->query($sql);
 
 		return $this;
+	}
+
+	/**
+	 * Set the primary keys.
+	 * @param  array $index
+	 * @return Table $this
+	 */
+	public function primary($index) {
+		$this->dropIndex('PRIMARY');
+
+		return $this->createIndex($index, 'PRIMARY');
 	}
 }
 
@@ -416,11 +469,11 @@ class Column {
 
 	/**
 	 * Constructor.
-	 * @param DBInterface      $db
-	 * @param string  $table
-	 * @param string  $name
-	 * @param string  $type
-	 * @param integer $length
+	 * @param DBInterface $db
+	 * @param string      $table
+	 * @param string      $name
+	 * @param string      $type
+	 * @param integer     $length
 	 */
 	public function __construct(DBInterface $db, $table, $name, $type=null, $length=null) {
 		$this->db     = $db;
@@ -435,7 +488,7 @@ class Column {
 	 * @return Column $this
 	 */
 	public function drop() {
-		$sql = 'alter table `'.$this->table.'` drop column `'.$this->name.'`';
+		$sql = 'ALTER TABLE `'.$this->table.'` DROP COLUMN `'.$this->name.'`';
 		$this->db->query($sql);
 
 		return $this;
@@ -656,7 +709,7 @@ class Column {
 	 * @return Column $this
 	 */
 	public function dropIndex() {
-		$sql = 'alter table `'.$this->table.'` drop index `'.$this->name.'`';
+		$sql = 'ALTER TABLE `'.$this->table.'` DROP INDEX `'.$this->name.'`';
 		try {
 			$this->db->query($sql);
 		} catch(\Asgard\Db\DBException $e) {}
@@ -669,7 +722,7 @@ class Column {
 	 * @return Column $this
 	 */
 	public function index() {
-		$sql = 'ALTER TABLE `'.$this->table.'` ADD INDEX(`'.$this->name.'`)';
+		$sql = 'ALTER TABLE `'.$this->table.'` ADD INDEX (`'.$this->name.'`)';
 		$this->db->query($sql);
 
 		return $this;
@@ -680,7 +733,7 @@ class Column {
 	 * @return Column $this
 	 */
 	public function unique() {
-		$sql = 'ALTER TABLE `'.$this->table.'` ADD UNIQUE(`'.$this->name.'`)';
+		$sql = 'ALTER TABLE `'.$this->table.'` ADD UNIQUE (`'.$this->name.'`)';
 		$this->db->query($sql);
 
 		return $this;
@@ -691,7 +744,7 @@ class Column {
 	 * @return Column $this
 	 */
 	public function primary() {
-		$sql = 'ALTER TABLE `'.$this->table.'` ADD PRIMARY KEY (`'.$this->name.'`)';
+		$sql = 'ALTER TABLE `'.$this->table.'` ADD PRIMARY (`'.$this->name.'`)';
 		$this->db->query($sql);
 
 		return $this;

@@ -60,7 +60,27 @@ class Generator {
 	 * @param  mixed $v
 	 * @return string
 	 */
-	public function outputPHP($v) {
-		return var_export($v, true);
+	public function outputPHP($v, $tabs=0, $line=false) {
+		$r = '';
+
+		if($line)
+			$r .= "\n".str_repeat("\t", $tabs);
+
+		if(is_array($v)) {
+			$r .= '[';
+			if($v === array_values($v)) {
+				foreach($v as $_v)
+					$r .= $this->outputPHP($_v, $tabs+1, true).",";
+			}
+			else {
+				foreach($v as $_k=>$_v)
+					$r .= $this->outputPHP($_k, $tabs+1, true).' => '.$this->outputPHP($_v, $tabs+1).",";
+			}
+			$r .= "\n".str_repeat("\t", $tabs).']';
+
+			return $r;
+		}
+		else
+			return $r.var_export($v, true);
 	}
 }

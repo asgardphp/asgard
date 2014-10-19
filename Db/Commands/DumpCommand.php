@@ -32,8 +32,9 @@ class DumpCommand extends \Asgard\Console\Command {
 	/**
 	 * Constructor.
 	 * @param \Asgard\Db\DBInterface $db
+	 * @param string                 $dir
 	 */
-	public function __construct(\Asgard\Db\DBInterface $db) {
+	public function __construct(\Asgard\Db\DBInterface $db, $dir) {
 		$this->db = $db;
 		$this->dir = $dir;
 		parent::__construct();

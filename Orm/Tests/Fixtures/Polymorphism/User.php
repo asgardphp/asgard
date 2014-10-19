@@ -7,10 +7,8 @@ class User extends \Asgard\Entity\Entity {
 			'name',
 			'documents' => [
 				'type'        => 'entity',
-				'polymorphic' => true,
+				'entities'     => ['Asgard\Orm\Tests\Fixtures\Polymorphism\Document'],
 				'many'        => true,
-				'classes'     => ['Asgard\Orm\Tests\Fixtures\Polymorphism\Document'],
-				'relation_type' => 'hasMany'
 			]
 		];
 	}

@@ -8,7 +8,6 @@ class Document extends \Asgard\Entity\Entity {
 			'user' => [
 				'type'        => 'entity',
 				'entity'      => 'Asgard\Orm\Tests\Fixtures\Polymorphism\User',
-				'relation_type' => 'belongsTo'
 			]
 		];
 	}

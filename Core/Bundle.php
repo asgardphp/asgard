@@ -16,9 +16,13 @@ class Bundle extends \Asgard\Core\BundleLoader {
 
 		#Db
 		$container->setParentClass('schema', 'Asgard\Db\SchemaInterface');
-		$container->register('schema', function($container) { return new \Asgard\Db\Schema($container['db']); } );
+		$container->register('schema', function($container) {
+			return new \Asgard\Db\Schema($container['db']);
+		});
 		$container->setParentClass('db', 'Asgard\Db\DBInterface');
-		$container->register('db', function($container) { return new \Asgard\Db\DB($container['config']['database']); } );
+		$container->register('db', function($container) {
+			return new \Asgard\Db\DB($container['config']['database']);
+		});
 
 		#Email
 		$container->setParentClass('email', 'Asgard\Email\DriverInterface');
@@ -120,10 +124,12 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		$container->setParentClass('MigrationManager', 'Asgard\Migration\MigrationManagerInterface');
 		$container->register('MigrationManager', function($container) {
 			$mm = new \Asgard\Migration\MigrationManager($container['kernel']['root'].'/migrations/', $container);
-			if($container->has('db'))
-				$mm->setDB($container['db']);
-			if($container->has('schema'))
-				$mm->setSchema($container['schema']);
+			if($container['config']['database']) {
+				if($container->has('db'))
+					$mm->setDB($container['db']);
+				if($container->has('schema'))
+					$mm->setSchema($container['schema']);
+			}
 			return $mm;
 		});
 
@@ -223,8 +229,9 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			$mm = $container['MigrationManager'];
 
 			#if database is available
-			try {
+			if($container['config']['database']) {
 				$db = $container['db'];
+				$schema = $container['schema'];
 				$dataMapper = $container['dataMapper'];
 
 				$ormAutomigrate = new \Asgard\Orm\Commands\AutoMigrateCommand($em, $mm, $dataMapper);
@@ -241,7 +248,26 @@ class Bundle extends \Asgard\Core\BundleLoader {
 
 				$dbDump = new \Asgard\Db\Commands\DumpCommand($db, $container['kernel']['root'].'/storage/dumps/sql');
 				$container['console']->add($dbDump);
-			} catch(\Exception $e) {}
+
+				$migrationMigrate = new \Asgard\Migration\Commands\MigrateCommand($container['kernel']['root'].'/migrations', $db, $schema);
+				$migrationMigrateOne = new \Asgard\Migration\Commands\MigrateOneCommand($container['kernel']['root'].'/migrations', $db, $schema);
+				$migrationRollback = new \Asgard\Migration\Commands\RollbackCommand($root.'/migrations', $db, $schema);
+				$migrationUnmigrate = new \Asgard\Migration\Commands\UnmigrateCommand($root.'/migrations', $db, $schema);
+				$migrationRefresh = new \Asgard\Migration\Commands\RefreshCommand($container['kernel']['root'].'/migrations', $db, $schema);
+			}
+			else {
+				$migrationMigrate = new \Asgard\Migration\Commands\MigrateCommand($container['kernel']['root'].'/migrations');
+				$migrationMigrateOne = new \Asgard\Migration\Commands\MigrateOneCommand($container['kernel']['root'].'/migrations');
+				$migrationRollback = new \Asgard\Migration\Commands\RollbackCommand($root.'/migrations');
+				$migrationUnmigrate = new \Asgard\Migration\Commands\UnmigrateCommand($root.'/migrations');
+				$migrationRefresh = new \Asgard\Migration\Commands\RefreshCommand($container['kernel']['root'].'/migrations');
+			}
+
+			$container['console']->add($migrationMigrate);
+			$container['console']->add($migrationMigrateOne);
+			$container['console']->add($migrationRollback);
+			$container['console']->add($migrationUnmigrate);
+			$container['console']->add($migrationRefresh);
 
 			$showEnv = new \Asgard\Core\Commands\ShowEnvironmentCommand($container['kernel']);
 			$container['console']->add($showEnv);
@@ -264,26 +290,11 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			$dbInit = new \Asgard\Db\Commands\InitCommand($container['kernel']['root'].'/config');
 			$container['console']->add($dbInit);
 
-			$migrationMigrate = new \Asgard\Migration\Commands\MigrateCommand($container['kernel']['root'].'/migrations');
-			$container['console']->add($migrationMigrate);
-
 			$migrationList = new \Asgard\Migration\Commands\ListCommand($container['kernel']['root'].'/migrations');
 			$container['console']->add($migrationList);
 
-			$migrationMigrateOne = new \Asgard\Migration\Commands\MigrateOneCommand($container['kernel']['root'].'/migrations');
-			$container['console']->add($migrationMigrateOne);
-
-			$migrationRefresh = new \Asgard\Migration\Commands\RefreshCommand($container['kernel']['root'].'/migrations');
-			$container['console']->add($migrationRefresh);
-
 			$migrationRemove = new \Asgard\Migration\Commands\RemoveCommand($container['kernel']['root'].'/migrations');
 			$container['console']->add($migrationRemove);
-
-			$migrationRollback = new \Asgard\Migration\Commands\RollbackCommand($root.'/migrations');
-			$container['console']->add($migrationRollback);
-
-			$migrationUnmigrate = new \Asgard\Migration\Commands\UnmigrateCommand($root.'/migrations');
-			$container['console']->add($migrationUnmigrate);
 
 			$migrationAdd = new \Asgard\Migration\Commands\AddCommand($root.'/migrations');
 			$container['console']->add($migrationAdd);

@@ -15,7 +15,7 @@ class EntityRelation {
 	 * Entity definition.
 	 * @var \Asgard\Entity\Definition
 	 */
-	protected $Definition;
+	protected $definition;
 	/**
 	 * DataMapper.
 	 * @var DataMapperInterface
@@ -52,13 +52,20 @@ class EntityRelation {
 	public function __construct(\Asgard\Entity\Definition $Definition, DataMapperInterface $dataMapper, $name, array $params) {
 		$entityClass            = $Definition->getClass();
 		$this->entityClass      = $entityClass;
-		$this->Definition = $Definition;
+		$this->definition = $Definition;
 		$this->dataMapper       = $dataMapper;
 		if(isset($params['relation_type']) && ($params['relation_type'] == 'hasMany' || $params['relation_type'] == 'HMABT'))
 			$params['many'] = true;
 		$this->params           = $params;
 		$this->params['name']   = $this->name = $name;
+	}
 
+	/**
+	 * Check if the relation is polymorphic.
+	 * @return boolean
+	 */
+	public function isPolymorphic() {
+		return $this->get('entities') !== null;
 	}
 
 	/**
@@ -85,7 +92,7 @@ class EntityRelation {
 	 * @return string
 	 */
 	public function getLinkType() {
-		if(!$this->get('polymorphic'))
+		if(!$this->isPolymorphic())
 			return;
 		if($this->get('as'))
 			return $this->get('as').'_type';
@@ -98,10 +105,10 @@ class EntityRelation {
 	 * @return string
 	 */
 	public function getLinkA() {
-		if($this->reverse()->get('polymorphic'))
+		if($this->reverse()->isPolymorphic())
 			return $this->reverse()->get('as').'_id';
 		else
-			return $this->Definition->getShortName().'_id';
+			return $this->reverse()->getName().'_id';
 	}
 
 	/**
@@ -109,10 +116,10 @@ class EntityRelation {
 	 * @return string
 	 */
 	public function getLinkB() {
-		if($this->get('polymorphic'))
+		if($this->isPolymorphic())
 			return $this->get('as').'_id';
 		else
-			return $this->getTargetDefinition()->getShortName().'_id';
+			return $this->getName().'_id';
 	}
 
 	/**
@@ -132,12 +139,12 @@ class EntityRelation {
 		if($this->type() !== 'HMABT')
 			throw new \Exception('Association table can only be used for HMABT relations.');
 
-		if(!$this->get('polymorphic') && $this->reverse()->get('polymorphic'))
+		if(!$this->isPolymorphic() && $this->reverse()->isPolymorphic())
 			$entityShortName = $this->reverse()->get('as');
 		else
-			$entityShortName = $this->Definition->getShortName();
+			$entityShortName = $this->definition->getShortName();
 
-		if($this->get('polymorphic'))
+		if($this->isPolymorphic())
 			$relationEntityShortName = $this->get('as');
 		else
 			$relationEntityShortName = $this->getTargetDefinition()->getShortName();
@@ -156,7 +163,12 @@ class EntityRelation {
 		if($this->targetDefinition)
 			return $this->targetDefinition;
 
-		return $this->Definition->getEntityManager()->get($this->params['entity']);
+		if(isset($this->params['entities']))
+			$entityClass = $this->params['entities'][0];
+		else
+			$entityClass = $this->params['entity'];
+
+		return $this->definition->getEntityManager()->get($entityClass);
 	}
 
 	/**
