@@ -920,6 +920,19 @@ class DAL {
 	}
 
 	/**
+	 * Return all values of a column.
+	 * @param  string $column
+	 * @return array
+	*/
+	public function values($column) {
+		$res = [];
+		$this->select($column);
+		while($row = $this->next())
+			$res[] = $row[$column];
+		return $res;
+	}
+
+	/**
 	 * Update rows.
 	 * @param  array  $values
 	 * @return Query
