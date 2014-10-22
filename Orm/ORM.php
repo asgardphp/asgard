@@ -555,7 +555,7 @@ class ORM implements ORMInterface {
 		$per_page = $this->per_page !== null ? $this->per_page : 10;
 
 		if($this->paginatorFactory)
-			return $this->paginatorFactory->create([$this->count(), $page, $per_page]);
+			return $this->paginatorFactory->create($this->count(), $page, $per_page);
 		else
 			return new \Asgard\Common\Paginator($this->count(), $page, $per_page);
 	}

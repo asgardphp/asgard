@@ -14,6 +14,15 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		#Config
 		$container->setParentClass('config', 'Asgard\Config\ConfigInterface');
 
+		#Cache
+		$container->setParentClass('cache', 'Asgard\Cache\CacheInterface');
+		$container->register('cache', function($container) {
+			if($cache = $container['kernel']->getCache())
+				return $cache;
+			else
+				return new \Asgard\Cache\Cache;
+		});
+
 		#Db
 		$container->setParentClass('schema', 'Asgard\Db\SchemaInterface');
 		$container->register('schema', function($container) {
@@ -39,7 +48,7 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			$entityManager = new \Asgard\Entity\EntityManager($container);
 			$entityManager->setHookManager($container['hooks']);
 			$entityManager->setDefaultLocale($container['config']['locale']);
-			$entityManager->setValidatorFactory(new \Asgard\Validation\ValidatorFactory);
+			$entityManager->setValidatorFactory($container['validator_factory']);
 			return $entityManager;
 		});
 		$container->register('Asgard.Entity.PropertyType.file', function($container, $params) {

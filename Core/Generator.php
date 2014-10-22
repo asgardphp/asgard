@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\Core\Commands;
+namespace Asgard\Core;
 
 /**
  * Generator.

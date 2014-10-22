@@ -9,8 +9,8 @@ namespace Asgard\Debug;
  */
 class Debug {
 	/**
-	 * Url object to link to javascript files.
-	 * @var \Asgard\Http\URLInterface
+	 * File path format.
+	 * @var string
 	 */
 	protected static $url;
 

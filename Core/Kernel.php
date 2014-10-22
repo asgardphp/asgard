@@ -20,6 +20,11 @@ class Kernel implements \ArrayAccess {
 	 */
 	protected $config;
 	/**
+	 * Cache instance.
+	 * @var \Asgard\Cache\CacheInterface
+	 */
+	protected $cache;
+	/**
 	 * User-added bundles.
 	 * @var array
 	 */
@@ -72,8 +77,9 @@ class Kernel implements \ArrayAccess {
 	 */
 	public function getConfig() {
 		if(!$this->config) {
-			$this->config = $config = new \Asgard\Config\Config();
-			$config->loadDir($this->params['root'].'/config', $this->getEnv());
+			$this->config = $config = new \Asgard\Config\Config;
+			if(file_exists($this->params['root'].'/config'))
+				$config->loadDir($this->params['root'].'/config', $this->getEnv());
 		}
 		return $this->config;
 	}
@@ -116,7 +122,7 @@ class Kernel implements \ArrayAccess {
 		if($this->getEnv() == 'prod' && file_exists($this->params['root'].'/storage/compiled.php'))
 			include_once $this->params['root'].'/storage/compiled.php';
 
-		$this->bundles = $this->doGetBundles($this->getConfig()['cache']);
+		$this->bundles = $this->doGetBundles();
 		$container = $this->getContainer();
 
 		$container['config'] = $this->getConfig();
@@ -165,23 +171,27 @@ class Kernel implements \ArrayAccess {
 
 	/**
 	 * Get the cache dependency.
-	 * @param  string $cache
 	 * @return \Asgard\Cache\CacheInterface
 	 */
-	protected function getCache($cache) {
-		$reflector = new \ReflectionClass($cache);
-		return $reflector->newInstanceArgs([$this->params['root'].'/storage/cache/']);
+	public function getCache() {
+		if($this->cache) {
+			$class = $this->getConfig()['cache'];
+			$reflector = new \ReflectionClass($class);
+			return $reflector->newInstanceArgs([$this->params['root'].'/storage/cache/']);
+		}
+		else
+			return $this->cache;
 	}
 
 	/**
 	 * Register the bundle's services.
-	 * @param  string $cache
 	 * @return \Asgard\Container\ContainerInterface
 	 */
-	protected function buildContainer($cache=null) {
+	protected function buildContainer() {
+		$cache = $this->getCache();
 		if($cache) {
-			$c = $this->getCache($cache);
-			if(($container = $c->fetch('container')) instanceof \Asgard\Container\Container) {
+			if(($container = $cache->fetch('container')) instanceof \Asgard\Container\Container) {
+				$container['kernel'] = $this;
 				$this->container = $container;
 				#make $this->container the default instance of Container, in case someones uses it
 				\Asgard\Container\Container::setInstance($this->container);
@@ -192,12 +202,13 @@ class Kernel implements \ArrayAccess {
 		$bundles = $this->getAllBundles();
 		#use the Container default instance, in case someones uses it
 		$container = $this->container = \Asgard\Container\Container::singleton();
+		$container['kernel'] = $this;
 
 		foreach($bundles as $bundle)
 			$bundle->buildContainer($container);
 
 		if($cache)
-			$c->save('container', $container);
+			$cache->save('container', $container);
 
 		return $container;
 	}
@@ -224,39 +235,36 @@ class Kernel implements \ArrayAccess {
 
 	/**
 	 * Get the hooks annotations reader dependency.
-	 * @param  string $cache
 	 * @return \Asgard\Hook\AnnotationReader
 	 */
-	protected function getHooksAnnotationReader($cache) {
+	protected function getHooksAnnotationReader() {
 		$AnnotationReader = new \Asgard\Hook\AnnotationReader();
-		if($cache)
-			$AnnotationReader->setCache($this->getCache($cache));
+		if($this->getCache())
+			$AnnotationReader->setCache($this->getCache());
 		$AnnotationReader->setDebug($this->getConfig()['debug']);
 		return $AnnotationReader;
 	}
 
 	/**
 	 * Get the controllers annotations reader dependency.
-	 * @param  string $cache
 	 * @return \Asgard\Http\AnnotationReader
 	 */
-	protected function getControllersAnnotationReader($cache) {
+	protected function getControllersAnnotationReader() {
 		$AnnotationReader = new \Asgard\Http\AnnotationReader();
-		if($cache)
-			$AnnotationReader->setCache($this->getCache($cache));
+		if($this->getCache())
+			$AnnotationReader->setCache($this->getCache());
 		$AnnotationReader->setDebug($this->getConfig()['debug']);
 		return $AnnotationReader;
 	}
 
 	/**
 	 * Actually fetch all the budles.
-	 * @param  string $cache
 	 * @return array
 	 */
-	protected function doGetBundles($cache=null) {
+	protected function doGetBundles() {
+		$cache = $this->getCache();
 		if($cache) {
-			$c = $this->getCache($cache);
-			if(($res = $c->fetch('bundles')) !== false)
+			if(($res = $cache->fetch('bundles')) !== false)
 				return $res;
 		}
 
@@ -308,8 +316,8 @@ class Kernel implements \ArrayAccess {
 			$c->save('bundles', $bundles);
 
 		foreach($bundles as $bundle) {
-			$bundle->setHooksAnnotationReader($this->getHooksAnnotationReader($cache));
-			$bundle->setControllersAnnotationReader($this->getControllersAnnotationReader($cache));
+			$bundle->setHooksAnnotationReader($this->getHooksAnnotationReader());
+			$bundle->setControllersAnnotationReader($this->getControllersAnnotationReader());
 		}
 
 		return $bundles;

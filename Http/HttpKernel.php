@@ -197,6 +197,7 @@ class HttpKernel implements HttpKernelInterface {
 	 * {@inheritDoc}
 	 */
 	public function run() {
+		#run uses the default Request, which comes from Request::singleton(), itself using Request::createFromGlobals()
 		$request = Request::singleton();
 		$request->isInitial = true;
 

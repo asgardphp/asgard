@@ -158,7 +158,7 @@ class Browser implements BrowserInterface {
 		libxml_use_internal_errors(true);
 
 		$parser = new FormParser;
-		$parser->parse($this->last->content, $xpath);
+		$parser->parse($this->last->getContent(), $xpath);
 		$res = $parser->values();
 		$this->merge($res, $override);
 

@@ -35,7 +35,7 @@ class GenerateCommand extends \Asgard\Console\Command {
 		$bundles = [];
 
 		$overrideFiles = $this->input->getOption('override-files');
-		$generator = new Generator($asgard);
+		$generator = new \Asgard\Core\Generator($asgard);
 		$generator->setOverrideFiles($overrideFiles);
 
 		foreach($raw as $bundle_name=>$bundle) {
