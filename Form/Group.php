@@ -93,13 +93,6 @@ class Group implements GroupInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getContainer() {
-		return $this->parent->getContainer();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public function name() {
 		return $this->name;
 	}

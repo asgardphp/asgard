@@ -25,12 +25,6 @@ interface GroupInterface extends \ArrayAccess, \Iterator {
 	public function getRequest();
 
 	/**
-	 * Get the parent container.
-	 * @return \Asgard\Container\ContainerInterface
-	 */
-	public function getContainer();
-
-	/**
 	 * Return the name.
 	 * @return string
 	 */

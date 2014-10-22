@@ -6,8 +6,6 @@ namespace Asgard\Form;
  * @author Michel Hognerud <michel@hognerud.com>
  */
 class Form extends Group implements FormInterface {
-	use \Asgard\Container\ContainerAwareTrait;
-
 	/**
 	 * Options.
 	 * @var array
@@ -107,16 +105,6 @@ class Form extends Group implements FormInterface {
 			return $this->parent->getTranslator();
 		else
 			return new \Symfony\Component\Translation\Translator('en');
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getContainer() {
-		if($this->container)
-			return $this->container;
-		if($this->parent)
-			return $this->parent->getContainer();
 	}
 
 	/**

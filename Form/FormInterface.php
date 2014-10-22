@@ -31,12 +31,6 @@ interface FormInterface extends GroupInterface {
 	public function getTranslator();
 
 	/**
-	 * Get container from this form or parent.
-	 * @return \Asgard\Container\ContainerInterface
-	 */
-	public function getContainer();
-
-	/**
 	 * Set the request.
 	 * @param \Asgard\Http\Request $request
 	 */
