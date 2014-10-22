@@ -107,7 +107,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 		#arrayToJSON
 		$this->assertEquals(
 			json_encode([$arr]),
-			\Asgard\Entity\Entity::arrayToJSON([$news], 1)
+			\Asgard\Entity\Serializer::sArrayToJSON([$news], 1)
 		);
 
 
@@ -220,7 +220,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 		#arrayToJSONI18N
 		$this->assertEquals(
 			json_encode([$arrI18N]),
-			\Asgard\Entity\Entity::arrayToJSONI18N([$newsi18n], [], 1)
+			\Asgard\Entity\Serializer::sArrayToJSONI18N([$newsi18n], [], 1)
 		);
 	}
 
@@ -338,7 +338,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 		];
 		$this->assertEquals(
 			'[{"id":null,"title":"Title 1","content":"Content 1","published":"2009-09-09","another_property":null},{"id":null,"title":"Title 2","content":"Content 2","published":"2009-09-09","another_property":null},{"id":null,"title":"Title 3","content":"Content 3","published":"2009-09-09","another_property":null}]',
-			Classes\News::arrayToJSON($news)
+			\Asgard\Entity\Serializer::sArrayToJSON($news)
 		);
 
 		#valid

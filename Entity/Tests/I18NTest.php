@@ -57,7 +57,7 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 				'en' => 'Hello',
 				'fr' => 'Bonjour'
 			]
-		]]), \Asgard\Entity\Entity::arrayToJSONI18N([$post]));
+		]]), \Asgard\Entity\Serializer::sArrayToJSONI18N([$post]));
 
 		#validation
 		$post->set('title', 'a', 'fr');
@@ -120,7 +120,7 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 				'en' => ['Hello'],
 				'fr' => ['Bonjour']
 			]
-		]]), \Asgard\Entity\Entity::arrayToJSONI18N([$post]));
+		]]), \Asgard\Entity\Serializer::sArrayToJSONI18N([$post]));
 
 		#validation
 		$post->set('titles', ['a'], 'fr');

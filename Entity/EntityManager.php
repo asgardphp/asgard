@@ -38,6 +38,11 @@ class EntityManager implements EntityManagerInterface {
 	 * @var \Asgard\Hook\HookManagerInterface
 	 */
 	protected $HookManager;
+	/**
+	 * Serializer dependency.
+	 * @var Serializer
+	 */
+	protected $serializer;
 
 	/**
 	 * Constructor.
@@ -46,6 +51,25 @@ class EntityManager implements EntityManagerInterface {
 	public function __construct(\Asgard\Container\ContainerInterface $container=null) {
 		#need services container for entity behaviors only
 		$this->setContainer($container);
+	}
+
+	/**
+	 * Set a serializer dependency.
+	 * @return EntityManager $this
+	 */
+	public function setSerializer(Serializer $serializer) {
+		$this->serializer = $serializer;
+		return $this;
+	}
+
+	/**
+	 * Return a serializer.
+	 * @return Serializer
+	 */
+	public function getSerializer() {
+		if(!$this->serializer)
+			$this->serializer = new \Asgard\Entity\Serializer;
+		return $this->serializer;
 	}
 
 	/**
