@@ -102,6 +102,14 @@ class ORM implements ORMInterface {
 	}
 
 	/**
+	 * Return the definition.
+	 * @return \Asgard\Entity\Definition
+	 */
+	public function getDefinition() {
+		return $this->definition;
+	}
+
+	/**
 	 * {@inheritDoc}
 	*/
 	public function __call($relationName, array $args) {
@@ -110,11 +118,35 @@ class ORM implements ORMInterface {
 		$relation = $this->dataMapper->relation($this->definition, $relationName);
 		$reverseRelation = $relation->reverse();
 		$reverseRelationName = $reverseRelation->get('name');
+		if($reverseRelation->isPolymorphic())
+			$reverseRelationName .= '|'.$this->definition->getClass();
 		$relation_entity = $relation->get('entity');
 
+		$table = $this->getTable();
+		$alias = $reverseRelation->getName();
+		$where = $this->updateConditions($this->where, $table, $alias);
+
 		return $this->dataMapper->orm($relation_entity)
-			->where($this->where)
+			->where($where)
 			->join([$reverseRelationName => $this->join]);
+	}
+
+	/**
+	 * Replace the old table with the new alias.
+	 * @param  array  $conditions
+	 * @return array
+	 */
+	protected function updateConditions(array $conditions, $table, $alias) {
+		$res = [];
+
+		foreach($conditions as $k=>$v) {
+			if(is_array($v))
+				$v = $this->updateConditions($v, $table, $alias);
+			$k = preg_replace('/(?<![\.a-z0-9-_`\(\)])'.$table.'./', $alias.'.', $k);
+			$res[$k] = $v;
+		}
+
+		return $res;
 	}
 
 	/**
@@ -289,10 +321,10 @@ class ORM implements ORMInterface {
 	 *
 	 * @param \Asgard\Db\DAL                  $dal
 	 * @param array                           $jointures Array of relations.
-	 * @param \Asgard\Entity\Definition $Definition The entity class from which jointures are built.
+	 * @param \Asgard\Entity\Definition $definition The entity class from which jointures are built.
 	 * @param string                          $table The table from which to performs jointures.
 	*/
-	protected function recursiveJointures(\Asgard\Db\DAL $dal, array $jointures, \Asgard\Entity\Definition $Definition, $table) {
+	protected function recursiveJointures(\Asgard\Db\DAL $dal, array $jointures, \Asgard\Entity\Definition $definition, $table) {
 		$alias = null;
 		foreach($jointures as $relation) {
 			if(is_array($relation)) {
@@ -301,7 +333,7 @@ class ORM implements ORMInterface {
 						if(!$v instanceof EntityRelation) {
 							if(strpos($v, ' '))
 								list($v, $alias) = explode(' ', $v);
-							$v = $this->dataMapper->relation($Definition, $v);
+							$v = $this->dataMapper->relation($definition, $v);
 						}
 						$this->jointure($dal, $v, $alias, $table);
 					}
@@ -310,7 +342,7 @@ class ORM implements ORMInterface {
 						if(strpos($relationName, ' '))
 							list($relationName, $alias) = explode(' ', $relationName);
 						$recJoins = $v;
-						$relation = $this->dataMapper->relation($Definition, $relationName);
+						$relation = $this->dataMapper->relation($definition, $relationName);
 
 						$this->jointure($dal, $relation, $alias, $table);
 						if(!is_array($recJoins))
@@ -323,7 +355,7 @@ class ORM implements ORMInterface {
 				if(!$relation instanceof EntityRelation) {
 					if(strpos($relation, ' '))
 						list($relation, $alias) = explode(' ', $relation);
-					$relation = $this->dataMapper->relation($Definition, $relation);
+					$relation = $this->dataMapper->relation($definition, $relation);
 				}
 				$this->jointure($dal, $relation, $alias, $table);
 			}

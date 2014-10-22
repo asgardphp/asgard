@@ -61,6 +61,22 @@ class ORMTest extends \PHPUnit_Framework_TestCase {
 		);
 	}
 
+	public function testUpdateAliasInWhere() {
+		#Dependencies
+		$em = new \Asgard\Entity\EntityManager;
+		$rulesRegistry = new \Asgard\Validation\RulesRegistry;
+		$rulesRegistry->registerNamespace('Asgard\Orm\Rules');
+		$em->setValidatorFactory(new \Asgard\Validation\ValidatorFactory($rulesRegistry));
+
+		$db = new \Asgard\Db\DB([
+			'host'     => 'localhost',
+			'user'     => 'root',
+			'password' => '',
+			'database' => 'asgard'
+		]);
+		$dataMapper = new \Asgard\Orm\DataMapper($db, $em);
+	}
+
 	public function test1() {
 		#Dependencies
 		$em = new \Asgard\Entity\EntityManager;

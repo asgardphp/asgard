@@ -177,4 +177,26 @@ class PolymorphismTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals('foo', $category->name);
 		$this->assertEquals('bar', $dm->getRelated($category, 'articles')[0]->title);
 	}
+
+	public function testCascadeRelations() {
+		$dm = static::$dm;
+		static::$schema->dropAll();
+		static::$ormm->autoMigrate([
+			static::$em->get('Asgard\Orm\Tests\Fixtures\Polymorphism\User'),
+			static::$em->get('Asgard\Orm\Tests\Fixtures\Polymorphism\Document'),
+		], static::$schema);
+
+		static::$schema->emptyAll();
+
+		$document = $dm->create('Asgard\Orm\Tests\Fixtures\Polymorphism\Document', [
+			'title' => 'foo',
+			'user' => $dm->create('Asgard\Orm\Tests\Fixtures\Polymorphism\User', [
+				'name' => 'bar'
+			])
+		]);
+
+		$orm = $dm->orm('Asgard\Orm\Tests\Fixtures\Polymorphism\Document');
+		$users = $orm->user();
+		$this->assertEquals(1, $users->count());
+	}
 }

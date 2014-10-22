@@ -2,17 +2,10 @@
 namespace Asgard\Entity\Tests;
 
 class MultipleTest extends \PHPUnit_Framework_TestCase {
-	protected static $container;
-
 	public static function setUpBeforeClass() {
-		$container = new \Asgard\Container\Container;
-		$container['hooks'] = new \Asgard\Hook\HookManager($container);
-
-		$entityManager = $container['entityManager'] = new \Asgard\Entity\EntityManager($container);
+		$entityManager = $container['entityManager'] = new \Asgard\Entity\EntityManager;
 		#set the EntityManager static instance for activerecord-like entities (e.g. new Article or Article::find())
 		\Asgard\Entity\EntityManager::setInstance($entityManager);
-
-		static::$container = $container;
 	}
 
 	public function testAdd() {

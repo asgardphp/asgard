@@ -14,7 +14,7 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 		];
 		static::$db = $db = new \Asgard\Db\DB($config);
 
-		$entityManager = $container['entityManager'] = new \Asgard\Entity\EntityManager;
+		$entityManager = new \Asgard\Entity\EntityManager;
 		$entityManager->setDefaultLocale('en');
 		static::$dm = new \Asgard\Orm\DataMapper(
 			$db,

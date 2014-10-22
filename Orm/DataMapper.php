@@ -506,7 +506,15 @@ class DataMapper implements DataMapperInterface {
 	 * {@inheritDoc}
 	 */
 	public function relation(\Asgard\Entity\Definition $definition, $name) {
-		return $this->relations($definition)[$name];
+		#polymorphic
+		if(strpos($name, '|')) {
+			list($name, $class) = explode('|', $name);
+			$relation = $this->relations($definition)[$name];
+			$relation->setTargetDefinition($this->entityManager->get($class));
+			return $relation;
+		}
+		else
+			return $this->relations($definition)[$name];
 	}
 
 	/**

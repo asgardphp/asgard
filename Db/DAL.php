@@ -577,7 +577,11 @@ class DAL {
 	 * @return string
 	 */
 	protected function identifierQuotes($str) {
-		return preg_replace_callback('/[a-z_][a-zA-Z0-9._]*/', function($matches) {
+		#for every word
+		return preg_replace_callback('/(?<=\s|^)[a-zA-Z0-9._]*/', function($matches) {
+			#if the word in not only uppercase letters (sql keyword)
+			if(!preg_match('/[a-z0-9._]/', $matches[0]))
+				return $matches[0];
 			$res = [];
 			foreach(explode('.', $matches[0]) as $substr)
 				$res[] = '`'.$substr.'`';
