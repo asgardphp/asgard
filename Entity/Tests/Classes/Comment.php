@@ -6,7 +6,7 @@ class Comment extends \Asgard\Entity\Entity {
 		$definition->properties = [
 			'content',
 			'published' => 'date',
-			'comments' => [
+			'news' => [
 				'type' => 'entity',
 				'entity' => 'Asgard\Entity\Tests\Classes\News',
 			]

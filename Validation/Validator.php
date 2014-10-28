@@ -125,7 +125,7 @@ class Validator implements ValidatorInterface {
 	/**
 	 * Set a rule.
 	 * @param  string  $rule   rule name
-	 * @param  array   $params rule parameter
+	 * @param  mixed   $params rule parameter
 	 * @param  boolean $each   to validate the rule against each input of an array.
 	 * @return ValidatorInterface       $this
 	 */
@@ -224,11 +224,12 @@ class Validator implements ValidatorInterface {
 			return $this;
 		}
 		else {
-			if(!isset($this->attributes[$next]))
+			if(!isset($this->attributes[$next])) {
 				$this->attributes[$next] = new static;
-			if($rules !== null) {
 				$this->attributes[$next]->setParent($this);
 				$this->attributes[$next]->setName($next);
+			}
+			if($rules !== null) {
 				if(is_array($rules))
 					$this->attributes[$next]->rules($rules);
 				else

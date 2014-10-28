@@ -4,7 +4,6 @@ namespace Asgard\Entity\Tests;
 class EntityTest extends \PHPUnit_Framework_TestCase {
 	public static function setUpBeforeClass() {
 		$entityManager = new \Asgard\Entity\EntityManager;
-		$entityManager->setValidatorFactory(new \Asgard\Validation\ValidatorFactory(new \Asgard\Validation\RulesRegistry));
 		#set the EntityManager static instance for activerecord-like entities (e.g. new Article or Article::find())
 		\Asgard\Entity\EntityManager::setInstance($entityManager);
 	}
@@ -68,19 +67,22 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 					'id' => null,
 					'content' => 'foo',
 					'published' => $date,
-					'another_property' => null
+					'another_property' => null,
+					'news' => null
 				],
 				[
 					'id' => null,
 					'content' => 'bar',
 					'published' => $date,
-					'another_property' => null
+					'another_property' => null,
+					'news' => null
 				],
 				[
 					'id' => null,
 					'content' => 'baz',
 					'published' => $date,
-					'another_property' => null
+					'another_property' => null,
+					'news' => null
 				]
 			],
 			'another_property' => null
@@ -313,7 +315,8 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 				'title' => 'bla',
 				'content' => 'Test Content',
 				#'published' => \Asgard\Common\Datetime::create(2009, 9, 9),
-				'another_property' => ''
+				'another_property' => null,
+				'comments' => null
 			],
 			$newsArray
 		);

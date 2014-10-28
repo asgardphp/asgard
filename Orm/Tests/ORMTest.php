@@ -264,16 +264,16 @@ class ORMTest extends \PHPUnit_Framework_TestCase {
 		$cat = $dataMapper->load('Asgard\Orm\Tests\Fixtures\ORM\Category', 1);
 		$this->assertEquals([
 			'news' => [
-				'morethan' => 'News must have more than 3 elements.'
+				'ormhasmorethan' => 'News must have more than 3 elements.'
 			]
-		], $dataMapper->errors($cat));
+		], $dataMapper->relationsErrors($cat));
 		$cat = $em->make('Asgard\Orm\Tests\Fixtures\ORM\Category');
 		$this->assertEquals([
 			'news' => [
-				'relationrequired' => 'News is required.',
-				'morethan' => 'News must have more than 3 elements.'
+				'ormrequired' => 'News is required.',
+				'ormhasmorethan' => 'News must have more than 3 elements.'
 			]
-		], $dataMapper->errors($cat));
+		], $dataMapper->relationsErrors($cat));
 
 		#
 

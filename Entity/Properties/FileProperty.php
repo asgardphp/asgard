@@ -50,15 +50,14 @@ class FileProperty extends \Asgard\Entity\Property {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getRules() {
-		$rules = parent::getRules();
+	public function prepareValidator(\Asgard\Validation\ValidatorInterface $validator) {
+		parent::prepareValidator($validator);
 		$rules['isNull'] = function($input) {
 			return !$input || $input->shouldDelete() || !$input->src();
 		};
 		if(!isset($rules['extension']))
 			$rules['extension'] = $this->get('extensions');
-
-		return $rules;
+		$validator->rules($rules);
 	}
 
 	/**

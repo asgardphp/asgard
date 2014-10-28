@@ -9,11 +9,9 @@ class DateProperty extends \Asgard\Entity\Property {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getRules() {
-		$rules = parent::getRules();
-		$rules['isinstanceof'] = 'Asgard\Common\DatetimeInterface';
-
-		return $rules;
+	public function prepareValidator(\Asgard\Validation\ValidatorInterface $validator) {
+		parent::prepareValidator($validator);
+		$validator->rule('isinstanceof', 'Asgard\Common\DatetimeInterface');
 	}
 
 	/**

@@ -20,15 +20,21 @@ class Serializer {
 		$res = [];
 
 		foreach($entity->getDefinition()->properties() as $name=>$property) {
-			if($entity->getDefinition()->property($name)->get('type') == 'entity') {
+			if($entity->getDefinition()->property($name) instanceof Properties\EntityProperty) {
 				if($depth < 1)
-					continue;
-				if($entity->getDefinition()->property($name)->get('many')) {
-					foreach($entity->get($name) as $entity)
-						$res[$name][] = $entity->toArrayRaw($depth-1);
+					$res[$name] = $entity->get($name, null, false);
+				else {
+					if($entity->getDefinition()->property($name)->get('many')) {
+						foreach($entity->get($name, null, false) as $subentity)
+							$res[$name][] = $subentity->toArrayRaw($depth-1);
+					}
+					else {
+						if($subentity == $entity->get($name, null, false))
+							$res[$name] = $subentity->toArrayRaw($depth-1);
+						else
+							$res[$name] = null;
+					}
 				}
-				else
-					$res[$name] = $entity->toArrayRaw($depth-1);
 			}
 			elseif($entity->getDefinition()->property($name)->get('many'))
 				$res[$name] = $entity->get($name)->all();
@@ -49,15 +55,19 @@ class Serializer {
 		$res = [];
 
 		foreach($entity->getDefinition()->properties() as $name=>$property) {
-			if($entity->getDefinition()->property($name)->get('type') == 'entity') {
+			if($entity->getDefinition()->property($name) instanceof Properties\EntityProperty) {
 				if($depth < 1)
 					continue;
 				if($entity->getDefinition()->property($name)->get('many')) {
-					foreach($entity->get($name) as $entity)
-						$res[$name][] = $entity->toArray($depth-1);
+					foreach($entity->get($name, null, false) as $subentity)
+						$res[$name][] = $subentity->toArray($depth-1);
 				}
-				else
-					$res[$name] = $entity->toArray($depth-1);
+				else {
+					if($subentity == $entity->get($name, null, false))
+						$res[$name] = $subentity->toArray($depth-1);
+					else
+						$res[$name] = null;
+				}
 			}
 			elseif($property->get('many')) {
 				foreach($entity->get($name) as $k=>$v)

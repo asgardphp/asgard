@@ -197,18 +197,22 @@ abstract class Entity {
 					if($property->get('many')) {
 						if($this->get($name) instanceof ManyCollection) {
 							foreach($this->get($name) as $k=>$v) {
-								$validator->attribute($name.'.'.$locale.'.'.$k, $property->getRules());
-								$validator->attribute($name.'.'.$locale.'.'.$k)->formatParameters(function(&$params) use($name) {
+								$propValidator = $validator->attribute($name.'.'.$locale.'.'.$k);
+								$property->prepareValidator($propValidator);
+								$propValidator->formatParameters(function(&$params) use($name) {
 									$params['attribute'] = $name;
 								});
+								$propValidator->ruleMessages($property->getMessages());
 							}
 						}
 					}
 					else {
-						$validator->attribute($name.'.'.$locale, $property->getRules());
-						$validator->attribute($name.'.'.$locale)->formatParameters(function(&$params) use($name) {
+						$propValidator = $validator->attribute($name.'.'.$locale);
+						$property->prepareValidator($propValidator);
+						$propValidator->formatParameters(function(&$params) use($name) {
 							$params['attribute'] = $name;
 						});
+						$propValidator->ruleMessages($property->getMessages());
 					}
 				}
 			}
@@ -216,24 +220,27 @@ abstract class Entity {
 				if($property->get('many')) {
 					if($this->get($name) instanceof ManyCollection) {
 						foreach($this->get($name) as $k=>$v) {
-							$validator->attribute($name.'.'.$k, $property->getRules());
-							$validator->attribute($name.'.'.$k)->formatParameters(function(&$params) use($name) {
+							$propValidator = $validator->attribute($name.'.'.$k);
+							$property->prepareValidator($propValidator);
+							$propValidator->formatParameters(function(&$params) use($name) {
 								$params['attribute'] = $name;
 							});
+							$propValidator->ruleMessages($property->getMessages());
 						}
 					}
 				}
-				else
-					$validator->attribute($name, $property->getRules());
+				else {
+					$propValidator = $validator->attribute($name);
+					$property->prepareValidator($propValidator);
+					$propValidator->ruleMessages($property->getMessages());
+				}
 			}
-
-			$messages[$name] = $property->getMessages();
 		}
 
 		$messages = array_merge($messages, $this->getDefinition()->messages());
+		$validator->attributesMessages($messages);
 
 		$validator->set('entity', $this);
-		$validator->attributesMessages($messages);
 
 		return $validator;
 	}
@@ -383,15 +390,15 @@ abstract class Entity {
 
 	/**
 	 * Hard get data. With pre-processing.
-	 * @param  string $name
+	 * @param  string       $name
 	 * @param  string|array $locale
 	 * @return mixed
 	 */
-	public function get($name, $locale=null) {
+	public function get($name, $locale=null, $hook=true) {
 		if(!$locale)
 			$locale = $this->getLocale();
 
-		if(($res = $this->getDefinition()->trigger('get', [$this, $name, $locale])) !== null)
+		if($hook && ($res = $this->getDefinition()->trigger('get', [$this, $name, $locale])) !== null)
 			return $res;
 
 		return $this->_get($name, $locale);

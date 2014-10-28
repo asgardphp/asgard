@@ -2,32 +2,30 @@
 namespace Asgard\Validation\Rules;
 
 /**
- * Check if any of the rule validates the input.
+ * Check if any of the validator validates the input.
  * @author Michel Hognerud <michel@hognerud.com>
  */
 class Any extends \Asgard\Validation\Rule {
 	/**
-	 * Rules.
+	 * Validators.
 	 * @var array
 	 */
-	public $rules;
+	public $validators;
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function __construct() {
-		$this->rules = func_get_args();
+		$this->validators = func_get_args();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\ValidatorInterface $validator) {
-		foreach($this->rules as $rule) {
-			if($rule instanceof \Asgard\Validation\Validator) {
-				if($rule->valid($input) !== false)
-					return true;
-			}
+		foreach($this->validators as $name=>$_validator) {
+			if($_validator->valid($input) !== false)
+				return true;
 		}
 		return false;
 	}

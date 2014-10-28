@@ -170,17 +170,16 @@ class Property {
 	}
 
 	/**
-	 * Return the validation rules.
+	 * Prepare the validator.
 	 * @return array
 	 */
-	public function getRules() {
-		$res = isset($this->params['validation']) ? $this->params['validation']:[];
-		if(!is_array($res))
-			$res = [$res];
+	public function prepareValidator(\Asgard\Validation\ValidatorInterface $validator) {
+		$rules = isset($this->params['validation']) ? $this->params['validation']:[];
+		if(!is_array($rules))
+			$rules = [$rules];
+		$validator->rules($rules);
 		if($this->get('required'))
-			$res['required'] = true;
-
-		return $res;
+			$validator->rule('required', true);
 	}
 
 	/**
@@ -190,6 +189,8 @@ class Property {
 	public function getMessages() {
 		if(isset($this->params['messages']))
 			return $this->params['messages'];
+		else
+			return [];
 	}
 
 	/**

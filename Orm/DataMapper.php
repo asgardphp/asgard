@@ -167,12 +167,17 @@ class DataMapper implements DataMapperInterface {
 		return $m;
 	}
 
+	public function createValidator(\Asgard\Entity\Entity $entity) {
+		$validator = $entity->getDefinition()->getEntityManager()->createValidator();
+		$validator->set('dataMapper', $this);
+		return $validator;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
 	public function getValidator(\Asgard\Entity\Entity $entity) {
-		$validator = $entity->getDefinition()->getEntityManager()->createValidator();
-		$validator->set('dataMapper', $this);
+		$validator = $this->createValidator($entity);
 		$entity->prepareValidator($validator);
 		$this->prepareValidator($entity, $validator);
 		return $validator;
@@ -204,15 +209,34 @@ class DataMapper implements DataMapperInterface {
 	}
 
 	/**
+	 * Return relations errors.
+	 * @param  \Asgard\Entity\Entity $entity
+	 * @return array
+	 */
+	public function relationsErrors(\Asgard\Entity\Entity $entity) {
+		$data = [];
+		$validator = $this->createValidator($entity);
+		foreach($this->relations($entity->getDefinition()) as $name=>$relation) {
+			$data[$name] = $this->related($entity, $name);
+			$relation->prepareValidator($validator->attribute($name));
+		}
+		$errors = $validator->errors($data);
+
+		$e = [];
+		foreach($data as $property=>$value) {
+			if($propertyErrors = $errors->attribute($property)->errors())
+				$e[$property] = $propertyErrors;
+		}
+
+		return $e;
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public function errors(\Asgard\Entity\Entity $entity) {
 		$data = $entity->toArrayRaw();
 		$validator = $this->getValidator($entity);
-		foreach($this->relations($entity->getDefinition()) as $name=>$relation) {
-			$data[$name] = $this->related($entity, $name);
-			$validator->attribute($name, $relation->getRules());
-		}
 		$errors = $entity->getDefinition()->trigger('validation', [$entity, $validator, &$data], function($chain, $entity, $validator, &$data) {
 			return $validator->errors($data);
 		});
@@ -225,6 +249,7 @@ class DataMapper implements DataMapperInterface {
 
 		return $e;
 	}
+
 
 	/**
 	 * {@inheritDoc}

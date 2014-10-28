@@ -225,14 +225,12 @@ class EntityRelation {
 		foreach($this->dataMapper->relations($relationDefinition) as $rev_rel_name=>$rev_rel) {
 			$relEntityClass = preg_replace('/^\\\/', '', strtolower($rev_rel->get('entity')));
 
-			if($relEntityClass == $entityName
-				|| $this->get('as') == $rev_rel->get('entity')
-				) {
+			if($relEntityClass == $entityName || $this->get('as') == $rev_rel->get('entity')) {
 				if($rev_rel_name == $name)
 					continue;
-				if($this->get('for')!==null && $this->get('for')!==$rev_rel_name)
+				if($this->get('for') !== null && $this->get('for') !== $rev_rel_name)
 					continue;
-				if($rev_rel->get('for')!==null && $rev_rel->get('for')!==$name)
+				if($rev_rel->get('for') !== null && $rev_rel->get('for') !== $name)
 					continue;
 				$rev_relations[] = $rev_rel;
 			}
@@ -252,14 +250,19 @@ class EntityRelation {
 	 * Get the relation validation rules.
 	 * @return array
 	 */
-	public function getRules() {
-		$res = isset($this->params['validation']) ? $this->params['validation']:[];
-		if(!is_array($res))
-			$res = ['validation' => $res];
+	public function prepareValidator(\Asgard\Validation\ValidatorInterface $validator) {
+		$validator->rules(isset($this->params['ormValidation']) ? $this->params['ormValidation']:[]);
 		if(isset($this->params['required']))
-			$res['relationrequired'] = $this->params['required'];
-
-		return $res;
+			$validator->rule('ormrequired', $this->params['required']);
+		if(isset($this->params['validation'])) {
+			foreach($this->params['validation'] as $name=>$params) {
+				if(is_integer($name)) {
+					$name = $params;
+					$params = [];
+				}
+				$validator->rule('orm'.$name, $params); #prefix each rule with suffix "orm"
+			}
+		}
 	}
 
 	/**

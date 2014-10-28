@@ -9,10 +9,9 @@ class BooleanProperty extends \Asgard\Entity\Property {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getRules() {
-		$rules = parent::getRules();
-		$rules['required'] = false;
-		return $rules;
+	public function prepareValidator(\Asgard\Validation\ValidatorInterface $validator) {
+		parent::prepareValidator($validator);
+		$validator->rule('required', false);
 	}
 
 	/**

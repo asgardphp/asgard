@@ -10,9 +10,9 @@ class Category extends \Asgard\Entity\Entity {
 				'type' => 'entity',
 				'entity' => 'Asgard\Orm\Tests\Fixtures\ORM\News',
 				'many' => true,
-				'ormValidation' => [
-					'relationrequired',
-					'morethan' => 3
+				'validation' => [
+					'required',
+					'hasmorethan' => 3
 				]
 			],
 		];
