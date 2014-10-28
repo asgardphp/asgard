@@ -94,6 +94,13 @@ class DALTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals('SELECT * FROM `news` WHERE `id`=? OR (`news`.`title` LIKE ? AND `news`.`content` LIKE ?)', $dal->buildSQL());
 		$this->assertEquals([4, '%test%', '%bla%'], $dal->getParameters());
 
+		#make sure conditions do not override
+		$dal = $this->getDAL()->from('news')
+			->where('news.title LIKE ?', '%abc%')
+			->where('news.title LIKE ?', '%cba%');
+		$this->assertEquals('SELECT * FROM `news` WHERE `news`.`title` LIKE ? AND `news`.`title` LIKE ?', $dal->buildSQL());
+		$this->assertEquals(['%abc%', '%cba%'], $dal->getParameters());
+
 		#make sure it add brackets to multiple subconditions like OR or AND
 		$dal = $this->getDAL()->from('news')->where(['news.title LIKE ?' => '%test%'])
 			->where([

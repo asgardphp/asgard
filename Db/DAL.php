@@ -468,7 +468,7 @@ class DAL {
 	 */
 	public function where($conditions, $values=null) {
 		if($values !== null)
-			$this->where[$conditions] = $values;
+			$this->where[] = [$conditions => $values];
 		else
 			$this->where[] = $conditions;
 
