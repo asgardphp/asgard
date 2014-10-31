@@ -472,8 +472,7 @@ class Definition {
 	public function make(array $attrs=null, $locale=null) {
 		$entityClass = $this->entityClass;
 		$entity      = new $entityClass($attrs, $locale);
-		$entity->setDefinition($this);
-
+		$entity->setEntityManager($this->entityManager);
 		return $entity;
 	}
 }

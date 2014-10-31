@@ -492,11 +492,6 @@ class Group implements GroupInterface {
 			);
 		}
 		elseif($fields instanceof Field) {
-			$reflect = new \ReflectionClass($this);
-			try {
-				if($reflect->getProperty($name))
-					throw new \Exception('Can\'t use keyword "'.$name.'" for form field');
-			} catch(\Exception $e) {}
 			$field = $fields;
 			$field->setName($name);
 			$field->setParent($this);

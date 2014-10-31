@@ -53,11 +53,11 @@ class PageLayout extends \Asgard\Http\Filter {
 
 		if($controller->layout !== false) {
 			if(is_callable($controller->layout))
-				$result = call_user_func_array($controller->layout, [$result]);
+				$result = call_user_func_array($controller->layout, [$controller, $result]);
 			elseif(is_string($controller->layout))
 				$result = \Asgard\Templating\PHPTemplate::renderFile($controller->layout, ['content'=>$result, 'controller'=>$controller]);
 			elseif(is_callable($this->layout))
-				$result = call_user_func_array($this->layout, [$result]);
+				$result = call_user_func_array($this->layout, [$controller, $result]);
 			elseif(is_string($this->layout))
 				$result = \Asgard\Templating\PHPTemplate::renderFile($this->layout, ['content'=>$result, 'controller'=>$controller]);
 		}
@@ -65,11 +65,11 @@ class PageLayout extends \Asgard\Http\Filter {
 		if($controller->htmlLayout === false)
 			return;
 		if(is_callable($controller->htmlLayout))
-			$result = call_user_func_array($controller->htmlLayout, [$result]);
+			$result = call_user_func_array($controller->htmlLayout, [$controller, $result]);
 		elseif(is_string($controller->htmlLayout))
 			$result = \Asgard\Templating\PHPTemplate::renderFile($controller->htmlLayout, ['content'=>$result, 'controller'=>$controller]);
 		elseif(is_callable($this->htmlLayout))
-			$result = call_user_func_array($this->htmlLayout, [$result]);
+			$result = call_user_func_array($this->htmlLayout, [$controller, $result]);
 		elseif(is_string($this->htmlLayout))
 			$result = \Asgard\Templating\PHPTemplate::renderFile($this->htmlLayout, ['content'=>$result, 'controller'=>$controller]);
 	}

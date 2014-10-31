@@ -40,7 +40,7 @@ class UnmigrateCommand extends \Asgard\Console\Command {
 	 * @param \Asgard\Db\DbInterface     $db
 	 * @param \Asgard\Db\SchemaInterface $schema
 	 */
-	public function __construct($migrationsDir, \Asgard\Db\DBInterface $db, \Asgard\Db\SchemaInterface $schema) {
+	public function __construct($migrationsDir, \Asgard\Db\DBInterface $db=null, \Asgard\Db\SchemaInterface $schema=null) {
 		$this->migrationsDir = $migrationsDir;
 		parent::__construct();
 	}

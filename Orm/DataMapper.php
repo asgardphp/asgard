@@ -48,7 +48,7 @@ class DataMapper implements DataMapperInterface {
 	 */
 	public function __construct(\Asgard\Db\DBInterface $db, \Asgard\Entity\EntityManagerInterface $entityManager=null, $locale='en', $prefix=null, ORMFactoryInterface $ormFactory=null, CollectionORMFactoryInterface $collectionOrmFactory=null) {
 		$this->db                   = $db;
-		$this->entityManager      = $entityManager;
+		$this->entityManager        = $entityManager;
 		$this->locale               = $locale;
 		$this->prefix               = $prefix;
 		$this->ormFactory           = $ormFactory;
@@ -154,7 +154,7 @@ class DataMapper implements DataMapperInterface {
 	 */
 	public function getEntityManager() {
 		if(!$this->entityManager)
-			$this->entityManager = new \Asgard\Entity\EntityManager;
+			$this->entityManager = \Asgard\Entity\EntityManager::singleton();
 		return $this->entityManager;
 	}
 
@@ -312,7 +312,7 @@ class DataMapper implements DataMapperInterface {
 						if($rel->isPolymorphic())
 							$vars[$rel->getLinkType()] = get_class($relatedEntity);
 					}
-					else {
+					elseif($relatedEntity) {
 						#array with class and id
 						if($rel->isPolymorphic()) {
 							$vars[$rel->getLinkType()] = $relatedEntity[0];

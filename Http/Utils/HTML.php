@@ -51,6 +51,11 @@ class HTML implements HTMLInterface {
 	 * @var string
 	 */
 	protected $keywords = '';
+	/**
+	 * Options.
+	 * @var array
+	 */
+	protected $options = [];
 
 	/**
 	 * Constructor.
@@ -256,5 +261,25 @@ class HTML implements HTMLInterface {
 	public static function sanitize($html) {
 		return htmlentities($html, ENT_NOQUOTES, 'UTF-8');
 	}
+
+	/**
+	 * Set an option.
+	 * @param string $name
+	 * @param mixed  $value
+	 */
+	public function set($name, $value) {
+		$this->options[$name] = $value;
+		return $this;
+	}
+
+	/**
+	 * Get an option.
+	 * @param  string $name
+	 * @return mixed
+	 */
+	public function get($name) {
+		if(!isset($this->options[$name]))
+			return;
+		return $this->options[$name];
+	}
 }
-?>

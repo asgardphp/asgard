@@ -16,15 +16,15 @@ abstract class Entity {
 		'translations' => [],
 	];
 	/**
-	 * Entity definition.
-	 * @var Definition
-	 */
-	protected $definition;
-	/**
 	 * Default locale.
 	 * @var string
 	 */
 	protected $locale;
+	/**
+	 * Entity manager.
+	 * @var EntityManager
+	 */
+	protected $entityManager;
 
 	/**
 	 * Constructor.
@@ -49,11 +49,11 @@ abstract class Entity {
 	}
 
 	/**
-	 * Set the entity definition.
-	 * @param Definition $definition
+	 * Set the entity manager.
+	 * @param EntityManager $em
 	 */
-	public function setDefinition($definition) {
-		$this->definition = $definition;
+	public function setEntityManager($em) {
+		$this->entityManager = $em;
 		return $this;
 	}
 
@@ -131,10 +131,9 @@ abstract class Entity {
 	 * @return Definition
 	 */
 	public function getDefinition() {
-		if(isset($this->definition))
-			return $this->definition;
-		else
-			return $this->definition = static::getStaticDefinition();
+		if(!$this->entityManager)
+			return $this->getStaticDefinition();
+		return $this->entityManager->get(get_called_class());
 	}
 
 	/**

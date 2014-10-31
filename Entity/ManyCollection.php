@@ -12,11 +12,6 @@ class ManyCollection implements \ArrayAccess, \Iterator, \Countable {
 	 */
 	protected $elements = [];
 	/**
-	 * Entity Definition.
-	 * @var Definition
-	 */
-	protected $definition;
-	/**
 	 * Entity.
 	 * @var Entity
 	 */
@@ -29,12 +24,10 @@ class ManyCollection implements \ArrayAccess, \Iterator, \Countable {
 
 	/**
 	 * Constructor.
-	 * @param Definition $definition
 	 * @param Entity           $entity
 	 * @param string           $name
 	 */
-	public function __construct($definition, $entity, $name) {
-		$this->definition = $definition;
+	public function __construct(Entity $entity, $name) {
 		$this->entity     = $entity;
 		$this->name       = $name;
 	}
@@ -62,7 +55,7 @@ class ManyCollection implements \ArrayAccess, \Iterator, \Countable {
 	public function add($element) {
 		if($element === null)
 			return;
-		$this->definition->processBeforeAdd($this->entity, $this->name, $element);
+		$this->entity->getDefinition()->processBeforeAdd($this->entity, $this->name, $element);
 		$this->elements[] = $element;
 		return $element;
 	}
@@ -154,7 +147,7 @@ class ManyCollection implements \ArrayAccess, \Iterator, \Countable {
 	 * Iterator key implementation.
 	 * @return integer
 	 */
-	public function key()  {
+	public function key() {
 		return key($this->elements);
 	}
 
@@ -162,7 +155,7 @@ class ManyCollection implements \ArrayAccess, \Iterator, \Countable {
 	 * Iterator next implementation.
 	 * @return mixed
 	 */
-	public function next()  {
+	public function next() {
 		return next($this->elements);
 	}
 }

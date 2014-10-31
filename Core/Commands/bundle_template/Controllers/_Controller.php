@@ -10,11 +10,11 @@ class <?=ucfirst($controller['name']) ?> extends \Asgard\Http\Controller {
 <?php foreach($controller['actions'] as $name=>$action): ?>
 <?php if(($route=$action['route']) !== null): ?>
 	/**
-	@Route("<?=$route ?>")
+	 * @Route("<?=$route ?>")
 	*/
 <?php endif ?>
 	public function <?=$name ?>Action($request) {
-		<?php if($action['template']): ?>
+<?php if($action['template']): ?>
 		$this->view = '<?=$action['template']?>';
 		<?php endif ?>
 	}

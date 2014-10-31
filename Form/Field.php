@@ -137,10 +137,12 @@ abstract class Field {
 
 	/**
 	 * Get field's HTML label tag.
+	 * @param  string $label
+	 * @param  string $for
 	 * @return string
 	 */
-	public function labelTag() {
-		return '<label for="'.$this->getID().'">'.$this->label().'</label>';
+	public function labelTag($label=null, $for=null) {
+		return '<label for="'.($for ? $for:$this->getID()).'">'.($label ? $label:$this->label()).'</label>';
 	}
 
 	/**

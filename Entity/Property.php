@@ -150,7 +150,7 @@ class Property {
 	 */
 	public function getDefault($entity, $name) {
 		if($this->get('many'))
-			return new ManyCollection($this->definition, $entity, $name);
+			return new ManyCollection($entity, $name);
 		elseif(isset($this->params['default'])) {
 			if(is_callable($this->params['default']))
 				return $this->params['default']();
@@ -271,7 +271,7 @@ class Property {
 			if($val instanceof ManyCollection)
 				return $val;
 			if(is_array($val)) {
-				$res = new ManyCollection($this->definition, $entity, $name);
+				$res = new ManyCollection($entity, $name);
 				foreach($val as $v)
 					$res[] = $this->doSet($v, $entity, $name);
 				return $res;

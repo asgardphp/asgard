@@ -72,7 +72,6 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			$form = new \Asgard\Entityform\EntityForm($entity, $params, $request, $EntityFieldSolver, $container['dataMapper']);
 			$form->setWidgetManager(clone $container['WidgetManager']);
 			$form->setTranslator($container['translator']);
-			$form->setContainer($container);
 			return $form;
 		});
 		$container->setParentClass('form', 'Asgard\Form\FormInterface');
@@ -82,7 +81,6 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			$form = new \Asgard\Form\Form($name, $params, $request, $fields);
 			$form->setWidgetManager(clone $container['WidgetManager']);
 			$form->setTranslator($container['translator']);
-			$form->setContainer($container);
 			return $form;
 		});
 
@@ -113,13 +111,13 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			return new \Asgard\Http\Browser\Browser($container['httpKernel']);
 		});
 		$container->setParentClass('cookieManager', 'Asgard\Common\BagInterface');
-		$container->register('cookieManager', function($container) {
+		$container->register('cookies', function($container) {
 			return $container['httpKernel']->getRequest()->cookie;
-		});
+		}, false);
 		$container->setParentClass('sessionManager', 'Asgard\Common\BagInterfacer');
-		$container->register('sessionManager', function($container) {
+		$container->register('session', function($container) {
 			return $container['httpKernel']->getRequest()->session;
-		});
+		}, false);
 		$container->setParentClass('html', 'Asgard\Http\Utils\HTMLInterface');
 		$container->register('html', function($container) {
 			return new \Asgard\Http\Utils\HTML($container['httpKernel']->getRequest());

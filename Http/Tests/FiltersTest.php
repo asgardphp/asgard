@@ -89,7 +89,7 @@ class FiltersTest extends \PHPUnit_Framework_TestCase {
 
 	public function testLayout() {
 		$controller = new \Asgard\Http\Tests\Fixtures\Controllers\FooController();
-		$controller->addFilter(new \Asgard\Http\Filters\PageLayout(function($content) { return '<h1>'.$content.'</h1>'; }));
+		$controller->addFilter(new \Asgard\Http\Filters\PageLayout(function($controller, $content) { return '<h1>'.$content.'</h1>'; }));
 		$res = $controller->run('page', new Request);
 
 		$this->assertEquals('<h1>hello!</h1>', $res->getContent());
