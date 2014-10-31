@@ -25,23 +25,23 @@ trait ViewableTrait {
 	/**
 	 * Render the method of a class.
 	 * @param  string $method method name
-	 * @param  array  $args   arguments
+	 * @param  array  $params   arguments
 	 * @return string
 	 */
-	public static function fragment($method, array $args=[]) {
-		$class = get_called_class();
-		$viewable = new $class;
-		return $viewable->run($method, $args);
+	public function fragment($method, array $params=[]) {
+		return $this->runTemplate($method, $params);
 	}
 
 	/**
-	 * Render the method of an instance.
+	 * Render the method of a class statically.
 	 * @param  string $method method name
-	 * @param  array  $args   arguments
+	 * @param  array  $params   arguments
 	 * @return string
 	 */
-	public function run($method, array $args=[]) {
-		return $this->runTemplate($method, $args);
+	public static function sFragment($method, array $params=[]) {
+		$class = get_called_class();
+		$v = new $class;
+		return $v->fragment($method, $params);
 	}
 
 	/**
@@ -69,15 +69,22 @@ trait ViewableTrait {
 		$this->templatePathSolvers[] = $cb;
 	}
 
+	protected function template($template, array $params=[]) {
+		if($this->templateEngine)
+			return $this->templateEngine->createTemplate()->setParams((array)$this)->render($template, $params);
+		else
+			return $this->renderDefaultTemplate($template, $params);
+	}
+
 	/**
 	 * Render the template.
 	 * @param  string $method method name
-	 * @param  array  $args   method arguments
+	 * @param  array  $params   method arguments
 	 * @return string
 	 */
-	protected function runTemplate($method, array $args=[]) {
+	protected function runTemplate($method, array $params=[]) {
 		ob_start();
-		$result         = call_user_func_array([$this, $method], $args);
+		$result         = call_user_func_array([$this, $method], $params);
 		$viewableBuffer = ob_get_clean();
 
 		#result returned by method?
@@ -97,7 +104,7 @@ trait ViewableTrait {
 		elseif(isset($this->view) && $this->view) {
 			#with given template engine?
 			if($this->templateEngine)
-				return $this->templateEngine->createTemplate()->setParams((array)$this)->render($this->view);
+				return $this->templateEngine->createTemplate()->setParams((array)$this)->render($this->view, $params);
 			#use the default render technique
 			else
 				return $this->renderDefaultTemplate($this->view);
@@ -121,13 +128,14 @@ trait ViewableTrait {
 	 * @param  string $file template file
 	 * @return string
 	 */
-	protected function renderDefaultTemplate($file) {
+	protected function renderDefaultTemplate($file, array $params=null) {
 		if(!file_exists($file))
 			$file = $this->solveTemplatePath($orig = $file);
 		if(!file_exists($file))
 			throw new \Exception('The template file "'.$orig.'" could not be found.');
 
-		$params = (array)$this;
+		if($params === null)
+			$params = (array)$this;
 		extract($params);
 
 		ob_start();

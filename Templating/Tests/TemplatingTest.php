@@ -12,7 +12,7 @@ class TemplatingTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testViewable() {
-		$this->assertEquals('<h1>hello world!</h1>', _Viewable::fragment('test'));
+		$this->assertEquals('<h1>hello world!</h1>', _Viewable::sFragment('test'));
 	}
 
 	public function testTemplatePathSolver() {
@@ -20,15 +20,15 @@ class TemplatingTest extends \PHPUnit_Framework_TestCase {
 		$viewable->addTemplatePathSolver(function($viewable, $template) {
 			return __DIR__.'/fixtures/'.$template.'.php';
 		});
-		$this->assertEquals('<h1>hello world, again!</h1>', $viewable->run('test1'));
+		$this->assertEquals('<h1>hello world, again!</h1>', $viewable->fragment('test1'));
 	}
 
 	public function testFragmentReturn() {
-		$this->assertEquals('This is.. Viewable!', _Viewable::fragment('test2'));
+		$this->assertEquals('This is.. Viewable!', _Viewable::sFragment('test2'));
 	}
 
 	public function testFragmentEcho() {
-		$this->assertEquals('This is.. Viewable!', _Viewable::fragment('test3'));
+		$this->assertEquals('This is.. Viewable!', _Viewable::sFragment('test3'));
 	}
 }
 
