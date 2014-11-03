@@ -206,17 +206,20 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		$container['rulesregistry']->registerNamespace('Asgard\Orm\Rules');
 
 		#Controllers Templates
-		$container['httpKernel']->addTemplatePathSolver(function($controller, $template) {
-			if(!$controller instanceof \Asgard\Http\LambdaController) {
-				$r = new \ReflectionClass($controller);
-				$controllerName = basename(str_replace('\\', DIRECTORY_SEPARATOR, get_class($controller)));
-				$controllerName = strtolower(preg_replace('/Controller$/i', '', $controllerName));
+		$container['httpKernel']->addTemplatePathSolver(function($viewable, $template) {
+			if(!$viewable instanceof \Asgard\Http\LambdaController) {
+				$r = new \ReflectionClass($viewable);
+				$viewableName = basename(str_replace('\\', DIRECTORY_SEPARATOR, get_class($viewable)));
+				$viewableName = strtolower(preg_replace('/Controller$/i', '', $viewableName));
 
-				$format = $controller->request->format();
+				if($viewable instanceof \Asgard\Http\Controller)
+					$format = $viewable->request->format();
+				else
+					$format = 'html';
 
-				$file = realpath(dirname($r->getFileName()).'/../'.$format.'/'.$controllerName.'/'.$template.'.php');
+				$file = realpath(dirname($r->getFileName()).'/../'.$format.'/'.$viewableName.'/'.$template.'.php');
 				if(!file_exists($file))
-					return realpath(dirname($r->getFileName()).'/../html/'.$controllerName.'/'.$template.'.php');
+					return realpath(dirname($r->getFileName()).'/../html/'.$viewableName.'/'.$template.'.php');
 				else
 					return $file;
 			}

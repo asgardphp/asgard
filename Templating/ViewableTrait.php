@@ -29,6 +29,7 @@ trait ViewableTrait {
 	 * @return string
 	 */
 	public function fragment($method, array $params=[]) {
+		$this->view = $method;
 		return $this->runTemplate($method, $params);
 	}
 
@@ -101,7 +102,7 @@ trait ViewableTrait {
 		elseif($viewableBuffer)
 			return $viewableBuffer;
 		#given view?
-		elseif(isset($this->view) && $this->view) {
+		elseif($this->view) {
 			#with given template engine?
 			if($this->templateEngine)
 				return $this->templateEngine->createTemplate()->setParams((array)$this)->render($this->view, $params);
