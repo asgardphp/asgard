@@ -65,6 +65,10 @@ abstract class Entity {
 		$this->locale = $locale;
 	}
 
+	public function __sleep() {
+		return ['data', 'locale'];
+	}
+
 	/**
 	 * __set magic method.
 	 * @param string $name

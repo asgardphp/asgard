@@ -250,13 +250,10 @@ class Property {
 	/**
 	 * Actually perform unserialization for a single element.
 	 * @param  string $str
-	 * @return mixed
+	 * @return string
 	 */
 	protected function doUnserialize($str) {
-		$json = json_decode($str);
-		if($json === null)
-			return $str;
-		return $json;
+		return $str;
 	}
 
 	/**
