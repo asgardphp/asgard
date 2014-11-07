@@ -29,7 +29,7 @@ class Serializer {
 							$res[$name][] = $subentity->toArrayRaw($depth-1);
 					}
 					else {
-						if($subentity == $entity->get($name, null, false))
+						if($subentity = $entity->get($name, null, false))
 							$res[$name] = $subentity->toArrayRaw($depth-1);
 						else
 							$res[$name] = null;
@@ -63,7 +63,7 @@ class Serializer {
 						$res[$name][] = $subentity->toArray($depth-1);
 				}
 				else {
-					if($subentity == $entity->get($name, null, false))
+					if($subentity = $entity->get($name, null, false))
 						$res[$name] = $subentity->toArray($depth-1);
 					else
 						$res[$name] = null;

@@ -44,15 +44,15 @@ class EntityRelation {
 
 	/**
 	 * Constructor.
-	 * @param \Asgard\Entity\Definition $Definition
+	 * @param \Asgard\Entity\Definition $definition
 	 * @param DataMapperInterface             $dataMapper
 	 * @param string                          $name
 	 * @param array                           $params
 	 */
-	public function __construct(\Asgard\Entity\Definition $Definition, DataMapperInterface $dataMapper, $name, array $params) {
-		$entityClass            = $Definition->getClass();
+	public function __construct(\Asgard\Entity\Definition $definition, DataMapperInterface $dataMapper, $name, array $params) {
+		$entityClass            = $definition->getClass();
 		$this->entityClass      = $entityClass;
-		$this->definition = $Definition;
+		$this->definition       = $definition;
 		$this->dataMapper       = $dataMapper;
 		if(isset($params['relation_type']) && ($params['relation_type'] == 'hasMany' || $params['relation_type'] == 'HMABT'))
 			$params['many'] = true;

@@ -508,13 +508,9 @@ class DAL {
 				}
 				else {
 					$res = $this->replace($key);
-					if($value instanceof Raw)
-						$res .= '='.$value;
-					else {
-						if(static::isIdentifier($key))
-							$res .= '=?';
-						$pdoparams[] = $value;
-					}
+					if(static::isIdentifier($key))
+						$res .= '=?';
+					$pdoparams[] = $value;
 					$string_conditions[] = $res;
 				}
 			}
@@ -532,7 +528,9 @@ class DAL {
 		if($brackets && count($params) > 1)
 			$result = '('.$result.')';
 
-		return [$result, \Asgard\Common\ArrayUtils::flatten($pdoparams)];
+		$pdoparams = \Asgard\Common\ArrayUtils::flatten($pdoparams);
+
+		return [$result, $pdoparams];
 	}
 
 	/**
@@ -793,6 +791,19 @@ class DAL {
 		return implode(', ', $tables);
 	}
 
+	protected function replaceRaws(&$sql, &$params) {
+		$i = 0;
+		$sql = preg_replace_callback('/\?/', function($match) use(&$i, $params) {
+			if($params[$i] instanceof Raw) {
+				$r = $params[$i];
+				unset($params[$i]);
+				return (string)$r;
+			}
+			else
+				return '?';
+		}, $sql);
+	}
+
 	/**
 	 * Build a SELECT SQL query.
 	 * @return string
@@ -813,8 +824,12 @@ class DAL {
 		list($where, $whereparams) = $this->buildWhere();
 		$params = array_merge($params, $whereparams);
 
+		$sql = 'SELECT '.$columns.' FROM '.$tables.$jointures.$where.$groupby.$orderBy.$limit;
+
+		$this->replaceRaws($sql, $params);
+
 		$this->params = $params;
-		return 'SELECT '.$columns.' FROM '.$tables.$jointures.$where.$groupby.$orderBy.$limit;
+		return $sql;
 	}
 
 	/**
@@ -848,10 +863,12 @@ class DAL {
 
 		list($where, $whereparams) = $this->buildWhere();
 		$params = array_merge($params, $whereparams);
+		$sql = 'UPDATE '.$tables.$jointures.$str.$where.$orderBy.$limit;
 
+		$this->replaceRaws($sql, $params);
 
 		$this->params = $params;
-		return 'UPDATE '.$tables.$jointures.$str.$where.$orderBy.$limit;
+		return $sql;
 	}
 
 	/**
@@ -873,15 +890,19 @@ class DAL {
 		list($where, $whereparams) = $this->buildWhere();
 		$params = array_merge($params, $whereparams);
 
-		$this->params = $params;
 		if($del_tables) {
 			foreach($del_tables as $k=>$v)
 				$del_tables[$k] = '`'.$v.'`';
 			$del_tables = implode(', ', $del_tables);
-			return 'DELETE '.$del_tables.' FROM '.$tables.$jointures.$where.$orderBy.$limit;
+			$sql = 'DELETE '.$del_tables.' FROM '.$tables.$jointures.$where.$orderBy.$limit;
 		}
 		else
-			return 'DELETE FROM '.$tables.$jointures.$where.$orderBy.$limit;
+			$sql = 'DELETE FROM '.$tables.$jointures.$where.$orderBy.$limit;
+
+		$this->replaceRaws($sql, $params);
+		$this->params = $params;
+
+		return $sql;
 	}
 
 	/**
@@ -915,8 +936,12 @@ class DAL {
 		}
 		$str = ' ('.implode(', ', $cols).') VALUES ('.implode(', ', $values).')';
 
+		$sql = 'INSERT INTO '.$into.$str;
+
+		$this->replaceRaws($sql, $params);
 		$this->params = $params;
-		return 'INSERT INTO '.$into.$str;
+
+		return $sql;
 	}
 
 	/**
