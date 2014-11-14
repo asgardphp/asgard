@@ -54,16 +54,17 @@ class Debug {
 	 * @param  array  $backtrace
 	 * @return string
 	 */
-	public static function getReport(array $backtrace) {
-		$request = \Asgard\Http\Request::singleton();
-
+		public static function getReport(array $backtrace) {
 		$r = '';
+
 		if(php_sapi_name() === 'cli')
 			$r .= static::getCLIBacktrace($backtrace);
 		else {
+			$request = \Asgard\Http\Request::singleton();
 			$r .= static::getHTMLBacktrace($request, $backtrace);
 			$r .= static::getHTMLRequest($request);
 		}
+
 		return $r;
 	}
 

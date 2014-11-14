@@ -12,6 +12,11 @@ trait ViewableTrait {
 	 */
 	protected $view;
 	/**
+	 * Path to default view file.
+	 * @var string
+	 */
+	protected $defaultView;
+	/**
 	 * Template engine.
 	 * @var TemplateEngineInterface
 	 */
@@ -29,7 +34,7 @@ trait ViewableTrait {
 	 * @return string
 	 */
 	public function fragment($method, array $params=[]) {
-		$this->view = $method;
+		$this->defaultView = $method;
 		return $this->runTemplate($method, $params);
 	}
 
@@ -103,13 +108,27 @@ trait ViewableTrait {
 			return $viewableBuffer;
 		#given view?
 		elseif($this->view) {
-			#with given template engine?
+			#given template engine?
 			if($this->templateEngine)
 				return $this->templateEngine->createTemplate()->setParams((array)$this)->render($this->view, $params);
 			#use the default render technique
 			else
 				return $this->renderDefaultTemplate($this->view);
 		}
+		#default view
+		elseif($this->defaultView) {
+			#given template engine?
+			if($this->templateEngine) {
+				$engine = $this->templateEngine;
+				if($engine->templateExists($this->defaultView))
+					return $engine->createTemplate()->setParams((array)$this)->render($this->defaultView, $params);
+			}
+			#use the default render technique
+			elseif($this->templateExists($this->defaultView))
+				return $this->renderDefaultTemplate($this->defaultView);
+		}
+		#nothing to return
+		return null;
 	}
 
 	/**
@@ -124,23 +143,33 @@ trait ViewableTrait {
 		}
 	}
 
+	protected function templateExists($template) {
+		if(!file_exists($template)) {
+			$template = $this->solveTemplatePath($orig = $template);
+			if(!file_exists($template))
+				return false;
+		}
+		return true;
+	}
+
 	/**
 	 * Render the default template file.
 	 * @param  string $file template file
 	 * @return string
 	 */
-	protected function renderDefaultTemplate($file, array $params=null) {
-		if(!file_exists($file))
-			$file = $this->solveTemplatePath($orig = $file);
-		if(!file_exists($file))
-			throw new \Exception('The template file "'.$orig.'" could not be found.');
+	protected function renderDefaultTemplate($template, array $params=null) {
+		if(!file_exists($template)) {
+			$template = $this->solveTemplatePath($orig = $template);
+			if(!file_exists($template))
+				throw new \Exception('The template file "'.$orig.'" could not be found.');
+		}
 
 		if($params === null)
 			$params = (array)$this;
 		extract($params);
 
 		ob_start();
-		include($file);
+		include($template);
 		return ob_get_clean();
 	}
 }

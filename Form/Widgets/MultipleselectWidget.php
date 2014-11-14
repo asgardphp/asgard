@@ -22,16 +22,37 @@ class MultipleselectWidget extends \Asgard\Form\Widget {
 
 		$str = '';
 		foreach($choices as $k=>$v) {
-			if(is_array($value) && in_array($k, $value)) {
-				$str .= \Asgard\Form\HTMLHelper::tag('option', [
-					'value'	=>	$k,
-					'selected'	=>	'selected',
-				], $v);
+			if(is_array($v)) {
+				$_str = '';
+				foreach($v as $_k=>$_v) {
+					if(is_array($value) && in_array($_k, $value)) {
+						$_str .= \Asgard\Form\HTMLHelper::tag('option', [
+							'value'	=>	$_k,
+							'selected'	=>	'selected',
+						], $_v);
+					}
+					else {
+						$_str .= \Asgard\Form\HTMLHelper::tag('option', [
+							'value'	=>	$_k,
+						], $_v);
+					}
+				}
+				$str .= \Asgard\Form\HTMLHelper::tag('optgroup', [
+					'label'	=>	$k,
+				], $_str);
 			}
 			else {
-				$str .= \Asgard\Form\HTMLHelper::tag('option', [
-					'value'	=>	$k,
-				], $v);
+				if(is_array($value) && in_array($k, $value)) {
+					$str .= \Asgard\Form\HTMLHelper::tag('option', [
+						'value'	=>	$k,
+						'selected'	=>	'selected',
+					], $v);
+				}
+				else {
+					$str .= \Asgard\Form\HTMLHelper::tag('option', [
+						'value'	=>	$k,
+					], $v);
+				}
 			}
 		}
 

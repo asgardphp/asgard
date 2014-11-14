@@ -68,7 +68,7 @@ abstract class Controller {
 	 */
 	public function run($action, $request=null) {
 		$this->action = $action;
-		$this->view = $action;
+		$this->defaultView = $action;
 
 		if($request === null)
 			$request = new Request;

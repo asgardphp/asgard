@@ -60,10 +60,10 @@ class Group implements GroupInterface {
 		array $data = [],
 		$parent     = null
 		) {
-		$this->addFields($fields);
-		$this->name = $name;
 		$this->data = $data;
+		$this->name = $name;
 		$this->parent = $parent;
+		$this->addFields($fields);
 	}
 
 	/**

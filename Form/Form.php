@@ -11,7 +11,6 @@ class Form extends Group implements FormInterface {
 	 * @var array
 	 */
 	protected $options = [
-		'method' => 'post',
 		'action' => '',
 	];
 	/**
@@ -131,6 +130,7 @@ class Form extends Group implements FormInterface {
 	 */
 	public function setMethod($method) {
 		$this->method = $method;
+		$this->fetch();
 		return $this;
 	}
 
@@ -338,15 +338,20 @@ class Form extends Group implements FormInterface {
 			if($file->error() === 4)
 				unset($files[$k]);
 		}
+		
+		if($this->getMethod() == 'GET')
+			$input = $this->getRequest()->get;
+		else
+			$input = $this->getRequest()->post;
 
 		$this->data = [];
 		if($this->name) {
 			$this->setData(
-				$this->getRequest()->post->get($this->name, []) + $files
+				$input->get($this->name, []) + $files
 			);
 		}
 		else
-			$this->setData($this->getRequest()->post->all() + $files);
+			$this->setData($input->all() + $files);
 
 		return $this;
 	}

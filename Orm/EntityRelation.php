@@ -215,7 +215,7 @@ class EntityRelation {
 		if($this->reverseRelation !== null)
 			return $this->reverseRelation;
 
-		$origEntityName = strtolower($this->entityClass);
+		$origEntityName = $this->entityClass;
 		$entityName = preg_replace('/^\\\/', '', $origEntityName);
 
 		$relationDefinition = $this->getTargetDefinition();
@@ -223,16 +223,26 @@ class EntityRelation {
 
 		$rev_relations = [];
 		foreach($this->dataMapper->relations($relationDefinition) as $rev_rel_name=>$rev_rel) {
-			$relEntityClass = preg_replace('/^\\\/', '', strtolower($rev_rel->get('entity')));
-
-			if($relEntityClass == $entityName || $this->get('as') == $rev_rel->get('entity')) {
-				if($rev_rel_name == $name)
-					continue;
-				if($this->get('for') !== null && $this->get('for') !== $rev_rel_name)
-					continue;
-				if($rev_rel->get('for') !== null && $rev_rel->get('for') !== $name)
-					continue;
-				$rev_relations[] = $rev_rel;
+			if($rev_rel->isPolymorphic()) {
+				if(in_array($entityName, $rev_rel->get('entities'))) {
+					if($this->get('for') !== null && $this->get('for') !== $rev_rel_name)
+						continue;
+					if($rev_rel->get('for') !== null && $rev_rel->get('for') !== $name)
+						continue;
+					$rev_relations[] = $rev_rel;
+				}
+			}
+			else {
+				$relEntityClass = preg_replace('/^\\\/', '', $rev_rel->get('entity'));
+				if($relEntityClass === $entityName || $this->get('as') === $rev_rel->get('entity')) {
+					if($rev_rel_name === $name)
+						continue;
+					if($this->get('for') !== null && $this->get('for') !== $rev_rel_name)
+						continue;
+					if($rev_rel->get('for') !== null && $rev_rel->get('for') !== $name)
+						continue;
+					$rev_relations[] = $rev_rel;
+				}
 			}
 		}
 
