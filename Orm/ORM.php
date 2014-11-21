@@ -255,7 +255,7 @@ class ORM implements ORMInterface {
 	*/
 	public function values($property) {
 		$res = [];
-		foreach($this->get() as $one)
+		while($one = $this->next())
 			$res[] = $one->get($property);
 		return $res;
 	}

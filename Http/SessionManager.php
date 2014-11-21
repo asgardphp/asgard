@@ -12,6 +12,8 @@ class SessionManager implements \Asgard\Common\BagInterface {
 	public function __construct() {
 		if(headers_sent())
 			return;
+		if(session_status() !== PHP_SESSION_NONE)
+			return;
 		if(isset($_SERVER['PHPSESSID']))
 			session_id($_SERVER['PHPSESSID']);
 		elseif(isset($_POST['PHPSESSID']))
