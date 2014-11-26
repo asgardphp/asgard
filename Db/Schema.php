@@ -295,7 +295,7 @@ class BuildTable {
 		}
 
 		foreach($this->indexes as $name=>$index) {
-			$sql .= ",\n".$index['type'].' KEY `'.$name.'` (';
+			$sql .= ",\n".$index['type'].' `'.$name.'` (';
 			$keys = [];
 			foreach($index['columns'] as $k=>$col)
 				$keys[] = '`'.$col.'`'.(isset($index['lengths'][$k]) ? '('.$index['lengths'][$k].')':'');
@@ -414,7 +414,7 @@ class Table {
 		else
 			$name = '';
 
-		$sql = 'ALTER TABLE  `'.$this->name.'` ADD '.$type.' KEY '.$name.' (';
+		$sql = 'ALTER TABLE  `'.$this->name.'` ADD '.$type.($type == 'PRIMARY' ? ' KEY':'').' '.$name.' (';
 		foreach($index['columns'] as $k=>$col)
 			$keys[] = '`'.$col.'`'.(isset($index['lengths'][$k]) ? '('.$index['lengths'][$k].')':'');
 		$sql .= implode(', ', $keys);
@@ -744,7 +744,7 @@ class Column {
 	 * @return Column $this
 	 */
 	public function primary() {
-		$sql = 'ALTER TABLE `'.$this->table.'` ADD PRIMARY (`'.$this->name.'`)';
+		$sql = 'ALTER TABLE `'.$this->table.'` ADD PRIMARY KEY (`'.$this->name.'`)';
 		$this->db->query($sql);
 
 		return $this;

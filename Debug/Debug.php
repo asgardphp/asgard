@@ -279,7 +279,10 @@ EOT;
 
 		ob_start();
 		var_dump($var);
-		$str = ob_get_contents();
+		if(ob_get_length() > 1024)
+			$str = '['.gettype($var).' - too big to display]';
+		else
+			$str = ob_get_contents();
 		ob_end_clean();
 		return $str;
 	}

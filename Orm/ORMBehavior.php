@@ -24,7 +24,7 @@ class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\Pers
 	public function load(\Asgard\Entity\Definition $definition) {
 		$this->entityClass = $definition->getClass();
 
-		if(!isset($definition->order_by))
+		if(!$definition->has('order_by'))
 			$definition->set('order_by', 'id DESC');
 
 		$definition->hook('get', [$this, 'hookGet']);

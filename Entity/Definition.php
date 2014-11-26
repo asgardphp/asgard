@@ -372,12 +372,22 @@ class Definition {
 
 	/**
 	 * Set a meta data.
-	 * @param string $name
-	 * @param mixed  $value
+	 * @param  string $name
+	 * @param  mixed  $value
+	 * @return Definition $this
 	 */
 	public function set($name, $value) {
 		$this->metas[$name] = $value;
 		return $this;
+	}
+
+	/**
+	 * Check if a meta data exists.
+	 * @param  string $name
+	 * @return boolean
+	 */
+	public function has($name) {
+		return isset($this->metas[$name]);
 	}
 
 	/**

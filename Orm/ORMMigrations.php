@@ -19,7 +19,7 @@ class ORMMigrations {
 
 	/**
 	 * Constructor.
-	 * @param DataMapperInterface                          $dataMapper
+	 * @param DataMapperInterface                         $dataMapper
 	 * @param \Asgard\Migration\MigrationManagerInterface $MigrationManager
 	 */
 	public function __construct(DataMapperInterface $dataMapper, \Asgard\Migration\MigrationManagerInterface $MigrationManager=null) {
@@ -30,7 +30,7 @@ class ORMMigrations {
 	/**
 	 * Automatically migrate given entity definitions.
 	 * @param  array|\Asgard\Entity\Definition $definitions
-	 * @param  \Asgard\Db\SchemaInterface                     $schema
+	 * @param  \Asgard\Db\SchemaInterface      $schema
 	 */
 	public function autoMigrate($definitions, \Asgard\Db\SchemaInterface $schema) {
 		if(!is_array($definitions))
@@ -41,8 +41,8 @@ class ORMMigrations {
 	/**
 	 * Generate a migration from given entity definitions.
 	 * @param  array|\Asgard\Entity\Definition $definitions
-	 * @param  string                                $migrationName
-	 * @return string                                name of migration
+	 * @param  string                          $migrationName
+	 * @return string                          name of migration
 	 */
 	public function generateMigration($definitions, $migrationName) {
 		if(!is_array($definitions))
@@ -197,9 +197,9 @@ class ORMMigrations {
 
 			if(isset($definition->get('orm')['indexes'])) {
 				foreach($definition->get('orm')['indexes'] as $index) {
-					if(count($index['columns']) === 1) {
+					if(count($index['columns']) === 1 && strtoupper($index['type']) !== 'INDEX') {
 						$column = $index['columns'][0];
-						$schema[$column]['key'] = $index['type'];
+						$schema['columns'][$column]['key'] = strtoupper($index['type']);
 						#todo column index length
 					}
 					else {
@@ -383,7 +383,7 @@ class ORMMigrations {
 						unset($diff['position']);
 					}
 					if($diff)
-						$colsRes .=  $this->updateColumn($col, $diff);
+						$colsRes .= $this->updateColumn($col, $diff);
 				}
 			}
 			foreach($oldColumns as $col=>$params) {
@@ -395,12 +395,12 @@ class ORMMigrations {
 			foreach($newIndexes as $indexName=>$index) {
 				#if the index or its name is not in the old indexes
 				if(!in_array($index, $oldIndexes) || !in_array($indexName, array_keys($oldIndexes)))
-					$colsRes .=  $this->createIndex($indexName, $index);
+					$colsRes .= $this->createIndex($indexName, $index);
 			}
 			foreach($oldIndexes as $indexName=>$index) {
 				#if the index or its name is only in the old indexes
 				if(!in_array($index, $newIndexes) || !in_array($indexName, array_keys($newIndexes)))
-					$colsRes .=  $this->dropIndex($indexName);
+					$colsRes .= $this->dropIndex($indexName);
 			}
 
 			if($colsRes)
@@ -485,6 +485,8 @@ class ORMMigrations {
 				$res .= "\n		->primary()";
 			elseif($params['key'] === 'UNIQUE')
 				$res .= "\n		->unique()";
+			elseif($params['key'] === 'INDEX')
+				$res .= "\n		->index()";
 			elseif($params['key'] === null)
 				$res .= "\n		->dropIndex()";
 		}
