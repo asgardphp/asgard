@@ -206,20 +206,15 @@ class Resolver implements ResolverInterface {
 	 */
 	public static function buildRoute($route, array $params=[]) {
 		foreach($params as $symbol=>$param) {
+			if(is_array($param))
+				continue;
 			$count = 0;
 			$route = str_replace(':'.$symbol, $param, $route, $count);
 			if($count)
 				unset($params[$symbol]);
 		}
 		if($params)
-			$route .= '?';
-		$i=0;
-		foreach($params as $symbol=>$param) {
-			if($i > 0)
-				$route .= '&;';
-			$route .= urlencode($symbol).'='.urlencode($param);
-			$i++;
-		}
+			$route .= '?'.http_build_query($params);
 
 		if(preg_match('/:([a-zA-Z0-9_]+)/', $route))
 			throw new \Exception('Missing parameter for route: '.$route);
