@@ -12,24 +12,40 @@ class Flash {
 	 */
 	protected $messages = [];
 	/**
-	 * Session dependency.
-	 * @var \Asgard\Common\BagInterface
+	 * Kernel dependency.
+	 * @var \Asgard\Http\HttpKernel
 	 */
-	protected $session;
+	protected $kernel;
 	/**
 	 * Display callback.
 	 * @var callable
 	 */
 	protected $cb;
+	/**
+	 * Fetched flag.
+	 * @var boolean
+	 */
+	protected $fetched;
 
 	/**
 	 * Constructor.
-	 * @param \Asgard\Http\SessionManager $session
+	 * @param \Asgard\Http\HttpKernel $kernel
 	 */
-	public function __construct(\Asgard\Common\BagInterface $session) {
-		$this->session = $session;
-		if($session->has('messages'))
-			$this->messages = $session['messages'];
+	public function __construct(\Asgard\Http\HttpKernel $kernel) {
+		$this->kernel = $kernel;
+	}
+
+	/**
+	 * Fetch messages.
+	 * @return Flash $this
+	 */
+	protected function fetch() {
+		if($this->fetched)
+			return;
+		if($this->kernel->getRequest()->session->has('messages'))
+			$this->messages = $this->kernel->getRequest()->session['messages'];
+		$this->fetched = true;
+		return $this;
 	}
 
 	/**
@@ -37,7 +53,7 @@ class Flash {
 	 * @return string
 	 */
 	protected function persist() {
-		$this->session['messages'] = $this->messages;
+		$this->kernel->getRequest()->session['messages'] = $this->messages;
 	}
 
 	/**
@@ -78,6 +94,8 @@ class Flash {
 	 * @param string $message
 	 */
 	public function add($type, $message) {
+		$this->fetch();
+
 		if(isset($message[$type]) && is_array($message[$type]))
 			$this->messages[$type] = array_merge($this->messages[$type], $message);
 		else
@@ -103,6 +121,10 @@ class Flash {
 	 * @param  callable $cb
 	 */
 	public function show($type, $cat=null, $cb=null) {
+		$this->fetch();
+		
+		if(!$cb)
+			$cb = $this->cb;
 		if($cat)
 			$messages = isset($this->messages[$type][$cat]) ? \Asgard\Common\ArrayUtils::flatten($this->messages[$type][$cat]):[];
 		else
@@ -118,5 +140,15 @@ class Flash {
 		else
 			$this->messages[$type] = [];
 		$this->persist();
+	}
+
+	/**
+	 * Set the display callback.
+	 * @param  callable $cb
+	 * @return Flash $this
+	 */
+	public function setCallback(callable $cb) {
+		$this->cb = $cb;
+		return $this;
 	}
 }

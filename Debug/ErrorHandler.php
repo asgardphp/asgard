@@ -31,6 +31,21 @@ class ErrorHandler {
 	 * @var \Psr\Log\LoggerInterface
 	 */
 	protected $logger;
+	/**
+	 * Debug flag.
+	 * @var boolean
+	 */
+	protected $debug;
+
+	/**
+	 * Set debug flag.
+	 * @param  boolean $debug
+	 * @return ErrorHandler $this
+	 */
+	public function setDebug($debug) {
+		$this->debug = $debug;
+		return $this;
+	}
 
 	/**
 	 * Register the PHP error handler.
@@ -101,8 +116,12 @@ class ErrorHandler {
 				];
 				array_unshift($trace, $lastStep);
 			}
-			else
-				$trace = array_slice(array_reverse($trace), 1);
+			else {
+				$trace = [[
+					'line' => $e->getLine(),
+					'file' => $e->getFile(),
+				]];
+			}
 		}
 
 		return $trace;
@@ -147,20 +166,26 @@ class ErrorHandler {
 		$this->logException($e);
 
 		if($kill) {
-			$trace = $this->getBacktraceFromException($e);
+			if(!headers_sent())
+				header(isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL']:''.' 500 Internal Server Error', true, 500);
+			if($this->debug) {
+				$trace = $this->getBacktraceFromException($e);
 
-			if($e instanceof PSRException)
-				$msg = $e->getMessage();
-			elseif($e instanceof \ErrorException)
-				$msg = 'PHP ('.static::getPHPError($e->getCode()).'): '.$e->getMessage();
+				if($e instanceof PSRException)
+					$msg = $e->getMessage();
+				elseif($e instanceof \ErrorException)
+					$msg = 'PHP ('.static::getPHPError($e->getCode()).'): '.$e->getMessage();
+				else
+					$msg = get_class($e).': '.$e->getMessage();
+
+				$result = '';
+				if($msg)
+					$result .= $msg."\n\n";
+				$result .= Debug::getReport($trace);
+				echo $result;
+			}
 			else
-				$msg = get_class($e).': '.$e->getMessage();
-
-			$result = '';
-			if($msg)
-				$result .= $msg."\n\n";
-			$result .= Debug::getReport($trace);
-			echo $result;
+				echo 'Something went wrong.';
 			exit(1);
 		}
 	}

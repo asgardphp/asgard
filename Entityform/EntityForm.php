@@ -118,7 +118,7 @@ class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function addRelation($name) {
+	public function addRelation($name, $cb=null) {
 		$entity = $this->entity;
 		$dataMapper = $this->dataMapper;
 		if(!$dataMapper)
@@ -128,6 +128,8 @@ class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 
 		$ids = [''=>$this->getTranslator()->trans('Choose')];
 		$orm = $dataMapper->orm($relation->get('entity'));
+		if($cb)
+			$cb($orm);
 		while($v = $orm->next())
 			$ids[$v->id] = (string)$v;
 

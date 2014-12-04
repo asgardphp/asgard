@@ -382,7 +382,7 @@ class ORM implements ORMInterface {
 			case 'belongsTo':
 				$link = $relation->getLink();
 				$table = $this->dataMapper->getTable($relationDefinition);
-				$dal->rightjoin([
+				$dal->innerjoin([
 					$table.' '.$alias => $this->processConditions([
 						$ref_table.'.'.$link.' = '.$alias.'.id'
 					])
@@ -391,19 +391,19 @@ class ORM implements ORMInterface {
 			case 'hasMany':
 				$link = $relation->getLink();
 				$table = $this->dataMapper->getTable($relationDefinition);
-				$dal->rightjoin([
+				$dal->innerjoin([
 					$table.' '.$alias => $this->processConditions([
 						$ref_table.'.id'.' = '.$alias.'.'.$link
 					])
 				]);
 				break;
 			case 'HMABT':
-				$dal->rightjoin([
+				$dal->innerjoin([
 					$relation->getAssociationTable($this->prefix) => $this->processConditions([
 						$relation->getAssociationTable($this->prefix).'.'.$relation->getLinkA().' = '.$ref_table.'.id',
 					])
 				]);
-				$dal->rightjoin([
+				$dal->innerjoin([
 					$this->dataMapper->getTable($relationDefinition).' '.$alias => $this->processConditions([
 						$relation->getAssociationTable($this->prefix).'.'.$relation->getLinkB().' = '.$alias.'.id',
 					])
@@ -459,7 +459,7 @@ class ORM implements ORMInterface {
 						$res = $orm->get();
 						foreach($entities as $entity) {
 							$id = $entity->$link;
-							$filter = array_filter($res, function($result) use ($id) {
+							$filter = array_filter($res, function($result) use($id) {
 								return ($id == $result->id);
 							});
 							$filter = array_values($filter);
@@ -478,7 +478,7 @@ class ORM implements ORMInterface {
 						$res = $orm->get();
 						foreach($entities as $entity) {
 							$id = $entity->id;
-							$filter = array_filter($res, function($result) use ($id, $link) {
+							$filter = array_filter($res, function($result) use($id, $link) {
 								return ($id == $result->$link);
 							});
 							$filter = array_values($filter);

@@ -18,7 +18,7 @@ class PasswordProperty extends \Asgard\Entity\Property {
 	 */
 	public function doSet($val, \Asgard\Entity\Entity $entity, $name) {
 		try {
-			$key = $entity->getDefinition()->getEntitiesManager()->getContainer()['config']['key'];
+			$key = $entity->getDefinition()->getEntityManager()->getContainer()['config']['key'];
 		} catch(\Exception $e) {
 			$key = '';
 		}

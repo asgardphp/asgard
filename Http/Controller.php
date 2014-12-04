@@ -142,7 +142,7 @@ abstract class Controller {
 	 * @return Utils\Flash
 	 */
 	public function getFlash() {
-		return new Utils\Flash($this->request->session);
+		return $this->container['flash'];
 	}
 
 	/**

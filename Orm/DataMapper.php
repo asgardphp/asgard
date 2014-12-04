@@ -114,7 +114,7 @@ class DataMapper implements DataMapperInterface {
 			$orms = [];
 
 			foreach($entity->getDefinition()->relations() as $name=>$relation) {
-				if(isset($relation['cascade']['delete']) && $relation['cascade']['delete']) {
+				if(isset($relation->get('cascade')['delete']) && $relation->get('cascade')['delete']) {
 					$orm = $this->related($entity, $name);
 					if(!is_object($orm))
 						continue;
@@ -169,7 +169,6 @@ class DataMapper implements DataMapperInterface {
 
 	public function createValidator(\Asgard\Entity\Entity $entity) {
 		$validator = $entity->getDefinition()->getEntityManager()->createValidator();
-		$validator->set('dataMapper', $this);
 		return $validator;
 	}
 
@@ -187,6 +186,7 @@ class DataMapper implements DataMapperInterface {
 	 * {@inheritDoc}
 	 */
 	public function prepareValidator($entity, $validator) {
+		$validator->set('dataMapper', $this);
 		foreach($entity->getDefinition()->properties() as $name=>$property) {
 			if($rules = $property->get('ormValidation'))
 				$validator->attribute($name, $rules);

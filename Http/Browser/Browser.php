@@ -25,7 +25,7 @@ class Browser implements BrowserInterface {
 	 * CatchException parameter.
 	 * @var boolean
 	 */
-	protected $catchException = false;
+	protected $catchException = true;
 	/**
 	 * Http Kernel dependency.
 	 * @var \Asgard\Http\HttpKernelInterface

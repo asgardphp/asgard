@@ -30,7 +30,7 @@ class Group implements GroupInterface {
 	 * Fields.
 	 * @var array
 	 */
-	protected $fields = [];
+	public $fields = [];
 	/**
 	 * Errors.
 	 * @var array

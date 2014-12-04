@@ -280,7 +280,7 @@ EOT;
 		ob_start();
 		var_dump($var);
 		if(ob_get_length() > 1024)
-			$str = '['.gettype($var).' - too big to display]';
+			$str = '['.(is_object($var) ? get_class($var):gettype($var)).' - too big to display]';
 		else
 			$str = ob_get_contents();
 		ob_end_clean();

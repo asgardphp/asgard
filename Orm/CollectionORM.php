@@ -156,18 +156,22 @@ class CollectionORM extends ORM implements CollectionORMInterface {
 	/**
 	 * {@inheritDoc}
 	 */
+	public function make(array $params=[]) {
+		$new = $this->relation->getTargetDefinition()->make($params);
+		$reverse = $this->relation->reverse();
+		$revName = $reverse->getName();
+		if($reverse->get('many'))
+			$new->{$revName}->add($this->parent);
+		else
+			$new->set($revName, $this->parent);
+		return $new;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public function create(array $params=[]) {
-		$new = $this->relation->getTargetDefinition()->make();
-		switch($this->relation->type()) {
-			case 'hasMany':
-				$params[$this->relation->getLink()] = $this->parent->id;
-				$this->dataMapper->save($new, $params);
-				break;
-			case 'HMABT':
-				$this->dataMapper->save($new, $params);
-				$this->add($new->id);
-				break;
-		}
+		$new = $this->make($params);
 		return $new;
 	}
 
