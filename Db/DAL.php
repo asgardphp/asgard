@@ -499,7 +499,17 @@ class DAL {
 		$pdoparams = [];
 
 		foreach($params as $key=>$value) {
-			if(!is_array($value)) {
+			if(is_int($key) || $key == 'and' || $key == 'or') {
+				if(is_int($key))
+					$key = 'and';
+				$r = $this->processConditions($value, $key, $brackets || count($params) > 1, $table);
+				$string_conditions[] = $r[0];
+				if(is_array($r[1]))
+					$pdoparams = array_merge($pdoparams, $r[1]);
+				else
+					$pdoparams[] = $r[1];
+			}
+			else {
 				if(is_int($key)) {
 					if(static::isIdentifier($value))
 						$string_conditions[] = $this->replace($value).' IS NULL';
@@ -510,16 +520,12 @@ class DAL {
 					$res = $this->replace($key);
 					if(static::isIdentifier($key))
 						$res .= '=?';
-					$pdoparams[] = $value;
+					if(is_array($value))
+						$pdoparams = array_merge($pdoparams, $value);
+					else
+						$pdoparams[] = $value;
 					$string_conditions[] = $res;
 				}
-			}
-			else {
-				if(is_int($key))
-					$key = 'and';
-				$r = $this->processConditions($value, $key, $brackets || count($params) > 1, $table);
-				$string_conditions[] = $r[0];
-				$pdoparams[] = $r[1];
 			}
 		}
 
