@@ -499,7 +499,8 @@ class DAL {
 		$pdoparams = [];
 
 		foreach($params as $key=>$value) {
-			if(is_int($key) || $key == 'and' || $key == 'or') {
+			#multiple conditions
+			if(is_array($value) && (is_int($key) || $key == 'and' || $key == 'or')) {
 				if(is_int($key))
 					$key = 'and';
 				$r = $this->processConditions($value, $key, $brackets || count($params) > 1, $table);
