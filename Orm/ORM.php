@@ -201,7 +201,7 @@ class ORM implements ORMInterface {
 	/**
 	 * Converts a raw array to an entity.
 	 *
-	 * @param array                           $raw
+	 * @param array                     $raw
 	 * @param \Asgard\Entity\Definition $definition The definition of the entity to be instantiated.
 	 *
 	 * @return \Asgard\Entity\Entity

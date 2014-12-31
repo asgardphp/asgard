@@ -16,7 +16,8 @@ interface CollectionORMInterface extends ORMInterface {
 
 	/**
 	 * Add new entities to the relation.
-	 * @param integer|array $ids
+	 * @param  integer|array $ids
+	 * @return integer       number of added elements
 	 */
 	public function add($ids);
 

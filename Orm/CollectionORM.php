@@ -121,11 +121,14 @@ class CollectionORM extends ORM implements CollectionORMInterface {
 	 * {@inheritDoc}
 	 */
 	public function add($ids) {
+		$res = 0;
+
 		if(!is_array($ids))
 			$ids = [$ids];
-		foreach($ids as $k=>$id)
+		foreach($ids as $k=>$id) {
 			if($id instanceof \Asgard\Entity\Entity)
 				$ids[$k] = (int)$id->id;
+		}
 
 		$dal = $this->dataMapper->getDB()->dal();
 		switch($this->relation->type()) {
@@ -133,24 +136,25 @@ class CollectionORM extends ORM implements CollectionORMInterface {
 				$relationDefinition = $this->relation->getTargetDefinition();
 				$table = $this->dataMapper->getTable($relationDefinition);
 				foreach($ids as $id)
-					$dal->reset()->from($table)->where(['id' => $id])->update([$this->relation->getLink() => $this->parent->id]);
+					$res += $dal->reset()->from($table)->where(['id' => $id])->update([$this->relation->getLink() => $this->parent->id]);
 				break;
 			case 'HMABT':
 				$table = $this->relation->getAssociationTable();
 				$i = 1;
 				foreach($ids as $id) {
-					$dal->reset()->from($table)->where([$this->relation->getLinkA() => $this->parent->id, $this->relation->getLinkB() => $id])->delete();
+					$res -= $dal->reset()->from($table)->where([$this->relation->getLinkA() => $this->parent->id, $this->relation->getLinkB() => $id])->delete();
 					if($this->relation->get('sortable'))
 						$dal->insert([$this->relation->getLinkA() => $this->parent->id, $this->relation->getLinkB() => $id, $this->relation->getPositionField() => $i++]);
 					else
 						$dal->insert([$this->relation->getLinkA() => $this->parent->id, $this->relation->getLinkB() => $id]);
+					$res += 1;
 				}
 				break;
 			default:
 				throw new \Exception('Collection only works with hasMany and HMABT');
 		}
 
-		return $this;
+		return $res;
 	}
 
 	/**
@@ -172,6 +176,7 @@ class CollectionORM extends ORM implements CollectionORMInterface {
 	 */
 	public function create(array $params=[]) {
 		$new = $this->make($params);
+		$new->save();
 		return $new;
 	}
 
@@ -188,15 +193,15 @@ class CollectionORM extends ORM implements CollectionORMInterface {
 
 		switch($this->relation->type()) {
 			case 'hasMany':
-				$relation_entity = $this->relation['entity'];
-				$dal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->dataMapper->getTable($relation_entity));
+				$targetDefinition = $this->relation->getTargetDefinition();
+				$dal = $this->dataMapper->getDB()->dal()->from($this->dataMapper->getTable($targetDefinition));
 				foreach($ids as $id)
-					$dal->reset()->where(['id' => $id])->update([$this->relation->getLink() => 0]);
+					$dal->where(['id' => $id])->update([$this->relation->getLink() => 0]);
 				break;
 			case 'HMABT':
-				$dal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->relation->getAssociationTable());
+				$dal = $this->dataMapper->getDB()->dal()->from($this->relation->getAssociationTable());
 				foreach($ids as $id)
-					$dal->reset()->where([$this->relation->getLinkA() => $this->parent->id, $this->relation->getLinkB() => $id])->delete();
+					$dal->where([$this->relation->getLinkA() => $this->parent->id, $this->relation->getLinkB() => $id])->delete();
 				break;
 			default:
 				throw new \Exception('Collection only works with hasMany and HMABT');

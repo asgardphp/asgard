@@ -545,7 +545,12 @@ class Column {
 				$after = ' AFTER `'.$params['after'].'`';
 		}
 
-		$sql = 'ALTER TABLE `'.$table.'` CHANGE `'.$oldcol.'` `'.$newcol.'` '.$type.' '.$default.' '.$nullable.' '.$autoincrement.' '.$after;
+		if($oldcol !== $newcol) {
+			$sql = 'ALTER TABLE `'.$table.'` CHANGE `'.$oldcol.'` `'.$newcol.'` '.$type;
+			$this->db->query($sql);
+		}
+
+		$sql = 'ALTER TABLE `'.$table.'` MODIFY `'.$newcol.'` '.$type.' '.$default.' '.$nullable.' '.$autoincrement.' '.$after;
 		$this->db->query($sql);
 	}
 
