@@ -218,7 +218,7 @@ class ORM implements ORMInterface {
 	 *
 	 * @param \Asgard\Entity\Entity $entity
 	 * @param array                 $data
-	 * @param string           $locale Only necessary if the data concerns a specific locale.
+	 * @param string                $locale Only necessary if the data concerns a specific locale.
 	 *
 	 * @return \Asgard\Entity\Entity
 	*/
@@ -376,6 +376,9 @@ class ORM implements ORMInterface {
 		$relationDefinition = $relation->getTargetDefinition();
 		if($alias === null)
 			$alias = $relationName;
+		if($alias == $this->getTable())
+			$alias = $alias.'2';
+		#todo conflict betweeen jointures
 
 		switch($relation->type()) {
 			case 'hasOne':
@@ -615,6 +618,8 @@ class ORM implements ORMInterface {
 	 * {@inheritDoc}
 	*/
 	public function where($conditions, $val=null) {
+		if(!$conditions)
+			return $this;
 		if($val === null) {
 			if(!is_array($conditions))
 				$conditions = [$conditions];
