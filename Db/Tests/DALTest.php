@@ -15,7 +15,7 @@ class DALTest extends \PHPUnit_Framework_TestCase {
 		];
 		static::$db = new \Asgard\Db\DB($config);
 		$mysql = new \Asgard\Db\MySQL($config);
-		$mysql->import(__dir__.'/sql/dal.sql');
+		$mysql->import(__DIR__.'/sql/dal.sql');
 	}
 
 	protected static function getDAL() {

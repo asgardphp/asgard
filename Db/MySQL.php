@@ -36,7 +36,7 @@ class MySQL {
 		$user = $this->config['user'];
 		$pwd = $this->config['password'];
 		$db = $this->config['database'];
-		$cmd = 'mysql -h '.$host.' -u '.$user.($pwd ? ' -p'.$pwd:'').' '.$db.' < '.realpath($src);
+		$cmd = 'mysql -h '.$host.' -u '.$user.($pwd ? ' -p'.$pwd:'').' '.$db.' < "'.realpath($src).'"';
 		$process = proc_open($cmd,
 			[
 				0 => ["pipe", "r"],
