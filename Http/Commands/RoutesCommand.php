@@ -36,7 +36,7 @@ class RoutesCommand extends \Asgard\Console\Command {
 	 * {@inheritDoc}
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
-		$table = $this->getHelperSet()->get('table');
+		$table = new \Symfony\Component\Console\Helper\Table($this->output);
 		$table->setHeaders(['Method', 'Host', 'URL', 'Controller', 'Action']);
 
 		$routes = $this->resolver->sortRoutes()->getRoutes();
