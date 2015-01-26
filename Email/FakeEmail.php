@@ -8,15 +8,15 @@ namespace Asgard\Email;
 class FakeEmail implements DriverInterface {
 	/**
 	 * The destination file.
-	 * @var string
+	 * @var transport
 	 */
-	protected $file;
+	protected $transport;
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function transport($file) {
-		$this->file = $file;
+	public function transport($transport) {
+		$this->transport = $transport;
 	}
 
 	/**
@@ -28,7 +28,7 @@ class FakeEmail implements DriverInterface {
 		$cb($message);
 
 		$result = $message->toString();
-		file_put_contents($this->file, $result);
+		file_put_contents($this->transport['file'], $result);
 
 		return true;
 	}

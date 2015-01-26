@@ -214,6 +214,9 @@ class GenerateCommand extends \Asgard\Console\Command {
 			}
 		}
 
+		foreach($bundles as $name=>$bundle)
+			$asgard['hooks']->trigger('Asgard.Core.Generate.postBundleBuild', [&$bundle, $root.'app/'.ucfirst($bundle['name']).'/', $generator]);
+
 
 		$this->info('Bundles created: '.implode(', ', array_keys($bundles)));
 	}
