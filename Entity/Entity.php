@@ -198,8 +198,8 @@ abstract class Entity {
 			if($locales && $property->get('i18n')) {
 				foreach($locales as $locale) {
 					if($property->get('many')) {
-						if($this->get($name) instanceof ManyCollection) {
-							foreach($this->get($name) as $k=>$v) {
+						if($this->get($name, null, false) instanceof ManyCollection) {
+							foreach($this->get($name, null, false) as $k=>$v) {
 								$propValidator = $validator->attribute($name.'.'.$locale.'.'.$k);
 								$property->prepareValidator($propValidator);
 								$propValidator->formatParameters(function(&$params) use($name) {
@@ -221,8 +221,8 @@ abstract class Entity {
 			}
 			else {
 				if($property->get('many')) {
-					if($this->get($name) instanceof ManyCollection) {
-						foreach($this->get($name) as $k=>$v) {
+					if($this->get($name, null, false) instanceof ManyCollection) {
+						foreach($this->get($name, null, false) as $k=>$v) {
 							$propValidator = $validator->attribute($name.'.'.$k);
 							$property->prepareValidator($propValidator);
 							$propValidator->formatParameters(function(&$params) use($name) {
