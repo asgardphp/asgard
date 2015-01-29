@@ -50,6 +50,8 @@ class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 
 		$fields = [];
 		foreach($entity->getDefinition()->properties() as $name=>$property) {
+			if($property->get('type') === 'entity')
+				continue;
 			if(isset($options['only']) && !in_array($name, $options['only']))
 				continue;
 			if(isset($options['except']) && in_array($name, $options['except']))
@@ -261,6 +263,10 @@ class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 	 */
 	protected function myErrors() {
 		$data = $this->data();
+		foreach($data as $k=>$v) {
+			if($this->entity->getDefinition()->property($k)->get('form.hidden') && ($v === null || $v === ''))
+				unset($data[$k]);
+		}
 		$data = array_filter($data, function($v) {
 			if($v instanceof \Asgard\Http\HttpFile && $v->error())
 				return false;
