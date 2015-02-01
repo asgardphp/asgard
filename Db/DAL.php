@@ -1040,8 +1040,8 @@ class DAL {
 	 * @return string
 	 * @api
 	 */
-	public function count($group_by=null) {
-		return $this->_function('count', null, $group_by);
+	public function count($what=null, $group_by=null) {
+		return $this->_function('count', $what, $group_by);
 	}
 
 	/**

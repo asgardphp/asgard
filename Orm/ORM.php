@@ -169,6 +169,7 @@ class ORM implements ORMInterface {
 			if($relation->type() == 'HMABT')
 				$this->where($relation->getAssociationTable().'.'.$relation->getLinkType(), $entity->getDefinition()->getClass());
 		}
+		$this->join($relation);
 
 		$alias = $relation->getName();
 		if($alias == $this->getTable()) #todo conflits entre jointures, et conditions
@@ -683,7 +684,7 @@ class ORM implements ORMInterface {
 	 * {@inheritDoc}
 	*/
 	public function count($group_by=null) {
-		return $this->getDAL()->count($group_by);
+		return $this->getDAL()->count('DISTINCT '.$this->getTable().'.id', $group_by);
 	}
 
 	/**
