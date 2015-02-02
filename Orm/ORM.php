@@ -142,7 +142,7 @@ class ORM implements ORMInterface {
 		foreach($conditions as $k=>$v) {
 			if(is_array($v))
 				$v = $this->updateConditions($v, $table, $alias);
-			$k = preg_replace('/(?<![\.a-z0-9-_`\(\)])'.$table.'./', $alias.'.', $k);
+			$k = preg_replace('/(?<![\.a-z0-9-_`\(\)])'.$table.'\./', $alias.'.', $k);
 			$res[$k] = $v;
 		}
 
@@ -160,6 +160,7 @@ class ORM implements ORMInterface {
 	 * {@inheritDoc}
 	*/
 	public function joinToEntity($relation, \Asgard\Entity\Entity $entity) {
+		$qqq=$relation;
 		if(is_string($relation))
 			$relation = $this->dataMapper->relation($this->definition, $relation);
 
@@ -169,9 +170,13 @@ class ORM implements ORMInterface {
 			if($relation->type() == 'HMABT')
 				$this->where($relation->getAssociationTable().'.'.$relation->getLinkType(), $entity->getDefinition()->getClass());
 		}
-		$this->join($relation);
 
-		$this->where($relation->getName().'.id', $entity->id);
+		$alias = $relation->getName();
+		if($alias == $this->getTable()) #todo conflits entre jointures, et conditions
+			$alias = $alias.'2';
+
+		$this->join($relation->getName().' '.$alias);
+		$this->where($alias.'.id', $entity->id);
 
 		return $this;
 	}
@@ -319,12 +324,13 @@ class ORM implements ORMInterface {
 	/**
 	 * Performs jointures on the DAL object.
 	 *
-	 * @param \Asgard\Db\DAL                  $dal
-	 * @param array                           $jointures Array of relations.
+	 * @param \Asgard\Db\DAL            $dal
+	 * @param array                     $jointures Array of relations.
 	 * @param \Asgard\Entity\Definition $definition The entity class from which jointures are built.
-	 * @param string                          $table The table from which to performs jointures.
+	 * @param string                    $table The table from which to performs jointures.
 	*/
 	protected function recursiveJointures(\Asgard\Db\DAL $dal, array $jointures, \Asgard\Entity\Definition $definition, $table) {
+		#todo refactoriser
 		$alias = null;
 		foreach($jointures as $relation) {
 			if(is_array($relation)) {
@@ -376,8 +382,6 @@ class ORM implements ORMInterface {
 		$relationDefinition = $relation->getTargetDefinition();
 		if($alias === null)
 			$alias = $relationName;
-		if($alias == $this->getTable())
-			$alias = $alias.'2';
 		#todo conflict betweeen jointures
 
 		switch($relation->type()) {
@@ -572,7 +576,7 @@ class ORM implements ORMInterface {
 	}
 
 	/**
-	 * Replace the tables by their i18n equivalent.
+	 * Set the tables.
 	 *
 	 * @param string $sql SQL query.
 	 *
@@ -583,7 +587,7 @@ class ORM implements ORMInterface {
 		$i18nTable = $this->getTranslationTable();
 		preg_match_all('/(?<![\.a-z0-9-_`\(\)])([a-z0-9-_]+)(?![\.a-z0-9-_`\(\)])/', $sql, $matches);
 		foreach($matches[0] as $property) {
-			if(!$this->definition->hasProperty($property))
+			if(!$this->definition->hasProperty($property)) #todo problem with entity_id?
 				continue;
 			$table = $this->definition->property($property)->get('i18n') ? $i18nTable:$table;
 			$sql = preg_replace('/(?<![\.a-z0-9-_`\(\)])('.$property.')(?![\.a-z0-9-_`\(\)])/', $table.'.$1', $sql);
@@ -680,7 +684,7 @@ class ORM implements ORMInterface {
 	 * {@inheritDoc}
 	*/
 	public function count($group_by=null) {
-		return $this->getDAL()->count($group_by);
+		return $this->getDAL()->count('DISTINCT '.$this->getTable().'.id', $group_by);
 	}
 
 	/**

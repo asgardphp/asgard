@@ -232,7 +232,7 @@ class DALTest extends \PHPUnit_Framework_TestCase {
 
 		/* COUNT */
 		$this->assertEquals(3, $this->getDAL()->from('news')->count());
-		$res = $this->getDAL()->from('news')->count('category_id');
+		$res = $this->getDAL()->from('news')->count('*', 'category_id');
 		$this->assertEquals([1=>'2', 2=>'1'], $res);
 
 		/* MIN, MAX, AVG, SUM */

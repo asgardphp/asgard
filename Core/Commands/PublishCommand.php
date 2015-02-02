@@ -45,14 +45,14 @@ class PublishCommand extends \Asgard\Console\Command {
 				$this->info('App files have been published.');
 			else
 				$this->comment('App files could not be published.');
+		}
 
-			#copy tests - only publish if bundle comes with app/
-			if($publishTests && file_exists($bundle.'/tests')) {
-				if($publisher->publish($bundle.'/tests', $root.'/tests'))
-					$this->info('Test files have been published.');
-				else
-					$this->comment('Test files could not be published.');
-			}
+		#copy tests
+		if($publishTests && file_exists($bundle.'/tests')) {
+			if($publisher->publish($bundle.'/tests', $root.'/tests'))
+				$this->info('Test files have been published.');
+			else
+				$this->comment('Test files could not be published.');
 		}
 
 		#copy config

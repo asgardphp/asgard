@@ -47,12 +47,6 @@ abstract class Field {
 	 * @param array $options
 	 */
 	public function __construct(array $options=[]) {
-		if(isset($options['data_type']))
-			$this->data_type = $options['data_type'];
-		if(isset($options['default']))
-			$this->value = $options['default'];
-		if(isset($options['widget']))
-			$this->widget = $options['widget'];
 		$this->setoptions($options);
 	}
 
@@ -69,6 +63,13 @@ abstract class Field {
 	 * @param array $options
 	 */
 	public function setOptions(array $options) {
+		if(isset($options['data_type']))
+			$this->data_type = $options['data_type'];
+		if(isset($options['default']))
+			$this->value = $options['default'];
+		if(isset($options['widget']))
+			$this->widget = $options['widget'];
+
 		$this->options = array_merge_recursive($this->options, $options);
 
 		return $this;

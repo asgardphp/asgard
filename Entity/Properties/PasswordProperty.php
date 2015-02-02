@@ -17,6 +17,8 @@ class PasswordProperty extends \Asgard\Entity\Property {
 	 * {@inheritDoc}
 	 */
 	public function doSet($val, \Asgard\Entity\Entity $entity, $name) {
+		if($val === null)
+			return null;
 		try {
 			$key = $entity->getDefinition()->getEntityManager()->getContainer()['config']['key'];
 		} catch(\Exception $e) {

@@ -36,7 +36,7 @@ class ListCommand extends \Asgard\Console\Command {
 	 * {@inheritDoc}
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
-		$table = $this->getHelperSet()->get('table');
+		$table = new \Symfony\Component\Console\Helper\Table($this->output);
 		$table->setHeaders(['Name', 'Status', 'Migrated', 'Added']);
 
 		$tracker = new \Asgard\Migration\Tracker($this->migrationsDir);

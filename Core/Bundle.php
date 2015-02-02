@@ -108,7 +108,10 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		});
 		$container->setParentClass('browser', 'Asgard\Http\Browser\BrowserInterface');
 		$container->register('browser', function($container) {
-			return new \Asgard\Http\Browser\Browser($container['httpKernel']);
+			$browser = new \Asgard\Http\Browser\Browser($container['httpKernel']);
+			if(getenv('catch') !== false)
+				$browser->catchException((bool)getenv('catch'));
+			return $browser;
 		});
 		$container->setParentClass('cookieManager', 'Asgard\Common\BagInterface');
 		$container->register('cookies', function($container) {

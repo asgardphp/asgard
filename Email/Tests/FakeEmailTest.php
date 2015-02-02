@@ -7,7 +7,7 @@ class FakeEmailTest extends \PHPUnit_Framework_TestCase {
 			unlink(__DIR__.'/res.txt');
 
 		$email = new \Asgard\Email\FakeEmail;
-		$email->transport(__DIR__.'/res.txt');
+		$email->transport(['file'=>__DIR__.'/res.txt']);
 		$email->send(function($msg) {
 			$msg->text('hello!');
 		});
