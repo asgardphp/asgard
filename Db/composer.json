@@ -12,6 +12,9 @@
         "php": ">=5.4.0",
         "asgard/common": "0.*"
     },
+    "suggest": {
+        "doctrine/dbal": "2.*"
+    },
     "minimum-stability": "dev",
     "extra": {
         "branch-alias": {
