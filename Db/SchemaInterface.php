@@ -26,13 +26,6 @@ interface SchemaInterface {
 	public function emptyTable($tableName);
 
 	/**
-	 * Drop a column.
-	 * @param string $table
-	 * @param string $col
-	 */
-	public function dropColumn($table, $col);
-
-	/**
 	 * Drop a table.
 	 * @param string $table
 	 */
@@ -60,4 +53,22 @@ interface SchemaInterface {
 	 * @param string $type
 	 */
 	public function renameColumn($table, $old, $new, $type=null);
+
+	/**
+	 * Return a doctrine connection instance.
+	 * @return \Doctrine\DBAL\Connection
+	 */
+	public function getConn();
+
+	/**
+	 * Return a doctrine platform.
+	 * @return  Doctrine\DBAL\Platforms\AbstractPlatform
+	 */
+	public function getPlatform();
+
+	/**
+	 * Return a doctrine schema manager.
+	 * @return  Doctrine\DBAL\Schema\AbstractSchemaManager
+	 */
+	public function getSchemaManager();
 }

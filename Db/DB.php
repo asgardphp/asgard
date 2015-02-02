@@ -17,6 +17,8 @@ class DB implements DBInterface {
 	 */
 	protected $config;
 
+	protected $conn;
+
 	/**
 	 * Constructor.
 	 * @param array $config database configuration
@@ -24,6 +26,8 @@ class DB implements DBInterface {
 	 * @api
 	*/
 	public function __construct(array $config, \PDO $db=null) {
+		if(!isset($config['driver']))
+			$config['driver'] = 'mysql';
 		$this->config = $config;
 		if($db === null)
 			$this->db = $this->getPDO($config);
@@ -45,7 +49,7 @@ class DB implements DBInterface {
 	 * @return \PDO
 	 */
 	protected function getPDO(array $config) {
-		$driver = isset($config['driver']) ? $config['driver']:'mysql';
+		$driver = $config['driver'];
 		$user = isset($config['user']) ? $config['user']:'root';
 		$password = isset($config['password']) ? $config['password']:'';
 
@@ -111,5 +115,42 @@ class DB implements DBInterface {
 	*/
 	public function rollback() {
 		$this->db->rollback();
+	}
+
+
+	/**
+	 * {@inheritDoc}
+	*/
+	public function close() {
+		unset($this->db);
+	}
+
+	public function getSchema() {
+		return new Schema($this);
+	}
+
+	public function getConn() {
+		if(!$this->conn) {
+			$driver = $this->getConfig()['driver'];
+
+			if($driver == 'mysql')
+				$driver = 'pdo_mysql';
+			elseif($driver == 'mssql')
+				$driver = 'pdo_sqlsrv';
+			elseif($driver == 'pgsql')
+				$driver = 'pdo_pgsql';
+			elseif($driver == 'sqlite')
+				$driver = 'pdo_sqlite';
+			else
+				throw new \Exception('Invalid driver: '.$driver);
+
+			$c = new \Doctrine\DBAL\Configuration;
+			$params = [
+				'pdo' => $this->getDB()
+			];
+			$this->conn = \Doctrine\DBAL\DriverManager::getConnection($params, $c);
+		}
+
+		return $this->conn;
 	}
 }

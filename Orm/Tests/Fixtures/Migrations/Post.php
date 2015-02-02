@@ -7,8 +7,7 @@ class Post extends \Asgard\Entity\Entity {
 			'title' => [
 				'orm' => [
 					'default' => 'a',
-					'nullable' => false,
-					'key' => 'UNIQUE'
+					'notnull' => true,
 				]
 			],
 			'posted' => 'date',
@@ -25,6 +24,15 @@ class Post extends \Asgard\Entity\Entity {
 				'entity' => 'Asgard\Orm\Tests\Fixtures\Migrations\Category',
 				'many' => true,
 			],
+		];
+
+		$definition->orm = [
+			'indexes' => [
+				[
+					'type' => 'unique',
+					'columns' => ['title']
+				]
+			]
 		];
 
 		$definition->behaviors = [

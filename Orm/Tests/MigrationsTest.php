@@ -10,10 +10,8 @@ class MigrationsTest extends \PHPUnit_Framework_TestCase {
 	public static function setUpBeforeClass() {
 		\Asgard\File\FileSystem::delete(__DIR__.'/migrations/');
 		static::$db = $db = new \Asgard\Db\DB([
-			'host' => 'localhost',
-			'user' => 'root',
-			'password' => '',
-			'database' => 'asgard'
+			'driver' => 'sqlite',
+			'database' => ':memory:',
 		]);
 		static::$em = $entityManager = new \Asgard\Entity\EntityManager;
 		$dataMapper = new \Asgard\Orm\DataMapper($db, $entityManager);
@@ -30,136 +28,157 @@ class MigrationsTest extends \PHPUnit_Framework_TestCase {
 		], static::$schema);
 
 		$tables = [];
-		foreach(static::$db->query('SHOW TABLES')->all() as $v) {
-			$table = array_values($v)[0];
-			$tables[$table] = static::$db->query('Describe `'.$table.'`')->all();
+		foreach(static::$db->getSchema()->listTables() as $table) {
+			$table = $table->getName();
+			$tables[$table] = static::$db->query('PRAGMA table_info(['.$table.']);')->all();
 		}
 
-		$this->assertEquals(
+		$this->assertEquals([
+			'author' =>
 			[
-				'author' => [
-					[
-						'Field' => 'id',
-						'Type' => 'int(11)',
-						'Null' => 'NO',
-						'Key' => 'PRI',
-						'Default' => NULL,
-						'Extra' => 'auto_increment',
-					],
-					[
-						'Field' => 'name',
-						'Type' => 'varchar(255)',
-						'Null' => 'YES',
-						'Key' => '',
-						'Default' => NULL,
-						'Extra' => '',
-					],
+				0 =>
+				[
+					'cid' => '0',
+					'name' => 'id',
+					'type' => 'INTEGER',
+					'notnull' => '1',
+					'dflt_value' => NULL,
+					'pk' => '1',
 				],
-				'category' => [
-					[
-						'Field' => 'id',
-						'Type' => 'int(11)',
-						'Null' => 'NO',
-						'Key' => 'PRI',
-						'Default' => NULL,
-						'Extra' => 'auto_increment',
-					],
-					[
-						'Field' => 'name',
-						'Type' => 'varchar(255)',
-						'Null' => 'YES',
-						'Key' => '',
-						'Default' => NULL,
-						'Extra' => '',
-					],
-				],
-				'post' => [
-					[
-						'Field' => 'id',
-						'Type' => 'int(11)',
-						'Null' => 'NO',
-						'Key' => 'PRI',
-						'Default' => NULL,
-						'Extra' => 'auto_increment',
-					],
-					[
-						'Field' => 'title',
-						'Type' => 'varchar(255)',
-						'Null' => 'NO',
-						'Key' => 'UNI',
-						'Default' => 'a',
-						'Extra' => '',
-					],
-					[
-						'Field' => 'posted',
-						'Type' => 'date',
-						'Null' => 'YES',
-						'Key' => '',
-						'Default' => NULL,
-						'Extra' => '',
-					],
-					[
-						'Field' => 'author_id',
-						'Type' => 'int(11)',
-						'Null' => 'YES',
-						'Key' => '',
-						'Default' => NULL,
-						'Extra' => '',
-					],
-				],
-				'post_translation' => [
-					[
-						'Field' => 'id',
-						'Type' => 'int(11)',
-						'Null' => 'NO',
-						'Key' => '',
-						'Default' => NULL,
-						'Extra' => '',
-					],
-					[
-						'Field' => 'locale',
-						'Type' => 'varchar(50)',
-						'Null' => 'NO',
-						'Key' => '',
-						'Default' => NULL,
-						'Extra' => '',
-					],
-					[
-						'Field' => 'content',
-						'Type' => 'text',
-						'Null' => 'YES',
-						'Key' => '',
-						'Default' => NULL,
-						'Extra' => '',
-					],
-				],
-				'category_post' => [
-					[
-						'Field' => 'categories_id',
-						'Type' => 'int(11)',
-						'Null' => 'YES',
-						'Key' => '',
-						'Default' => NULL,
-						'Extra' => '',
-					],
-					[
-						'Field' => 'posts_id',
-						'Type' => 'int(11)',
-						'Null' => 'YES',
-						'Key' => '',
-						'Default' => NULL,
-						'Extra' => '',
-					],
+				1 =>
+				[
+					'cid' => '1',
+					'name' => 'name',
+					'type' => 'VARCHAR(255)',
+					'notnull' => '0',
+					'dflt_value' => 'NULL',
+					'pk' => '0',
 				],
 			],
+			'category' =>
+			[
+				0 =>
+				[
+					'cid' => '0',
+					'name' => 'id',
+					'type' => 'INTEGER',
+					'notnull' => '1',
+					'dflt_value' => NULL,
+					'pk' => '1',
+				],
+				1 =>
+				[
+					'cid' => '1',
+					'name' => 'name',
+					'type' => 'VARCHAR(255)',
+					'notnull' => '0',
+					'dflt_value' => 'NULL',
+					'pk' => '0',
+				],
+			],
+			'category_post' =>
+			[
+				0 =>
+				[
+					'cid' => '0',
+					'name' => 'categories_id',
+					'type' => 'INTEGER',
+					'notnull' => '0',
+					'dflt_value' => 'NULL',
+					'pk' => '0',
+				],
+				1 =>
+				[
+					'cid' => '1',
+					'name' => 'posts_id',
+					'type' => 'INTEGER',
+					'notnull' => '0',
+					'dflt_value' => 'NULL',
+					'pk' => '0',
+				],
+			],
+			'post' =>
+			[
+				0 =>
+				[
+					'cid' => '0',
+					'name' => 'id',
+					'type' => 'INTEGER',
+					'notnull' => '1',
+					'dflt_value' => NULL,
+					'pk' => '1',
+				],
+				1 =>
+				[
+					'cid' => '1',
+					'name' => 'title',
+					'type' => 'VARCHAR(255)',
+					'notnull' => '1',
+					'dflt_value' => '\'a\'',
+					'pk' => '0',
+				],
+				2 =>
+				[
+					'cid' => '2',
+					'name' => 'posted',
+					'type' => 'DATE',
+					'notnull' => '0',
+					'dflt_value' => 'NULL',
+					'pk' => '0',
+				],
+				3 =>
+				[
+					'cid' => '3',
+					'name' => 'author_id',
+					'type' => 'INTEGER',
+					'notnull' => '0',
+					'dflt_value' => 'NULL',
+					'pk' => '0',
+				],
+			],
+			'post_translation' =>
+			[
+				0 =>
+				[
+					'cid' => '0',
+					'name' => 'id',
+					'type' => 'INTEGER',
+					'notnull' => '1',
+					'dflt_value' => NULL,
+					'pk' => '0',
+				],
+				1 =>
+				[
+					'cid' => '1',
+					'name' => 'locale',
+					'type' => 'VARCHAR(50)',
+					'notnull' => '1',
+					'dflt_value' => NULL,
+					'pk' => '0',
+				],
+				2 =>
+				[
+					'cid' => '2',
+					'name' => 'content',
+					'type' => 'CLOB',
+					'notnull' => '0',
+					'dflt_value' => 'NULL',
+					'pk' => '0',
+				],
+			]],
 			$tables
 		);
 	}
 
 	public function testGenerateMigration() {
 		static::$schema->dropAll();
-		static::$ormm->generateMigration([
+
+		static::$ormm->autoMigrate([
 			static::$em->get('Asgard\Orm\Tests\Fixtures\Migrations\Post'),
+		], static::$schema);
+
+		static::$ormm->generateMigration([
+			static::$em->get('Asgard\Orm\Tests\Fixtures\Migrations\Post2'),
 			static::$em->get('Asgard\Orm\Tests\Fixtures\Migrations\Author'),
 			static::$em->get('Asgard\Orm\Tests\Fixtures\Migrations\Category')
 		], 'Post');

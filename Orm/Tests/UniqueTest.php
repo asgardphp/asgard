@@ -9,10 +9,8 @@ class UniqueTest extends \PHPUnit_Framework_TestCase {
 		$rulesRegistry->register('unique', 'Asgard\Orm\Rules\Unique');
 		$em->setValidatorFactory(new \Asgard\Validation\ValidatorFactory($rulesRegistry));
 		$db = new \Asgard\Db\DB([
-			'host'     => 'localhost',
-			'user'     => 'root',
-			'password' => '',
-			'database' => 'asgard'
+			'driver' => 'sqlite',
+			'database' => ':memory:',
 		]);
 		$dataMapper = new \Asgard\Orm\DataMapper($db, $em);
 

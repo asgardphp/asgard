@@ -4,18 +4,33 @@ namespace Asgard\Db\Tests;
 class DBTest extends \PHPUnit_Framework_TestCase {
 	public function test1() {
 		$config = [
-			'host' => 'localhost',
-			'user' => 'root',
-			'password' => '',
-			'database' => 'asgard',
+			'driver' => 'sqlite',
+			'database' => tmpfile(),
 		];
 		$db = new \Asgard\Db\DB($config);
 		$db2 = new \Asgard\Db\DB($config);
-		$mysql = new \Asgard\Db\MySQL($config);
 
 		$this->assertTrue($db->getDB() instanceof \PDO);
 
-		$mysql->import(__dir__.'/sql/test1.sql');
+		#Fixtures
+		$db->getSchema()->drop('news');
+		$db->getSchema()->create('news', function($table) {
+			$table->addColumn('id', 'integer', [
+					'length' => 4,
+					'notnull' => true,
+					'autoincrement' => true,
+			]);
+			$table->addColumn('title', 'string', [
+					'length' => 255,
+					'notnull' => true,
+			]);
+
+
+			$table->setPrimaryKey(['id']);
+		});
+		$db->dal()->into('news')->insert(['id'=>1, 'title'=>'The first news!']);
+
+		#Tests
 		$db->query('SELECT title FROM news WHERE id=?', [1]);
 
 		$this->assertEquals('The first news!', $db->query('SELECT title FROM news')->first()['title']);
@@ -39,9 +54,8 @@ class DBTest extends \PHPUnit_Framework_TestCase {
 		);
 		$i = 0;
 		$q = $db->query('SELECT * FROM news ORDER BY id ASC');
-		while($row = $q->next()) {
+		while($row = $q->next())
 			$this->assertEquals($rows[$i++], $row);
-		}
 
 		$db->beginTransaction();
 		$db->query('INSERT INTO news (title) VALUES (?)', ['Another news!']);
@@ -55,10 +69,10 @@ class DBTest extends \PHPUnit_Framework_TestCase {
 		$db->rollback();
 		$this->assertEquals(3, $db->query('SELECT * FROM news ORDER BY id DESC')->first()['id']);
 
-		$this->assertEquals(3, $db->query('SELECT * FROM news')->count());
+		$this->assertEquals(3, $db->query('UPDATE news SET title=1')->count());
 
 		$db->query('INSERT INTO news (title) VALUES (?)', ['Another news!']);
-		$this->assertEquals(5, $db->id());
+		$this->assertEquals(4, $db->id());
 
 		$this->assertEquals(4, $db->query('UPDATE news SET title = ?', ['test'])->affected());
 	}

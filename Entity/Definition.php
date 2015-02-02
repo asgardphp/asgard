@@ -87,14 +87,26 @@ class Definition {
 			'position' => -9999,
 			'defaut'   => 0,
 			'orm'      => [
-				'type'           => 'int(11)',
-				'auto_increment' => true,
-				'key'            => 'PRIMARY',
-				'nullable'       => false,
+				'type'           => 'integer',
+				'length'         => 11,
+				'autoincrement'  => true,
+				'notnull'        => true,
+				// 'key'            => 'PRIMARY',
 			],
 		]);
 
 		$entityClass::definition($this);
+
+		\Asgard\Common\ArrayUtils::append($this->metas, 'orm.indexes', [
+			'type' => 'primary',
+			'columns' => ['id']
+		]);
+		// if(!$this->get('orm'))
+		// 	$this->set('orm', []);
+		// $this->orm['indexes'][] = [
+		// 	'type' => 'primary',
+		// 	'columns' => ['id']
+		// ];
 
 		if($generalHookManager !== null)
 			$generalHookManager->trigger('Asgard.Entity.Definition', [$this]);

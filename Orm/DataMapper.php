@@ -338,14 +338,18 @@ class DataMapper implements DataMapperInterface {
 			$entity->id = $orm->getDAL()->insert($vars);
 		#existing
 		elseif(count($vars) > 0) {
-			if(!$orm->reset()->where(['id'=>$entity->id])->getDAL()->update($vars))
+			if($orm->reset()->where(['id'=>$entity->id])->getDAL()->count())
+				$orm->reset()->where(['id'=>$entity->id])->getDAL()->update($vars);
+			else
 				$entity->id = $orm->getDAL()->insert($vars);
 		}
 
 		#Persist i18n
 		foreach($i18n as $locale=>$values) {
 			$dal = new \Asgard\Db\DAL($this->db, $this->getTranslationTable($entity->getDefinition()));
-			if(!$dal->where(['id'=>$entity->id, 'locale'=>$locale])->update($values)) {
+			if($dal->where(['id'=>$entity->id, 'locale'=>$locale])->count())
+				$dal->where(['id'=>$entity->id, 'locale'=>$locale])->update($values);
+			else {
 				$dal->insert(
 					array_merge(
 						$values,

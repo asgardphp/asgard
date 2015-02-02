@@ -9,10 +9,8 @@ class PolymorphismTest extends \PHPUnit_Framework_TestCase {
 
 	public static function setUpBeforeClass() {
 		$db = new \Asgard\Db\DB([
-			'host' => 'localhost',
-			'user' => 'root',
-			'password' => '',
-			'database' => 'asgard'
+			'driver' => 'sqlite',
+			'database' => ':memory:',
 		]);
 		static::$em = new \Asgard\Entity\EntityManager;
 		static::$dm = new \Asgard\Orm\DataMapper($db);

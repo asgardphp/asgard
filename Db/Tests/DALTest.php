@@ -8,14 +8,61 @@ class DALTest extends \PHPUnit_Framework_TestCase {
 
 	public static function setUpBeforeClass() {
 		$config = [
-			'host' => 'localhost',
-			'user' => 'root',
-			'password' => '',
-			'database' => 'asgard',
+			'driver' => 'sqlite',
+			'database' => ':memory:',
 		];
-		static::$db = new \Asgard\Db\DB($config);
-		$mysql = new \Asgard\Db\MySQL($config);
-		$mysql->import(__DIR__.'/sql/dal.sql');
+		$db = static::$db = new \Asgard\Db\DB($config);
+
+		$schema = $db->getSchema();
+
+		#Author
+		$schema->create('author', function($table) {
+			$table->addColumn('id', 'integer', [
+					'length' => 4,
+					'notnull' => true,
+					'autoincrement' => true,
+			]);
+			$table->addColumn('name', 'string', [
+					'length' => 255,
+					'notnull' => true,
+			]);
+
+			$table->setPrimaryKey(['id']);
+		});
+
+		$db->dal()->into('author')->insert(['id'=>1, 'name'=>'Bob']);
+		$db->dal()->into('author')->insert(['id'=>2, 'name'=>'Joe']);
+		$db->dal()->into('author')->insert(['id'=>3, 'name'=>'John']);
+
+		#News
+		$schema->create('news', function($table) {
+			$table->addColumn('id', 'integer', [
+					'length' => 4,
+					'notnull' => true,
+					'autoincrement' => true,
+			]);
+			$table->addColumn('title', 'string', [
+					'length' => 255,
+			]);
+			$table->addColumn('content', 'string', [
+					'length' => 255,
+			]);
+			$table->addColumn('category_id', 'integer', [
+					'length' => 11,
+			]);
+			$table->addColumn('author_id', 'integer', [
+					'length' => 11,
+			]);
+			$table->addColumn('score', 'integer', [
+					'length' => 11,
+			]);
+
+			$table->setPrimaryKey(['id']);
+		});
+
+		$db->dal()->into('news')->insert(['id'=>1, 'title'=>'Welcome!', 'content'=>'blabla', 'category_id'=>1, 'author_id'=>1, 'score'=>2]);
+		$db->dal()->into('news')->insert(['id'=>2, 'title'=>'1000th visitor!', 'content'=>'blabla', 'category_id'=>1, 'author_id'=>2, 'score'=>5]);
+		$db->dal()->into('news')->insert(['id'=>3, 'title'=>'Important', 'content'=>'blabla', 'category_id'=>2, 'author_id'=>1, 'score'=>1]);
 	}
 
 	protected static function getDAL() {
@@ -199,30 +246,39 @@ class DALTest extends \PHPUnit_Framework_TestCase {
 			'title' => 'bla',
 			'content' => 'ble',
 		]);
-		$this->assertEquals('UPDATE `news` `n` SET `title`=?, `content`=? WHERE `id`>? ORDER BY `id` ASC LIMIT 5', $sql);
+		#$this->assertEquals('UPDATE `news` `n` SET `title`=?, `content`=? WHERE `id`>?', $sql);
+		$this->assertEquals('UPDATE `news` SET `title`=?, `content`=? WHERE EXISTS (SELECT 1 AS `1` FROM `news` `thisIsAUniqueAlias` WHERE `id`>? AND `thisIsAUniqueAlias`.`id` <> `news`.`id` AND `thisIsAUniqueAlias`.`title` <> `news`.`title` AND `thisIsAUniqueAlias`.`content` <> `news`.`content` AND `thisIsAUniqueAlias`.`category_id` <> `news`.`category_id` AND `thisIsAUniqueAlias`.`author_id` <> `news`.`author_id` AND `thisIsAUniqueAlias`.`score` <> `news`.`score` ORDER BY `id` ASC LIMIT 5)', $sql);
+		#$this->assertEquals('UPDATE `news` `n` SET `title`=?, `content`=? WHERE `id`>? ORDER BY `id` ASC LIMIT 5', $sql);
 		$this->assertEquals(['bla', 'ble', 3], $dal->getParameters());
 		$this->assertEquals(0, $dal->update(['title' => 'bla', 'content' => 'ble']));
 
-		$dal = $this->getDAL()->from('news n, category c')->where('id>?', 3)->orderBy('id ASC')->limit(5);
-		$sql = $dal->buildUpdateSQL([
-			'title' => 'bla',
-			'content' => 'ble',
-		]);
-		$this->assertEquals('UPDATE `news` `n`, `category` `c` SET `title`=?, `content`=? WHERE `id`>? ORDER BY `id` ASC LIMIT 5', $sql);
-		$this->assertEquals(['bla', 'ble', 3], $dal->getParameters());
+		#not possible with sqlite
+		// $dal = $this->getDAL()->from('news n, category c')->where('id>?', 3)->orderBy('id ASC')->limit(5);
+		// $sql = $dal->buildUpdateSQL([
+		// 	'title' => 'bla',
+		// 	'content' => 'ble',
+		// ]);
+		// #$this->assertEquals('UPDATE `news` `n`, `category` `c` SET `title`=?, `content`=? WHERE `id`>? ORDER BY `id` ASC LIMIT 5', $sql);
+		// $this->assertEquals('UPDATE `news`, `category` SET `title`=?, `content`=? WHERE `id`>?', $sql);
+		// $this->assertEquals(['bla', 'ble', 3], $dal->getParameters());
 
 		/* DELETE */
 		$dal = $this->getDAL()->from('news n')->where('id>?', 3)->orderBy('id ASC')->limit(5);
-		$this->assertEquals('DELETE FROM `news` WHERE `id`>? ORDER BY `id` ASC LIMIT 5', $dal->buildDeleteSQL());
+		#$this->assertEquals('DELETE FROM `news` WHERE `id`>? ORDER BY `id` ASC LIMIT 5', $dal->buildDeleteSQL());
+		$this->assertEquals('DELETE FROM `news` WHERE EXISTS (SELECT 1 AS `1` FROM `news` `thisIsAUniqueAlias` WHERE `id`>? AND `thisIsAUniqueAlias`.`id` <> `news`.`id` AND `thisIsAUniqueAlias`.`title` <> `news`.`title` AND `thisIsAUniqueAlias`.`content` <> `news`.`content` AND `thisIsAUniqueAlias`.`category_id` <> `news`.`category_id` AND `thisIsAUniqueAlias`.`author_id` <> `news`.`author_id` AND `thisIsAUniqueAlias`.`score` <> `news`.`score` ORDER BY `id` ASC LIMIT 5)', $dal->buildDeleteSQL());
 		$this->assertEquals([3], $dal->getParameters());
 		$this->assertEquals(0, $dal->delete());
 
-		$dal = $this->getDAL()->from('news n, category c')->where('id>?', 3)->orderBy('id ASC')->limit(5);
-		$this->assertEquals('DELETE FROM `news`, `category` WHERE `id`>? ORDER BY `id` ASC LIMIT 5', $dal->buildDeleteSQL());
-		$this->assertEquals([3], $dal->getParameters());
+		#not possible with sqlite
+		// $dal = $this->getDAL()->from('news n, category c')->where('id>?', 3)->orderBy('id ASC')->limit(5);
+		// #$this->assertEquals('DELETE FROM `news`, `category` WHERE `id`>? ORDER BY `id` ASC LIMIT 5', $dal->buildDeleteSQL());
+		// $this->assertEquals('DELETE FROM `news`, `category` WHERE `id`>?', $dal->buildDeleteSQL());
+		// $this->assertEquals([3], $dal->getParameters());
 
-		$dal = $this->getDAL()->from('news n')->leftJoin('category')->where('id>?', 3)->orderBy('id ASC')->limit(5);
-		$this->assertEquals('DELETE `n` FROM `news` `n` LEFT JOIN `category` WHERE `n`.`id`>? ORDER BY `n`.`id` ASC LIMIT 5', $dal->buildDeleteSQL(['n']));
+		#$dal = $this->getDAL()->from('news n')->leftJoin('category')->where('id>?', 3)->orderBy('id ASC')->limit(5);
+		$dal = $this->getDAL()->from('news')->where('id>?', 3);
+		#$this->assertEquals('DELETE `n` FROM `news` `n` LEFT JOIN `category` WHERE `n`.`id`>? ORDER BY `n`.`id` ASC LIMIT 5', $dal->buildDeleteSQL(['n']));
+		$this->assertEquals('DELETE FROM `news` WHERE `id`>?', $dal->buildDeleteSQL(['n']));
 		$this->assertEquals([3], $dal->getParameters());
 
 		/* INSERT */

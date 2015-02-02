@@ -5,10 +5,8 @@ class EntityFormTest extends \PHPUnit_Framework_TestCase {
 	public function testEntityForm() {
 		#Dependencies
 		$db = new \Asgard\Db\DB([
-			'host' => 'localhost',
-			'user' => 'root',
-			'password' => '',
-			'database' => 'asgard',
+			'driver' => 'sqlite',
+			'database' => ':memory:',
 		]);
 		$em = new \Asgard\Entity\EntityManager;
 		$dataMapper = new \Asgard\Orm\DataMapper($db, $em);

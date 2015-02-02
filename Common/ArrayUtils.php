@@ -24,12 +24,24 @@ class ArrayUtils {
 	 * Set element in array, with a path.
 	 * @param  array  $arr
 	 * @param  string $str_path  nested keys separated by ".".
-	 * @param  mixed $value
+	 * @param  mixed  $value
 	 * @api
 	 */
 	public static function set(&$arr, $str_path, $value) {
 		$path = explode('.', $str_path);
 		static::array_set($arr, $path, $value);
+	}
+
+	/**
+	 * Add element in array, with a path.
+	 * @param  array  $arr
+	 * @param  string $str_path  nested keys separated by ".".
+	 * @param  mixed  $value
+	 * @api
+	 */
+	public static function append(&$arr, $str_path, $value) {
+		$path = explode('.', $str_path);
+		static::array_append($arr, $path, $value);
 	}
 
 	/**
@@ -69,6 +81,22 @@ class ArrayUtils {
 		foreach($path as $parent)
 			$arr =& $arr[$parent];
 		$arr[$lastkey] = $value;
+	}
+
+	/**
+	 * Add element in array.
+	 * @param  array        $arr
+	 * @param  string|array $path  list of nested keys.
+	 * @param  mixed        $value
+	 * @api
+	 */
+	public static function array_append(&$arr, $path, $value) {
+		if(!is_array($path))
+			$path = [$path];
+		$lastkey = array_pop($path);
+		foreach($path as $parent)
+			$arr =& $arr[$parent];
+		$arr[$lastkey][] = $value;
 	}
 
 	/**

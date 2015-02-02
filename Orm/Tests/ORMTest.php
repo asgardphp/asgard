@@ -5,10 +5,8 @@ class ORMTest extends \PHPUnit_Framework_TestCase {
 	public function testHMABTSorting() {
 		#Deps
 		$db = new \Asgard\Db\DB([
-			'host'     => 'localhost',
-			'user'     => 'root',
-			'password' => '',
-			'database' => 'asgard'
+			'driver' => 'sqlite',
+			'database' => ':memory:',
 		]);
 		$em = new \Asgard\Entity\EntityManager;
 		$dataMapper = new \Asgard\Orm\DataMapper($db, $em);
@@ -69,10 +67,8 @@ class ORMTest extends \PHPUnit_Framework_TestCase {
 		$em->setValidatorFactory(new \Asgard\Validation\ValidatorFactory($rulesRegistry));
 
 		$db = new \Asgard\Db\DB([
-			'host'     => 'localhost',
-			'user'     => 'root',
-			'password' => '',
-			'database' => 'asgard'
+			'driver' => 'sqlite',
+			'database' => ':memory:',
 		]);
 		$dataMapper = new \Asgard\Orm\DataMapper($db, $em);
 	}

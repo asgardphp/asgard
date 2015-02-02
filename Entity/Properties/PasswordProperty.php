@@ -10,7 +10,7 @@ class PasswordProperty extends \Asgard\Entity\Property {
 	 * {@inheritDoc}
 	 */
 	public function getSQLType() {
-		return 'varchar(255)';
+		return 'string';
 	}
 
 	/**

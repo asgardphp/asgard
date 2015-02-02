@@ -32,10 +32,12 @@ class ORMMigrations {
 	 * @param  array|\Asgard\Entity\Definition $definitions
 	 * @param  \Asgard\Db\SchemaInterface      $schema
 	 */
-	public function autoMigrate($definitions, \Asgard\Db\SchemaInterface $schema) {
+	public function autoMigrate($definitions) {
 		if(!is_array($definitions))
 			$definitions = [$definitions];
-		$this->processSchemas($this->getEntitiesSchemas($definitions), $schema);
+		$entitiesSchema = $this->getEntitiesSchemas($definitions);
+		$sqlSchema = $this->getSQLSchemas($this->dataMapper->getDB());
+		$this->processSchemas($entitiesSchema, $sqlSchema);
 	}
 
 	/**
@@ -47,10 +49,10 @@ class ORMMigrations {
 	public function generateMigration($definitions, $migrationName) {
 		if(!is_array($definitions))
 			$definitions = [$definitions];
-		$entitiesSchemas = $this->getEntitiesSchemas($definitions);
-		$sqlSchemas = $this->getSQLSchemas($this->dataMapper->getDB());
-		$up = $this->buildMigration($entitiesSchemas, $sqlSchemas, false);
-		$down = $this->buildMigration($sqlSchemas, $entitiesSchemas, true);
+		$entitiesSchema = $this->getEntitiesSchemas($definitions);
+		$sqlSchema = $this->getSQLSchemas($this->dataMapper->getDB());
+		$up = $this->buildMigration($entitiesSchema, $sqlSchema, false);
+		$down = $this->buildMigration($sqlSchema, $entitiesSchema, true);
 
 		if($up == '' && $down == '')
 			return;
@@ -65,12 +67,9 @@ class ORMMigrations {
 	 */
 	protected function getEntitiesSchemas(array $definitions) {
 		$dataMapper = $this->dataMapper;
-		$schemas = [];
+		$schema = new \Doctrine\DBAL\Schema\Schema;
 		foreach($definitions as $definition) {
-			$schema = [
-				'columns' => [],
-				'indexes' => [],
-			];
+			$table = $schema->createTable($dataMapper->getTable($definition));
 
 			foreach($definition->properties() as $name=>$prop) {
 				if($prop->get('orm'))
@@ -83,206 +82,134 @@ class ORMMigrations {
 					$relation = $dataMapper->relation($definition, $name);
 					#relations with one entity
 					if(!$relation->get('many')) {
-						$schema['columns'][$relation->getLink()] = [
-							'type'           => 'int(11)',
-							'nullable'       => true,
-							'auto_increment' => false,
-							'default'        => null,
-							'key'            => null,
-						];
+						$table->addColumn($relation->getLink(), 'integer', [
+							'length'         => 11,
+							'notnull'        => false,
+							'autoincrement'  => false,
+						]);
 						if($relation->isPolymorphic()) {
-							$schema['columns'][$relation->getLinkType()] = [
-								'type'           => 'varchar(50)',
-								'nullable'       => true,
-								'auto_increment' => false,
-								'default'        => null,
-								'key'            => null,
-							];
+							$table->addColumn($relation->getLinkType(), 'string', [
+								'length'         => 50,
+								'notnull'        => false,
+								'autoincrement'  => false,
+							]);
 						}
 					}
 					#HMABT relations
 					elseif($relation->type() == 'HMABT' && !$relation->isPolymorphic()) {
 						$table_name = $relation->getAssociationTable();
 						#if table was not already created by the opposite entity
-						if(!isset($schemas[$table_name])) {
-							$arr = [
-								$relation->getLinkB() => [
-									'type'           => 'int(11)',
-									'nullable'       => true,
-									'auto_increment' => false,
-									'default'        => null,
-									'key'            => null,
-								],
-								$relation->getLinkA() => [
-									'type'           => 'int(11)',
-									'nullable'       => true,
-									'auto_increment' => false,
-									'default'        => null,
-									'key'            => null,
-								],
-							];
-							$schemas[$table_name] = [
-								'columns' => $arr,
-								'indexes' => [],
-							];
+						if(!$schema->hasTable($table_name)) {
+							$relTable = $schema->createTable($table_name);
+							$relTable->addColumn($relation->getLinkB(), 'integer', [
+								'length'         => 11,
+								'notnull'        => false,
+								'autoincrement'  => false,
+							]);
+							$relTable->addColumn($relation->getLinkA(), 'integer', [
+								'length'         => 11,
+								'notnull'        => false,
+								'autoincrement'  => false,
+							]);
 						}
 						if($relation->reverse()->isPolymorphic()) {
-							$schemas[$table_name]['columns'][$relation->reverse()->getLinkType()] = [
-								'type'           => 'varchar(50)',
-								'nullable'       => true,
-								'auto_increment' => false,
-								'default'        => null,
-								'key'            => null,
-							];
+							$schema->getTable($table_name)->addColumn($relation->reverse()->getLinkType(), 'string', [
+								'length'         => 50,
+								'notnull'        => false,
+								'autoincrement'  => false,
+							]);
 						}
 						#sortable
 						if($relation->get('sortable')) {
-							$schemas[$table_name]['columns'][$relation->getPositionField()] = [
-								'type'           => 'int(11)',
-								'nullable'       => true,
-								'auto_increment' => false,
-								'default'        => null,
-								'key'            => null,
-							];
+							$schema->getTable($table_name)->addColumn($relation->getPositionField(), 'integer', [
+								'length'         => 11,
+								'notnull'        => false,
+								'autoincrement'  => false,
+							]);
 						}
 					}
 					continue;
 				}
 
 				if($prop->get('many'))
-					$col['type'] = 'blob';
+					$type = 'blob';
 				elseif(!isset($prop->get('orm')['type'])) {
 					if(method_exists($prop, 'getSQLType'))
-						$col['type'] = $prop->getSQLType();
+						$type = $prop->getSQLType();
 					else
 						throw new \Exception('Cannot convert '.$prop->type.' type');
 				}
+				else
+					$type = $col['type'];
+				unset($col['type']);
 
-				if(!isset($col['default']))
-					$col['default'] = false;
-				if(!isset($col['nullable']))
-					$col['nullable'] = true;
-				if(!isset($col['key']))
-					$col['key'] = null;
-				if(!isset($col['auto_increment']))
-					$col['auto_increment'] = false;
+				if(!isset($col['length']))
+					$col['length'] = $prop->getSQLLength();
+				if(!isset($col['notnull']))
+					$col['notnull'] = false;
+				if(!isset($col['autoincrement']))
+					$col['autoincrement'] = false;
 				$col['position'] = $prop->getPosition('position');
 
 				if($prop->get('i18n')) {
-					if(!isset($schemas[$dataMapper->getTranslationTable($definition)])) {
-						$schemas[$dataMapper->getTranslationTable($definition)]['columns'] = [
-							'id' => [
-								'type'           => 'int(11)',
-								'nullable'       => false,
-								'auto_increment' => false,
-								'default'        => null,
-								'key'            => null,
-								'position'       => 0,
-							],
-							'locale' => [
-								'type'           => 'varchar(50)',
-								'nullable'       => false,
-								'auto_increment' => false,
-								'default'        => null,
-								'key'            => null,
-								'position'       => 1,
-							],
-						];
+					$table_name = $dataMapper->getTranslationTable($definition);
+					if(!$schema->hasTable($table_name)) {
+						$i18nTable = $schema->createTable($table_name);
+						$i18nTable->addColumn('id', 'integer', [
+							'length'         => 11,
+							'notnull'        => true,
+							'autoincrement'  => false,
+						]);
+						$i18nTable->addColumn('locale', 'string', [
+							'length'         => 50,
+							'notnull'        => true,
+							'autoincrement'  => false,
+						]);
 					}
-					$schemas[$dataMapper->getTranslationTable($definition)]['columns'][$name] = $col;
+					$schema->getTable($table_name)->addColumn($name, $type, $col);
 				}
 				else
-					$schema['columns'][$name] = $col;
+					$table->addColumn($name, $type, $col);
 			}
 
 			if(isset($definition->get('orm')['indexes'])) {
 				foreach($definition->get('orm')['indexes'] as $index) {
-					if(count($index['columns']) === 1 && strtoupper($index['type']) !== 'INDEX') {
-						$column = $index['columns'][0];
-						$schema['columns'][$column]['key'] = strtoupper($index['type']);
-						#todo column index length
-					}
+					$index['type'] = strtoupper($index['type']);
+					#todo index col length : not possible with doctrine?
+					if($index['type'] == 'PRIMARY')
+						$table->setPrimaryKey($index['columns'], 'PRIMARY');
 					else {
-						foreach($index['columns'] as $k=>$v) {
-							if(!isset($index['lengths'][$k])) {
-								if($schema['columns'][$v]['type'] === 'text')
-									$index['lengths'][$k] = '255';
-								else
-									$index['lengths'][$k] = null;
-							}
-						}
-
-						$index['type'] = strtoupper($index['type']);
-
-						if($index['type'] == 'PRIMARY')
-							$indexName = 'PRIMARY';
-						else
-							$indexName = $_indexName = implode('_', $index['columns']);
+						$indexName = $_indexName = implode('_', $index['columns']);
 						$i = 1;
-						while(isset($schema['indexes'][$indexName]))
+						while($table->hasIndex($indexName))
 							$indexName = $_indexName.$i++;
-						$schema['indexes'][$indexName] = $index;
+						if($index['type'] == 'UNIQUE')
+							$table->addUniqueIndex($index['columns'], $indexName);
+						elseif($index['type'] == 'INDEX')
+							$table->addIndex($index['columns'], $indexName);
+						#todo fulltext
 					}
 				}
 			}
-
-			$schemas[$dataMapper->getTable($definition)] = $schema;
 		}
 
-		foreach($schemas as &$schema) {
-			uasort($schema['columns'], function($a, $b) {
-				if(!isset($a['position']))
-					return 1;
-				if(!isset($b['position']))
-					return -1;
-				if($a['position'] < $b['position'])
-					return -1;
-				return 1;
-			});
-
-			$i = 0;
-			foreach($schema['columns'] as $k=>$col)
-				$schema['columns'][$k]['position'] = $i++;
-		}
-
-		return $schemas;
+		return $schema;
 	}
 
 	/**
 	 * Process the schemas.
-	 * @param  array             $schemas
+	 * @param  array             $schema
 	 * @param  \Asgard\Db\SchemaInterface $s
 	 */
-	protected function processSchemas(array $schemas, \Asgard\Db\SchemaInterface $s) {
-		foreach($schemas as $tableName=>$table) {
-			$cols = $table['columns'];
-			$indexes = isset($table['indexes']) ? $table['indexes']:[];
+	protected function processSchemas(\Doctrine\DBAL\Schema\Schema $newSchema, \Doctrine\DBAL\Schema\Schema $oldSchema) {
+		$comparator = new \Doctrine\DBAL\Schema\Comparator;
+		$schemaDiff = $comparator->compare($oldSchema, $newSchema);
 
-			$s->create($tableName, function($table) use($cols, $indexes) {
-				foreach($cols as $col=>$params) {
-					$c = $table->add($col, $params['type']);
-					if($params['key'] === 'PRIMARY')
-						$c->primary();
-					elseif($params['key'] === 'UNIQUE')
-						$c->unique();
-					if($params['nullable'])
-						$c->nullable();
-					if($params['auto_increment'])
-						$c->autoincrement();
-					if($params['default'] !== null)
-						$c->def($params['default']);
-				}
+		$platform = $this->dataMapper->getDB()->getConn()->getDatabasePlatform();
 
-				foreach($indexes as $indexName=>$index) {
-					if($index['type'] == 'PRIMARY')
-						$table->setPrimary($index, $indexName);
-					else {
-						$method = 'add'.ucfirst(strtolower($index['type']));
-						$table->{$method}($index, $indexName);
-					}
-				}
-			});
-		}
+		$queries = $schemaDiff->toSql($platform);
+		foreach($queries as $query)
+			$this->dataMapper->getDB()->query($query);
 	}
 
 	/**
@@ -291,128 +218,51 @@ class ORMMigrations {
 	 * @return array
 	 */
 	protected function getSQLSchemas(\Asgard\Db\DBInterface $db) {
-		$tables = [];
-		foreach($db->query('SHOW TABLES')->all() as $v) {
-			$table = array_values($v)[0];
-
-			$description = [];
-			$pos = 0;
-			foreach($db->query('Describe `'.$table.'`')->all() as $row) {
-				$params = [];
-				$name = $row['Field'];
-				$params['type'] = $row['Type'];
-				$params['nullable'] = ($row['Null'] == 'YES');
-				if($row['Key'] == 'PRI')
-					$params['key'] = 'PRIMARY';
-				elseif($row['Key'] == 'UNI')
-					$params['key'] = 'UNIQUE';
-				else
-					$params['key'] = null;
-				$params['default'] = $row['Default'];
-				$params['auto_increment'] = (strpos($row['Extra'], 'auto_increment') !== false);
-				$params['position'] = $pos++;
-
-				$description[$name] = $params;
-			}
-
-			$indexes = [];
-			foreach ($db->query('SHOW INDEX FROM `'.$table.'`')->all() as $row) {
-				$indexes[$row['Key_name']]['type'] = (
-					$row['Key_name'] == 'PRIMARY' ? 'PRIMARY' : 
-						($row['Index_type'] == 'FULLTEXT' ? 'FULLTEXT' : 
-							($row['Non_unique'] ? 'INDEX' : 'UNIQUE')
-						)
-				);
-				$indexes[$row['Key_name']]['columns'][] = $row['Column_name'];
-				$indexes[$row['Key_name']]['lengths'][] = $row['Sub_part'];
-			}
-
-			foreach($indexes as $indexName=>$index) {
-				if(count($index['columns']) === 1 && ($index['type'] === 'PRIMARY' || $index['type'] === 'UNIQUE')) {
-					$column = $index['columns'][0];
-					$descriptions[$column]['key'] = $index['type'];
-					#todo column index length
-					
-					unset($indexes[$indexName]);
-				}
-			}
-
-			$tables[$table] = [
-				'columns' => $description,
-				'indexes' => $indexes
-			];
-		}
-
-		return $tables;
+		return $this->dataMapper->getDb()->getConn()->getSchemaManager()->createSchema();
 	}
 
 	/**
 	 * Build the migration code by comparing the new schemas to the old ones.
-	 * @param  array   $newSchemas
-	 * @param  array   $oldSchemas
+	 * @param  array   $newSchema
+	 * @param  array   $oldSchema
 	 * @param  boolean $drop       true to drop the old tables
 	 * @return string  migration code
 	 */
-	protected function buildMigration($newSchemas, $oldSchemas, $drop) {
+	protected function buildMigration(\Doctrine\DBAL\Schema\Schema $newSchema, \Doctrine\DBAL\Schema\Schema $oldSchema, $drop) {
+		$comparator = new \Doctrine\DBAL\Schema\Comparator;
+		$schemaDiff = $comparator->compare($oldSchema, $newSchema);
+
 		$res = '';
-		foreach($newSchemas as $table=>$newSchema) {
-			if(!in_array($table, array_keys($oldSchemas))) {
-				if(!$drop)
-					$res .= $this->createTable($table, $newSchema);
-				continue;
-			}
-			$newColumns = $newSchema['columns'];
-			$newIndexes = $newSchema['indexes'];
 
-			$oldSchema = $oldSchemas[$table];
-			$oldColumns = $oldSchema['columns'];
-			$oldIndexes = $oldSchema['indexes'];
+		if($drop) {
+			foreach($schemaDiff->removedTables as $tableName=>$table)
+				$res .= $this->dropTable($tableName);
+		}
+		else {
+			foreach($schemaDiff->newTables as $tableName=>$table)
+				$res .= $this->createTable($tableName, $table);
+		}
 
-			#Columns
+		foreach($schemaDiff->changedTables as $tableName=>$table) {
 			$colsRes = '';
-			foreach(array_keys($newColumns) as $k=>$col) {
-				if(!in_array($col, array_keys($oldColumns)))
-					$colsRes .= $this->createColumn($col, $newColumns[$col]);
-				else {
-					$diff = array_diff_assoc($newColumns[$col], $oldColumns[$col]);
-					if(isset($diff['position'])) {
-						if($k === 0)
-							$diff['after'] = false;
-						else
-							$diff['after'] = array_keys($newColumns)[$k-1];
-						unset($diff['position']);
-					}
-					if($diff)
-						$colsRes .= $this->updateColumn($col, $diff);
-				}
-			}
-			foreach($oldColumns as $col=>$params) {
-				if(!in_array($col, array_keys($newColumns)))
-					$colsRes .= $this->dropColumn($col);
-			}
 
-			#Indexes
-			foreach($newIndexes as $indexName=>$index) {
-				#if the index or its name is not in the old indexes
-				if(!in_array($index, $oldIndexes) || !in_array($indexName, array_keys($oldIndexes)))
-					$colsRes .= $this->createIndex($indexName, $index);
-			}
-			foreach($oldIndexes as $indexName=>$index) {
-				#if the index or its name is only in the old indexes
-				if(!in_array($index, $newIndexes) || !in_array($indexName, array_keys($newIndexes)))
-					$colsRes .= $this->dropIndex($indexName);
-			}
+			foreach($table->addedColumns as $colName=>$col)
+				$colsRes .= $this->createColumn($colName, $col);
+
+			foreach($table->changedColumns as $colName=>$col)
+				$colsRes .= $this->updateColumn($colName, $col);
+
+			foreach($table->removedColumns as $colName=>$col)
+				$colsRes .= $this->dropColumn($colName);
+
+			foreach($table->addedIndexes as $indexName=>$index)
+				$colsRes .= $this->createIndex($indexName, $index);
+
+			foreach($table->removedIndexes as $indexName=>$index)
+				$colsRes .= $this->dropIndex($indexName);
 
 			if($colsRes)
-				$res .= "\$this->container['schema']->table('$table', function(\$table) {".$colsRes."\n});\n\n";
-		}
-		if($drop) {
-			foreach($oldSchemas as $table=>$oldSchema) {
-				if(!in_array($table, array_keys($newSchemas))) {
-					$res .= $this->dropTable($table);
-					continue;
-				}
-			}
+				$res .= "\$this->container['schema']->table('$tableName', function(\$tableName) {".$colsRes."\n});\n\n";
 		}
 
 		return trim($res, "\n");
@@ -433,7 +283,7 @@ class ORMMigrations {
 	 * @return string
 	 */
 	protected function dropColumn($col) {
-		return "\n\t\$table->drop('$col');";
+		return "\n\t\$table->dropColumn('$col');";
 	}
 
 	/**
@@ -445,12 +295,10 @@ class ORMMigrations {
 	protected function createTable($tableName, $table) {
 		$res = "\$this->container['schema']->create('$tableName', function(\$table) {";
 
-		$cols = $table['columns'];
-		foreach($cols as $col=>$params)
-			$res .= $this->createColumn($col, $params);
+		foreach($table->getColumns() as $colName=>$col)
+			$res .= $this->createColumn($colName, $col);
 
-		$indexes = isset($table['indexes']) ? $table['indexes']:[];
-		foreach($indexes as $indexName=>$index)
+		foreach($table->getIndexes() as $indexName=>$index)
 			$res .= $this->createIndex($indexName, $index);
 
 		$res .= "\n});\n\n";
@@ -464,45 +312,14 @@ class ORMMigrations {
 	 * @param  array  $params column parameters
 	 * @return string
 	 */
-	protected function updateColumn($col, $params) {
-		$res = "\n\t\$table->col('$col')";
-		if(array_key_exists('type', $params))
-			$res .= "\n		->type('$params[type]')";
-		if(array_key_exists('after', $params)) {
-			if($params['after'] === false)
-				$res .= "\n		->first()";
-			else
-				$res .= "\n		->after('$params[after]')";
+	protected function updateColumn($name, $col) {
+		$res = "\n\t\$table->changeColumn('$name', [";
+
+		foreach($col->column->toArray() as $propName=>$prop) {
+			if(in_array($propName, $col->changedProperties))
+				$res .= "\n\t\t'$propName' => '$prop',";
 		}
-		if(array_key_exists('nullable', $params)) {
-			if($params['nullable'])
-				$res .= "\n		->nullable()";
-			else
-				$res .= "\n		->NotNullable()";
-		}
-		if(array_key_exists('key', $params)) {
-			if($params['key'] === 'PRIMARY')
-				$res .= "\n		->primary()";
-			elseif($params['key'] === 'UNIQUE')
-				$res .= "\n		->unique()";
-			elseif($params['key'] === 'INDEX')
-				$res .= "\n		->index()";
-			elseif($params['key'] === null)
-				$res .= "\n		->dropIndex()";
-		}
-		if(array_key_exists('auto_increment', $params)) {
-			if($params['auto_increment'])
-				$res .= "\n		->autoincrement()";
-			else
-				$res .= "\n		->notAutoincrement()";
-		}
-		if(array_key_exists('default', $params)) {
-			if($params['default'] === false)
-				$res .= "\n		->def(false)";
-			else
-				$res .= "\n		->def('$params[default]')";
-		}
-		$res .= ';';
+		$res .= "\n\t]);";
 
 		return $res;
 	}
@@ -513,19 +330,15 @@ class ORMMigrations {
 	 * @param  array  $params column parameters
 	 * @return string
 	 */
-	protected function createColumn($col, $params) {
-		$res = "\n\t\$table->add('$col', '$params[type]')";
-		if($params['nullable'])
-			$res .= "\n		->nullable()";
-		if($params['key'] === 'PRIMARY')
-			$res .= "\n		->primary()";
-		elseif($params['key'] === 'UNIQUE')
-			$res .= "\n		->unique()";
-		if($params['auto_increment'])
-			$res .= "\n		->autoincrement()";
-		if($params['default'])
-			$res .= "\n		->def('$params[default]')";
-		$res .= ';';
+	protected function createColumn($name, $col) {
+		$res = "\n\t\$table->addColumn('$name', '".strtolower($col->getType())."', [";
+		if($col->getNotnull())
+			$res .= "\n		'notnull' => true,";
+		if($col->getAutoincrement())
+			$res .= "\n		'autoincrement' => true,";
+		if($col->getDefault())
+			$res .= "\n		'default' => '".$col->getDefault()."',";
+		$res .= "\n	]);";
 
 		return $res;
 	}
@@ -537,14 +350,13 @@ class ORMMigrations {
 	 * @return string
 	 */
 	protected function createIndex($indexName, $index) {
-		if($index['type'] == 'PRIMARY')
-			$res = "\n\t\$table->setPrimary(";
+		if($index->isPrimary())
+			$res = "\n\t\$table->setPrimaryKey(\n\t\t".$this->outputPHP($index->getColumns(), 2)."\n\t);";
+		elseif($index->isUnique())
+			$res = "\n\t\$table->addUniqueIndex(\n\t\t".$this->outputPHP($index->getColumns(), 2).",\n\t\t'".$indexName."'\n\t);";
 		else
-			$res = "\n\t\$table->add".ucfirst(strtolower($index['type']))."(";
-		unset($index['type']);
-		$res .= $this->outputPHP($index, 1);
-		$res .= ', \''.$indexName.'\');';
-
+			$res = "\n\t\$table->addIndex(\n\t\t".$this->outputPHP($index->getColumns(), 2).",\n\t\t'".$indexName."'\n\t);";
+		
 		return $res;
 	}
 

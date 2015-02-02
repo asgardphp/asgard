@@ -10,7 +10,7 @@ class EmailProperty extends TextProperty {
 	 * {@inheritDoc}
 	 */
 	public function getSQLType() {
-		return 'varchar(250)';
+		return 'string';
 	}
 
 	/**

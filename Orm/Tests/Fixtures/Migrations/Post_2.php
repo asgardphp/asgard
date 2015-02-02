@@ -1,59 +1,72 @@
 <?php
 class Post extends \Asgard\Migration\DBMigration {
 	public function up() {
-		$this->container['schema']->create('post_translation', function($table) {
-			$table->add('id', 'int(11)');
-			$table->add('locale', 'varchar(50)');
-			$table->add('content', 'text')
-				->nullable();
-		});
-		
-		$this->container['schema']->create('category_post', function($table) {
-			$table->add('categories_id', 'int(11)')
-				->nullable();
-			$table->add('posts_id', 'int(11)')
-				->nullable();
-		});
-		
-		$this->container['schema']->create('post', function($table) {
-			$table->add('id', 'int(11)')
-				->primary()
-				->autoincrement();
-			$table->add('title', 'varchar(255)')
-				->unique()
-				->def('a');
-			$table->add('posted', 'date')
-				->nullable();
-			$table->add('author_id', 'int(11)')
-				->nullable();
-		});
-		
 		$this->container['schema']->create('author', function($table) {
-			$table->add('id', 'int(11)')
-				->primary()
-				->autoincrement();
-			$table->add('name', 'varchar(255)')
-				->nullable();
+			$table->addColumn('id', 'integer', [
+				'notnull' => true,
+				'autoincrement' => true,
+			]);
+			$table->addColumn('name', 'string', [
+			]);
+			$table->setPrimaryKey(
+				[
+					'id',
+				]
+			);
 		});
 		
 		$this->container['schema']->create('category', function($table) {
-			$table->add('id', 'int(11)')
-				->primary()
-				->autoincrement();
-			$table->add('name', 'varchar(255)')
-				->nullable();
+			$table->addColumn('id', 'integer', [
+				'notnull' => true,
+				'autoincrement' => true,
+			]);
+			$table->addColumn('name', 'string', [
+			]);
+			$table->setPrimaryKey(
+				[
+					'id',
+				]
+			);
+		});
+		
+		$this->container['schema']->table('post', function($tableName) {
+			$table->addColumn('content2', 'text', [
+			]);
+			$table->changeColumn('title', [
+				'default' => 'b',
+				'notnull' => '',
+			]);
+			$table->dropColumn('posted');
+			$table->addIndex(
+				[
+					'content2',
+				],
+				'content2'
+			);
+			$table->dropIndex('title');
 		});
 	}
 
 	public function down() {
-		$this->container['schema']->drop('post_translation');
-		
-		$this->container['schema']->drop('category_post');
-		
-		$this->container['schema']->drop('post');
-		
 		$this->container['schema']->drop('author');
 		
 		$this->container['schema']->drop('category');
+		
+		$this->container['schema']->table('post', function($tableName) {
+			$table->addColumn('posted', 'date', [
+			]);
+			$table->changeColumn('title', [
+				'default' => 'a',
+				'notnull' => '1',
+			]);
+			$table->dropColumn('content2');
+			$table->addUniqueIndex(
+				[
+					'title',
+				],
+				'title'
+			);
+			$table->dropIndex('content2');
+		});
 	}
 }

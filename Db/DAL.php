@@ -556,9 +556,9 @@ class DAL {
 	 * @param  string $condition
 	 * @return string
 	 */
-	protected function replace($condition) {
-		$condition = preg_replace_callback('/[a-z_][a-zA-Z0-9._]*(?![^\(]*\))/', function($matches) {
-			if(strpos($matches[0], '.')===false && count($this->joins) > 0 && count($this->tables)===1)
+	protected function replace($condition, $setTable=true) {
+		$condition = preg_replace_callback('/[a-z_][a-zA-Z0-9._]*(?![^\(]*\))/', function($matches) use($setTable) {
+			if($setTable && strpos($matches[0], '.')===false && count($this->joins) > 0 && count($this->tables)===1)
 				$matches[0] = array_keys($this->tables)[0].'.'.$matches[0];
 
 			return $this->identifierQuotes($matches[0]);
@@ -625,9 +625,13 @@ class DAL {
 	 * Return the default table.
 	 * @return string
 	 */
-	protected function getDefaultTable() {
-		if(count($this->tables) === 1)
-			return array_keys($this->tables)[0];
+	protected function getDefaultTable($real=false) {
+		if(count($this->tables) === 1) {
+			if($real)
+				return array_values($this->tables)[0];
+			else
+				return array_keys($this->tables)[0];
+		}
 		else
 			return null;
 	}
@@ -850,31 +854,80 @@ class DAL {
 			throw new \Exception('Update values should not be empty.');
 		$params = [];
 
-		$tables = $this->buildTables();
-		$orderBy = $this->buildOrderBy();
-		$limit = $this->buildLimit();
-
-		list($jointures, $joinparams) = $this->buildJointures();
-		$params = array_merge($params, $joinparams);
-
-		$set = [];
-		foreach($values as $k=>$v) {
-			if($v instanceof Raw)
-				$set[] = $this->replace($k).'='.$v;
-			else {
-				$params[] = $v;
-				$set[] = $this->replace($k).'=?';
+		if($this->db->getConn()->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\MySqlPlatform) {
+			$set = [];
+			foreach($values as $k=>$v) {
+				if($v instanceof Raw)
+					$set[] = $this->replace($k).'='.$v;
+				else {
+					$params[] = $v;
+					$set[] = $this->replace($k).'=?';
+				}
 			}
+			$str = ' SET '.implode(', ', $set);
+
+			$tables = $this->buildTables(true);
+			$orderBy = $this->buildOrderBy();
+			$limit = $this->buildLimit();
+
+			list($jointures, $joinparams) = $this->buildJointures();
+			$params = array_merge($params, $joinparams);
+
+			list($where, $whereparams) = $this->buildWhere();
+			$params = array_merge($params, $whereparams);
+			$sql = 'UPDATE '.$tables.$jointures.$str.$where.$orderBy.$limit;
+
+			$this->replaceRaws($sql, $params);
 		}
-		$str = ' SET '.implode(', ', $set);
+		elseif($this->joins || $this->limit || $this->offset) {
+			$set = [];
+			foreach($values as $k=>$v) {
+				if($v instanceof Raw)
+					$set[] = $this->replace($k, false).'='.$v;
+				else {
+					$params[] = $v;
+					$set[] = $this->replace($k, false).'=?';
+				}
+			}
+			$str = ' SET '.implode(', ', $set);
 
-		list($where, $whereparams) = $this->buildWhere();
-		$params = array_merge($params, $whereparams);
-		$sql = 'UPDATE '.$tables.$jointures.$str.$where.$orderBy.$limit;
+			$selectDal = clone $this;
+			$selectDal->select('1')->from($this->getDefaultTable(true).' thisIsAUniqueAlias');
 
-		$this->replaceRaws($sql, $params);
+			$selectDal->replaceTable($this->getDefaultTable(), 'thisIsAUniqueAlias');
+
+			foreach($this->db->getSchema()->table($this->getDefaultTable(true))->getColumns() as $colName=>$col)
+				$selectDal->where('thisIsAUniqueAlias.'.$colName.' <> '.$this->getDefaultTable(true).'.'.$colName);
+
+			$selectSql = $selectDal->buildSQL();
+
+			$params = array_merge($params, $selectDal->getParameters());
+
+			$tables = $this->buildTables(false);
+
+			$sql = 'UPDATE '.$tables.$str.' WHERE EXISTS ('.$selectSql.')';
+		}
+		else {
+			$set = [];
+			foreach($values as $k=>$v) {
+				if($v instanceof Raw)
+					$set[] = $this->replace($k, false).'='.$v;
+				else {
+					$params[] = $v;
+					$set[] = $this->replace($k, false).'=?';
+				}
+			}
+			$str = ' SET '.implode(', ', $set);
+
+			$tables = $this->buildTables(false);
+			list($where, $whereparams) = $this->buildWhere();
+			$params = array_merge($params, $whereparams);
+
+			$sql = 'UPDATE '.$tables.$str.$where;
+		}
 
 		$this->params = $params;
+
 		return $sql;
 	}
 
@@ -887,29 +940,94 @@ class DAL {
 	public function buildDeleteSQL(array $del_tables=[]) {
 		$params = [];
 
-		$tables = $this->buildTables(count($del_tables) > 0);
-		$orderBy = $this->buildOrderBy();
-		$limit = $this->buildLimit();
+		if($this->db->getConn()->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\MySqlPlatform) {
+			$tables = $this->buildTables(count($del_tables) > 0);
+			$orderBy = $this->buildOrderBy();
+			$limit = $this->buildLimit();
 
-		list($jointures, $joinparams) = $this->buildJointures();
-		$params = array_merge($params, $joinparams);
+			list($jointures, $joinparams) = $this->buildJointures();
+			$params = array_merge($params, $joinparams);
 
-		list($where, $whereparams) = $this->buildWhere();
-		$params = array_merge($params, $whereparams);
+			list($where, $whereparams) = $this->buildWhere();
+			$params = array_merge($params, $whereparams);
 
-		if($del_tables) {
-			foreach($del_tables as $k=>$v)
-				$del_tables[$k] = '`'.$v.'`';
-			$del_tables = implode(', ', $del_tables);
-			$sql = 'DELETE '.$del_tables.' FROM '.$tables.$jointures.$where.$orderBy.$limit;
+			if($this->db->getConn()->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\MySqlPlatform && $del_tables) {
+				foreach($del_tables as $k=>$v)
+					$del_tables[$k] = '`'.$v.'`';
+				$del_tables = implode(', ', $del_tables);
+				$sql = 'DELETE '.$del_tables.' FROM '.$tables.$jointures.$where.$orderBy.$limit;
+			}
+			else
+				$sql = 'DELETE FROM '.$tables.$jointures.$where.$orderBy.$limit;
+
+			$this->replaceRaws($sql, $params);
 		}
-		else
-			$sql = 'DELETE FROM '.$tables.$jointures.$where.$orderBy.$limit;
+		elseif($this->joins || $this->limit || $this->offset) {
+			$selectDal = clone $this;
+			$selectDal->select('1')->from($this->getDefaultTable(true).' thisIsAUniqueAlias');
 
-		$this->replaceRaws($sql, $params);
+			$selectDal->replaceTable($this->getDefaultTable(), 'thisIsAUniqueAlias');
+
+			foreach($this->db->getSchema()->table($this->getDefaultTable(true))->getColumns() as $colName=>$col)
+				$selectDal->where('thisIsAUniqueAlias.'.$colName.' <> '.$this->getDefaultTable(true).'.'.$colName);
+			$selectSql = $selectDal->buildSQL();
+
+			$params = array_merge($params, $selectDal->getParameters());
+
+			$tables = $this->buildTables(false);
+
+			$sql = 'DELETE FROM '.$tables.' WHERE EXISTS ('.$selectSql.')';
+		}
+		else {
+			$tables = $this->buildTables(false);
+			list($where, $whereparams) = $this->buildWhere();
+			$params = array_merge($params, $whereparams);
+
+			$sql = 'DELETE FROM '.$tables.$where;
+		}
+
 		$this->params = $params;
 
 		return $sql;
+	}
+
+	/**
+	 * Replace an alias in conditions.
+	 * @param  aray   $conditions
+	 * @param  string $oldTable
+	 * @param  string $newTable
+	 * @return array  new conditions
+	 * @api
+	 */
+	public function replaceTableInConditions($conditions, $oldTable, $newTable) {
+		foreach($conditions as $k=>$v) {
+			if(is_array($v))
+				$v = $this->replaceTableInConditions($v, $oldTable, $newTable);
+			else
+				$v = str_replace($oldTable.'.', $newTable.'.', $v);
+
+			if(is_string($k)) {
+				$newK = str_replace($oldTable.'.', $newTable.'.', $k);
+				unset($conditions[$k]);
+				$conditions[$newK] = $v;
+			}
+			else
+				$conditions[$k] = $v;
+		}
+		return $conditions;
+	}
+
+	/**
+	 * Replace an alias with a new one in the conditions, jointures and group by.
+	 * @param string $oldTable
+	 * @param string $newTable
+	 * @api
+	 */
+	public function replaceTable($oldTable, $newTable) {
+		#todo careful that the name is not just the suffix of another one
+		$this->where = $this->replaceTableInConditions($this->where, $oldTable, $newTable);
+		$this->joins = $this->replaceTableInConditions($this->joins, $oldTable, $newTable);
+		$this->groupBy = str_replace($oldTable.'.', $newTable.'.', $this->groupBy);
 	}
 
 	/**
@@ -933,7 +1051,7 @@ class DAL {
 
 		$cols = [];
 		foreach($values as $k=>&$v) {
-			$cols[] = $this->replace($k);
+			$cols[] = $this->replace($k, false);
 			if($v instanceof Raw)
 				$v = (string)$v;
 			else {
