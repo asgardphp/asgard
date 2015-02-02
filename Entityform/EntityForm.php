@@ -264,7 +264,9 @@ class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 	protected function myErrors() {
 		$data = $this->data();
 		foreach($data as $k=>$v) {
-			if($this->entity->getDefinition()->property($k)->get('form.hidden') && ($v === null || $v === ''))
+			if(!$this->entity->getDefinition()->hasProperty($k) ||
+				$this->entity->getDefinition()->property($k)->get('form.hidden')
+				&& ($v === null || $v === ''))
 				unset($data[$k]);
 		}
 		$data = array_filter($data, function($v) {

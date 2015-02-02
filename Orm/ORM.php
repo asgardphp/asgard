@@ -160,6 +160,7 @@ class ORM implements ORMInterface {
 	 * {@inheritDoc}
 	*/
 	public function joinToEntity($relation, \Asgard\Entity\Entity $entity) {
+		$qqq=$relation;
 		if(is_string($relation))
 			$relation = $this->dataMapper->relation($this->definition, $relation);
 
@@ -169,7 +170,6 @@ class ORM implements ORMInterface {
 			if($relation->type() == 'HMABT')
 				$this->where($relation->getAssociationTable().'.'.$relation->getLinkType(), $entity->getDefinition()->getClass());
 		}
-		$this->join($relation);
 
 		$alias = $relation->getName();
 		if($alias == $this->getTable()) #todo conflits entre jointures, et conditions

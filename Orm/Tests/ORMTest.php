@@ -174,7 +174,7 @@ class ORMTest extends \PHPUnit_Framework_TestCase {
 			1,
 			$dataMapper->orm('Asgard\Orm\Tests\Fixtures\ORM\News')->joinToEntity('category', $cat)->where('title', 'Welcome!')->first()->id
 		);
-		$author = $dataMapper->load('Asgard\Orm\Tests\Fixtures\ORM\Category', 2);
+		$author = $dataMapper->load('Asgard\Orm\Tests\Fixtures\ORM\Author', 2);
 		$this->assertEquals(
 			2,
 			$dataMapper->orm('Asgard\Orm\Tests\Fixtures\ORM\News')->joinToEntity('category', $cat)->joinToEntity('author', $author)->where('author.name', 'Joe')->first()->id
