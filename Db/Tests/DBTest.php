@@ -10,7 +10,7 @@ class DBTest extends \PHPUnit_Framework_TestCase {
 		$db = new \Asgard\Db\DB($config);
 		$db2 = new \Asgard\Db\DB($config);
 
-		$this->assertTrue($db->getDB() instanceof \PDO);
+		$this->assertTrue($db->getPDO() instanceof \PDO);
 
 		#Fixtures
 		$db->getSchema()->drop('news');
