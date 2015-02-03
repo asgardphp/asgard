@@ -11,7 +11,7 @@ class Query {
 	 * Database instance.
 	 * @var \PDO
 	 */
-	protected $db;
+	protected $pdo;
 	/**
 	 * Query's ressource.
 	 * @var \PDOStatement
@@ -24,16 +24,18 @@ class Query {
 	 * @param string  $sql
 	 * @param array   $args
 	 */
-	public function __construct(\PDO $db, $sql, array $args=[]) {
-		$this->db = $db;
+	public function __construct(\PDO $pdo, $sql, array $args=[]) {
+		$this->pdo = $pdo;
 		try {
 			if($args) {
-				$this->rsc = $db->prepare($sql);
+				$this->rsc = $pdo->prepare($sql);
+				if(!$this->rsc)
+					throw new \Exception('Not connected to a database.');
 				$this->rsc->execute($args);
 			}
 			else
-				$this->rsc = $db->query($sql);
-		} catch(\PDOException $e) {
+				$this->rsc = $pdo->query($sql);
+		} catch(\Exception $e) {
 			throw new DBException($e->getMessage().'<br/>'."\n".'SQL: '.$sql.' ('.implode(', ', $args).')'); #todo extend pdoexception?
 		}
 	}

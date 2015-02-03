@@ -26,7 +26,7 @@ interface DBInterface {
 	 * @return \PDO
 	 * @api
 	*/
-	public function getDB();
+	public function getPDO();
 
 	/**
 	 * Execute an SQL query.

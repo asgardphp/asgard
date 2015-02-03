@@ -17,7 +17,7 @@ class InitCommand extends \Asgard\Console\Command {
 	/**
 	 * {@inheritDoc}
 	 */
-	protected $description = 'Initialize the database';
+	protected $description = 'Initialize the database configuration';
 	/**
 	 * Configuration directory.
 	 * @var string

@@ -251,6 +251,9 @@ class Bundle extends \Asgard\Core\BundleLoader {
 				$schema = $container['schema'];
 				$dataMapper = $container['dataMapper'];
 
+				$dbCreate = new \Asgard\Db\Commands\CreateCommand($db);
+				$container['console']->add($dbCreate);
+
 				$ormAutomigrate = new \Asgard\Orm\Commands\AutoMigrateCommand($em, $mm, $dataMapper);
 				$container['console']->add($ormAutomigrate);
 

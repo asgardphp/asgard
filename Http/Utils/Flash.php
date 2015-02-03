@@ -22,6 +22,11 @@ class Flash {
 	 */
 	protected $cb;
 	/**
+	 * Global display callback.
+	 * @var callable
+	 */
+	protected $globalCb;
+	/**
 	 * Fetched flag.
 	 * @var boolean
 	 */
@@ -109,9 +114,16 @@ class Flash {
 	 * Show all messages.
 	 * @param  string $cat
 	 */
-	public function showAll($cat=null) {
-		foreach($this->messages as $type=>$messages)
-			$this->show($type, $cat);
+	public function showAll($cat=null, $cb=true) {
+		$this->fetch();
+		if($cb && $this->globalCb) {
+			$globalCb = $this->globalCb;
+			$globalCb($this, $cat);
+		}
+		else {
+			foreach($this->messages as $type=>$messages)
+				$this->show($type, $cat);
+		}
 	}
 
 	/**
@@ -149,6 +161,17 @@ class Flash {
 	 */
 	public function setCallback(callable $cb) {
 		$this->cb = $cb;
+		return $this;
+	}
+
+	public function has($type=null) {
+		if($type === null)
+			return count($this->messages) > 0;
+		else
+			return isset($this->messages['type']) && count($this->messages['type']) > 0;
+	}
+	public function setGlobalCallback(callable $globalCb) {
+		$this->globalCb = $globalCb;
 		return $this;
 	}
 }

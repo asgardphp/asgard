@@ -10,7 +10,7 @@ class DB implements DBInterface {
 	 * \PDO instance.
 	 * @var \PDO
 	 */
-	protected $db;
+	protected $pdo;
 	/**
 	 * Configuration.
 	 * @var array
@@ -25,15 +25,14 @@ class DB implements DBInterface {
 	 * @param \PDO  $db database connection
 	 * @api
 	*/
-	public function __construct(array $config, \PDO $db=null) {
+	public function __construct(array $config, \PDO $pdo=null) {
 		if(!isset($config['driver']))
 			$config['driver'] = 'mysql';
 		$this->config = $config;
-		if($db === null)
-			$this->db = $this->getPDO($config);
-		else
-			$this->db = $db;
-		$this->db->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+		if($pdo !== null) {
+			$this->pdo = $pdo;
+			$this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+		}
 	}
 
 	/**
@@ -48,24 +47,32 @@ class DB implements DBInterface {
 	 * @param  array $config
 	 * @return \PDO
 	 */
-	protected function getPDO(array $config) {
-		$driver = $config['driver'];
-		$user = isset($config['user']) ? $config['user']:'root';
-		$password = isset($config['password']) ? $config['password']:'';
+	public function getPDO() {
+		if(!$this->pdo) {
+			$config = $this->config;
+			$driver = $config['driver'];
+			$user = isset($config['user']) ? $config['user']:'root';
+			$password = isset($config['password']) ? $config['password']:'';
 
-		switch($driver) {
-			case 'pgsql':
-				$parameters = 'pgsql:host='.$config['host'].(isset($config['port']) ? ' port='.$config['port']:'').(isset($config['database']) ? ' dbname='.$config['database']:'');
-				return new \PDO($parameters, $user, $password);
-			case 'mssql':
-				$parameters = 'mssql:host='.$config['host'].(isset($config['database']) ? ';dbname='.$config['database']:'');
-				return new \PDO($parameters, $user, $password);
-			case 'sqlite':
-				return new \PDO('sqlite:'.$config['database']);
-			default:
-				$parameters = 'mysql:host='.$config['host'].(isset($config['port']) ? ';port='.$config['port']:'').(isset($config['database']) ? ';dbname='.$config['database']:'');
-				return new \PDO($parameters, $user, $password, [\PDO::MYSQL_ATTR_FOUND_ROWS => true, \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8']);
+			switch($driver) {
+				case 'pgsql':
+					$parameters = 'pgsql:host='.$config['host'].(isset($config['port']) ? ' port='.$config['port']:'').(isset($config['database']) ? ' dbname='.$config['database']:'');
+					$this->pdo = new \PDO($parameters, $user, $password);
+					break;
+				case 'mssql':
+					$parameters = 'mssql:host='.$config['host'].(isset($config['database']) ? ';dbname='.$config['database']:'');
+					$this->pdo = new \PDO($parameters, $user, $password);
+					break;
+				case 'sqlite':
+					$this->pdo = new \PDO('sqlite:'.$config['database']);
+					break;
+				default:
+					$parameters = 'mysql:host='.$config['host'].(isset($config['port']) ? ';port='.$config['port']:'').(isset($config['database']) ? ';dbname='.$config['database']:'');
+					$this->pdo = new \PDO($parameters, $user, $password, [\PDO::MYSQL_ATTR_FOUND_ROWS => true, \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8']);
+			}
 		}
+
+		return $this->pdo;
 	}
 
 	/**
@@ -78,43 +85,36 @@ class DB implements DBInterface {
 	/**
 	 * {@inheritDoc}
 	*/
-	public function getDB() {
-		return $this->db;
-	}
-
-	/**
-	 * {@inheritDoc}
-	*/
 	public function query($sql, array $args=[]) {
-		return new Query($this->db, $sql, $args);
+		return new Query($this->getPDO(), $sql, $args);
 	}
 
 	/**
 	 * {@inheritDoc}
 	*/
 	public function id() {
-		return $this->db->lastInsertId();
+		return $this->getPDO()->lastInsertId();
 	}
 
 	/**
 	 * {@inheritDoc}
 	*/
 	public function beginTransaction() {
-		$this->db->beginTransaction();
+		$this->getPDO()->beginTransaction();
 	}
 
 	/**
 	 * {@inheritDoc}
 	*/
 	public function commit() {
-		$this->db->commit();
+		$this->getPDO()->commit();
 	}
 
 	/**
 	 * {@inheritDoc}
 	*/
 	public function rollback() {
-		$this->db->rollback();
+		$this->getPDO()->rollback();
 	}
 
 
@@ -122,7 +122,7 @@ class DB implements DBInterface {
 	 * {@inheritDoc}
 	*/
 	public function close() {
-		unset($this->db);
+		unset($this->pdo);
 	}
 
 	public function getSchema() {
@@ -146,7 +146,7 @@ class DB implements DBInterface {
 
 			$c = new \Doctrine\DBAL\Configuration;
 			$params = [
-				'pdo' => $this->getDB()
+				'pdo' => $this->getPDO()
 			];
 			$this->conn = \Doctrine\DBAL\DriverManager::getConnection($params, $c);
 		}
