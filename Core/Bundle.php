@@ -87,6 +87,8 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		#Hook
 		$container->setParentClass('hooks', 'Asgard\Hook\HookManagerInterface');
 		$container->register('hooks', function($container) { return new \Asgard\Hook\HookManager($container); } );
+		$container->setParentClass('hooksAnnotationReader', 'Asgard\Hook\AnnotationReader');
+		$container->register('hooksAnnotationReader', function($container) { return $container['kernel']->getHooksAnnotationReader(); } );
 
 		#Http
 		$container->setParentClass('httpKernel', 'Asgard\Http\HttpKernelInterface');
@@ -133,6 +135,8 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		$container->register('url', function($container) {
 			return $container['httpKernel']->getRequest()->url;
 		});
+		$container->setParentClass('controllersAnnotationReader', 'Asgard\Http\AnnotationReader');
+		$container->register('controllersAnnotationReader', function($container) { return $container['kernel']->getControllersAnnotationReader(); } );
 
 		#Migration
 		$container->setParentClass('MigrationManager', 'Asgard\Migration\MigrationManagerInterface');

@@ -141,8 +141,9 @@ class GenerateCommand extends \Asgard\Console\Command {
 					$generator->processFile(__DIR__.'/bundle_template/Controllers/_EntityController.php', $dst.'Controllers/'.ucfirst($bundle['entities'][$name]['meta']['name']).'Controller.php', ['bundle'=>$bundle, 'entity'=>$entity]);
 
 					if($bundle['tests']) {
-						include_once $dst.'Controllers/'.ucfirst($bundle['entities'][$name]['meta']['name']).'Controller.php';
 						$class = $bundle['namespace'].'\\Controllers\\'.ucfirst($entity['meta']['name']).'Controller';
+						$routes = $asgard['controllersAnnotationReader']->fetchRoutes($class);
+						$asgard['resolver']->addRoutes($routes);
 					}
 
 					if(in_array('index', $entity['front']) || isset($entity['front']['index'])) {
@@ -176,17 +177,19 @@ class GenerateCommand extends \Asgard\Console\Command {
 				$generator->processFile(__DIR__.'/bundle_template/Controllers/_Controller.php', $dst.'Controllers/'.$controller['name'].'.php', ['bundle'=>$bundle, 'controller'=>$controller]);
 
 				if($bundle['tests']) {
-					include_once $dst.'Controllers/'.$controller['name'].'.php';
 					$class = $bundle['namespace'].'\\Controllers\\'.ucfirst($controller['name']);
+					$routes = $asgard['controllersAnnotationReader']->fetchRoutes($class);
+					$asgard['resolver']->addRoutes($routes);
 				}
 
 				foreach($controller['actions'] as $action=>$params) {
 					if($bundle['tests']) {
-						$actionRoute = $class::routeFor($action);
-						if(!$actionRoute)
+						try {
+							$actionRoute = $asgard['resolver']->getRouteFor([$class, 'index'])->getRoute();
+							$actionRoute = $actionRoute;
+						} catch(\Exception $e) {
 							continue;
-						else
-							$actionRoute = $actionRoute->getRoute();
+						}
 						$tests[$actionRoute] = '
 		$browser = $this->createBrowser();
 		$this->assertTrue($browser->get(\''.$actionRoute.'\')->isOK(), \'GET '.$actionRoute.'\');';

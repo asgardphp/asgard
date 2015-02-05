@@ -237,8 +237,8 @@ class Kernel implements \ArrayAccess {
 	 * Get the hooks annotations reader dependency.
 	 * @return \Asgard\Hook\AnnotationReader
 	 */
-	protected function getHooksAnnotationReader() {
-		$AnnotationReader = new \Asgard\Hook\AnnotationReader();
+	public function getHooksAnnotationReader() {
+		$AnnotationReader = new \Asgard\Hook\AnnotationReader;
 		if($this->getCache())
 			$AnnotationReader->setCache($this->getCache());
 		$AnnotationReader->setDebug($this->getConfig()['debug']);
@@ -249,8 +249,8 @@ class Kernel implements \ArrayAccess {
 	 * Get the controllers annotations reader dependency.
 	 * @return \Asgard\Http\AnnotationReader
 	 */
-	protected function getControllersAnnotationReader() {
-		$AnnotationReader = new \Asgard\Http\AnnotationReader();
+	public function getControllersAnnotationReader() {
+		$AnnotationReader = new \Asgard\Http\AnnotationReader;
 		if($this->getCache())
 			$AnnotationReader->setCache($this->getCache());
 		$AnnotationReader->setDebug($this->getConfig()['debug']);
