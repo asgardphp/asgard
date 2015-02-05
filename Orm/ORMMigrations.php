@@ -262,7 +262,7 @@ class ORMMigrations {
 				$colsRes .= $this->dropIndex($indexName);
 
 			if($colsRes)
-				$res .= "\$this->container['schema']->table('$tableName', function(\$tableName) {".$colsRes."\n});\n\n";
+				$res .= "\$this->container['schema']->table('$tableName', function(\$table) {".$colsRes."\n});\n\n";
 		}
 
 		return trim($res, "\n");
@@ -316,8 +316,12 @@ class ORMMigrations {
 		$res = "\n\t\$table->changeColumn('$name', [";
 
 		foreach($col->column->toArray() as $propName=>$prop) {
-			if(in_array($propName, $col->changedProperties))
-				$res .= "\n\t\t'$propName' => '$prop',";
+			if(in_array($propName, $col->changedProperties)) {
+				if($propName === 'type')
+					$res .= "\n\t\t'$propName' => '".strtolower($prop)."',";
+				else
+					$res .= "\n\t\t'$propName' => '$prop',";
+			}
 		}
 		$res .= "\n\t]);";
 

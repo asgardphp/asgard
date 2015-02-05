@@ -92,7 +92,7 @@ class Paginator implements PaginatorInterface {
 		if($this->page > 1)
 			$r .= '<a href="'.$this->getPrev().'">«</a>';
 		for($i=1; $i<=$this->getPages(); $i++)
-			$r .= '<a href="'.$this->request->url->full(['page'=>$i]).'"'.($this->page ==$i ? ' class="active"':'').'>'.$i.'</a>';
+			$r .= '<a href="'.$this->request->url->full(['page'=>$i]).'"'.($this->page === $i ? ' class="active"':'').'>'.$i.'</a>';
 		if($this->page < $this->getPages())
 			$r .= '<a href="'.$this->getNext().'">»</a>';
 		return $r;

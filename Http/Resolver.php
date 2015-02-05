@@ -230,21 +230,19 @@ class Resolver implements ResolverInterface {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Get route for a given action.
+	 * @param  array $what controller and action
+	 * @return Route
 	 */
-	public function url($what, array $params=[]) {
+	public function getRouteFor($what) {
 		#controller/action
 		if(is_array($what)) {
-			$controller = strtolower($what[0]);
+			$controller = trim(strtolower($what[0]), '\\');
 			$action = strtolower($what[1]);
 			foreach($this->getRoutes() as $routeObj) {
 				$route = $routeObj->getRoute();
-				if(strtolower($routeObj->getController()) == $controller && strtolower($routeObj->getAction()) == $action) {
-					if($routeObj->get('host'))
-						return 'http://'.$routeObj->get('host').'/'.static::buildRoute($route, $params);
-					else
-						return $this->getUrl()->to(static::buildRoute($route, $params));
-				}
+				if(trim(strtolower($routeObj->getController()), '\\') === $controller && strtolower($routeObj->getAction()) === $action)
+					return $routeObj;
 			}
 		}
 		#route
@@ -252,16 +250,23 @@ class Resolver implements ResolverInterface {
 			$what = strtolower($what);
 			foreach($this->getRoutes() as $routeObj) {
 				$route = $routeObj->getRoute();
-				if($routeObj->get('name') !== null && strtolower($routeObj->get('name')) == $what) {
-					if($routeObj->get('host'))
-						return 'http://'.$routeObj->get('host').'/'.static::buildRoute($route, $params);
-					else
-						return $this->getUrl()->to(static::buildRoute($route, $params));
-				}
+				if($routeObj->get('name') !== null && strtolower($routeObj->get('name')) === $what)
+					return $routeObj;
 			}
 		}
 
 		throw new \Exception('Route not found.');
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function url($what, array $params=[]) {
+		$route = $this->getRouteFor($what);
+		if($route->get('host'))
+			return 'http://'.$route->get('host').'/'.static::buildRoute($route->getRoute(), $params);
+		else
+			return $this->getUrl()->to(static::buildRoute($route->getRoute(), $params));
 	}
 
 	/**

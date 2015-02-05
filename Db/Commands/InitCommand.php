@@ -33,12 +33,16 @@ class InitCommand extends \Asgard\Console\Command {
 		parent::__construct();
 	}
 
+	protected function ask($question, $default=null) {
+		$helper = $this->getHelperSet()->get('question');
+		$question = new \Symfony\Component\Console\Question\Question($question, $default);
+		return $helper->ask($this->input, $this->output, $question);
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
-		$dialog = $this->getHelperSet()->get('dialog');
-
 		$env = $this->input->getOption('env');
 		if(!$env)
 			$file = 'database.yml';
@@ -51,16 +55,16 @@ class InitCommand extends \Asgard\Console\Command {
 		}
 
 		while(!isset($driver) || !in_array($driver, ['mysql', 'pgsql', 'mssql', 'sqlite']))
-			$driver = $dialog->ask($this->output, 'Driver mysql/pgsql/mssql/sqlite ("mysql"): ', 'mysql');
+			$driver = $this->ask('Driver mysql/pgsql/mssql/sqlite ("mysql"): ', 'mysql');
 		if($driver === 'sqlite')
 			$host = $user = $password = null;
 		else {
-			$host = $dialog->ask($this->output, 'Database host ("localhost"): ', 'localhost');
-			$user = $dialog->ask($this->output, 'Database user ("root"): ', 'root');
-			$password = $dialog->ask($this->output, 'Database password (""): ', '');
+			$host = $this->ask('Database host ("localhost"): ', 'localhost');
+			$user = $this->ask('Database user ("root"): ', 'root');
+			$password = $this->ask('Database password (""): ', '');
 		}
-		$name = $dialog->ask($this->output, 'Database name ("asgard"): ', 'asgard');
-		$prefix = $dialog->ask($this->output, 'Database prefix (""): ');
+		$name = $this->ask('Database name ("asgard"): ', 'asgard');
+		$prefix = $this->ask('Database prefix (""): ');
 
 		$config = file_get_contents(__DIR__.'/stubs/database.yml.stub');
 
@@ -72,26 +76,20 @@ class InitCommand extends \Asgard\Console\Command {
 		$config = str_replace('_PREFIX_', $prefix, $config);
 
 		try {
-			$db = new \Asgard\Db\DB([
-				'driver' => $driver,
-				'host' => $host,
-				'user' => $user,
-				'password' => $password,
-				'database' => $name,
-			]);
-			$this->comment('Database already exist.');
-		} catch(\PDOException $e) {
-			try {
-				$db = new \Asgard\Db\DB([
-					'driver' => $driver,
-					'host' => $host,
-					'user' => $user,
-					'password' => $password,
-				]);
-				$db->query('CREATE DATABASE `'.$name.'` CHARACTER SET utf8 COLLATE utf8_general_ci');
-			} catch(\PDOException $e) {
-				$this->error('The database could not be created.');
+			if($driver == 'sqlite') {
+				if(file_exists($name))
+					$this->comment('The database "'.$name.'" already exists.');
+				else {
+					\Asgard\File\FileSystem::write($name, '');
+					$this->info('Database created.');
+				}
 			}
+			else {
+					$this->db->getSchema()->getSchemaManager()->createDatabase($name);
+					$this->success('Database created.');
+			}
+		} catch(\Exception $e) {
+			$this->comment('Database could not be created.');
 		}
 
 		if(\Asgard\File\FileSystem::write($this->dir.'/'.$file, $config))

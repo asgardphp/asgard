@@ -8,10 +8,11 @@ namespace Asgard\Common;
 interface PaginatorFactoryInterface {
 	/**
 	 * Create a new instance.
-	 * @param  integer            $total
-	 * @param  integer            $page
-	 * @param  integer            $per_page
+	 * @param  integer              $total
+	 * @param  integer              $page
+	 * @param  integer              $per_page
+	 * @param  \Asgard\Http\Request $request
 	 * @return PaginatorInterface
 	 */
-	public function create($total, $page=1, $per_page=10, $request=null);
+	public function create($total, $page=1, $per_page=10, \Asgard\Http\Request $request=null);
 }

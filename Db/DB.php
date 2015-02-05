@@ -65,11 +65,21 @@ class DB implements DBInterface {
 					break;
 				case 'sqlite':
 					$this->pdo = new \PDO('sqlite:'.$config['database']);
+		
+					$this->pdo->sqliteCreateFunction('concat', function() {
+						return implode('', func_get_args());
+					});
+					
+					$this->pdo->sqliteCreateFunction('md5', function($a) {
+						return md5($a);
+					}, 1);
+
 					break;
 				default:
 					$parameters = 'mysql:host='.$config['host'].(isset($config['port']) ? ';port='.$config['port']:'').(isset($config['database']) ? ';dbname='.$config['database']:'');
 					$this->pdo = new \PDO($parameters, $user, $password, [\PDO::MYSQL_ATTR_FOUND_ROWS => true, \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8']);
 			}
+			$this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
 		}
 
 		return $this->pdo;

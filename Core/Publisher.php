@@ -62,6 +62,8 @@ class Publisher {
 		}
 		else {
 			$mm = new \Asgard\Migration\MigrationManager($dstDir, $this->container);
+			$mm->setDb($this->container['db']); #todo deps injection
+			$mm->setSchema($this->container['schema']); #todo deps injection
 			$tracking = new \Asgard\Migration\Tracker($src);
 			foreach(array_keys($tracking->getList()) as $migration) {
 				$mm->getTracker()->add($migration);

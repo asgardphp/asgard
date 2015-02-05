@@ -176,24 +176,8 @@ class InstallCommand extends \Asgard\Console\Command {
 	protected function runCommand($cmd, $verbose=false) {
 		$this->comment($cmd);
 
-		$process = proc_open($cmd,
-			$pipes = [
-			   0 => ['pipe', 'r'],
-			   1 => ['pipe', 'w'],
-			   2 => ['pipe', 'w'],
-			],
-			$pipes
-		);
-
-		if($verbose) {
-			echo stream_get_contents($pipes[1]);
-			fclose($pipes[1]);
-		}
-
-		while(($status=proc_get_status($process)) && $status['running']) {}
-		$exitCode = $status['exitcode'];
-		proc_close($process);
-		return $exitCode === 0;
+		passthru($cmd, $return);
+		return $return === 0;
 	}
 
 	/**

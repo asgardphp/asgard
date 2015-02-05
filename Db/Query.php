@@ -29,13 +29,11 @@ class Query {
 		try {
 			if($args) {
 				$this->rsc = $pdo->prepare($sql);
-				if(!$this->rsc)
-					throw new \Exception('Not connected to a database.');
 				$this->rsc->execute($args);
 			}
 			else
 				$this->rsc = $pdo->query($sql);
-		} catch(\Exception $e) {
+		} catch(\PDOException $e) {
 			throw new DBException($e->getMessage().'<br/>'."\n".'SQL: '.$sql.' ('.implode(', ', $args).')'); #todo extend pdoexception?
 		}
 	}

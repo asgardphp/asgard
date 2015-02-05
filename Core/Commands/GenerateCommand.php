@@ -129,7 +129,7 @@ class GenerateCommand extends \Asgard\Console\Command {
 		}
 
 
-		foreach($bundles as $name=>$bundle) {
+		foreach($bundles as $name=>&$bundle) {
 			if($bundle['tests'])
 				$tests = [];
 
@@ -151,7 +151,7 @@ class GenerateCommand extends \Asgard\Console\Command {
 						else
 							$generator->processFile(__DIR__.'/bundle_template/html/_entity/index.php', $dst.'html/'.strtolower($bundle['entities'][$name]['meta']['name'].'/index.php'), ['bundle'=>$bundle, 'entity'=>$entity]);
 						if($bundle['tests']) {
-							$indexRoute = $class::routeFor('index')->getRoute();
+							$indexRoute = $asgard['resolver']->getRouteFor([$class, 'index'])->getRoute();
 							$tests[$indexRoute] = '
 		$browser = $this->createBrowser();
 		$this->assertTrue($browser->get(\''.$indexRoute.'\')->isOK(), \'GET '.$indexRoute.'\');';
@@ -163,7 +163,7 @@ class GenerateCommand extends \Asgard\Console\Command {
 						else
 							$generator->processFile(__DIR__.'/bundle_template/html/_entity/show.php', $dst.'html/'.strtolower($bundle['entities'][$name]['meta']['name'].'/show.php'), ['bundle'=>$bundle, 'entity'=>$entity]);
 						if($bundle['tests']) {
-							$showRoute = $class::routeFor('show')->getRoute();
+							$showRoute = $asgard['resolver']->getRouteFor([$class, 'show'])->getRoute();
 							$tests[$showRoute] = '
 		$browser = $this->createBrowser();
 		$this->assertTrue($browser->get(\''.$showRoute.'\')->isOK(), \'GET '.$showRoute.'\');';
@@ -207,15 +207,16 @@ class GenerateCommand extends \Asgard\Console\Command {
 				$bundle['generatedTests'] = $tests;
 
 			$asgard['hooks']->trigger('Asgard.Core.Generate.bundleBuild', [&$bundle, $root.'app/'.ucfirst($bundle['name']).'/', $generator]);
+		}
+
+		foreach($bundles as $name=>$bundle) {
+			$asgard['hooks']->trigger('Asgard.Core.Generate.postBundleBuild', [&$bundle, $root.'app/'.ucfirst($bundle['name']).'/', $generator]);
 
 			if($bundle['tests']) {
-				if(!$this->addToTests($bundle['generatedTests'], $root.'tests/'.ucfirst($bundle['name']).'Test.php'))
+				if(!$this->addToTests($bundle['generatedTests'], $root.'tests/'.ucfirst($bundle['name']).'Test.php', $overrideFiles))
 					$this->comment($root.'tests/'.ucfirst($bundle['name']).'Test.php could not be generated.');
 			}
 		}
-
-		foreach($bundles as $name=>$bundle)
-			$asgard['hooks']->trigger('Asgard.Core.Generate.postBundleBuild', [&$bundle, $root.'app/'.ucfirst($bundle['name']).'/', $generator]);
 
 
 		$this->info('Bundles created: '.implode(', ', array_keys($bundles)));
@@ -223,11 +224,12 @@ class GenerateCommand extends \Asgard\Console\Command {
 
 	/**
 	 * Add a new tests file.
-	 * @param array  $tests
-	 * @param string $dst
+	 * @param array   $tests
+	 * @param string  $dst
+	 * @param boolean $overrideFiles
 	 * @return boolean
 	 */
-	protected function addToTests($tests, $dst) {
+	protected function addToTests($tests, $dst, $overrideFiles=false) {
 		if(!$tests)
 			return true;
 
@@ -239,7 +241,7 @@ class GenerateCommand extends \Asgard\Console\Command {
 			$res .= "\t\t".$test."\n\n";
 		}
 
-		if(file_exists($dst))
+		if(!$overrideFiles && file_exists($dst))
 			return false;
 
 		file_put_contents($dst, '<?php

@@ -29,7 +29,7 @@ class Post extends \Asgard\Migration\DBMigration {
 			);
 		});
 		
-		$this->container['schema']->table('post', function($tableName) {
+		$this->container['schema']->table('post', function($table) {
 			$table->addColumn('content2', 'text', [
 			]);
 			$table->changeColumn('title', [
@@ -52,7 +52,7 @@ class Post extends \Asgard\Migration\DBMigration {
 		
 		$this->container['schema']->drop('category');
 		
-		$this->container['schema']->table('post', function($tableName) {
+		$this->container['schema']->table('post', function($table) {
 			$table->addColumn('posted', 'date', [
 			]);
 			$table->changeColumn('title', [

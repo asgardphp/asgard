@@ -154,7 +154,7 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		});
 		$container->setParentClass('paginator_factory', 'Asgard\Common\PaginatorFactoryInterface');
 		$container->register('paginator_factory', function($container) {
-			return new \Asgard\Common\PaginatorFactory($container['httpKernel']->getRequest());
+			return new \Asgard\Common\PaginatorFactory($container['httpKernel']);
 		});
 
 		#Validation

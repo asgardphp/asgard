@@ -519,12 +519,13 @@ class DAL {
 				}
 				else {
 					$res = $this->replace($key);
-					if(static::isIdentifier($key))
-						$res .= '=?';
 					if(is_array($value))
 						$pdoparams = array_merge($pdoparams, $value);
-					else
+					else {
+						if(strpos($key, '?') === false)
+							$res .= '=?';
 						$pdoparams[] = $value;
+					}
 					$string_conditions[] = $res;
 				}
 			}

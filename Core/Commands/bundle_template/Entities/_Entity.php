@@ -5,8 +5,7 @@ class <?=ucfirst($entity['meta']['name'])?> extends \Asgard\Entity\Entity {
 	public static function definition(\Asgard\Entity\Definition $definition) {
 		$definition->properties = <?=$this->outputPHP($entity['properties'], 2)?>;
 
-<?php if($entity['relations']): ?>
-		$definition->relations = <?=$this->outputPHP($entity['relations'], 2)?>;<?php endif ?><?php if($entity['behaviors']): ?>
+<?php if($entity['behaviors']): ?>
 
 		$definition->behaviors = [
 	<?php foreach($entity['behaviors'] as $behaviorname => $behavior): ?>

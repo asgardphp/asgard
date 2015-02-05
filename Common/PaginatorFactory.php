@@ -8,24 +8,22 @@ namespace Asgard\Common;
 class PaginatorFactory implements PaginatorFactoryInterface {
 	/**
 	 * HTTP request.
-	 * @var \Asgard\Http\Request
+	 * @var \Asgard\Http\HttpKernel
 	 */
-	protected $request;
+	protected $httpKernel;
 
 	/**
 	 * Constructor.
-	 * @param \Asgard\Http\Request $request
+	 * @param \Asgard\Http\HttpKernel $httpKernel
 	 */
-	public function __construct(\Asgard\Http\Request $request=null) {
-		$this->request = $request;
+	public function __construct(\Asgard\Http\HttpKernel $httpKernel=null) {
+		$this->httpKernel = $httpKernel;
 	}
 
 	/**
 	 * {@inheritDoc}
-	 * @param \Asgard\Http\Request       $request
-	 * @return Paginator
 	 */
-	public function create($total, $page=1, $per_page=10, $request=null) {
-		return new Paginator($total, $page, $per_page, $request!==null ? $request:$this->request);
+	public function create($total, $page=1, $per_page=10, \Asgard\Http\Request $request=null) {
+		return new Paginator($total, $page, $per_page, $request!==null ? $request:$this->httpKernel ? $this->httpKernel->getRequest():null);
 	}
 }

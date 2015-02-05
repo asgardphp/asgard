@@ -102,6 +102,9 @@ class Schema implements SchemaInterface {
 			$comparator = new \Doctrine\DBAL\Schema\Comparator;
 			$tableDiff = $comparator->diffTable($table, $clone->getTable());
 
+			if(!$tableDiff)
+				$tableDiff = new \Doctrine\DBAL\Schema\TableDiff($tableName);
+
 			if($renamedColumns = $clone->getRenamedColumns())
 				$tableDiff->getRenamedColumns = $renamedColumns;
 
