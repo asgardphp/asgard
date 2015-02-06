@@ -164,11 +164,14 @@ abstract class Controller {
 
 	/**
 	 * Return the url for a given action.
-	 * @param  string $action
+	 * @param  mixed $action
 	 * @param  array  $params
 	 * @return string
 	 */
 	public function url($action, $params=[]) {
-		return $this->container['resolver']->url([get_called_class(), $action], $params);
+		if(is_array($action))
+			return $this->container['resolver']->url($action, $params);
+		else
+			return $this->container['resolver']->url([get_called_class(), $action], $params);
 	}
 }

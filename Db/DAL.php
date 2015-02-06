@@ -1160,7 +1160,7 @@ class DAL {
 	 * @api
 	 */
 	public function count($what=null, $group_by=null) {
-		return $this->_function('count', $what, $group_by);
+		return (int)$this->_function('count', $what, $group_by);
 	}
 
 	/**
@@ -1205,5 +1205,67 @@ class DAL {
 	 */
 	public function sum($what, $group_by=null) {
 		return $this->_function('sum', $what, $group_by);
+	}
+
+	/**
+	 * Replace parameters in a SQL query.
+	 * @param  string $sql
+	 * @param  array  $params
+	 * @return string
+	 */
+	protected function replaceParams($sql, array $params) {
+		$i=0;
+		return preg_replace_callback('/\?/', function($a) use(&$i, $params) {
+			$rep = $params[$i++];
+			if(is_string($rep))
+				$rep = "'$rep'";
+			return $rep;
+		}, $sql);
+	}
+
+	/**
+	 * Compute the sql query for debugging.
+	 * @return string
+	 */
+	public function dbgSelect() {
+		$sql = $this->buildSQL();
+		$params = $this->getParameters();
+
+		return $this->replaceParams($sql, $params);
+	}
+
+	/**
+	 * Compute the update sql query for debugging.
+	 * @param  array  $values
+	 * @return string
+	 */
+	public function dbgUpdate(array $values) {
+		$sql = $this->buildUpdateSQL($values);
+		$params = $this->getParameters();
+
+		return $this->replaceParams($sql, $params);
+	}
+
+	/**
+	 * Conpute the insert sql query for debugging.
+	 * @param  array  $values
+	 * @return string
+	 */
+	public function dbgInsert(array $values) {
+		$sql = $this->buildInsertSQL($values);
+		$params = $this->getParameters();
+
+		return $this->replaceParams($sql, $params);
+	}
+
+	/**
+	 * Compute the delete sql query for debugging.
+	 * @return string
+	 */
+	public function dbgDelete() {
+		$sql = $this->buildDeleteSQL();
+		$params = $this->getParameters();
+
+		return $this->replaceParams($sql, $params);
 	}
 }

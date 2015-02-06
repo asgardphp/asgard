@@ -21,6 +21,6 @@ class <?=ucfirst($entity['meta']['name'])?> extends \Asgard\Entity\Entity {
 	}
 <?php if($entity['front'] && in_array('show', $entity['front'])): ?>
 	public function url() {
-		return static::$container['resolver']->url(['<?=$bundle['namespace'].'\Controllers\\'.ucfirst($entity['meta']['name']).'Controller' ?>', 'show'], array('id'=>$this->id));
+		return $this->getDefinition()->getContainer()['resolver']->url(['<?=$bundle['namespace'].'\Controllers\\'.ucfirst($entity['meta']['name']).'Controller' ?>', 'show'], array('id'=>$this->id));
 	}
 	<?php endif ?>}

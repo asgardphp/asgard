@@ -37,10 +37,10 @@ class GenerateTestsCommand extends \Asgard\Console\Command {
 	 * {@inheritDoc}
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
-		$asgard = $this->getContainer();
+		$container = $this->getContainer();
 		$dst = $this->input->getArgument('dst') ? $this->dir.'/'.$this->input->getArgument('dst'):$this->dir.'/AutoTest.php';
 
-		$tg = new \Asgard\Http\Generator\TestsGenerator($asgard);
+		$tg = new \Asgard\Http\Generator\TestsGenerator($container);
 		$count = $tg->generateTests($dst);
 		if($count === false)
 			$this->error('Tests generation failed. Tests should pass first. Check with the command: phpunit');

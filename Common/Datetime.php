@@ -28,14 +28,10 @@ class Datetime extends \DateTime implements DatetimeInterface {
 
 	/**
 	 * Return the carbon instance equivalent.
-	 * @param  DatetimeInterface $dt
 	 * @return Carbon
 	 */
-	public function getCarbon(DatetimeInterface $dt) {
-		if($dt instanceof Carbon)
-			return $dt;
-		else
-			return new Carbon($dt->getTimestamp(), $dt->getTimezone());
+	public function getCarbon() {
+		return $this->carbon;
 	}
 
 	/**
@@ -478,63 +474,63 @@ class Datetime extends \DateTime implements DatetimeInterface {
 	 * {@inheritDoc}
 	 */
 	public function eq(DatetimeInterface $dt) {
-		return $this->carbon->eq($dt);
+		return $this->carbon->eq($dt->getCarbon());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function ne(DatetimeInterface $dt) {
-		return $this->carbon->ne($dt);
+		return $this->carbon->ne($dt->getCarbon());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function gt(DatetimeInterface $dt) {
-		return $this->carbon->gt($dt);
+		return $this->carbon->gt($dt->getCarbon());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function gte(DatetimeInterface $dt) {
-		return $this->carbon->gte($dt);
+		return $this->carbon->gte($dt->getCarbon());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function lt(DatetimeInterface $dt) {
-		return $this->carbon->lt($dt);
+		return $this->carbon->lt($dt->getCarbon());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function lte(DatetimeInterface $dt) {
-		return $this->carbon->lte($dt);
+		return $this->carbon->lte($dt->getCarbon());
 	}
 
 	/**
 	 * {@inheritDoc}
 	*/
 	public function between(DatetimeInterface $dt1, DatetimeInterface $dt2, $equal=true) {
-		return $this->carbon->between($dt1, $dt2, $equal);
+		return $this->carbon->between($dt1->getCarbon(), $dt2->getCarbon(), $equal);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function min(DatetimeInterface $dt=null) {
-		return $this->carbon->min($dt);
+		return $this->carbon->min($dt->getCarbon());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function max(DatetimeInterface $dt=null) {
-		return $this->carbon->max($dt);
+		return $this->carbon->max($dt->getCarbon());
 	}
 
 	/**
@@ -597,7 +593,7 @@ class Datetime extends \DateTime implements DatetimeInterface {
 	 * {@inheritDoc}
 	 */
 	public function isSameDay(DatetimeInterface $dt) {
-		return $this->carbon->isSameDay($dt);
+		return $this->carbon->isSameDay($dt->getCarbon());
 	}
 
 	/**
@@ -828,69 +824,69 @@ class Datetime extends \DateTime implements DatetimeInterface {
 	 * {@inheritDoc}
 	 */
 	public function diffInYears(DatetimeInterface $dt=null, $abs=true) {
-		return $this->carbon->diffInYears($dt, $abs);
+		return $this->carbon->diffInYears($dt->getCarbon(), $abs);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function diffInMonths(DatetimeInterface $dt=null, $abs=true) {
-		return $this->carbon->diffInMonths($dt, $abs);
+		return $this->carbon->diffInMonths($dt->getCarbon(), $abs);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function diffInWeeks(DatetimeInterface $dt=null, $abs=true) {
-		return $this->carbon->diffInWeeks($dt, $abs);
+		return $this->carbon->diffInWeeks($dt->getCarbon(), $abs);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function diffInDays(DatetimeInterface $dt=null, $abs=true) {
-		return $this->carbon->diffInDays($dt, $abs);
+		return $this->carbon->diffInDays($dt->getCarbon(), $abs);
 	}
 
 	 /**
 	 * {@inheritDoc}
 	 */
 	 public function diffInDaysFiltered(Closure $callback, DatetimeInterface $dt=null, $abs=true) {
-		return $this->carbon->diffInDaysFiltered($callback, $dt, $abs);
+		return $this->carbon->diffInDaysFiltered($callback, $dt->getCarbon(), $abs);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	 public function diffInWeekdays(DatetimeInterface $dt=null, $abs=true) {
-		return $this->carbon->diffInWeekdays($dt, $abs);
+		return $this->carbon->diffInWeekdays($dt->getCarbon(), $abs);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	 public function diffInWeekendDays(DatetimeInterface $dt=null, $abs=true) {
-		return $this->carbon->diffInWeekendDays($dt, $abs);
+		return $this->carbon->diffInWeekendDays($dt->getCarbon(), $abs);
 	}
 
 	/**
 	 */
 	public function diffInHours(DatetimeInterface $dt=null, $abs=true) {
-		return $this->carbon->diffInHours($dt, $abs);
+		return $this->carbon->diffInHours($dt->getCarbon(), $abs);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function diffInMinutes(DatetimeInterface $dt=null, $abs=true) {
-		return $this->carbon->diffInMinutes($dt, $abs);
+		return $this->carbon->diffInMinutes($dt->getCarbon(), $abs);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function diffInSeconds(DatetimeInterface $dt=null, $abs=true) {
-		return $this->carbon->diffInSeconds($dt, $abs);
+		return $this->carbon->diffInSeconds($dt->getCarbon(), $abs);
 	}
 
 	/**
@@ -1064,13 +1060,13 @@ class Datetime extends \DateTime implements DatetimeInterface {
 	 * {@inheritDoc}
 	 */
 	public function average(DatetimeInterface $dt=null) {
-		return $this->carbon->average($dt);
+		return $this->carbon->average($dt->getCarbon());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function isBirthday(DatetimeInterface $dt) {
-		return $this->carbon->isBirthday($dt);
+		return $this->carbon->isBirthday($dt->getCarbon());
 	}
 }

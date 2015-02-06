@@ -24,9 +24,9 @@ class GenerateCommand extends \Asgard\Console\Command {
 	 * {@inheritDoc}
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
-		$asgard = $this->getContainer();
+		$container = $this->getContainer();
 		$path = $this->input->getArgument('path');
-		$root = $asgard['kernel']['root'].'/';
+		$root = $container['kernel']['root'].'/';
 
 		$yaml = new \Symfony\Component\Yaml\Parser();
 		$raw = $yaml->parse(file_get_contents($path));
@@ -35,7 +35,7 @@ class GenerateCommand extends \Asgard\Console\Command {
 		$bundles = [];
 
 		$overrideFiles = $this->input->getOption('override-files');
-		$generator = new \Asgard\Core\Generator($asgard);
+		$generator = new \Asgard\Core\Generator($container);
 		$generator->setOverrideFiles($overrideFiles);
 
 		foreach($raw as $bundle_name=>$bundle) {
@@ -142,8 +142,8 @@ class GenerateCommand extends \Asgard\Console\Command {
 
 					if($bundle['tests']) {
 						$class = $bundle['namespace'].'\\Controllers\\'.ucfirst($entity['meta']['name']).'Controller';
-						$routes = $asgard['controllersAnnotationReader']->fetchRoutes($class);
-						$asgard['resolver']->addRoutes($routes);
+						$routes = $container['controllersAnnotationReader']->fetchRoutes($class);
+						$container['resolver']->addRoutes($routes);
 					}
 
 					if(in_array('index', $entity['front']) || isset($entity['front']['index'])) {
@@ -152,7 +152,7 @@ class GenerateCommand extends \Asgard\Console\Command {
 						else
 							$generator->processFile(__DIR__.'/bundle_template/html/_entity/index.php', $dst.'html/'.strtolower($bundle['entities'][$name]['meta']['name'].'/index.php'), ['bundle'=>$bundle, 'entity'=>$entity]);
 						if($bundle['tests']) {
-							$indexRoute = $asgard['resolver']->getRouteFor([$class, 'index'])->getRoute();
+							$indexRoute = $container['resolver']->getRouteFor([$class, 'index'])->getRoute();
 							$tests[$indexRoute] = '
 		$browser = $this->createBrowser();
 		$this->assertTrue($browser->get(\''.$indexRoute.'\')->isOK(), \'GET '.$indexRoute.'\');';
@@ -164,7 +164,7 @@ class GenerateCommand extends \Asgard\Console\Command {
 						else
 							$generator->processFile(__DIR__.'/bundle_template/html/_entity/show.php', $dst.'html/'.strtolower($bundle['entities'][$name]['meta']['name'].'/show.php'), ['bundle'=>$bundle, 'entity'=>$entity]);
 						if($bundle['tests']) {
-							$showRoute = $asgard['resolver']->getRouteFor([$class, 'show'])->getRoute();
+							$showRoute = $container['resolver']->getRouteFor([$class, 'show'])->getRoute();
 							$tests[$showRoute] = '
 		$browser = $this->createBrowser();
 		$this->assertTrue($browser->get(\''.$showRoute.'\')->isOK(), \'GET '.$showRoute.'\');';
@@ -178,14 +178,14 @@ class GenerateCommand extends \Asgard\Console\Command {
 
 				if($bundle['tests']) {
 					$class = $bundle['namespace'].'\\Controllers\\'.ucfirst($controller['name']);
-					$routes = $asgard['controllersAnnotationReader']->fetchRoutes($class);
-					$asgard['resolver']->addRoutes($routes);
+					$routes = $container['controllersAnnotationReader']->fetchRoutes($class);
+					$container['resolver']->addRoutes($routes);
 				}
 
 				foreach($controller['actions'] as $action=>$params) {
 					if($bundle['tests']) {
 						try {
-							$actionRoute = $asgard['resolver']->getRouteFor([$class, 'index'])->getRoute();
+							$actionRoute = $container['resolver']->getRouteFor([$class, 'index'])->getRoute();
 							$actionRoute = $actionRoute;
 						} catch(\Exception $e) {
 							continue;
@@ -209,11 +209,11 @@ class GenerateCommand extends \Asgard\Console\Command {
 			if($bundle['tests'])
 				$bundle['generatedTests'] = $tests;
 
-			$asgard['hooks']->trigger('Asgard.Core.Generate.bundleBuild', [&$bundle, $root.'app/'.ucfirst($bundle['name']).'/', $generator]);
+			$container['hooks']->trigger('Asgard.Core.Generate.bundleBuild', [&$bundle, $root.'app/'.ucfirst($bundle['name']).'/', $generator]);
 		}
 
 		foreach($bundles as $name=>$bundle) {
-			$asgard['hooks']->trigger('Asgard.Core.Generate.postBundleBuild', [&$bundle, $root.'app/'.ucfirst($bundle['name']).'/', $generator]);
+			$container['hooks']->trigger('Asgard.Core.Generate.postBundleBuild', [&$bundle, $root.'app/'.ucfirst($bundle['name']).'/', $generator]);
 
 			if($bundle['tests']) {
 				if(!$this->addToTests($bundle['generatedTests'], $root.'tests/'.ucfirst($bundle['name']).'Test.php', $overrideFiles))
