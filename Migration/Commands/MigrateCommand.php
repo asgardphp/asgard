@@ -24,19 +24,19 @@ class MigrateCommand extends \Asgard\Console\Command {
 	protected $migrationsDir;
 	/**
 	 * DB dependency.
-	 * @var string
+	 * @var \Asgard\Db\DBInterface
 	 */
 	protected $db;
 	/**
 	 * Schema dependency.
-	 * @var string
+	 * @var \Asgard\Db\SchemaInterface
 	 */
 	protected $schema;
 
 	/**
 	 * Constructor.
 	 * @param string                     $migrationsDir
-	 * @param \Asgard\Db\DbInterface     $db
+	 * @param \Asgard\Db\DBInterface     $db
 	 * @param \Asgard\Db\SchemaInterface $schema
 	 */
 	public function __construct($migrationsDir, \Asgard\Db\DBInterface $db=null, \Asgard\Db\SchemaInterface $schema=null) {

@@ -8,15 +8,15 @@ namespace Asgard\Orm;
 interface CollectionORMInterface extends ORMInterface {
 	/**
 	 * Update the related entities.
-	 * @param integer|array           $ids   array of entity ids
+	 * @param array                   $ids   array of entity ids
 	 * @param boolean                 $force true to skip validation
-	 * @return CollectionORMInterface        $this
+	 * @return CollectionORMInterface $this
 	 */
 	public function sync($ids, $force=false);
 
 	/**
 	 * Add new entities to the relation.
-	 * @param  integer|array $ids
+	 * @param  array $ids
 	 * @return integer       number of added elements
 	 */
 	public function add($ids);
@@ -24,7 +24,7 @@ interface CollectionORMInterface extends ORMInterface {
 	/**
 	 * Create a new entity and add it to the relation.
 	 * @param  array $params entity default attributes
-	 * @return \Asgard\Entity\Entitiy
+	 * @return \Asgard\Entity\Entity
 	 */
 	public function create(array $params=[]);
 

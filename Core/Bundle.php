@@ -267,14 +267,8 @@ class Bundle extends \Asgard\Core\BundleLoader {
 				$ormGenerateMigration = new \Asgard\Orm\Commands\GenerateMigrationCommand($em, $mm, $dataMapper);
 				$container['console']->add($ormGenerateMigration);
 
-				$dbRestore = new \Asgard\Db\Commands\RestoreCommand($db);
-				$container['console']->add($dbRestore);
-
 				$dbEmpty = new \Asgard\Db\Commands\EmptyCommand($db);
 				$container['console']->add($dbEmpty);
-
-				$dbDump = new \Asgard\Db\Commands\DumpCommand($db, $container['kernel']['root'].'/storage/dumps/sql');
-				$container['console']->add($dbDump);
 
 				$migrationMigrate = new \Asgard\Migration\Commands\MigrateCommand($container['kernel']['root'].'/migrations', $db, $schema);
 				$migrationMigrateOne = new \Asgard\Migration\Commands\MigrateOneCommand($container['kernel']['root'].'/migrations', $db, $schema);

@@ -20,8 +20,8 @@ class CollectionORM extends ORM implements CollectionORMInterface {
 	/**
 	 * Constructor.
 	 * @param \Asgard\Entity\Entity $entity            $entity
-	 * @param string                                   $relation_name
-	 * @param DataMapperInterface                      $datamapper
+	 * @param string                                   $relationName
+	 * @param DataMapperInterface                      $dataMapper
 	 * @param string                                   $locale        default locale
 	 * @param string                                   $prefix        tables prefix
 	 * @param \Asgard\Common\PaginatorFactoryInterface $paginatorFactory
@@ -82,8 +82,10 @@ class CollectionORM extends ORM implements CollectionORMInterface {
 						$ids[$k] = $v['id'];
 					$newDal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->dataMapper->getTable($relationDefinition));
 					$newDal->where('id IN ('.implode(', ', $ids).')');
-					if($this->relation->reverse()->isPolymorphic())
+					if($this->relation->reverse()->isPolymorphic()) {
+						$linkType = $this->relation->reverse()->getLinkType();
 						$newDal->update([$link => $this->parent->id, $linkType => get_class($this->parent)]);
+					}
 					else
 						$newDal->update([$link => $this->parent->id]);
 				}
@@ -176,7 +178,7 @@ class CollectionORM extends ORM implements CollectionORMInterface {
 	 */
 	public function create(array $params=[]) {
 		$new = $this->make($params);
-		$new->save();
+		$this->dataMapper->save($new);
 		return $new;
 	}
 

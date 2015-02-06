@@ -35,12 +35,12 @@ abstract class Field {
 	 * Widget.
 	 * @var string|callable
 	 */
-	protected $widget    = 'text';
+	protected $widget = 'text';
 	/**
 	 * Errors.
 	 * @var array
 	 */
-	protected $errors    = [];
+	protected $errors = [];
 
 	/**
 	 * Constructor.

@@ -17,13 +17,23 @@ class Datetime extends \DateTime implements DatetimeInterface {
 	/**
 	 * Constructor.
 	 * @param string       $time
-	 * @param DateTimeZone $tz
+	 * @param DateTimeZone|string $tz
 	 */
 	public function __construct($time=null, $tz=null) {
 		if($time===null)
 			$time = 'now';
+		$tz = $this->safeCreateDateTimeZone($tz);
 		parent::__construct($time, $tz); #need to initialize parent \DateTime as well or comparaison will fail in PHP internals
 		return $this->carbon = new Carbon($time, $tz);
+	}
+
+	protected static function safeCreateDateTimeZone($object) {
+		if($object instanceof \DateTimeZone || $object === null)
+			return $object;
+		$tz = timezone_open((string)$object);
+		if($tz === false)
+			throw new \InvalidArgumentException('Unknown or bad timezone ('.$object.')');
+		return $tz;
 	}
 
 	/**

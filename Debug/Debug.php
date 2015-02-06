@@ -43,7 +43,7 @@ class Debug {
 
 	/**
 	 * Set the URL dependency.
-	 * @param \Asgard\Http\URLInterface $url
+	 * @param string $url
 	 */
 	public static function setURL($url) {
 		static::$url = $url;

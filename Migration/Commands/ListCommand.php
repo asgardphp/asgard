@@ -49,6 +49,6 @@ class ListCommand extends \Asgard\Console\Command {
 		foreach($tracker->getList() as $migration=>$params)
 			$table->addRow([$migration, isset($params['migrated']) ? 'up':'down', isset($params['migrated']) ? date('d/m/Y H:i:s', $params['migrated']):'', date('d/m/Y H:i:s', $params['added'])]);
 
-		$table->render($this->output);
+		$table->render();
 	}
 }

@@ -30,13 +30,12 @@ class ORMMigrations {
 	/**
 	 * Automatically migrate given entity definitions.
 	 * @param  array|\Asgard\Entity\Definition $definitions
-	 * @param  \Asgard\Db\SchemaInterface      $schema
 	 */
 	public function autoMigrate($definitions) {
 		if(!is_array($definitions))
 			$definitions = [$definitions];
 		$entitiesSchema = $this->getEntitiesSchemas($definitions);
-		$sqlSchema = $this->getSQLSchemas($this->dataMapper->getDB());
+		$sqlSchema = $this->getSQLSchemas();
 		$this->processSchemas($entitiesSchema, $sqlSchema);
 	}
 
@@ -50,7 +49,7 @@ class ORMMigrations {
 		if(!is_array($definitions))
 			$definitions = [$definitions];
 		$entitiesSchema = $this->getEntitiesSchemas($definitions);
-		$sqlSchema = $this->getSQLSchemas($this->dataMapper->getDB());
+		$sqlSchema = $this->getSQLSchemas();
 		$up = $this->buildMigration($entitiesSchema, $sqlSchema, false);
 		$down = $this->buildMigration($sqlSchema, $entitiesSchema, true);
 
@@ -205,8 +204,8 @@ class ORMMigrations {
 
 	/**
 	 * Process the schemas.
-	 * @param  array             $schema
-	 * @param  \Asgard\Db\SchemaInterface $s
+	 * @param  \Doctrine\DBAL\Schema\Schema $newSchema
+	 * @param  \Doctrine\DBAL\Schema\Schema $oldSchema
 	 */
 	protected function processSchemas(\Doctrine\DBAL\Schema\Schema $newSchema, \Doctrine\DBAL\Schema\Schema $oldSchema) {
 		$comparator = new \Doctrine\DBAL\Schema\Comparator;
@@ -221,10 +220,9 @@ class ORMMigrations {
 
 	/**
 	 * Fetch the SQL schemas
-	 * @param  \Asgard\Db\DBInterface $db
-	 * @return array
+	 * @return \Doctrine\DBAL\Schema\Schema
 	 */
-	protected function getSQLSchemas(\Asgard\Db\DBInterface $db) {
+	protected function getSQLSchemas() {
 		return $this->dataMapper->getDb()->getConn()->getSchemaManager()->createSchema();
 	}
 
@@ -295,8 +293,8 @@ class ORMMigrations {
 
 	/**
 	 * Generate code to create a table.
-	 * @param  string $table
-	 * @param  array $cols
+	 * @param  string                      $tableName
+	 * @param  \Doctrine\DBAL\Schema\Table $table
 	 * @return string
 	 */
 	protected function createTable($tableName, $table) {
@@ -315,11 +313,11 @@ class ORMMigrations {
 
 	/**
 	 * Generate the code to update a column.
-	 * @param  string $col    column name
-	 * @param  array  $params column parameters
+	 * @param  string $col                      column name
+	 * @param  \Doctrine\DBAL\Schema\ColumnDiff $col
 	 * @return string
 	 */
-	protected function updateColumn($name, $col) {
+	protected function updateColumn($name, \Doctrine\DBAL\Schema\ColumnDiff $col) {
 		$res = "\n\t\$table->changeColumn('$name', [";
 
 		foreach($col->column->toArray() as $propName=>$prop) {
@@ -337,11 +335,11 @@ class ORMMigrations {
 
 	/**
 	 * Generate the code to create a column.
-	 * @param  string $col    column name
-	 * @param  array  $params column parameters
+	 * @param  string $col                  column name
+	 * @param  \Doctrine\DBAL\Schema\Column $col
 	 * @return string
 	 */
-	protected function createColumn($name, $col) {
+	protected function createColumn($name, \Doctrine\DBAL\Schema\Column $col) {
 		$res = "\n\t\$table->addColumn('$name', '".strtolower($col->getType())."', [";
 		if($col->getNotnull())
 			$res .= "\n		'notnull' => true,";
@@ -356,8 +354,8 @@ class ORMMigrations {
 
 	/**
 	 * Build an index.
-	 * @param  string $indexName
-	 * @param  array  $index
+	 * @param  string                      $indexName
+	 * @param  \Doctrine\DBAL\Schema\Index $index
 	 * @return string
 	 */
 	protected function createIndex($indexName, $index) {

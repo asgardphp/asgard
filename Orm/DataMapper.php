@@ -118,7 +118,7 @@ class DataMapper implements DataMapperInterface {
 					$orm = $this->related($entity, $name);
 					if(!is_object($orm))
 						continue;
-					$orm->getDAL()->rsc();
+					$orm->getDAL()->query();
 					$orms[] = $orm;
 				}
 			}

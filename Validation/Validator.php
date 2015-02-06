@@ -66,7 +66,7 @@ class Validator implements ValidatorInterface {
 	protected $name;
 	/**
 	 * Translator.
-	 * @var Symfony\Component\Translation\TranslatorInterface
+	 * @var \Symfony\Component\Translation\TranslatorInterface
 	 */
 	protected $translator;
 	/**
@@ -102,20 +102,14 @@ class Validator implements ValidatorInterface {
 	}
 
 	/**
-	 * Capture the calls to rules. Magic __call method.
-	 * @param  string $name
-	 * @param  array  $args
-	 * @return mixed
+	 * {@inheritDoc}
 	 */
 	public function __call($name, array $args) {
 		return call_user_func_array([$this, 'rule'], [$name, $args]);
 	}
 
 	/**
-	 * Capture the static calls to rules. MAgic __callStatic method.
-	 * @param  string $name
-	 * @param  array  $args
-	 * @return mixed
+	 * {@inheritDoc}
 	 */
 	public static function __callStatic($name, array $args) {
 		$v = new static;
@@ -123,11 +117,7 @@ class Validator implements ValidatorInterface {
 	}
 
 	/**
-	 * Set a rule.
-	 * @param  string  $rule   rule name
-	 * @param  mixed   $params rule parameter
-	 * @param  boolean $each   to validate the rule against each input of an array.
-	 * @return ValidatorInterface       $this
+	 * {@inheritDoc}
 	 */
 	public function rule($rule, $params=[], $each=false) {
 		if(!is_array($params))
@@ -156,10 +146,7 @@ class Validator implements ValidatorInterface {
 	}
 
 	/**
-	 * Set multiple rules.
-	 * @param  array   $rules
-	 * @param  boolean $each
-	 * @return ValidatorInterface       $this
+	 * {@inheritDoc}
 	 */
 	public function rules(array $rules, $each=false) {
 		if(count($rules) === 2 && isset($rules['each']) && isset($rules['self'])) {
@@ -178,9 +165,7 @@ class Validator implements ValidatorInterface {
 	}
 
 	/**
-	 * Check if attribute exists.
-	 * @param  string  $attribute
-	 * @return boolean
+	 * {@inheritDoc}
 	 */
 	public function hasAttribute($attribute) {
 		if(!is_array($attribute))
@@ -202,10 +187,7 @@ class Validator implements ValidatorInterface {
 	}
 
 	/**
-	 * Set an attribute validator or only return the attribute validator if no rules given.
-	 * @param  string $attribute attribute name
-	 * @param  array  $rules     attribute rules
-	 * @return ValidatorInterface         $this or the attribute validator.
+	 * {@inheritDoc}
 	 */
 	public function attribute($attribute, $rules=null) {
 		if(!is_array($attribute))

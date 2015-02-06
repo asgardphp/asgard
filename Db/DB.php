@@ -22,7 +22,7 @@ class DB implements DBInterface {
 	/**
 	 * Constructor.
 	 * @param array $config database configuration
-	 * @param \PDO  $db database connection
+	 * @param \PDO  $pdo    database connection
 	 * @api
 	*/
 	public function __construct(array $config, \PDO $pdo=null) {
@@ -44,7 +44,6 @@ class DB implements DBInterface {
 
 	/**
 	 * Get the PDO instance.
-	 * @param  array $config
 	 * @return \PDO
 	 */
 	public function getPDO() {
@@ -141,19 +140,6 @@ class DB implements DBInterface {
 
 	public function getConn() {
 		if(!$this->conn) {
-			$driver = $this->getConfig()['driver'];
-
-			if($driver == 'mysql')
-				$driver = 'pdo_mysql';
-			elseif($driver == 'mssql')
-				$driver = 'pdo_sqlsrv';
-			elseif($driver == 'pgsql')
-				$driver = 'pdo_pgsql';
-			elseif($driver == 'sqlite')
-				$driver = 'pdo_sqlite';
-			else
-				throw new \Exception('Invalid driver: '.$driver);
-
 			$c = new \Doctrine\DBAL\Configuration;
 			$params = [
 				'pdo' => $this->getPDO()

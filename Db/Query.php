@@ -20,7 +20,7 @@ class Query {
 
 	/**
 	 * Constructor.
-	 * @param \PDO    $db
+	 * @param \PDO    $pdo
 	 * @param string  $sql
 	 * @param array   $args
 	 */

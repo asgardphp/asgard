@@ -50,7 +50,7 @@ class CreateCommand extends \Asgard\Console\Command {
 		}
 		else {
 			$this->db->getSchema()->getSchemaManager()->createDatabase($database);
-			$this->success('Database created.');
+			$this->info('Database created.');
 		}
 	}
 }

@@ -18,7 +18,7 @@ class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 	protected $locales = [];
 	/**
 	 * Fields solver.
-	 * @var EntityFieldSolverInterface
+	 * @var entityFieldSolverInterface
 	 */
 	protected $entityFieldSolver;
 	/**
@@ -33,17 +33,17 @@ class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 	 * @param \Asgard\Entity\Entity  $entity
 	 * @param array                  $options
 	 * @param \Asgard\Http\Request   $request
-	 * @param EntityFieldSolverInterface     $EntityFieldSolver
+	 * @param entityFieldSolverInterface     $entityFieldSolver
 	 * @param \Asgard\Orm\DataMapperInterface $dataMapper
 	 */
 	public function __construct(
 		\Asgard\Entity\Entity  $entity,
 		array                  $options = [],
 		\Asgard\Http\Request   $request = null,
-		EntityFieldSolverInterface     $EntityFieldSolver = null,
+		entityFieldSolverInterface     $entityFieldSolver = null,
 		\Asgard\Orm\DataMapperInterface $dataMapper         = null
 	) {
-		$this->EntityFieldSolver = $EntityFieldSolver;
+		$this->entityFieldSolver = $entityFieldSolver;
 		$this->dataMapper         = $dataMapper;
 		$this->entity             = $entity;
 		$this->locales            = isset($options['locales']) ? $options['locales']:[];
@@ -80,19 +80,19 @@ class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function addEntityFieldSolver($EntityFieldSolver) {
-		$this->EntityFieldSolver->addSolver($EntityFieldSolver);
+	public function addentityFieldSolver($entityFieldSolver) {
+		$this->entityFieldSolver->addSolver($entityFieldSolver);
 		return $this;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getEntityFieldSolver() {
-		if(!$this->EntityFieldSolver)
-			$this->EntityFieldSolver = new EntityFieldSolver;
+	public function getentityFieldSolver() {
+		if(!$this->entityFieldSolver)
+			$this->entityFieldSolver = new entityFieldSolver;
 
-		return $this->EntityFieldSolver;
+		return $this->entityFieldSolver;
 	}
 
 	/**
@@ -205,11 +205,11 @@ class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 	 * @return \Asgard\FormInterface\Field
 	 */
 	protected function getPropertyField(\Asgard\Entity\Entity $entity, $name, \Asgard\Entity\Property $property, $locale=null) {
-		$field = $this->getEntityFieldSolver()->solve($property);
+		$field = $this->getentityFieldSolver()->solve($property);
 
 		if($field instanceof \Asgard\Form\DynamicGroup) {
 			$field->setCallback(function() use($entity, $name, $property, $locale) {
-				$field = $this->getEntityFieldSolver()->doSolve($property);
+				$field = $this->getentityFieldSolver()->doSolve($property);
 				$options = $this->getEntityFieldOptions($property);
 				$field->setOptions($options);
 				return $field;

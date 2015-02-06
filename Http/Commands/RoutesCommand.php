@@ -59,6 +59,6 @@ class RoutesCommand extends \Asgard\Console\Command {
 			]);
 		}
 
-		$table->render($this->output);
+		$table->render();
 	}
 }

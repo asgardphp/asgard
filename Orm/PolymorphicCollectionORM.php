@@ -40,8 +40,8 @@ class PolymorphicCollectionORM implements CollectionORMInterface {
 	/**
 	 * Constructor.
 	 * @param \Asgard\Entity\Entity $entity            $entity
-	 * @param string                                   $relation_name
-	 * @param DataMapperInterface                      $datamapper
+	 * @param string                                   $relationName
+	 * @param DataMapperInterface                      $dataMapper
 	 * @param string                                   $locale        default locale
 	 * @param string                                   $prefix        tables prefix
 	 * @param \Asgard\Common\PaginatorFactoryInterface $paginatorFactory

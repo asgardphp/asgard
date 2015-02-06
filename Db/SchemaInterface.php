@@ -62,13 +62,13 @@ interface SchemaInterface {
 
 	/**
 	 * Return a doctrine platform.
-	 * @return  Doctrine\DBAL\Platforms\AbstractPlatform
+	 * @return \Doctrine\DBAL\Platforms\AbstractPlatform
 	 */
 	public function getPlatform();
 
 	/**
 	 * Return a doctrine schema manager.
-	 * @return  Doctrine\DBAL\Schema\AbstractSchemaManager
+	 * @return \Doctrine\DBAL\Schema\AbstractSchemaManager
 	 */
 	public function getSchemaManager();
 }

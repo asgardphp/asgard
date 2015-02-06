@@ -7,6 +7,12 @@ namespace Asgard\Orm;
  */
 class CollectionORMFactory implements CollectionORMFactoryInterface {
 	/**
+	 * Paginator factory.
+	 * @var \Asgard\Common\PaginatorFactoryInterface
+	 */
+	protected $paginatorFactory;
+
+	/**
 	 * Constructor.
 	 * @param \Asgard\Common\PaginatorFactoryInterface $paginatorFactory
 	 */

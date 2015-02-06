@@ -34,13 +34,13 @@ class EntityProperty extends \Asgard\Entity\Property {
 	public function doSet($val, \Asgard\Entity\Entity $entity, $name) {
 		if(is_numeric($val)) {
 			if($class = $entity->getDefinition()->property($name)->get('entity'))
-				return $entity->getEntityManager()->make($class, ['id'=>$val]);
+				return $entity->getDefinition()->getEntityManager()->make($class, ['id'=>$val]);
 		}
 		elseif(is_array($val)) {
 			if($entity->getDefinition()->property($name)->get('entities')) {
 				$class = $val[0];
 				$id = $val[1];
-				return $entity->getEntityManager()->make($class, ['id'=>$id]);
+				return $entity->getDefinition()->getEntityManager()->make($class, ['id'=>$id]);
 			}
 		}
 		else

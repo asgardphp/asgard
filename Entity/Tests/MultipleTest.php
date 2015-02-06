@@ -3,7 +3,7 @@ namespace Asgard\Entity\Tests;
 
 class MultipleTest extends \PHPUnit_Framework_TestCase {
 	public static function setUpBeforeClass() {
-		$entityManager = $container['entityManager'] = new \Asgard\Entity\EntityManager;
+		$entityManager = new \Asgard\Entity\EntityManager;
 		#set the EntityManager static instance for activerecord-like entities (e.g. new Article or Article::find())
 		\Asgard\Entity\EntityManager::setInstance($entityManager);
 	}

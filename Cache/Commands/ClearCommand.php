@@ -36,7 +36,7 @@ class ClearCommand extends \Asgard\Console\Command {
 	 * {@inheritDoc}
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
-		if($this->cache->clear())
+		if(is_subclass_of($this->cache, 'Doctrine\Common\Cache\ClearableCache') && $this->cache->deleteAll())
 			$this->info('The cache has been cleared.');
 		else
 			$this->error('The cache could not be cleared.');

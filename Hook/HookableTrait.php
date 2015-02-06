@@ -49,26 +49,26 @@ trait HookableTrait {
 	}
 
 	/**
-	 * Set a "before" hook.
+	 * Set a "pre" hook.
 	 * @param string   $hookName
 	 * @param Callable $cb
 	 * @return mixed
 	*/
-	public function hookBefore($hookName, $cb) {
+	public function preHook($hookName, $cb) {
 		$args = [$hookName, $cb];
-		return call_user_func_array([$this->getHookManager(), 'hookBefore'], $args);
+		return call_user_func_array([$this->getHookManager(), 'preHook'], $args);
 	}
 
 	/**
-	 * Set an "after" hook.
+	 * Set an "post" hook.
 	 *
 	 * @param string   $hookName
 	 * @param callable $cb
 	 * @return mixed
 	*/
-	public function hookAfter($hookName, $cb) {
+	public function postHook($hookName, $cb) {
 		$args = [$hookName, $cb];
-		return call_user_func_array([$this->getHookManager(), 'hookAfter'], $args);
+		return call_user_func_array([$this->getHookManager(), 'postHook'], $args);
 	}
 
 	/**

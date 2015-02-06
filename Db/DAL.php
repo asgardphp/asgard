@@ -245,7 +245,7 @@ class DAL {
 	 */
 	public function next() {
 		if($this->query === null)
-			$this->query = $this->query();
+			$this->query();
 		return $this->query->next();
 	}
 
@@ -282,7 +282,7 @@ class DAL {
 			return $this->query($sql, $params);
 		}
 
-		return $this->db->query($sql, $params);
+		return $this->query = $this->db->query($sql, $params);
 	}
 
 	/**
@@ -340,7 +340,7 @@ class DAL {
 			return;
 		if(!$this->paginatorFactory)
 			return new \Asgard\Common\Paginator($this->count(), $this->page, $this->per_page);
-		return $this->paginatorFactory->create([$this->count(), $this->page, $this->per_page]);
+		return $this->paginatorFactory->create($this->count(), $this->page, $this->per_page);
 	}
 
 	/**
@@ -805,7 +805,7 @@ class DAL {
 
 	protected function replaceRaws(&$sql, &$params) {
 		$i = 0;
-		$sql = preg_replace_callback('/\?/', function($match) use(&$i, $params) {
+		$sql = preg_replace_callback('/\?/', function() use(&$i, $params) {
 			if($params[$i] instanceof Raw) {
 				$r = $params[$i];
 				unset($params[$i]);
@@ -994,7 +994,7 @@ class DAL {
 
 	/**
 	 * Replace an alias in conditions.
-	 * @param  aray   $conditions
+	 * @param  array  $conditions
 	 * @param  string $oldTable
 	 * @param  string $newTable
 	 * @return array  new conditions
@@ -1125,7 +1125,7 @@ class DAL {
 	 * @param  string      $fct
 	 * @param  string $what
 	 * @param  string $group_by
-	 * @return string
+	 * @return array|string
 	 */
 	protected function _function($fct, $what=null, $group_by=null) {
 		if($what === null)

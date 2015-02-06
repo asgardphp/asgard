@@ -132,13 +132,6 @@ class Group implements GroupInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getWidget($widget, $name, $value, array $options=[]) {
-		return $this->getWidgetManager()->getWidget($widget, $name, $value, $options, $this);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public function getWidgetManager() {
 		if($this->parent)
 			return $this->parent->getWidgetManager();
@@ -434,35 +427,6 @@ class Group implements GroupInterface {
 		$validator->attributes($constrains);
 		$validator->attributesMessages($messages);
 		return $validator;
-	}
-
-	/**
-	 * Do render a field.
-	 * @param  string|callable $render_callback
-	 * @param  Group|Field     $field
-	 * @param  array           $options
-	 * @return Widget
-	 */
-	protected function doRender($render_callback, $field, array &$options) {
-		$name = $field->name();
-		if($field instanceof Field) {
-			$options['field'] = $field;
-			$options = $field->options+$options;
-			$options['id'] = $field->getID();
-			$value = $field->value();
-		}
-		elseif($field instanceof GroupInterface) {
-			$options['group'] = $field;
-			$value = null;
-		}
-		else
-			throw new \Exception('Invalid field type.');
-
-		$widget = $this->getWidget($render_callback, $name, $value, $options);
-		if($widget === null)
-			throw new \Exception('Invalid widget name: '.$render_callback);
-
-		return $widget;
 	}
 
 	/**

@@ -154,4 +154,23 @@ interface FormInterface extends GroupInterface {
 	 * @return FormInterface $this
 	 */
 	public function fetch();
+
+	/**
+	 * Do render a field.
+	 * @param  string|callable $render_callback
+	 * @param  Group|Field     $field
+	 * @param  array           $options
+	 * @return Widget
+	 */
+	public function doRender($render_callback, $field, array &$options);
+
+	/**
+	 * Return a new widget instance.
+	 * @param  string|callable $widget Widget class or callback.
+	 * @param  string          $name   string
+	 * @param  mixed           $value
+	 * @param  array           $options
+	 * @return Widget
+	 */
+	public function getWidget($widget, $name, $value, array $options=[]);
 }

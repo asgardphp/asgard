@@ -160,7 +160,6 @@ class ORM implements ORMInterface {
 	 * {@inheritDoc}
 	*/
 	public function joinToEntity($relation, \Asgard\Entity\Entity $entity) {
-		$qqq=$relation;
 		if(is_string($relation))
 			$relation = $this->dataMapper->relation($this->definition, $relation);
 

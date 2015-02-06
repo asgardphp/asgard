@@ -25,7 +25,7 @@ class MigrationsTest extends \PHPUnit_Framework_TestCase {
 			static::$em->get('Asgard\Orm\Tests\Fixtures\Migrations\Post'),
 			static::$em->get('Asgard\Orm\Tests\Fixtures\Migrations\Category'),
 			static::$em->get('Asgard\Orm\Tests\Fixtures\Migrations\Author')
-		], static::$schema);
+		]);
 
 		$tables = [];
 		foreach(static::$db->getSchema()->listTables() as $table) {
@@ -175,7 +175,7 @@ class MigrationsTest extends \PHPUnit_Framework_TestCase {
 
 		static::$ormm->autoMigrate([
 			static::$em->get('Asgard\Orm\Tests\Fixtures\Migrations\Post'),
-		], static::$schema);
+		]);
 
 		static::$ormm->generateMigration([
 			static::$em->get('Asgard\Orm\Tests\Fixtures\Migrations\Post2'),

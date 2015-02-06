@@ -33,6 +33,11 @@ class Container implements ContainerInterface {
 	 * @var array
 	 */
 	protected $parents = [];
+	/**
+	 * Services not to persist.
+	 * @var array
+	 */
+	protected $doNotPersist = [];
 
 	/**
 	 * Constructor.
@@ -112,7 +117,9 @@ class Container implements ContainerInterface {
 		if(!isset($this->instances[$name])) {
 			if(!isset($this->registry[$name]))
 				throw new \Exception($name.' has not been registered in container.');
-			$this->instances[$name] = $this->make($name);
+			$instance = $this->make($name);
+			if(!in_array($name, $this->doNotPersist))
+				$this->instances[$name] = $instance;
 		}
 
 		if(isset($this->parents[$name]) && !$this->instances[$name] instanceof $this->parents[$name])
@@ -161,7 +168,7 @@ class Container implements ContainerInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function register($name, $callback) {
+	public function register($name, $callback, $persist=true) {
 		$name = strtolower($name);
 		if($this->autofacade)
 			$this->createFacade($name);
@@ -169,6 +176,8 @@ class Container implements ContainerInterface {
 		if($callback instanceof \Closure)
 			$callback = new SerializableClosure($callback);
 		$this->registry[$name] = $callback;
+		if(!$persist)
+			$this->doNotPersist[] = $name;
 	}
 
 	/**

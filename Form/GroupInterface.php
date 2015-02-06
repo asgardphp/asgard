@@ -49,16 +49,6 @@ interface GroupInterface extends \ArrayAccess, \Iterator {
 	public function hasFile();
 
 	/**
-	 * Return a new widget instance.
-	 * @param  string|callable $widget Widget class or callback.
-	 * @param  string          $name   string
-	 * @param  mixed           $value
-	 * @param  array           $options
-	 * @return Widget
-	 */
-	public function getWidget($widget, $name, $value, array $options=[]);
-
-	/**
 	 * Return the widgets manager.
 	 * @return WidgetManagerInterface
 	 */

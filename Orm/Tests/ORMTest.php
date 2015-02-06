@@ -48,7 +48,7 @@ class ORMTest extends \PHPUnit_Framework_TestCase {
 		(new \Asgard\Orm\ORMMigrations($dataMapper))->autoMigrate([
 			$em->get('Asgard\Orm\Tests\Fixtures\HMABTSorting\News'),
 			$em->get('Asgard\Orm\Tests\Fixtures\HMABTSorting\Tag'),
-		], $schema);
+		]);
 
 		#Fixtures
 		$dataMapper->create('Asgard\Orm\Tests\Fixtures\HMABTSorting\News', [
@@ -124,7 +124,7 @@ class ORMTest extends \PHPUnit_Framework_TestCase {
 			$em->get('Asgard\Orm\Tests\Fixtures\ORM\Category'),
 			$em->get('Asgard\Orm\Tests\Fixtures\ORM\News'),
 			$em->get('Asgard\Orm\Tests\Fixtures\ORM\Author'),
-		], $schema);
+		]);
 
 		#Fixtures
 		$author1 = $dataMapper->create('Asgard\Orm\Tests\Fixtures\ORM\Author', [

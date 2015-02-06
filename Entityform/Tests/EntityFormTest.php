@@ -18,7 +18,7 @@ class EntityFormTest extends \PHPUnit_Framework_TestCase {
 		(new \Asgard\Orm\ORMMigrations($dataMapper))->autoMigrate([
 			$em->get('Asgard\Entityform\Tests\Entities\User'),
 			$em->get('Asgard\Entityform\Tests\Entities\Comment')
-		], $schema);
+		]);
 
 		$dataMapper->save($em->make('Asgard\Entityform\Tests\Entities\Comment', ['id'=>1, 'content'=>'Foo']));
 		$dataMapper->save($em->make('Asgard\Entityform\Tests\Entities\Comment', ['id'=>2, 'content'=>'Bar']));

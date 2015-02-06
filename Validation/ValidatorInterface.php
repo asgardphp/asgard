@@ -14,6 +14,54 @@ interface ValidatorInterface {
 	public function setTranslator(TranslatorInterface $translator);
 
 	/**
+	 * Capture the static calls to rules. MAgic __callStatic method.
+	 * @param  string $name
+	 * @param  array  $args
+	 * @return mixed
+	 */
+	public static function __callStatic($name, array $args);
+
+	/**
+	 * Capture the calls to rules. Magic __call method.
+	 * @param  string $name
+	 * @param  array  $args
+	 * @return mixed
+	 */
+	public function __call($name, array $args);
+
+	/**
+	 * Check if attribute exists.
+	 * @param  string  $attribute
+	 * @return boolean
+	 */
+	public function hasAttribute($attribute);
+
+	/**
+	 * Set an attribute validator or only return the attribute validator if no rules given.
+	 * @param  string             $attribute attribute name
+	 * @param  array|string       $rules     attribute rules
+	 * @return ValidatorInterface $this or the attribute validator.
+	 */
+	public function attribute($attribute, $rules=null);
+
+	/**
+	 * Set multiple rules.
+	 * @param  array   $rules
+	 * @param  boolean $each
+	 * @return ValidatorInterface $this
+	 */
+	public function rules(array $rules, $each=false);
+
+	/**
+	 * Set a rule.
+	 * @param  string|callable|Rule|Validator $rule   rule name
+	 * @param  mixed                          $params rule parameter
+	 * @param  boolean                        $each   to validate the rule against each input of an array.
+	 * @return ValidatorInterface             $this
+	 */
+	public function rule($rule, $params=[], $each=false);
+
+	/**
 	 * Get the translator.
 	 * @return \Symfony\Component\Translation\TranslatorInterface
 	 */
@@ -64,8 +112,8 @@ interface ValidatorInterface {
 
 	/**
 	 * Get an instance of a rule.
-	 * @param  string $rule    rule name
-	 * @param  array  $params
+	 * @param  string|callable|Rule|Validator $rule    rule name
+	 * @param  array                          $params
 	 * @return Rule
 	 */
 	public function getRule($rule, array $params);

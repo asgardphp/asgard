@@ -24,7 +24,7 @@ class PolymorphismTest extends \PHPUnit_Framework_TestCase {
 		static::$ormm->autoMigrate([
 			static::$em->get('Asgard\Orm\Tests\Fixtures\Polymorphism\Article'),
 			static::$em->get('Asgard\Orm\Tests\Fixtures\Polymorphism\Tag'),
-		], static::$schema);
+		]);
 
 		static::$schema->emptyAll();
 
@@ -63,7 +63,7 @@ class PolymorphismTest extends \PHPUnit_Framework_TestCase {
 		static::$ormm->autoMigrate([
 			static::$em->get('Asgard\Orm\Tests\Fixtures\Polymorphism\User'),
 			static::$em->get('Asgard\Orm\Tests\Fixtures\Polymorphism\Document'),
-		], static::$schema);
+		]);
 
 		static::$schema->emptyAll();
 
@@ -103,7 +103,7 @@ class PolymorphismTest extends \PHPUnit_Framework_TestCase {
 		static::$ormm->autoMigrate([
 			static::$em->get('Asgard\Orm\Tests\Fixtures\Polymorphism\Article2'),
 			static::$em->get('Asgard\Orm\Tests\Fixtures\Polymorphism\Author'),
-		], static::$schema);
+		]);
 
 		static::$schema->emptyAll();
 
@@ -141,7 +141,7 @@ class PolymorphismTest extends \PHPUnit_Framework_TestCase {
 		static::$ormm->autoMigrate([
 			static::$em->get('Asgard\Orm\Tests\Fixtures\Polymorphism\Article3'),
 			static::$em->get('Asgard\Orm\Tests\Fixtures\Polymorphism\Category'),
-		], static::$schema);
+		]);
 
 		static::$schema->emptyAll();
 
@@ -182,11 +182,11 @@ class PolymorphismTest extends \PHPUnit_Framework_TestCase {
 		static::$ormm->autoMigrate([
 			static::$em->get('Asgard\Orm\Tests\Fixtures\Polymorphism\User'),
 			static::$em->get('Asgard\Orm\Tests\Fixtures\Polymorphism\Document'),
-		], static::$schema);
+		]);
 
 		static::$schema->emptyAll();
 
-		$document = $dm->create('Asgard\Orm\Tests\Fixtures\Polymorphism\Document', [
+		$dm->create('Asgard\Orm\Tests\Fixtures\Polymorphism\Document', [
 			'title' => 'foo',
 			'user' => $dm->create('Asgard\Orm\Tests\Fixtures\Polymorphism\User', [
 				'name' => 'bar'

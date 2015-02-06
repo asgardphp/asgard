@@ -56,7 +56,7 @@ class Kernel implements \ArrayAccess {
 	 */
 	public function getContainer() {
 		if(!$this->container) {
-			$this->container = $this->buildContainer($this->getConfig()['cache']);
+			$this->container = $this->buildContainer();
 			$this->container['kernel'] = $this;
 		}
 		return $this->container;
@@ -313,7 +313,7 @@ class Kernel implements \ArrayAccess {
 		}
 
 		if($cache)
-			$c->save('bundles', $bundles);
+			$cache->save('bundles', $bundles);
 
 		foreach($bundles as $bundle) {
 			$bundle->setHooksAnnotationReader($this->getHooksAnnotationReader());

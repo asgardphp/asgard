@@ -52,6 +52,7 @@ class FileProperty extends \Asgard\Entity\Property {
 	 */
 	public function prepareValidator(\Asgard\Validation\ValidatorInterface $validator) {
 		parent::prepareValidator($validator);
+		$rules = [];
 		$rules['isNull'] = function($input) {
 			return !$input || $input->shouldDelete() || !$input->src();
 		};

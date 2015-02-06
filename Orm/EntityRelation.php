@@ -70,7 +70,7 @@ class EntityRelation {
 
 	/**
 	 * Return the name.
-	 * @return string.
+	 * @return string
 	 */
 	public function getName() {
 		return $this->name;

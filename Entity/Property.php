@@ -235,7 +235,7 @@ class Property {
 	 */
 	public function unserialize($str, $entity, $name) {
 		if($this->get('many')) {
-			$r = new ManyCollection($this->definition, $entity, $name);
+			$r = new ManyCollection($entity, $name);
 			$arr = unserialize($str);
 			if(!is_array($arr))
 				return $r;

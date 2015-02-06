@@ -154,7 +154,7 @@ trait ViewableTrait {
 
 	/**
 	 * Render the default template file.
-	 * @param  string $file template file
+	 * @param  string $template template file
 	 * @return string
 	 */
 	protected function renderDefaultTemplate($template, array $params=null) {

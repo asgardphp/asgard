@@ -188,7 +188,7 @@ abstract class Entity {
 	/**
 	 * Prepare the validator.
 	 * @param  \Asgard\Validation\ValidatorInterface $validator
-	 * @param  array                        $locales
+	 * @param  array                                 $locales
 	 * @return \Asgard\Validation\ValidatorInterface
 	 */
 	public function prepareValidator(\Asgard\Validation\ValidatorInterface $validator, array $locales=[]) {

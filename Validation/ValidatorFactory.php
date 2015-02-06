@@ -7,6 +7,12 @@ namespace Asgard\Validation;
  */
 class ValidatorFactory implements ValidatorFactoryInterface {
 	/**
+	 * Rules registry.
+	 * @var RulesRegistry
+	 */
+	protected $rulesRegistry;
+
+	/**
 	 * Constructor.
 	 * @param RulesRegistry $rulesRegistry
 	 */

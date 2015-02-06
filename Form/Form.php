@@ -355,4 +355,36 @@ class Form extends Group implements FormInterface {
 
 		return $this;
 	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function doRender($render_callback, $field, array &$options) {
+		$name = $field->name();
+		if($field instanceof Field) {
+			$options['field'] = $field;
+			$options = $field->options+$options;
+			$options['id'] = $field->getID();
+			$value = $field->value();
+		}
+		elseif($field instanceof GroupInterface) {
+			$options['group'] = $field;
+			$value = null;
+		}
+		else
+			throw new \Exception('Invalid field type.');
+
+		$widget = $this->getWidget($render_callback, $name, $value, $options);
+		if($widget === null)
+			throw new \Exception('Invalid widget name: '.$render_callback);
+
+		return $widget;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getWidget($widget, $name, $value, array $options=[]) {
+		return $this->getWidgetManager()->getWidget($widget, $name, $value, $options, $this);
+	}
 }

@@ -19,7 +19,7 @@ class UniqueTest extends \PHPUnit_Framework_TestCase {
 		$schema->drop('test');
 		(new \Asgard\Orm\ORMMigrations($dataMapper))->autoMigrate([
 			$em->get('Asgard\Orm\Tests\Fixtures\Unique\Test')
-		], $schema);
+		]);
 
 		#Fixtures
 		$dataMapper->create('Asgard\Orm\Tests\Fixtures\Unique\Test', ['name'=>'not unique name']);
