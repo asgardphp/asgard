@@ -40,7 +40,7 @@ class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 		\Asgard\Entity\Entity  $entity,
 		array                  $options = [],
 		\Asgard\Http\Request   $request = null,
-		entityFieldSolverInterface     $entityFieldSolver = null,
+		EntityFieldSolverInterface     $entityFieldSolver = null,
 		\Asgard\Orm\DataMapperInterface $dataMapper         = null
 	) {
 		$this->entityFieldSolver = $entityFieldSolver;
@@ -90,7 +90,7 @@ class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 	 */
 	public function getentityFieldSolver() {
 		if(!$this->entityFieldSolver)
-			$this->entityFieldSolver = new entityFieldSolver;
+			$this->entityFieldSolver = new EntityFieldSolver;
 
 		return $this->entityFieldSolver;
 	}
