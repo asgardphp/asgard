@@ -1160,7 +1160,10 @@ class DAL {
 	 * @api
 	 */
 	public function count($what=null, $group_by=null) {
-		return (int)$this->_function('count', $what, $group_by);
+		$r = $this->_function('count', $what, $group_by);
+		if(!is_array($r))
+			$r = (int)$r;
+		return $r;
 	}
 
 	/**

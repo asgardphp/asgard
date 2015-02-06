@@ -32,28 +32,15 @@ class MigrationManager implements MigrationManagerInterface {
 	/**
 	 * Constructor.
 	 * @param string $directory
+	 * @param \Asgard\Db\DBInterface $directory
 	 * @param \Asgard\Container\ContainerInterface $container
 	 */
-	public function __construct($directory, \Asgard\Container\ContainerInterface $container=null) {
+	public function __construct($directory, \Asgard\Db\DBInterface $db, \Asgard\Db\SchemaInterface $schema, \Asgard\Container\ContainerInterface $container=null) {
 		$this->directory = $directory;
 		$this->container = $container;
-		$this->tracker   = new Tracker($directory);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function setDB(\Asgard\Db\DBInterface $db) {
-		$this->db = $db;
-		return $this;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function setSchema(\Asgard\Db\SchemaInterface $schema) {
-		$this->schema = $schema;
-		return $this;
+		$this->db        = $db;
+		$this->schema    = $schema;
+		$this->tracker   = new Tracker($directory, $db);
 	}
 
 	/**
@@ -126,14 +113,13 @@ class '.$name.' extends '.$class.' {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function migrate($migrationName, $tracking=false) {
-		if($tracking && $this->tracker->isUp($migrationName))
+	public function migrate($migrationName) {
+		if($this->tracker->isUp($migrationName))
 			return false;
 
 		$this->migrateFile($this->directory.'/'.$migrationName.'.php');
 
-		if($tracking)
-			$this->tracker->migrate($migrationName);
+		$this->tracker->migrate($migrationName);
 		return true;
 	}
 
@@ -156,13 +142,10 @@ class '.$name.' extends '.$class.' {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function migrateAll($tracking=false) {
-		if($tracking)
-			$list = $this->tracker->getDownList();
-		else
-			$list = $this->tracker->getList();
+	public function migrateAll() {
+		$list = $this->tracker->getDownList();
 		foreach($list as $migrationName=>$params) {
-			if($this->migrate($migrationName, $tracking) === false)
+			if($this->migrate($migrationName) === false)
 				return false;
 		}
 		return true;

@@ -141,13 +141,7 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		#Migration
 		$container->setParentClass('MigrationManager', 'Asgard\Migration\MigrationManagerInterface');
 		$container->register('MigrationManager', function($container) {
-			$mm = new \Asgard\Migration\MigrationManager($container['kernel']['root'].'/migrations/', $container);
-			if($container['config']['database']) {
-				if($container->has('db'))
-					$mm->setDB($container['db']);
-				if($container->has('schema'))
-					$mm->setSchema($container['schema']);
-			}
+			$mm = new \Asgard\Migration\MigrationManager($container['kernel']['root'].'/migrations/', $container['db'], $container['schema'], $container);
 			return $mm;
 		});
 
@@ -255,6 +249,15 @@ class Bundle extends \Asgard\Core\BundleLoader {
 				$schema = $container['schema'];
 				$dataMapper = $container['dataMapper'];
 
+				$migrationList = new \Asgard\Migration\Commands\ListCommand($container['kernel']['root'].'/migrations', $db);
+				$container['console']->add($migrationList);
+
+				$migrationRemove = new \Asgard\Migration\Commands\RemoveCommand($container['kernel']['root'].'/migrations', $db, $schema);
+				$container['console']->add($migrationRemove);
+
+				$migrationAdd = new \Asgard\Migration\Commands\AddCommand($root.'/migrations', $db, $schema);
+				$container['console']->add($migrationAdd);
+
 				$dbCreate = new \Asgard\Db\Commands\CreateCommand($db);
 				$container['console']->add($dbCreate);
 
@@ -313,15 +316,6 @@ class Bundle extends \Asgard\Core\BundleLoader {
 
 			$dbInit = new \Asgard\Db\Commands\InitCommand($container['kernel']['root'].'/config');
 			$container['console']->add($dbInit);
-
-			$migrationList = new \Asgard\Migration\Commands\ListCommand($container['kernel']['root'].'/migrations');
-			$container['console']->add($migrationList);
-
-			$migrationRemove = new \Asgard\Migration\Commands\RemoveCommand($container['kernel']['root'].'/migrations');
-			$container['console']->add($migrationRemove);
-
-			$migrationAdd = new \Asgard\Migration\Commands\AddCommand($root.'/migrations');
-			$container['console']->add($migrationAdd);
 
 			$httpTests = new \Asgard\Http\Commands\GenerateTestsCommand($container['kernel']['root'].'/tests');
 			$container['console']->add($httpTests);

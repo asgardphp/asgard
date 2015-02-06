@@ -55,7 +55,7 @@ class ManyCollection implements \ArrayAccess, \Iterator, \Countable {
 	public function add($element) {
 		if($element === null)
 			return;
-		$this->entity->getDefinition()->processBeforeAdd($this->entity, $this->name, $element);
+		$this->entity->getDefinition()->processPreAdd($this->entity, $this->name, $element);
 		$this->elements[] = $element;
 		return $element;
 	}

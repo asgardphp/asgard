@@ -2,6 +2,35 @@
 namespace Asgard\Orm\Tests;
 
 class ORMTest extends \PHPUnit_Framework_TestCase {
+	public function testHasOne() {
+		#Deps
+		$db = new \Asgard\Db\DB([
+			'driver' => 'sqlite',
+			'database' => 'test.db',
+		]);
+		$em = new \Asgard\Entity\EntityManager;
+		$dataMapper = new \Asgard\Orm\DataMapper($db, $em);
+		$schema = $db->getSchema();
+		(new \Asgard\Orm\ORMMigrations($dataMapper))->autoMigrate([
+			$em->get('Asgard\Orm\Tests\Fixtures\ORM\A'),
+			$em->get('Asgard\Orm\Tests\Fixtures\ORM\B'),
+		], $schema);
+
+		#Fixtures
+		$dataMapper->create('Asgard\Orm\Tests\Fixtures\ORM\A', [
+			'id' => 1,
+			'name' => 'foo',
+			'b' =>  $dataMapper->create('Asgard\Orm\Tests\Fixtures\ORM\B', [
+				'id' => 1,
+				'name' => 'bar',
+			])
+		]);
+
+		$a = $dataMapper->load('Asgard\Orm\Tests\Fixtures\ORM\A', 1);
+
+		$this->assertInstanceOf('Asgard\Orm\Tests\Fixtures\ORM\B', $dataMapper->getRelated($a, 'b'));
+	}
+
 	public function testHMABTSorting() {
 		#Deps
 		$db = new \Asgard\Db\DB([
@@ -12,7 +41,7 @@ class ORMTest extends \PHPUnit_Framework_TestCase {
 		$dataMapper = new \Asgard\Orm\DataMapper($db, $em);
 
 		#DB
-		$schema = new \Asgard\Db\Schema($db);
+		$schema = $db->getSchema();
 		$schema->drop('news');
 		$schema->drop('tag');
 		$schema->drop('news_tag');
@@ -87,7 +116,7 @@ class ORMTest extends \PHPUnit_Framework_TestCase {
 		$dataMapper = new \Asgard\Orm\DataMapper($db, $em);
 
 		#Create tables
-		$schema = new \Asgard\Db\Schema($db);
+		$schema = $db->getSchema();
 		$schema->drop('category');
 		$schema->drop('news');
 		$schema->drop('author');

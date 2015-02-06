@@ -81,32 +81,14 @@ class Definition {
 		$this->generalHookManager = $generalHookManager;
 
 		$this->addProperty('id', [
-			'type'     => 'text',
+			'type'     => 'integer',
 			'editable' => false,
 			'required' => false,
 			'position' => -9999,
 			'defaut'   => 0,
-			'orm'      => [
-				'type'           => 'integer',
-				'length'         => 11,
-				'autoincrement'  => true,
-				'notnull'        => true,
-				// 'key'            => 'PRIMARY',
-			],
 		]);
 
 		$entityClass::definition($this);
-
-		\Asgard\Common\ArrayUtils::append($this->metas, 'orm.indexes', [
-			'type' => 'primary',
-			'columns' => ['id']
-		]);
-		// if(!$this->get('orm'))
-		// 	$this->set('orm', []);
-		// $this->orm['indexes'][] = [
-		// 	'type' => 'primary',
-		// 	'columns' => ['id']
-		// ];
 
 		if($generalHookManager !== null)
 			$generalHookManager->trigger('Asgard.Entity.Definition', [$this]);
@@ -440,7 +422,7 @@ class Definition {
 	 * @param  string  $locale
 	 * @param  boolean $hook   True to enable hooks.
 	 */
-	public function processBeforeSet($entity, $name, &$value, $locale=null, $hook=true) {
+	public function processPreSet($entity, $name, &$value, $locale=null, $hook=true) {
 		if($hook)
 			$this->trigger('set', [$entity, $name, &$value, $locale]);
 
@@ -473,7 +455,7 @@ class Definition {
 	 * @param  string  $locale
 	 * @param  boolean $hook   True to enable hooks.
 	 */
-	public function processBeforeAdd($entity, $name, &$value, $locale=null, $hook=true) {
+	public function processPreAdd($entity, $name, &$value, $locale=null, $hook=true) {
 		if($hook)
 			$this->trigger('set', [$entity, $name, &$value, $locale]);
 

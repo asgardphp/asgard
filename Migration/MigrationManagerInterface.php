@@ -7,20 +7,6 @@ namespace Asgard\Migration;
  */
 interface MigrationManagerInterface {
 	/**
-	 * Set db dependency.
-	 * @param  \Asgard\Db\DBInterface    $db
-	 * @return MigrationManager $this
-	 */
-	public function setDB(\Asgard\Db\DBInterface $db);
-
-	/**
-	 * Set schema dependency.
-	 * @param  \Asgard\Db\SchemaInterface $schema
-	 * @return MigrationManager  $this
-	 */
-	public function setSchema(\Asgard\Db\SchemaInterface $schema);
-
-	/**
 	 * Return the tracker instance.
 	 * @return Tracker
 	 */
@@ -58,10 +44,9 @@ interface MigrationManagerInterface {
 	/**
 	 * Execute a migration.
 	 * @param  string  $migrationName
-	 * @param  boolean $tracking      true to track the migration status
 	 * @return boolean                true for success, otherwise false
 	 */
-	public function migrate($migrationName, $tracking=false);
+	public function migrate($migrationName);
 
 	/**
 	 * Execute a migration file directly.
@@ -71,10 +56,9 @@ interface MigrationManagerInterface {
 
 	/**
 	 * Execute all migrations.
-	 * @param  boolean $tracking true to track the migration status
 	 * @return boolean                true for success, otherwise false
 	 */
-	public function migrateAll($tracking=false);
+	public function migrateAll();
 
 	/**
 	 * Rollback and re-execute all migrations.

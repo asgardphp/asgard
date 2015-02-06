@@ -168,8 +168,13 @@ class ORMMigrations {
 					}
 					$schema->getTable($table_name)->addColumn($name, $type, $col);
 				}
-				else
+				else {
+					if($name === 'id') {
+						$col['autoincrement'] = true;
+						$col['notnull'] = true;
+					}
 					$table->addColumn($name, $type, $col);
+				}
 			}
 
 			if(isset($definition->get('orm')['indexes'])) {
@@ -191,6 +196,8 @@ class ORMMigrations {
 					}
 				}
 			}
+			
+			$table->setPrimaryKey(['id']);
 		}
 
 		return $schema;

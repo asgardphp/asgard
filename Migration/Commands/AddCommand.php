@@ -23,13 +23,25 @@ class AddCommand extends \Asgard\Console\Command {
 	 * @var string
 	 */
 	protected $migrationsDir;
+	/**
+	 * DB.
+	 * @var \Asgard\Db\DBInterface
+	 */
+	protected $db;
+	/**
+	 * DB.
+	 * @var \Asgard\Db\SchemaInterface
+	 */
+	protected $schema;
 
 	/**
 	 * Constructor.
 	 * @param string $migrationsDir
 	 */
-	public function __construct($migrationsDir) {
+	public function __construct($migrationsDir, \Asgard\Db\DBInterface $db, \Asgard\Db\SchemaInterface $schema) {
 		$this->migrationsDir = $migrationsDir;
+		$this->db = $db;
+		$this->schema = $schema;
 		parent::__construct();
 	}
 
@@ -39,7 +51,7 @@ class AddCommand extends \Asgard\Console\Command {
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$src = $this->input->getArgument('src');
 
-		$mm = new \Asgard\Migration\MigrationManager($this->migrationsDir);
+		$mm = new \Asgard\Migration\MigrationManager($this->migrationsDir, $this->db, $this->schema);
 		$migration = $mm->add($src);
 		if($mm->has($migration))
 			$this->info('The migration was successfully added.');

@@ -15,16 +15,16 @@ class HookTest extends \PHPUnit_Framework_TestCase {
 		});
 		$this->assertEquals('hello', $hooks->trigger('test'));
 
-		$hooks->hookBefore('test', function() {
+		$hooks->preHook('test', function() {
 			return 'yo';
 		});
 		$this->assertEquals('yo', $hooks->trigger('test'));
 
-		$mock = $this->getMock('StdClass', ['on', 'after']);
+		$mock = $this->getMock('StdClass', ['on', 'post']);
 		$mock->expects($this->once())->method('on');
-		$mock->expects($this->once())->method('after');
+		$mock->expects($this->once())->method('post');
 		$hooks->hook('foo', [$mock, 'on']);
-		$hooks->hookAfter('foo', [$mock, 'after']);
+		$hooks->postHook('foo', [$mock, 'post']);
 		$hooks->trigger('foo');
 
 		$this->assertCount(2, $hooks->get('foo'));
@@ -33,14 +33,14 @@ class HookTest extends \PHPUnit_Framework_TestCase {
 	public function testHooks() {
 		$hooks = new HookManager;
 
-		$mock = $this->getMock('StdClass', ['on', 'after']);
+		$mock = $this->getMock('StdClass', ['on', 'post']);
 		$mock->expects($this->once())->method('on');
-		$mock->expects($this->once())->method('after');
+		$mock->expects($this->once())->method('post');
 
 		$hooks->hooks([
 			'foo' => [
 				[$mock, 'on'],
-				[$mock, 'after'],
+				[$mock, 'post'],
 			]
 		]);
 		$hooks->trigger('foo');

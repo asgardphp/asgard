@@ -46,10 +46,10 @@ class HookManager implements HookManagerInterface {
 		$chain = new Chain($this->container);
 
 		$chain->setCalls(array_merge(
-			$this->get($name.'.before'),
+			$this->get($name.'.pre'),
 			$this->get($name.'.on'),
 			$cb !== null ? [$cb]:[],
-			$this->get($name.'.after')
+			$this->get($name.'.post')
 		));
 
 		return $chain->run($args);
@@ -114,7 +114,7 @@ class HookManager implements HookManagerInterface {
 	 * Create a hook.
 	 * @param string   $identifier
 	 * @param callable $cb
-	 * @param string   $type   on|before|after
+	 * @param string   $type   on|pre|post
 	*/
 	protected function createhook($identifier, $cb, $type='on') {
 		$identifier .= '.'.$type;
@@ -132,15 +132,15 @@ class HookManager implements HookManagerInterface {
 	/**
 	 * {@inheritDoc}
 	*/
-	public function hookBefore($identifier, $cb) {
-		$this->createhook($identifier, $cb, 'before');
+	public function preHook($identifier, $cb) {
+		$this->createhook($identifier, $cb, 'pre');
 	}
 
 	/**
 	 * {@inheritDoc}
 	*/
-	public function hookAfter($identifier, $cb) {
-		$this->createhook($identifier, $cb, 'after');
+	public function postHook($identifier, $cb) {
+		$this->createhook($identifier, $cb, 'post');
 	}
 
 	/**

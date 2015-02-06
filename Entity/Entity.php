@@ -339,7 +339,7 @@ abstract class Entity {
 			return $this;
 		}
 
-		$this->getDefinition()->processBeforeSet($this, $name, $value, $locale, $hook);
+		$this->getDefinition()->processPreSet($this, $name, $value, $locale, $hook);
 
 		if($this->getDefinition()->hasProperty($name)) {
 			if(!$locale)

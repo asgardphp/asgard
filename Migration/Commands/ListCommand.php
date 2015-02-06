@@ -22,13 +22,19 @@ class ListCommand extends \Asgard\Console\Command {
 	 * @var string
 	 */
 	protected $migrationsDir;
+	/**
+	 * DB.
+	 * @var \Asgard\Db\DBInterface
+	 */
+	protected $db;
 
 	/**
 	 * Constructor.
 	 * @param string $migrationsDir
 	 */
-	public function __construct($migrationsDir) {
+	public function __construct($migrationsDir, \Asgard\Db\DBInterface $db) {
 		$this->migrationsDir = $migrationsDir;
+		$this->db = $db;
 		parent::__construct();
 	}
 
@@ -39,7 +45,7 @@ class ListCommand extends \Asgard\Console\Command {
 		$table = new \Symfony\Component\Console\Helper\Table($this->output);
 		$table->setHeaders(['Name', 'Status', 'Migrated', 'Added']);
 
-		$tracker = new \Asgard\Migration\Tracker($this->migrationsDir);
+		$tracker = new \Asgard\Migration\Tracker($this->migrationsDir, $this->db);
 		foreach($tracker->getList() as $migration=>$params)
 			$table->addRow([$migration, isset($params['migrated']) ? 'up':'down', isset($params['migrated']) ? date('d/m/Y H:i:s', $params['migrated']):'', date('d/m/Y H:i:s', $params['added'])]);
 

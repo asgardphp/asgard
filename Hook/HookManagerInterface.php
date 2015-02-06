@@ -38,18 +38,18 @@ interface HookManagerInterface {
 	public function hook($identifier, $cb);
 
 	/**
-	 * Set a "before" hook.
+	 * Set a "pre" hook.
 	 * @param string   $identifier
 	 * @param callable $cb
 	*/
-	public function hookBefore($identifier, $cb);
+	public function preHook($identifier, $cb);
 
 	/**
-	 * Set an "after" hook.
+	 * Set an "post" hook.
 	 * @param string   $identifier
 	 * @param callable $cb
 	*/
-	public function hookAfter($identifier, $cb);
+	public function postHook($identifier, $cb);
 
 	/**
 	 * Set multiple hooks.

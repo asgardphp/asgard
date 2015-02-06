@@ -11,13 +11,29 @@ class Tracker {
 	 * @var string
 	 */
 	protected $dir;
+	/**
+	 * Database.
+	 * @var \Asgard\Db\DBInterface
+	 */
+	protected $db;
 
 	/**
 	 * Constructor.
 	 * @param string $dir
 	 */
-	public function __construct($dir) {
+	public function __construct($dir, \Asgard\Db\DBInterface $db) {
 		$this->dir = $dir;
+		$this->db = $db;
+
+		if(!$db->getSchema()->hasTable('_migrations')) {
+			$db->getSchema()->create('_migrations', function($table) {
+				$table->addColumn('name', 'string', [
+					'length' => 255,
+				]);
+				$table->addColumn('migrated', 'datetime', [
+				]);
+			});
+		}
 	}
 
 	/**
@@ -28,8 +44,11 @@ class Tracker {
 		if(!file_exists($this->dir.'/migrations.json'))
 			return [];
 		$migrations = json_decode(file_get_contents($this->dir.'/migrations.json'), true);
-		if(file_exists($this->dir.'/tracking.json'))
-			$tracking = json_decode(file_get_contents($this->dir.'/tracking.json'), true);
+
+		$tracking = [];
+		foreach($this->db->dal()->from('_migrations')->get() as $r)
+			$tracking[$r['name']] = ['migrated' => strtotime($r['migrated'])];
+
 		foreach($migrations as $migration=>$params) {
 			if(isset($tracking[$migration]))
 				$migrations[$migration] = array_merge($migrations[$migration], $tracking[$migration]);
@@ -142,11 +161,7 @@ class Tracker {
 	 * @param  string $migrationName
 	 */
 	public function unmigrate($migrationName) {
-		$list = $this->getList();
-		if(!isset($list[$migrationName]['migrated']))
-			return;
-		unset($list[$migrationName]['migrated']);
-		$this->writeTracking($list);
+		$this->db->dal()->from('_migrations')->where('name', $migrationName)->delete();
 	}
 
 	/**
@@ -154,9 +169,7 @@ class Tracker {
 	 * @param  string $migrationName
 	 */
 	public function migrate($migrationName) {
-		$list = $this->getList();
-		$list[$migrationName]['migrated'] = time()+microtime();
-		$this->writeTracking($list);
+		$this->db->dal()->into('_migrations')->insert(['name'=>$migrationName, 'migrated'=>date('Y-m-d H:i:s')]);
 	}
 
 	/**
@@ -191,28 +204,28 @@ class Tracker {
 		file_put_contents($this->dir.'/migrations.json', json_encode($migrations, JSON_PRETTY_PRINT));
 	}
 
-	/**
-	 * Persist migration statuses.
-	 * @param  array $res
-	 */
-	protected function writeTracking($res) {
-		uasort($res, function($a, $b) {
-			if(isset($a['migrated']) && !isset($b['migrated']))
-				return -1;
-			elseif(!isset($a['migrated']) && isset($b['migrated']))
-				return 1;
-			elseif(isset($a['migrated']) && isset($b['migrated']))
-				return $a['migrated'] > $b['migrated'];
-			else
-				return $a['added'] > $b['added'];
-		});
+	// /**
+	//  * Persist migration statuses.
+	//  * @param  array $res
+	//  */
+	// protected function writeTracking($res) {
+	// 	uasort($res, function($a, $b) {
+	// 		if(isset($a['migrated']) && !isset($b['migrated']))
+	// 			return -1;
+	// 		elseif(!isset($a['migrated']) && isset($b['migrated']))
+	// 			return 1;
+	// 		elseif(isset($a['migrated']) && isset($b['migrated']))
+	// 			return $a['migrated'] > $b['migrated'];
+	// 		else
+	// 			return $a['added'] > $b['added'];
+	// 	});
 
-		$tracking = [];
-		foreach($res as $migration=>$params) {
-			if(isset($params['migrated']))
-				$tracking[$migration] = ['migrated'=>$params['migrated']];
-		}
+	// 	$tracking = [];
+	// 	foreach($res as $migration=>$params) {
+	// 		if(isset($params['migrated']))
+	// 			$tracking[$migration] = ['migrated'=>$params['migrated']];
+	// 	}
 
-		file_put_contents($this->dir.'/tracking.json', json_encode($tracking, JSON_PRETTY_PRINT));
-	}
+	// 	file_put_contents($this->dir.'/tracking.json', json_encode($tracking, JSON_PRETTY_PRINT));
+	// }
 }

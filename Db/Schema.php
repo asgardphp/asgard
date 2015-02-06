@@ -46,6 +46,10 @@ class Schema implements SchemaInterface {
 		return $this->getSchemaManager()->listTables();
 	}
 
+	public function hasTable($table) {
+		return $this->getSchemaManager()->tablesExist([$table]);
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */

@@ -16,7 +16,7 @@ class MigrationsTest extends \PHPUnit_Framework_TestCase {
 		static::$em = $entityManager = new \Asgard\Entity\EntityManager;
 		$dataMapper = new \Asgard\Orm\DataMapper($db, $entityManager);
 		static::$schema = new \Asgard\Db\Schema($db);
-		static::$ormm = new \Asgard\Orm\ORMMigrations($dataMapper, new \Asgard\Migration\MigrationManager(__DIR__.'/migrations/'));
+		static::$ormm = new \Asgard\Orm\ORMMigrations($dataMapper, new \Asgard\Migration\MigrationManager(__DIR__.'/migrations/', $db, $db->getSchema()));
 	}
 
 	public function testAutoMigrate() {
