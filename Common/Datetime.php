@@ -17,7 +17,7 @@ class Datetime extends \DateTime implements DatetimeInterface {
 	/**
 	 * Constructor.
 	 * @param string       $time
-	 * @param DateTimeZone|string $tz
+	 * @param \DateTimeZone|string $tz
 	 */
 	public function __construct($time=null, $tz=null) {
 		if($time===null)
@@ -36,6 +36,11 @@ class Datetime extends \DateTime implements DatetimeInterface {
 		return $tz;
 	}
 
+	/**
+	 * Create a new Datetime object from a carbon object.
+	 * @param  \Carbon\Carbon $carbon
+	 * @return Datetime
+	 */
 	public static function createFromCarbon(\Carbon\Carbon $carbon) {
 		$dt = new static;
 		$dt->setCarbon($carbon);
@@ -260,21 +265,21 @@ class Datetime extends \DateTime implements DatetimeInterface {
 	 * {@inheritDoc}
 	 */
 	public function __get($name) {
-		return static::createFromCarbon($this->carbon->__get($name));
+		return $this->carbon->__get($name);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function __isset($name) {
-		return static::createFromCarbon($this->carbon->__isset($name));
+		return $this->carbon->__isset($name);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function __set($name, $value) {
-		return static::createFromCarbon($this->carbon->__set($name, $value));
+		return $this->carbon->__set($name, $value);
 	}
 
 	/**
@@ -365,189 +370,190 @@ class Datetime extends \DateTime implements DatetimeInterface {
 	 * {@inheritDoc}
 	 */
 	public function setTimezone($value) {
-		return static::createFromCarbon($this->carbon->setTimezone($value));
+		$this->carbon->setTimezone($value);
+		return $this;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function formatLocalized($format) {
-		return static::createFromCarbon($this->carbon->formatLocalized($format));
+		return $this->carbon->formatLocalized($format);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function __toString() {
-		return static::createFromCarbon($this->carbon->__toString());
+		return $this->carbon->__toString();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function toDateString() {
-		return static::createFromCarbon($this->carbon->toDateString());
+		return $this->carbon->toDateString();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function toFormattedDateString() {
-		return static::createFromCarbon($this->carbon->toFormattedDateString());
+		return $this->carbon->toFormattedDateString();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function toTimeString() {
-		return static::createFromCarbon($this->carbon->toTimeString());
+		return $this->carbon->toTimeString();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function toDateTimeString() {
-		return static::createFromCarbon($this->carbon->toDateTimeString());
+		return $this->carbon->toDateTimeString();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function toDayDateTimeString() {
-		return static::createFromCarbon($this->carbon->toDayDateTimeString());
+		return $this->carbon->toDayDateTimeString();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function toAtomString() {
-		return static::createFromCarbon($this->carbon->toAtomString());
+		return $this->carbon->toAtomString();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function toCookieString() {
-		return static::createFromCarbon($this->carbon->toCookieString());
+		return $this->carbon->toCookieString();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function toIso8601String() {
-		return static::createFromCarbon($this->carbon->toIso8601String());
+		return $this->carbon->toIso8601String();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function toRfc822String() {
-		return static::createFromCarbon($this->carbon->toRfc822String());
+		return $this->carbon->toRfc822String();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function toRfc850String() {
-		return static::createFromCarbon($this->carbon->toRfc850String());
+		return $this->carbon->toRfc850String();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function toRfc1036String() {
-		return static::createFromCarbon($this->carbon->toRfc1036String());
+		return $this->carbon->toRfc1036String();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function toRfc1123String() {
-		return static::createFromCarbon($this->carbon->toRfc1123String());
+		return $this->carbon->toRfc1123String();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function toRfc2822String() {
-		return static::createFromCarbon($this->carbon->toRfc2822String());
+		return $this->carbon->toRfc2822String();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function toRfc3339String() {
-		return static::createFromCarbon($this->carbon->toRfc3339String());
+		return $this->carbon->toRfc3339String();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function toRssString() {
-		return static::createFromCarbon($this->carbon->toRssString());
+		return $this->carbon->toRssString();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function toW3cString() {
-		return static::createFromCarbon($this->carbon->toW3cString());
+		return $this->carbon->toW3cString();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function eq(DatetimeInterface $dt) {
-		return static::createFromCarbon($this->carbon->eq($dt->getCarbon()));
+		return $this->carbon->eq($dt->getCarbon());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function ne(DatetimeInterface $dt) {
-		return static::createFromCarbon($this->carbon->ne($dt->getCarbon()));
+		return $this->carbon->ne($dt->getCarbon());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function gt(DatetimeInterface $dt) {
-		return static::createFromCarbon($this->carbon->gt($dt->getCarbon()));
+		return $this->carbon->gt($dt->getCarbon());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function gte(DatetimeInterface $dt) {
-		return static::createFromCarbon($this->carbon->gte($dt->getCarbon()));
+		return $this->carbon->gte($dt->getCarbon());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function lt(DatetimeInterface $dt) {
-		return static::createFromCarbon($this->carbon->lt($dt->getCarbon()));
+		return $this->carbon->lt($dt->getCarbon());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function lte(DatetimeInterface $dt) {
-		return static::createFromCarbon($this->carbon->lte($dt->getCarbon()));
+		return $this->carbon->lte($dt->getCarbon());
 	}
 
 	/**
 	 * {@inheritDoc}
 	*/
 	public function between(DatetimeInterface $dt1, DatetimeInterface $dt2, $equal=true) {
-		return static::createFromCarbon($this->carbon->between($dt1->getCarbon(), $dt2->getCarbon(), $equal));
+		return $this->carbon->between($dt1->getCarbon(), $dt2->getCarbon(), $equal);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function min(DatetimeInterface $dt=null) {
-		return static::createFromCarbon($this->carbon->min($dt->getCarbon()));
+		return $this->carbon->min($dt->getCarbon());
 	}
 
 	/**
@@ -561,63 +567,63 @@ class Datetime extends \DateTime implements DatetimeInterface {
 	 * {@inheritDoc}
 	 */
 	public function isWeekday() {
-		return static::createFromCarbon($this->carbon->isWeekday());
+		return $this->carbon->isWeekday();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function isWeekend() {
-		return static::createFromCarbon($this->carbon->isWeekend());
+		return $this->carbon->isWeekend();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function isYesterday() {
-		return static::createFromCarbon($this->carbon->isYesterday());
+		return $this->carbon->isYesterday();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function isToday() {
-		return static::createFromCarbon($this->carbon->isToday());
+		return $this->carbon->isToday();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function isTomorrow() {
-		return static::createFromCarbon($this->carbon->isTomorrow());
+		return $this->carbon->isTomorrow();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function isFuture() {
-		return static::createFromCarbon($this->carbon->isFuture());
+		return $this->carbon->isFuture();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function isPast() {
-		return static::createFromCarbon($this->carbon->isPast());
+		return $this->carbon->isPast();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function isLeapYear() {
-		return static::createFromCarbon($this->carbon->isLeapYear());
+		return $this->carbon->isLeapYear();
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function isSameDay(DatetimeInterface $dt) {
-		return static::createFromCarbon($this->carbon->isSameDay($dt->getCarbon()));
+		return $this->carbon->isSameDay($dt->getCarbon());
 	}
 
 	/**
@@ -848,76 +854,76 @@ class Datetime extends \DateTime implements DatetimeInterface {
 	 * {@inheritDoc}
 	 */
 	public function diffInYears(DatetimeInterface $dt=null, $abs=true) {
-		return static::createFromCarbon($this->carbon->diffInYears($dt->getCarbon(), $abs));
+		return $this->carbon->diffInYears($dt->getCarbon(), $abs);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function diffInMonths(DatetimeInterface $dt=null, $abs=true) {
-		return static::createFromCarbon($this->carbon->diffInMonths($dt->getCarbon(), $abs));
+		return $this->carbon->diffInMonths($dt->getCarbon(), $abs);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function diffInWeeks(DatetimeInterface $dt=null, $abs=true) {
-		return static::createFromCarbon($this->carbon->diffInWeeks($dt->getCarbon(), $abs));
+		return $this->carbon->diffInWeeks($dt->getCarbon(), $abs);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function diffInDays(DatetimeInterface $dt=null, $abs=true) {
-		return static::createFromCarbon($this->carbon->diffInDays($dt->getCarbon(), $abs));
+		return $this->carbon->diffInDays($dt->getCarbon(), $abs);
 	}
 
 	 /**
 	 * {@inheritDoc}
 	 */
 	 public function diffInDaysFiltered(Closure $callback, DatetimeInterface $dt=null, $abs=true) {
-		return static::createFromCarbon($this->carbon->diffInDaysFiltered($callback, $dt->getCarbon(), $abs));
+		return $this->carbon->diffInDaysFiltered($callback, $dt->getCarbon(), $abs);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	 public function diffInWeekdays(DatetimeInterface $dt=null, $abs=true) {
-		return static::createFromCarbon($this->carbon->diffInWeekdays($dt->getCarbon(), $abs));
+		return $this->carbon->diffInWeekdays($dt->getCarbon(), $abs);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	 public function diffInWeekendDays(DatetimeInterface $dt=null, $abs=true) {
-		return static::createFromCarbon($this->carbon->diffInWeekendDays($dt->getCarbon(), $abs));
+		return $this->carbon->diffInWeekendDays($dt->getCarbon(), $abs);
 	}
 
 	/**
 	 */
 	public function diffInHours(DatetimeInterface $dt=null, $abs=true) {
-		return static::createFromCarbon($this->carbon->diffInHours($dt->getCarbon(), $abs));
+		return $this->carbon->diffInHours($dt->getCarbon(), $abs);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function diffInMinutes(DatetimeInterface $dt=null, $abs=true) {
-		return static::createFromCarbon($this->carbon->diffInMinutes($dt->getCarbon(), $abs));
+		return $this->carbon->diffInMinutes($dt->getCarbon(), $abs);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function diffInSeconds(DatetimeInterface $dt=null, $abs=true) {
-		return static::createFromCarbon($this->carbon->diffInSeconds($dt->getCarbon(), $abs));
+		return $this->carbon->diffInSeconds($dt->getCarbon(), $abs);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function diffForHumans(DatetimeInterface $other=null) {
-		return static::createFromCarbon($this->carbon->diffForHumans($other));
+		return $this->carbon->diffForHumans($other);
 	}
 
 	/**
@@ -1091,6 +1097,6 @@ class Datetime extends \DateTime implements DatetimeInterface {
 	 * {@inheritDoc}
 	 */
 	public function isBirthday(DatetimeInterface $dt) {
-		return static::createFromCarbon($this->carbon->isBirthday($dt->getCarbon()));
+		return $this->carbon->isBirthday($dt->getCarbon());
 	}
 }

@@ -170,7 +170,6 @@ class InstallCommand extends \Asgard\Console\Command {
 	/**
 	 * Run a command.
 	 * @param  string  $cmd
-	 * @param  boolean $verbose
 	 * @return boolean
 	 */
 	protected function runCommand($cmd) {
