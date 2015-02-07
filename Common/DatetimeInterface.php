@@ -230,7 +230,7 @@ interface DatetimeInterface {
 	 *
 	 * @throws InvalidArgumentException
 	 *
-	 * @return string|integer|DateTimeZone
+	 * @return string|integer|\DateTimeZone
 	 */
 	public function __get($name);
 

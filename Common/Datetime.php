@@ -553,7 +553,7 @@ class Datetime extends \DateTime implements DatetimeInterface {
 	 * {@inheritDoc}
 	 */
 	public function min(DatetimeInterface $dt=null) {
-		return $this->carbon->min($dt->getCarbon());
+		return static::createFromCarbon($this->carbon->min($dt->getCarbon()));
 	}
 
 	/**
@@ -923,7 +923,7 @@ class Datetime extends \DateTime implements DatetimeInterface {
 	 * {@inheritDoc}
 	 */
 	public function diffForHumans(DatetimeInterface $other=null) {
-		return $this->carbon->diffForHumans($other);
+		return $this->carbon->diffForHumans($other->getCarbon());
 	}
 
 	/**
