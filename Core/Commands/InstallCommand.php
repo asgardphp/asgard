@@ -143,7 +143,7 @@ class InstallCommand extends \Asgard\Console\Command {
 	 */
 	protected function gitInstall($src, $tmp) {
 		$cmd = 'git clone --recursive "'.$src.'" "'.$tmp.'"';
-		return $this->runCommand($cmd, true);
+		return $this->runCommand($cmd);
 	}
 
 	/**
@@ -154,7 +154,7 @@ class InstallCommand extends \Asgard\Console\Command {
 	 */
 	protected function gitCheckout($dir, $tag) {
 		$cmd = 'cd "'.$dir.'" & git checkout tags/'.$tag;
-		return $this->runCommand($cmd, true);
+		return $this->runCommand($cmd);
 	}
 
 	/**
@@ -164,7 +164,7 @@ class InstallCommand extends \Asgard\Console\Command {
 	 */
 	protected function updateComposer($dir) {
 		$cmd = 'composer update --working-dir "'.$dir.'"';
-		return $this->runCommand($cmd, true);
+		return $this->runCommand($cmd);
 	}
 
 	/**
@@ -173,7 +173,7 @@ class InstallCommand extends \Asgard\Console\Command {
 	 * @param  boolean $verbose
 	 * @return boolean
 	 */
-	protected function runCommand($cmd, $verbose=false) {
+	protected function runCommand($cmd) {
 		$this->comment($cmd);
 
 		passthru($cmd, $return);

@@ -224,9 +224,7 @@ class Validator implements ValidatorInterface {
 	}
 
 	/**
-	 * Set attributes rules.
-	 * @param  array  $attributes
-	 * @return ValidatorInterface       $this
+	 * {@inheritDoc}
 	 */
 	public function attributes(array $attributes) {
 		foreach($attributes as $attribute=>$rules)

@@ -12,7 +12,7 @@ class TestsGenerator {
 	 * Constructor.
 	 * @param \Asgard\Container\ContainerInterface $container
 	 */
-	public function __construct(\Asgard\Container\ContainerInterface $container) {
+	public function __construct(\Asgard\Container\ContainerInterface $container=null) {
 		$this->container = $container;
 	}
 

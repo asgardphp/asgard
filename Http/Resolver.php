@@ -231,7 +231,7 @@ class Resolver implements ResolverInterface {
 
 	/**
 	 * Get route for a given action.
-	 * @param  array $what controller and action
+	 * @param  string|array $what controller and action
 	 * @return Route
 	 */
 	public function getRouteFor($what) {
@@ -240,7 +240,6 @@ class Resolver implements ResolverInterface {
 			$controller = trim(strtolower($what[0]), '\\');
 			$action = strtolower($what[1]);
 			foreach($this->getRoutes() as $routeObj) {
-				$route = $routeObj->getRoute();
 				if(trim(strtolower($routeObj->getController()), '\\') === $controller && strtolower($routeObj->getAction()) === $action)
 					return $routeObj;
 			}
@@ -249,7 +248,6 @@ class Resolver implements ResolverInterface {
 		else {
 			$what = strtolower($what);
 			foreach($this->getRoutes() as $routeObj) {
-				$route = $routeObj->getRoute();
 				if($routeObj->get('name') !== null && strtolower($routeObj->get('name')) === $what)
 					return $routeObj;
 			}

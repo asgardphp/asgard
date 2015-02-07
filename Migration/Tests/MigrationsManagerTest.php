@@ -12,7 +12,7 @@ class BrowserTest extends \PHPUnit_Framework_TestCase {
 				'database' => ':memory:',
 			]);
 			$schema = $db->getSchema();
-			$this->mm = $mm = new \Asgard\Migration\MigrationManager(__DIR__.'/migrations/', $db, $schema);
+			$this->mm = new \Asgard\Migration\MigrationManager(__DIR__.'/migrations/', $db, $schema);
 		}
 		$this->db->dal()->from('_migrations')->delete();
 		return $this->mm;

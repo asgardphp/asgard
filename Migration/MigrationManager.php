@@ -159,7 +159,7 @@ class '.$name.' extends '.$class.' {
 			if($this->unmigrate($migrationName) === false)
 				return false;
 		}
-		return $this->migrateAll(true);
+		return $this->migrateAll();
 	}
 
 	/**

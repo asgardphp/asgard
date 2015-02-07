@@ -68,7 +68,7 @@ class AutoMigrateCommand extends \Asgard\Console\Command {
 		else
 			$this->error('The migration could not be generated.');
 
-		if($mm->migrate($migration, true))
+		if($mm->migrate($migration))
 			$this->info('Migration succeded.');
 		else
 			$this->error('Migration failed.');

@@ -11,7 +11,7 @@ class RadiosWidget extends \Asgard\Form\Widget {
 	 */
 	public function render(array $options=[]) {
 		$options = $this->options+$options;
-		$form = $this->field->getParent();
+		$form = $this->field->getParent()->getTopForm();
 
 		$str = '';
 		foreach($this->field->getChoices() as $k=>$v) {

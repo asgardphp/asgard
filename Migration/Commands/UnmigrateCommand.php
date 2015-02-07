@@ -52,11 +52,7 @@ class UnmigrateCommand extends \Asgard\Console\Command {
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$migration = $this->input->getArgument('migration');
-		$mm = new \Asgard\Migration\MigrationManager($this->migrationsDir, $this->getContainer());
-		if($this->db)
-			$mm->setDB($this->db);
-		if($this->schema)
-			$mm->setSchema($this->schema);
+		$mm = new \Asgard\Migration\MigrationManager($this->migrationsDir, $this->db, $this->schema, $this->getContainer());
 
 		if($mm->unmigrate($migration))
 			$this->info('Unmigration succeded.');

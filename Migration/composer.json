@@ -11,7 +11,8 @@
     "require": {
         "php": ">=5.4.0",
         "asgard/container": "0.*",
-        "asgard/common": "0.*"
+        "asgard/common": "0.*",
+        "asgard/db": "0.*"
     },
     "require-dev": {
         "asgard/file": "0.*"

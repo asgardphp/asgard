@@ -179,4 +179,13 @@ interface GroupInterface extends \ArrayAccess, \Iterator {
 	 * Actually perform the group saving. Empty by default but can be overriden.
 	 */
 	public function doSave();
+
+	/**
+	 * Pass the doRender call to the parent group/form.
+	 * @param  string|callable $render_callback
+	 * @param  Group|Field     $field
+	 * @param  array           $options
+	 * @return Widget
+	 */
+	public function doRender($render_callback, $field, array &$options);
 }

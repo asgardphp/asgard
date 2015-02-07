@@ -110,7 +110,7 @@ class Schema implements SchemaInterface {
 				$tableDiff = new \Doctrine\DBAL\Schema\TableDiff($tableName);
 
 			if($renamedColumns = $clone->getRenamedColumns())
-				$tableDiff->getRenamedColumns = $renamedColumns;
+				$tableDiff->renamedColumns = $renamedColumns;
 
 			$queries = $platform->getAlterTableSQL($tableDiff);
 			foreach($queries as $query)

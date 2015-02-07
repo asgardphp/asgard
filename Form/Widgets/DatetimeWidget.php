@@ -19,7 +19,7 @@ class DatetimeWidget extends \Asgard\Form\Widget {
 		$month = $this->field->getMonth();
 		$year = $this->field->getYear();
 
-		$form = $this->field->getParent();
+		$form = $this->field->getParent()->getTopForm();
 
 		return
 			$form->getWidget('select', $this->field->name().'[second]', $second, ['id'=>$this->field->getID().'-second', 'choices'=>array_combine(range(1, 60), range(1, 60))]).

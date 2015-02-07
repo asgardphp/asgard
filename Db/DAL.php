@@ -1218,7 +1218,7 @@ class DAL {
 	 */
 	protected function replaceParams($sql, array $params) {
 		$i=0;
-		return preg_replace_callback('/\?/', function($a) use(&$i, $params) {
+		return preg_replace_callback('/\?/', function() use(&$i, $params) {
 			$rep = $params[$i++];
 			if(is_string($rep))
 				$rep = "'$rep'";

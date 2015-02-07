@@ -577,4 +577,11 @@ class Group implements GroupInterface {
 		else
 			return $report->errors();
 	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function doRender($render_callback, $field, array &$options) {
+		return $this->parent->doRender($render_callback, $field, $options);
+	}
 }

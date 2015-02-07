@@ -24,7 +24,7 @@ class Datetime extends \DateTime implements DatetimeInterface {
 			$time = 'now';
 		$tz = $this->safeCreateDateTimeZone($tz);
 		parent::__construct($time, $tz); #need to initialize parent \DateTime as well or comparaison will fail in PHP internals
-		return $this->carbon = new Carbon($time, $tz);
+		$this->carbon = new Carbon($time, $tz);
 	}
 
 	protected static function safeCreateDateTimeZone($object) {
@@ -36,15 +36,29 @@ class Datetime extends \DateTime implements DatetimeInterface {
 		return $tz;
 	}
 
+	public static function createFromCarbon(\Carbon\Carbon $carbon) {
+		$dt = new static;
+		$dt->setCarbon($carbon);
+		return $dt;
+	}
+
 	/**
 	 * Return the carbon instance equivalent.
 	 * @return Carbon
 	 */
 	public function getCarbon() {
-		return $this->carbon;
+		return static::createFromCarbon($this->carbon);
 	}
 
 	/**
+	 * Return the carbon instance equivalent.
+	 * @param \Carbon\Carbon $carbon
+	 */
+	public function setCarbon(\Carbon\Carbon $carbon) {
+		$this->carbon = $carbon;
+	}
+
+	/**)
 	 * {@inheritDoc}
 	 */
 	public function diff($datetime2, $absolute=null) {
@@ -95,7 +109,7 @@ class Datetime extends \DateTime implements DatetimeInterface {
 	public function __wakeup() {
 		parent::__wakeup();
 		if(!$this->carbon instanceof \__PHP_Incomplete_Class)
-			return $this->carbon->__wakeup();
+			return static::createFromCarbon($this->carbon->__wakeup());
 	}
 
 	/**
@@ -239,844 +253,844 @@ class Datetime extends \DateTime implements DatetimeInterface {
 	 * {@inheritDoc}
 	 */
 	public function copy() {
-		return $this->carbon->copy();
+		return static::createFromCarbon($this->carbon->copy());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function __get($name) {
-		return $this->carbon->__get($name);
+		return static::createFromCarbon($this->carbon->__get($name));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function __isset($name) {
-		return $this->carbon->__isset($name);
+		return static::createFromCarbon($this->carbon->__isset($name));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function __set($name, $value) {
-		return $this->carbon->__set($name, $value);
+		return static::createFromCarbon($this->carbon->__set($name, $value));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function year($value) {
-		return $this->carbon->year($value);
+		return static::createFromCarbon($this->carbon->year($value));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function month($value) {
-		return $this->carbon->month($value);
+		return static::createFromCarbon($this->carbon->month($value));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function day($value) {
-		return $this->carbon->day($value);
+		return static::createFromCarbon($this->carbon->day($value));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function setDate($year, $month, $day) {
-		return $this->carbon->setDate($year, $month, $day);
+		return static::createFromCarbon($this->carbon->setDate($year, $month, $day));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function hour($value) {
-		return $this->carbon->hour($value);
+		return static::createFromCarbon($this->carbon->hour($value));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function minute($value) {
-		return $this->carbon->minute($value);
+		return static::createFromCarbon($this->carbon->minute($value));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function second($value) {
-		return $this->carbon->second($value);
+		return static::createFromCarbon($this->carbon->second($value));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function setTime($hour, $minute, $second=0) {
-		return $this->carbon->setTime($hour, $minute, $second);
+		return static::createFromCarbon($this->carbon->setTime($hour, $minute, $second));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function setDateTime($year, $month, $day, $hour, $minute, $second=0) {
-		return $this->carbon->setDateTime($year, $month, $day, $hour, $minute, $second);
+		return static::createFromCarbon($this->carbon->setDateTime($year, $month, $day, $hour, $minute, $second));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function timestamp($value) {
-		return $this->carbon->timestamp($value);
+		return static::createFromCarbon($this->carbon->timestamp($value));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function timezone($value) {
-		return $this->carbon->timezone($value);
+		return static::createFromCarbon($this->carbon->timezone($value));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function tz($value) {
-		return $this->carbon->tz($value);
+		return static::createFromCarbon($this->carbon->tz($value));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function setTimezone($value) {
-		return $this->carbon->setTimezone($value);
+		return static::createFromCarbon($this->carbon->setTimezone($value));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function formatLocalized($format) {
-		return $this->carbon->formatLocalized($format);
+		return static::createFromCarbon($this->carbon->formatLocalized($format));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function __toString() {
-		return $this->carbon->__toString();
+		return static::createFromCarbon($this->carbon->__toString());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function toDateString() {
-		return $this->carbon->toDateString();
+		return static::createFromCarbon($this->carbon->toDateString());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function toFormattedDateString() {
-		return $this->carbon->toFormattedDateString();
+		return static::createFromCarbon($this->carbon->toFormattedDateString());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function toTimeString() {
-		return $this->carbon->toTimeString();
+		return static::createFromCarbon($this->carbon->toTimeString());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function toDateTimeString() {
-		return $this->carbon->toDateTimeString();
+		return static::createFromCarbon($this->carbon->toDateTimeString());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function toDayDateTimeString() {
-		return $this->carbon->toDayDateTimeString();
+		return static::createFromCarbon($this->carbon->toDayDateTimeString());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function toAtomString() {
-		return $this->carbon->toAtomString();
+		return static::createFromCarbon($this->carbon->toAtomString());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function toCookieString() {
-		return $this->carbon->toCookieString();
+		return static::createFromCarbon($this->carbon->toCookieString());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function toIso8601String() {
-		return $this->carbon->toIso8601String();
+		return static::createFromCarbon($this->carbon->toIso8601String());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function toRfc822String() {
-		return $this->carbon->toRfc822String();
+		return static::createFromCarbon($this->carbon->toRfc822String());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function toRfc850String() {
-		return $this->carbon->toRfc850String();
+		return static::createFromCarbon($this->carbon->toRfc850String());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function toRfc1036String() {
-		return $this->carbon->toRfc1036String();
+		return static::createFromCarbon($this->carbon->toRfc1036String());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function toRfc1123String() {
-		return $this->carbon->toRfc1123String();
+		return static::createFromCarbon($this->carbon->toRfc1123String());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function toRfc2822String() {
-		return $this->carbon->toRfc2822String();
+		return static::createFromCarbon($this->carbon->toRfc2822String());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function toRfc3339String() {
-		return $this->carbon->toRfc3339String();
+		return static::createFromCarbon($this->carbon->toRfc3339String());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function toRssString() {
-		return $this->carbon->toRssString();
+		return static::createFromCarbon($this->carbon->toRssString());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function toW3cString() {
-		return $this->carbon->toW3cString();
+		return static::createFromCarbon($this->carbon->toW3cString());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function eq(DatetimeInterface $dt) {
-		return $this->carbon->eq($dt->getCarbon());
+		return static::createFromCarbon($this->carbon->eq($dt->getCarbon()));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function ne(DatetimeInterface $dt) {
-		return $this->carbon->ne($dt->getCarbon());
+		return static::createFromCarbon($this->carbon->ne($dt->getCarbon()));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function gt(DatetimeInterface $dt) {
-		return $this->carbon->gt($dt->getCarbon());
+		return static::createFromCarbon($this->carbon->gt($dt->getCarbon()));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function gte(DatetimeInterface $dt) {
-		return $this->carbon->gte($dt->getCarbon());
+		return static::createFromCarbon($this->carbon->gte($dt->getCarbon()));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function lt(DatetimeInterface $dt) {
-		return $this->carbon->lt($dt->getCarbon());
+		return static::createFromCarbon($this->carbon->lt($dt->getCarbon()));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function lte(DatetimeInterface $dt) {
-		return $this->carbon->lte($dt->getCarbon());
+		return static::createFromCarbon($this->carbon->lte($dt->getCarbon()));
 	}
 
 	/**
 	 * {@inheritDoc}
 	*/
 	public function between(DatetimeInterface $dt1, DatetimeInterface $dt2, $equal=true) {
-		return $this->carbon->between($dt1->getCarbon(), $dt2->getCarbon(), $equal);
+		return static::createFromCarbon($this->carbon->between($dt1->getCarbon(), $dt2->getCarbon(), $equal));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function min(DatetimeInterface $dt=null) {
-		return $this->carbon->min($dt->getCarbon());
+		return static::createFromCarbon($this->carbon->min($dt->getCarbon()));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function max(DatetimeInterface $dt=null) {
-		return $this->carbon->max($dt->getCarbon());
+		return static::createFromCarbon($this->carbon->max($dt->getCarbon()));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function isWeekday() {
-		return $this->carbon->isWeekday();
+		return static::createFromCarbon($this->carbon->isWeekday());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function isWeekend() {
-		return $this->carbon->isWeekend();
+		return static::createFromCarbon($this->carbon->isWeekend());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function isYesterday() {
-		return $this->carbon->isYesterday();
+		return static::createFromCarbon($this->carbon->isYesterday());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function isToday() {
-		return $this->carbon->isToday();
+		return static::createFromCarbon($this->carbon->isToday());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function isTomorrow() {
-		return $this->carbon->isTomorrow();
+		return static::createFromCarbon($this->carbon->isTomorrow());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function isFuture() {
-		return $this->carbon->isFuture();
+		return static::createFromCarbon($this->carbon->isFuture());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function isPast() {
-		return $this->carbon->isPast();
+		return static::createFromCarbon($this->carbon->isPast());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function isLeapYear() {
-		return $this->carbon->isLeapYear();
+		return static::createFromCarbon($this->carbon->isLeapYear());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function isSameDay(DatetimeInterface $dt) {
-		return $this->carbon->isSameDay($dt->getCarbon());
+		return static::createFromCarbon($this->carbon->isSameDay($dt->getCarbon()));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function addYears($value) {
-		return $this->carbon->addYears($value);
+		return static::createFromCarbon($this->carbon->addYears($value));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function addYear() {
-		return $this->carbon->addYear();
+		return static::createFromCarbon($this->carbon->addYear());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function subYear() {
-		return $this->carbon->subYear();
+		return static::createFromCarbon($this->carbon->subYear());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function subYears($value) {
-		return $this->carbon->subYears($value);
+		return static::createFromCarbon($this->carbon->subYears($value));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function addMonths($value) {
-		return $this->carbon->addMonths($value);
+		return static::createFromCarbon($this->carbon->addMonths($value));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function addMonth() {
-		return $this->carbon->addMonth();
+		return static::createFromCarbon($this->carbon->addMonth());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function subMonth() {
-		return $this->carbon->subMonth();
+		return static::createFromCarbon($this->carbon->subMonth());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function subMonths($value) {
-		return $this->carbon->subMonths($value);
+		return static::createFromCarbon($this->carbon->subMonths($value));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function addDays($value) {
-		return $this->carbon->addDays($value);
+		return static::createFromCarbon($this->carbon->addDays($value));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function addDay() {
-		return $this->carbon->addDay();
+		return static::createFromCarbon($this->carbon->addDay());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function subDay() {
-		return $this->carbon->subDay();
+		return static::createFromCarbon($this->carbon->subDay());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function subDays($value) {
-		return $this->carbon->subDays($value);
+		return static::createFromCarbon($this->carbon->subDays($value));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function addWeekdays($value) {
-		return $this->carbon->addWeekdays($value);
+		return static::createFromCarbon($this->carbon->addWeekdays($value));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function addWeekday() {
-		return $this->carbon->addWeekday();
+		return static::createFromCarbon($this->carbon->addWeekday());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function subWeekday() {
-		return $this->carbon->subWeekday();
+		return static::createFromCarbon($this->carbon->subWeekday());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function subWeekdays($value) {
-		return $this->carbon->subWeekdays($value);
+		return static::createFromCarbon($this->carbon->subWeekdays($value));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function addWeeks($value) {
-		return $this->carbon->addWeeks($value);
+		return static::createFromCarbon($this->carbon->addWeeks($value));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function addWeek() {
-		return $this->carbon->addWeek();
+		return static::createFromCarbon($this->carbon->addWeek());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function subWeek() {
-		return $this->carbon->subWeek();
+		return static::createFromCarbon($this->carbon->subWeek());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function subWeeks($value) {
-		return $this->carbon->subWeeks($value);
+		return static::createFromCarbon($this->carbon->subWeeks($value));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function addHours($value) {
-		return $this->carbon->addHours($value);
+		return static::createFromCarbon($this->carbon->addHours($value));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function addHour() {
-		return $this->carbon->addHour();
+		return static::createFromCarbon($this->carbon->addHour());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function subHour() {
-		return $this->carbon->subHour();
+		return static::createFromCarbon($this->carbon->subHour());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function subHours($value) {
-		return $this->carbon->subHours($value);
+		return static::createFromCarbon($this->carbon->subHours($value));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function addMinutes($value) {
-		return $this->carbon->addMinutes($value);
+		return static::createFromCarbon($this->carbon->addMinutes($value));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function addMinute() {
-		return $this->carbon->addMinute();
+		return static::createFromCarbon($this->carbon->addMinute());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function subMinute() {
-		return $this->carbon->subMinute();
+		return static::createFromCarbon($this->carbon->subMinute());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function subMinutes($value) {
-		return $this->carbon->subMinutes($value);
+		return static::createFromCarbon($this->carbon->subMinutes($value));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function addSeconds($value) {
-		return $this->carbon->addSeconds($value);
+		return static::createFromCarbon($this->carbon->addSeconds($value));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function addSecond() {
-		return $this->carbon->addSecond();
+		return static::createFromCarbon($this->carbon->addSecond());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function subSecond() {
-		return $this->carbon->subSecond();
+		return static::createFromCarbon($this->carbon->subSecond());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function subSeconds($value) {
-		return $this->carbon->subSeconds($value);
+		return static::createFromCarbon($this->carbon->subSeconds($value));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function diffInYears(DatetimeInterface $dt=null, $abs=true) {
-		return $this->carbon->diffInYears($dt->getCarbon(), $abs);
+		return static::createFromCarbon($this->carbon->diffInYears($dt->getCarbon(), $abs));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function diffInMonths(DatetimeInterface $dt=null, $abs=true) {
-		return $this->carbon->diffInMonths($dt->getCarbon(), $abs);
+		return static::createFromCarbon($this->carbon->diffInMonths($dt->getCarbon(), $abs));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function diffInWeeks(DatetimeInterface $dt=null, $abs=true) {
-		return $this->carbon->diffInWeeks($dt->getCarbon(), $abs);
+		return static::createFromCarbon($this->carbon->diffInWeeks($dt->getCarbon(), $abs));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function diffInDays(DatetimeInterface $dt=null, $abs=true) {
-		return $this->carbon->diffInDays($dt->getCarbon(), $abs);
+		return static::createFromCarbon($this->carbon->diffInDays($dt->getCarbon(), $abs));
 	}
 
 	 /**
 	 * {@inheritDoc}
 	 */
 	 public function diffInDaysFiltered(Closure $callback, DatetimeInterface $dt=null, $abs=true) {
-		return $this->carbon->diffInDaysFiltered($callback, $dt->getCarbon(), $abs);
+		return static::createFromCarbon($this->carbon->diffInDaysFiltered($callback, $dt->getCarbon(), $abs));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	 public function diffInWeekdays(DatetimeInterface $dt=null, $abs=true) {
-		return $this->carbon->diffInWeekdays($dt->getCarbon(), $abs);
+		return static::createFromCarbon($this->carbon->diffInWeekdays($dt->getCarbon(), $abs));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	 public function diffInWeekendDays(DatetimeInterface $dt=null, $abs=true) {
-		return $this->carbon->diffInWeekendDays($dt->getCarbon(), $abs);
+		return static::createFromCarbon($this->carbon->diffInWeekendDays($dt->getCarbon(), $abs));
 	}
 
 	/**
 	 */
 	public function diffInHours(DatetimeInterface $dt=null, $abs=true) {
-		return $this->carbon->diffInHours($dt->getCarbon(), $abs);
+		return static::createFromCarbon($this->carbon->diffInHours($dt->getCarbon(), $abs));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function diffInMinutes(DatetimeInterface $dt=null, $abs=true) {
-		return $this->carbon->diffInMinutes($dt->getCarbon(), $abs);
+		return static::createFromCarbon($this->carbon->diffInMinutes($dt->getCarbon(), $abs));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function diffInSeconds(DatetimeInterface $dt=null, $abs=true) {
-		return $this->carbon->diffInSeconds($dt->getCarbon(), $abs);
+		return static::createFromCarbon($this->carbon->diffInSeconds($dt->getCarbon(), $abs));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function diffForHumans(DatetimeInterface $other=null) {
-		return $this->carbon->diffForHumans($other);
+		return static::createFromCarbon($this->carbon->diffForHumans($other));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function startOfDay() {
-		return $this->carbon->startOfDay();
+		return static::createFromCarbon($this->carbon->startOfDay());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function endOfDay() {
-		return $this->carbon->endOfDay();
+		return static::createFromCarbon($this->carbon->endOfDay());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function startOfMonth() {
-		return $this->carbon->startOfMonth();
+		return static::createFromCarbon($this->carbon->startOfMonth());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function endOfMonth() {
-		return $this->carbon->endOfMonth();
+		return static::createFromCarbon($this->carbon->endOfMonth());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function startOfYear() {
-		return $this->carbon->startOfYear();
+		return static::createFromCarbon($this->carbon->startOfYear());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	 public function endOfYear() {
-		return $this->carbon->endOfYear();
+		return static::createFromCarbon($this->carbon->endOfYear());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	 public function startOfDecade() {
-		return $this->carbon->startOfDecade();
+		return static::createFromCarbon($this->carbon->startOfDecade());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	 public function endOfDecade() {
-		return $this->carbon->endOfDecade();
+		return static::createFromCarbon($this->carbon->endOfDecade());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	 public function startOfCentury() {
-		return $this->carbon->startOfCentury();
+		return static::createFromCarbon($this->carbon->startOfCentury());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	 public function endOfCentury() {
-		return $this->carbon->endOfCentury();
+		return static::createFromCarbon($this->carbon->endOfCentury());
 	}
 
 	/**
 	 */
 	 public function startOfWeek() {
-		return $this->carbon->startOfWeek();
+		return static::createFromCarbon($this->carbon->startOfWeek());
 	}
 
 	 /**
 	 * {@inheritDoc}
 	 */
 	 public function endOfWeek() {
-		return $this->carbon->endOfWeek();
+		return static::createFromCarbon($this->carbon->endOfWeek());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function next($dayOfWeek=null) {
-		return $this->carbon->next($dayOfWeek);
+		return static::createFromCarbon($this->carbon->next($dayOfWeek));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function previous($dayOfWeek=null) {
-		return $this->carbon->previous($dayOfWeek);
+		return static::createFromCarbon($this->carbon->previous($dayOfWeek));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function firstOfMonth($dayOfWeek=null) {
-		return $this->carbon->firstOfMonth($dayOfWeek);
+		return static::createFromCarbon($this->carbon->firstOfMonth($dayOfWeek));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function lastOfMonth($dayOfWeek=null) {
-		return $this->carbon->lastOfMonth($dayOfWeek);
+		return static::createFromCarbon($this->carbon->lastOfMonth($dayOfWeek));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function nthOfMonth($nth, $dayOfWeek) {
-		return $this->carbon->nthOfMonth($nth, $dayOfWeek);
+		return static::createFromCarbon($this->carbon->nthOfMonth($nth, $dayOfWeek));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function firstOfQuarter($dayOfWeek=null) {
-		return $this->carbon->firstOfQuarter($dayOfWeek);
+		return static::createFromCarbon($this->carbon->firstOfQuarter($dayOfWeek));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function lastOfQuarter($dayOfWeek=null) {
-		return $this->carbon->lastOfQuarter($dayOfWeek);
+		return static::createFromCarbon($this->carbon->lastOfQuarter($dayOfWeek));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function nthOfQuarter($nth, $dayOfWeek) {
-		return $this->carbon->nthOfQuarter($nth, $dayOfWeek);
+		return static::createFromCarbon($this->carbon->nthOfQuarter($nth, $dayOfWeek));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function firstOfYear($dayOfWeek=null) {
-		return $this->carbon->firstOfYear($dayOfWeek);
+		return static::createFromCarbon($this->carbon->firstOfYear($dayOfWeek));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function lastOfYear($dayOfWeek=null) {
-		return $this->carbon->lastOfYear($dayOfWeek);
+		return static::createFromCarbon($this->carbon->lastOfYear($dayOfWeek));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function nthOfYear($nth, $dayOfWeek) {
-		return $this->carbon->nthOfYear($nth, $dayOfWeek);
+		return static::createFromCarbon($this->carbon->nthOfYear($nth, $dayOfWeek));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function average(DatetimeInterface $dt=null) {
-		return $this->carbon->average($dt->getCarbon());
+		return static::createFromCarbon($this->carbon->average($dt->getCarbon()));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function isBirthday(DatetimeInterface $dt) {
-		return $this->carbon->isBirthday($dt->getCarbon());
+		return static::createFromCarbon($this->carbon->isBirthday($dt->getCarbon()));
 	}
 }

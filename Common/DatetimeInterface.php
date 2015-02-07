@@ -68,7 +68,7 @@ interface DatetimeInterface {
 	 * (new Datetime('Monday next week'))->fn()
 	 *
 	 * @param string              $time
-	 * @param DateTimeZone|string $tz
+	 * @param \DateTimeZone|string $tz
 	 *
 	 * @return static
 	 */
@@ -77,7 +77,7 @@ interface DatetimeInterface {
 	/**
 	 * Get a DatetimeInterface instance for the current date and time
 	 *
-	 * @param DateTimeZone|string $tz
+	 * @param \DateTimeZone|string $tz
 	 *
 	 * @return static
 	 */
@@ -86,7 +86,7 @@ interface DatetimeInterface {
 	/**
 	 * Create a DatetimeInterface instance for today
 	 *
-	 * @param DateTimeZone|string $tz
+	 * @param \DateTimeZone|string $tz
 	 *
 	 * @return static
 	 */
@@ -95,7 +95,7 @@ interface DatetimeInterface {
 	/**
 	 * Create a DatetimeInterface instance for tomorrow
 	 *
-	 * @param DateTimeZone|string $tz
+	 * @param \DateTimeZone|string $tz
 	 *
 	 * @return static
 	 */
@@ -104,7 +104,7 @@ interface DatetimeInterface {
 	/**
 	 * Create a DatetimeInterface instance for yesterday
 	 *
-	 * @param DateTimeZone|string $tz
+	 * @param \DateTimeZone|string $tz
 	 *
 	 * @return static
 	 */
@@ -141,7 +141,7 @@ interface DatetimeInterface {
 	 * @param integer             $hour
 	 * @param integer             $minute
 	 * @param integer             $second
-	 * @param DateTimeZone|string $tz
+	 * @param \DateTimeZone|string $tz
 	 *
 	 * @return static
 	 */
@@ -153,7 +153,7 @@ interface DatetimeInterface {
 	 * @param integer             $year
 	 * @param integer             $month
 	 * @param integer             $day
-	 * @param DateTimeZone|string $tz
+	 * @param \DateTimeZone|string $tz
 	 *
 	 * @return static
 	 */
@@ -165,7 +165,7 @@ interface DatetimeInterface {
 	 * @param integer             $hour
 	 * @param integer             $minute
 	 * @param integer             $second
-	 * @param DateTimeZone|string $tz
+	 * @param \DateTimeZone|string $tz
 	 *
 	 * @return static
 	 */
@@ -176,7 +176,7 @@ interface DatetimeInterface {
 	 *
 	 * @param string              $format
 	 * @param string              $time
-	 * @param DateTimeZone|string $tz
+	 * @param \DateTimeZone|string $tz
 	 *
 	 * @return static
 	 *
@@ -188,7 +188,7 @@ interface DatetimeInterface {
 	 * Create a DatetimeInterface instance from a timestamp
 	 *
 	 * @param integer             $timestamp
-	 * @param DateTimeZone|string $tz
+	 * @param \DateTimeZone|string $tz
 	 *
 	 * @return static
 	 */

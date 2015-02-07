@@ -186,7 +186,6 @@ class GenerateCommand extends \Asgard\Console\Command {
 					if($bundle['tests']) {
 						try {
 							$actionRoute = $container['resolver']->getRouteFor([$class, 'index'])->getRoute();
-							$actionRoute = $actionRoute;
 						} catch(\Exception $e) {
 							continue;
 						}

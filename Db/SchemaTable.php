@@ -43,7 +43,7 @@ class SchemaTable {
 		if(isset($params['type']))
 			$params['type'] = \Doctrine\DBAL\Types\Type::getType($params['type']);
 		if(isset($params['name'])) {
-			$this->renamedColumns[$name] = $params['name'];
+			$this->renamedColumns[$params['name']] = $this->table->getColumn($name);
 			unset($params['name']);
 		}
 		return $this->table->changeColumn($name, $params);

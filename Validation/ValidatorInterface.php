@@ -45,6 +45,13 @@ interface ValidatorInterface {
 	public function attribute($attribute, $rules=null);
 
 	/**
+	 * Set attributes rules.
+	 * @param  array  $attributes
+	 * @return ValidatorInterface       $this
+	 */
+	public function attributes(array $attributes);
+
+	/**
 	 * Set multiple rules.
 	 * @param  array   $rules
 	 * @param  boolean $each
@@ -114,7 +121,7 @@ interface ValidatorInterface {
 	 * Get an instance of a rule.
 	 * @param  string|callable|Rule|Validator $rule    rule name
 	 * @param  array                          $params
-	 * @return Rule
+	 * @return Rule|Validator
 	 */
 	public function getRule($rule, array $params);
 
@@ -201,8 +208,8 @@ interface ValidatorInterface {
 
 	/**
 	 * Format parameters before passing them to the message.
-	 * @param  array        $formatParameters
-	 * @return ValidatorInterface    $this
+	 * @param  callable           $formatParameters
+	 * @return ValidatorInterface $this
 	 */
 	public function formatParameters($formatParameters);
 

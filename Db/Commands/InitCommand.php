@@ -85,8 +85,9 @@ class InitCommand extends \Asgard\Console\Command {
 				}
 			}
 			else {
-					$this->db->getSchema()->getSchemaManager()->createDatabase($name);
-					$this->success('Database created.');
+				$db = \Asgard\Db\DB($config);
+				$db->getSchema()->getSchemaManager()->createDatabase($name);
+				$this->info('Database created.');
 			}
 		} catch(\Exception $e) {
 			$this->comment('Database could not be created.');

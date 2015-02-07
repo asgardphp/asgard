@@ -14,11 +14,11 @@ class CallbackWidget extends \Asgard\Form\Widget {
 
 	/**
 	 * Constructor.
-	 * @param callable      $cb
-	 * @param string        $name
-	 * @param mixed         $value
-	 * @param array         $options
-	 * @param FormInterface $form
+	 * @param callable                   $cb
+	 * @param string                     $name
+	 * @param mixed                      $value
+	 * @param array                      $options
+	 * @param \Asgard\Form\FormInterface $form
 	 */
 	public function __construct(callable $cb, $name, $value=null, array $options=[], $form=null) {
 		parent::__construct($name, $value, $options, $form);
