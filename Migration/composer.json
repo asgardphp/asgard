@@ -15,6 +15,7 @@
         "asgard/db": "0.*"
     },
     "require-dev": {
+        "doctrine/dbal": "2.*",
         "asgard/file": "0.*"
     },
     "minimum-stability": "dev",
