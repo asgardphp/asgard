@@ -10,7 +10,6 @@ class ORMTest extends \PHPUnit_Framework_TestCase {
 		]);
 		$em = new \Asgard\Entity\EntityManager;
 		$dataMapper = new \Asgard\Orm\DataMapper($db, $em);
-		$schema = $db->getSchema();
 		(new \Asgard\Orm\ORMMigrations($dataMapper))->autoMigrate([
 			$em->get('Asgard\Orm\Tests\Fixtures\ORM\A'),
 			$em->get('Asgard\Orm\Tests\Fixtures\ORM\B'),
