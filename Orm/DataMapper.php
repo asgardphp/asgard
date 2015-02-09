@@ -369,45 +369,10 @@ class DataMapper implements DataMapperInterface {
 			$rel = $this->relation($entity->getDefinition(), $relation);
 
 			$type = $rel->type();
-			if($type !== 'belongsTo') {
-				if($rel->isPolymorphic()) {
-
-					if($type == 'hasOne') {
-						#todo comment trouver l'ancien entity?
-						// $reverse_rel = $rel->reverse();
-						// $relation_entity = $rel->get('entity');
-						// $link = $reverse_rel->getLink();
-						
-						// $this->orm($relation_entity)->where([$link => $entity->id])->getDAL()->update([$link => 0]);
-						// $this->orm($relation_entity)->where(['id' => $entity->data['properties'][$relation]->id])->getDAL()->update([$link => $entity->id]);
-					}
-					elseif($rel->get('many'))
-						$this->related($entity, $relation)->sync($entity->data['properties'][$relation]->all());
-				}
-				else {
-					$reverse_rel = $rel->reverse();
-					$relation_entity = $rel->get('entity');
-					$link = $reverse_rel->getLink();
-
-					if($reverse_rel->isPolymorphic()) {
-						if($type == 'hasOne') {
-							$linkType = $reverse_rel->getLinkType();
-							$this->orm($relation_entity)->where([$link => $entity->id, $linkType => get_class($entity)])->getDAL()->update([$link => null, $linkType => null]);
-							$this->orm($relation_entity)->where(['id' => $entity->data['properties'][$relation]->id])->getDAL()->update([$link => $entity->id, $linkType => get_class($entity)]);
-						}
-						elseif($rel->get('many'))
-							$this->related($entity, $relation)->sync($entity->data['properties'][$relation]->all());
-					}
-					else {
-						if($type == 'hasOne') {
-							$this->orm($relation_entity)->where([$link => $entity->id])->getDAL()->update([$link => 0]);
-							$this->orm($relation_entity)->where(['id' => $entity->data['properties'][$relation]->id])->getDAL()->update([$link => $entity->id]);
-						}
-						elseif($rel->get('many'))
-							$this->related($entity, $relation)->sync($entity->data['properties'][$relation]->all());
-					}
-				}
-			}
+			if($rel->get('many'))
+				$this->related($entity, $relation)->sync($entity->data['properties'][$relation]->all());
+			elseif(!$rel->reverse()->get('many'))
+				$this->related($entity, $relation)->sync($entity->data['properties'][$relation]);
 		}
 
 		return $entity;
@@ -419,6 +384,7 @@ class DataMapper implements DataMapperInterface {
 	public function related(\Asgard\Entity\Entity $entity, $name) {
 		$rel = $this->relation($entity->getDefinition(), $name);
 
+				return $this->getCollectionOrmFactory()->create($entity, $name, $this, $this->locale, $this->prefix);
 		switch($rel->type()) {
 			case 'hasOne':
 			case 'belongsTo':
@@ -463,10 +429,15 @@ class DataMapper implements DataMapperInterface {
 	public function getRelated(\Asgard\Entity\Entity $entity, $name) {
 		$orm = $this->related($entity, $name);
 		$rel = $this->relation($entity->getDefinition(), $name);
+		// d($orm);
+		// try {
 		if($rel->get('many'))
 			return $orm->get();
 		else
 			return $orm->first();
+	// }catch(\Exception $e){
+	// 	d($orm);
+	// }
 	}
 
 	/**

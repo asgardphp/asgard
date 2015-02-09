@@ -14,6 +14,7 @@ class BrowserTest extends \PHPUnit_Framework_TestCase {
 			$schema = $db->getSchema();
 			$this->mm = new \Asgard\Migration\MigrationManager(__DIR__.'/migrations/', $db, $schema);
 		}
+		$this->mm->getTracker()->createTable();
 		$this->db->dal()->from('_migrations')->delete();
 		return $this->mm;
 	}

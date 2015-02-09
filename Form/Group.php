@@ -278,8 +278,11 @@ class Group implements GroupInterface {
 		$res = [];
 
 		foreach($this->fields as $field) {
-			if($field instanceof Field)
-				$res[$field->shortName()] = $field->value();
+			if($field instanceof Field) {
+				if(!$field->getOption('hidden')
+					|| ($field->value() !== null && $field->value() !== ''))
+					$res[$field->shortName()] = $field->value();
+			}
 			elseif($field instanceof self)
 				$res[$field->name()] = $field->data();
 		}

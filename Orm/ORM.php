@@ -163,13 +163,6 @@ class ORM implements ORMInterface {
 		if(is_string($relation))
 			$relation = $this->dataMapper->relation($this->definition, $relation);
 
-		if($relation->isPolymorphic()) {
-			if($relation->type() == 'hasMany')
-				$this->where($this->dataMapper->getTable($entity->getDefinition()).'.'.$relation->getLinkType(), $entity->getDefinition()->getClass());
-			if($relation->type() == 'HMABT')
-				$this->where($relation->getAssociationTable().'.'.$relation->getLinkType(), $entity->getDefinition()->getClass());
-		}
-
 		$alias = $relation->getName();
 		if($alias == $this->getTable()) #todo conflits entre jointures, et conditions
 			$alias = $alias.'2';
@@ -390,25 +383,44 @@ class ORM implements ORMInterface {
 				$table = $this->dataMapper->getTable($relationDefinition);
 				$dal->innerjoin([
 					$table.' '.$alias => $this->processConditions([
-						$ref_table.'.'.$link.' = '.$alias.'.id'
+						$alias.'.id = '.$ref_table.'.'.$link
 					])
 				]);
 				break;
 			case 'hasMany':
 				$link = $relation->getLink();
 				$table = $this->dataMapper->getTable($relationDefinition);
-				$dal->innerjoin([
-					$table.' '.$alias => $this->processConditions([
-						$ref_table.'.id'.' = '.$alias.'.'.$link
-					])
-				]);
+				if($relation->isPolymorphic()) {
+					$dal->innerjoin([
+						$table.' '.$alias => $this->processConditions([
+							$alias.'.'.$link.' = '.$ref_table.'.id',
+						])
+					]);
+				}
+				else {
+					$dal->innerjoin([
+						$table.' '.$alias => $this->processConditions([
+							$alias.'.'.$link.' = '.$ref_table.'.id',
+						])
+					]);
+				}
 				break;
 			case 'HMABT':
-				$dal->innerjoin([
-					$relation->getAssociationTable($this->prefix) => $this->processConditions([
-						$relation->getAssociationTable($this->prefix).'.'.$relation->getLinkA().' = '.$ref_table.'.id',
-					])
-				]);
+				if($relation->isPolymorphic()) {
+					$dal->innerjoin([
+						$relation->getAssociationTable($this->prefix) => $this->processConditions([
+							$relation->getAssociationTable($this->prefix).'.'.$relation->getLinkA().' = '.$ref_table.'.id',
+							$relation->getAssociationTable($this->prefix).'.'.$relation->getLinkType() => $relation->getTargetDefinition()->getClass(),
+						])
+					]);
+				}
+				else {
+					$dal->innerjoin([
+						$relation->getAssociationTable($this->prefix) => $this->processConditions([
+							$relation->getAssociationTable($this->prefix).'.'.$relation->getLinkA().' = '.$ref_table.'.id',
+						])
+					]);
+				}
 				$dal->innerjoin([
 					$this->dataMapper->getTable($relationDefinition).' '.$alias => $this->processConditions([
 						$relation->getAssociationTable($this->prefix).'.'.$relation->getLinkB().' = '.$alias.'.id',
@@ -586,9 +598,8 @@ class ORM implements ORMInterface {
 		$i18nTable = $this->getTranslationTable();
 		preg_match_all('/(?<![\.a-z0-9-_`\(\)])([a-z0-9-_]+)(?![\.a-z0-9-_`\(\)])/', $sql, $matches);
 		foreach($matches[0] as $property) {
-			if(!$this->definition->hasProperty($property)) #todo problem with entity_id?
-				continue;
-			$table = $this->definition->property($property)->get('i18n') ? $i18nTable:$table;
+			if($this->definition->hasProperty($property)) #todo problem with entity_id?
+				$table = $this->definition->property($property)->get('i18n') ? $i18nTable:$table;
 			$sql = preg_replace('/(?<![\.a-z0-9-_`\(\)])('.$property.')(?![\.a-z0-9-_`\(\)])/', $table.'.$1', $sql);
 		}
 
@@ -605,7 +616,10 @@ class ORM implements ORMInterface {
 	protected function processConditions(array $conditions) {
 		foreach($conditions as $k=>$v) {
 			if(!is_array($v)) {
-				$newK = $this->replaceTable($k);
+				if(is_numeric($k))
+					$newK = $k;
+				else
+					$newK = $this->replaceTable($k);
 				$conditions[$newK] = $v;
 				if($newK != $k)
 					unset($conditions[$k]);

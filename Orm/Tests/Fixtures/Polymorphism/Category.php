@@ -8,7 +8,7 @@ class Category extends \Asgard\Entity\Entity {
 			'articles' => [
 				'type'          => 'entity',
 				'entities'   => ['Asgard\Orm\Tests\Fixtures\Polymorphism\Article3'],
-				// 'as'            => 'categorisable',
+				'as'            => 'categorisable',
 				'many'          => true,
 			]
 		];

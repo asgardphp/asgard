@@ -44,26 +44,28 @@ class DB implements DBInterface {
 
 	/**
 	 * Get the PDO instance.
+	 * @param boolean $useDatabase Connect to database.
 	 * @return \PDO
 	 */
-	public function getPDO() {
+	public function getPDO($useDatabase=true) {
 		if(!$this->pdo) {
 			$config = $this->config;
 			$driver = $config['driver'];
 			$user = isset($config['user']) ? $config['user']:'root';
 			$password = isset($config['password']) ? $config['password']:'';
+			$database = isset($config['database']) && $useDatabase ? $config['database']:null;
 
 			switch($driver) {
 				case 'pgsql':
-					$parameters = 'pgsql:host='.$config['host'].(isset($config['port']) ? ' port='.$config['port']:'').(isset($config['database']) ? ' dbname='.$config['database']:'');
+					$parameters = 'pgsql:host='.$config['host'].(isset($config['port']) ? ' port='.$config['port']:'').($database ? ' dbname='.$database:'');
 					$this->pdo = new \PDO($parameters, $user, $password);
 					break;
 				case 'mssql':
-					$parameters = 'mssql:host='.$config['host'].(isset($config['database']) ? ';dbname='.$config['database']:'');
+					$parameters = 'mssql:host='.$config['host'].($database ? ';dbname='.$database:'');
 					$this->pdo = new \PDO($parameters, $user, $password);
 					break;
 				case 'sqlite':
-					$this->pdo = new \PDO('sqlite:'.$config['database']);
+					$this->pdo = new \PDO('sqlite:'.$database);
 		
 					$this->pdo->sqliteCreateFunction('concat', function() {
 						return implode('', func_get_args());
@@ -75,7 +77,7 @@ class DB implements DBInterface {
 
 					break;
 				default:
-					$parameters = 'mysql:host='.$config['host'].(isset($config['port']) ? ';port='.$config['port']:'').(isset($config['database']) ? ';dbname='.$config['database']:'');
+					$parameters = 'mysql:host='.$config['host'].(isset($config['port']) ? ';port='.$config['port']:'').($database ? ';dbname='.$database:'');
 					$this->pdo = new \PDO($parameters, $user, $password, [\PDO::MYSQL_ATTR_FOUND_ROWS => true, \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8']);
 			}
 			$this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);

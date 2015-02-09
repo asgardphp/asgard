@@ -49,6 +49,7 @@ class CreateCommand extends \Asgard\Console\Command {
 			}
 		}
 		else {
+			$this->db->getPDO(false);
 			$this->db->getSchema()->getSchemaManager()->createDatabase($database);
 			$this->info('Database created.');
 		}

@@ -66,9 +66,10 @@ class CollectionORM extends ORM implements CollectionORMInterface {
 		}
 
 		switch($this->relation->type()) {
+			case 'hasOne':
 			case 'hasMany':
 				$relationDefinition = $this->relation->getTargetDefinition();
-				$link = $this->relation->getLink();
+				$link = $this->relation->reverse()->getLink();
 				$dal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->dataMapper->getTable($relationDefinition));
 				if($this->relation->reverse()->isPolymorphic()) {
 					$linkType = $this->relation->reverse()->getLinkType();
@@ -113,7 +114,7 @@ class CollectionORM extends ORM implements CollectionORMInterface {
 				}
 				break;
 			default:
-				throw new \Exception('Collection only works with hasMany and HMABT');
+				throw new \Exception('Collection should only be used for hasMany and HMABT relations');
 		}
 
 		return $this;

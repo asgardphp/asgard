@@ -7,10 +7,10 @@ namespace Asgard\Http\Utils;
  */
 class HTML implements HTMLInterface {
 	/**
-	 * HTTP Request.
-	 * @var \Asgard\Http\Request
+	 * HTTP Kernel.
+	 * @var \Asgard\Http\HttpKernel
 	 */
-	protected $request;
+	protected $httpKernel;
 	/**
 	 * JS files.
 	 * @var array
@@ -59,10 +59,10 @@ class HTML implements HTMLInterface {
 
 	/**
 	 * Constructor.
-	 * @param \Asgard\Http\Request $request
+	 * @param \Asgard\Http\HttpKernel $httpKernel
 	 */
-	public function __construct($request) {
-		$this->request = $request;
+	public function __construct(\Asgard\Http\HttpKernel $httpKernel) {
+		$this->httpKernel = $httpKernel;
 	}
 
 	/**
@@ -191,7 +191,7 @@ class HTML implements HTMLInterface {
 			if(preg_match('/http:\/\//', $js))
 				echo '<script type="text/javascript" src="'.$js.'"></script>'."\n";
 			else
-				echo '<script type="text/javascript" src="'.$this->request->url->to($js).'"></script>'."\n";
+				echo '<script type="text/javascript" src="'.$this->getRequest()->url->to($js).'"></script>'."\n";
 		}
 	}
 
@@ -203,7 +203,7 @@ class HTML implements HTMLInterface {
 			if(preg_match('/http:\/\//', $css))
 				echo '<link rel="stylesheet" href="'.$css.'"/>'."\n";
 			else
-				echo '<link rel="stylesheet" href="'.$this->request->url->to($css).'"/>'."\n";
+				echo '<link rel="stylesheet" href="'.$this->getRequest()->url->to($css).'"/>'."\n";
 		}
 	}
 
@@ -281,5 +281,9 @@ class HTML implements HTMLInterface {
 		if(!isset($this->options[$name]))
 			return;
 		return $this->options[$name];
+	}
+
+	public function getRequest() {
+		return $this->httpKernel->getRequest();
 	}
 }

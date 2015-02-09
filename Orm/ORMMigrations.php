@@ -148,7 +148,6 @@ class ORMMigrations {
 					$col['notnull'] = false;
 				if(!isset($col['autoincrement']))
 					$col['autoincrement'] = false;
-				$col['position'] = $prop->getPosition('position');
 
 				if($prop->get('i18n')) {
 					$table_name = $dataMapper->getTranslationTable($definition);
@@ -179,7 +178,6 @@ class ORMMigrations {
 			if(isset($definition->get('orm')['indexes'])) {
 				foreach($definition->get('orm')['indexes'] as $index) {
 					$index['type'] = strtoupper($index['type']);
-					#todo index col length : not possible with doctrine?
 					if($index['type'] == 'PRIMARY')
 						$table->setPrimaryKey($index['columns'], 'PRIMARY');
 					else {
@@ -191,7 +189,10 @@ class ORMMigrations {
 							$table->addUniqueIndex($index['columns'], $indexName);
 						elseif($index['type'] == 'INDEX')
 							$table->addIndex($index['columns'], $indexName);
-						#todo fulltext
+						elseif($index['type'] == 'FULLTEXT') {
+							$table->addIndex($index['columns'], $indexName);
+							$table->getIndex($indexName)->addFlag('fulltext');
+						}
 					}
 				}
 			}

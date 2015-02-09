@@ -59,6 +59,8 @@ class PolymorphicCollectionORM implements CollectionORMInterface {
 	 * {@inheritDoc}
 	 */
 	public function sync($entities, $force=false) {
+		if(!is_array($entities))
+			$entities = [$entities];
 		$perclass = [];
 
 		foreach($entities as $entity)
@@ -142,7 +144,18 @@ class PolymorphicCollectionORM implements CollectionORMInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function first() { throw new \Exception('Not implemented'); }
+	public function first() {
+		$classes = [];
+
+		$classes = $this->relation->get('entities');
+
+		foreach($classes as $class) {
+			$targetDefinition = $this->parent->getDefinition()->getEntityManager()->get($class);
+			$cORM = new CollectionORM($this->parent, $this->relation->getName(), $this->dataMapper, $this->locale, $this->prefix, $this->paginatorFactory, $targetDefinition);
+			if($entity = $cORM->first())
+				return $entity;
+		}
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -161,16 +174,7 @@ class PolymorphicCollectionORM implements CollectionORMInterface {
 		$entities = [];
 		$classes = [];
 
-		if($this->relation->type() == 'HMABT') {
-			$dal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->relation->getAssociationTable());
-			$types = $dal->select('DISTINCT '.$this->relation->getLinkType().' as class')->get();
-			foreach($types as $type)
-				$classes[] = $type['class'];
-		}
-		elseif($this->relation->type() == 'hasMany')
-			$classes = $this->relation->get('entities');
-		else
-			throw new \Exception('Wrong relation type.');
+		$classes = $this->relation->get('entities');
 
 		foreach($classes as $class) {
 			$targetDefinition = $this->parent->getDefinition()->getEntityManager()->get($class);

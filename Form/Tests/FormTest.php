@@ -163,6 +163,16 @@ class FormTest extends \PHPUnit_Framework_TestCase {
 		$form->save();
 	}
 
+	public function testHiddenInput() {
+		$request = new \Asgard\Http\Request;
+		$request->setMethod('post')->post->set('password', '');
+
+		$form = new \Asgard\Form\Form('test', [], $request);
+		$form['password'] = new \Asgard\Form\Fields\TextField(['hidden'=>true]);
+
+		$this->assertEquals([], $form->data());
+	}
+
 	public function testHTMLHelper() {
 		$this->assertEquals('<test a="b" c="d">bla</test>', \Asgard\Form\HTMLHelper::tag('test', ['a'=>'b', 'c'=>'d'], 'bla'));
 		$this->assertEquals('<test a="b" c="d">', \Asgard\Form\HTMLHelper::tag('test', ['a'=>'b', 'c'=>'d']));

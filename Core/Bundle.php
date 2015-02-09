@@ -125,7 +125,7 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		}, false);
 		$container->setParentClass('html', 'Asgard\Http\Utils\HTMLInterface');
 		$container->register('html', function($container) {
-			return new \Asgard\Http\Utils\HTML($container['httpKernel']->getRequest());
+			return new \Asgard\Http\Utils\HTML($container['httpKernel']);
 		});
 		$container->setParentClass('flash', 'Asgard\Http\Utils\Flash');
 		$container->register('flash', function($container) {

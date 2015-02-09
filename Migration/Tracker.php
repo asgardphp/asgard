@@ -24,9 +24,11 @@ class Tracker {
 	public function __construct($dir, \Asgard\Db\DBInterface $db) {
 		$this->dir = $dir;
 		$this->db = $db;
+	}
 
-		if(!$db->getSchema()->hasTable('_migrations')) {
-			$db->getSchema()->create('_migrations', function($table) {
+	public function createTable() {
+		if(!$this->db->getSchema()->hasTable('_migrations')) {
+			$this->db->getSchema()->create('_migrations', function($table) {
 				$table->addColumn('name', 'string', [
 					'length' => 255,
 				]);
@@ -44,6 +46,8 @@ class Tracker {
 		if(!file_exists($this->dir.'/migrations.json'))
 			return [];
 		$migrations = json_decode(file_get_contents($this->dir.'/migrations.json'), true);
+
+		$this->createTable();
 
 		$tracking = [];
 		foreach($this->db->dal()->from('_migrations')->get() as $r)
@@ -161,6 +165,7 @@ class Tracker {
 	 * @param  string $migrationName
 	 */
 	public function unmigrate($migrationName) {
+		$this->createTable();
 		$this->db->dal()->from('_migrations')->where('name', $migrationName)->delete();
 	}
 
@@ -169,6 +174,7 @@ class Tracker {
 	 * @param  string $migrationName
 	 */
 	public function migrate($migrationName) {
+		$this->createTable();
 		$this->db->dal()->into('_migrations')->insert(['name'=>$migrationName, 'migrated'=>date('Y-m-d H:i:s')]);
 	}
 

@@ -17,6 +17,11 @@ class WidgetManager implements WidgetManagerInterface {
 	 */
 	protected $widgets = [];
 	/**
+	 * Widgets registry.
+	 * @var array
+	 */
+	protected $factories = [];
+	/**
 	 * Namespaces registry.
 	 * @var array
 	 */
@@ -46,6 +51,10 @@ class WidgetManager implements WidgetManagerInterface {
 	 */
 	public function getWidget($widget, $name, $value, array $options, FormInterface $form) {
 		if(is_string($widget)) {
+			if(isset($this->factories[$widget])) {
+				$factory = $this->factories[$widget];
+				return $factory->create($name, $value, $options, $form);
+			}
 			if(isset($this->widgets[$widget]))
 				$widget = $this->widgets[$widget];
 			else {
@@ -81,6 +90,11 @@ class WidgetManager implements WidgetManagerInterface {
 	 */
 	public function addNamespace($namespace) {
 		$this->namespaces[] = trim($namespace, '\\');
+		return $this;
+	}
+
+	public function setWidgetFactory($name, \Asgard\Form\WidgetFactoryInterface $widgetFactory) {
+		$this->factories[$name] = $widgetFactory;
 		return $this;
 	}
 }

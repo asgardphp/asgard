@@ -33,14 +33,14 @@ class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 	 * @param \Asgard\Entity\Entity  $entity
 	 * @param array                  $options
 	 * @param \Asgard\Http\Request   $request
-	 * @param entityFieldSolverInterface     $entityFieldSolver
+	 * @param entityFieldSolverInterface      $entityFieldSolver
 	 * @param \Asgard\Orm\DataMapperInterface $dataMapper
 	 */
 	public function __construct(
 		\Asgard\Entity\Entity  $entity,
 		array                  $options = [],
 		\Asgard\Http\Request   $request = null,
-		EntityFieldSolverInterface     $entityFieldSolver = null,
+		EntityFieldSolverInterface      $entityFieldSolver  = null,
 		\Asgard\Orm\DataMapperInterface $dataMapper         = null
 	) {
 		$this->entityFieldSolver = $entityFieldSolver;
@@ -233,11 +233,14 @@ class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 		$options = [];
 		$options['form'] = $this;
 
-		if(isset($property->get('form')['validation'])) {
-			$options['validation'] = $property->get('form')['validation'];
-			if(isset($property->get('form')['messages']))
-				$options['messages'] = $property->get('form')['messages'];
+		if($property->get('form.validation')) {
+			$options['validation'] = $property->get('form.validation');
+			if($property->get('form.messages'))
+				$options['messages'] = $property->get('form.messages');
 		}
+
+		if($property->get('form.hidden'))
+			$options['hidden'] = true;
 
 		return $options;
 	}
@@ -263,12 +266,6 @@ class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 	 */
 	protected function myErrors() {
 		$data = $this->data();
-		foreach($data as $k=>$v) {
-			if(!$this->entity->getDefinition()->hasProperty($k) ||
-				$this->entity->getDefinition()->property($k)->get('form.hidden')
-				&& ($v === null || $v === ''))
-				unset($data[$k]);
-		}
 		$data = array_filter($data, function($v) {
 			if($v instanceof \Asgard\Http\HttpFile && $v->error())
 				return false;

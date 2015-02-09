@@ -132,7 +132,6 @@ class PolymorphismTest extends \PHPUnit_Framework_TestCase {
 		$author = $dm->load('Asgard\Orm\Tests\Fixtures\Polymorphism\Author', 1);
 		$this->assertEquals('foo', $author->name);
 		$this->assertEquals('bar', $dm->getRelated($author, 'article')->title);
-
 	}
 
 	public function testHMABT() {

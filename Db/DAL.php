@@ -1005,10 +1005,10 @@ class DAL {
 			if(is_array($v))
 				$v = $this->replaceTableInConditions($v, $oldTable, $newTable);
 			else
-				$v = str_replace($oldTable.'.', $newTable.'.', $v);
+				$v = preg_replace('/(?<![a-zA-Z0-9_])'.$oldTable.'\./', $newTable.'.', $v);
 
 			if(is_string($k)) {
-				$newK = str_replace($oldTable.'.', $newTable.'.', $k);
+				$newK = preg_replace('/(?<![a-zA-Z0-9_])'.$oldTable.'\./', $newTable.'.', $k);
 				unset($conditions[$k]);
 				$conditions[$newK] = $v;
 			}
@@ -1025,10 +1025,10 @@ class DAL {
 	 * @api
 	 */
 	public function replaceTable($oldTable, $newTable) {
-		#todo careful that the name is not just the suffix of another one
 		$this->where = $this->replaceTableInConditions($this->where, $oldTable, $newTable);
 		$this->joins = $this->replaceTableInConditions($this->joins, $oldTable, $newTable);
-		$this->groupBy = str_replace($oldTable.'.', $newTable.'.', $this->groupBy);
+		#using regex to replace table names not preceded by one of the following character
+		$this->groupBy = preg_replace('/(?<![a-zA-Z0-9_])'.$oldTable.'\./', $newTable.'.', $this->groupBy);
 	}
 
 	/**
