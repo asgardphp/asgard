@@ -6,12 +6,8 @@ class ORMTest extends \PHPUnit_Framework_TestCase {
 		// return;
 		$em = new \Asgard\Entity\EntityManager;
 		$dataMapper = new \Asgard\Orm\DataMapper(new \Asgard\Db\DB([
-			// 'driver' => 'sqlite',
-			// 'database' => ':memory:',
-			'database' => 'asgard_test',
-			'user' => 'root',
-			'password' => '',
-			'host' => 'localhost',
+			'driver' => 'sqlite',
+			'database' => ':memory:',
 		]), $em);
 		(new \Asgard\Orm\ORMMigrations($dataMapper))->autoMigrate([
 			$em->get('Asgard\Orm\Tests\Fixtures\NamesConflict\A'),
