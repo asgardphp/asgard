@@ -23,6 +23,7 @@ class ExecuteCommand extends \Asgard\Console\Command {
 	 * {@inheritDoc}
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
+		$container = $this->getContainer();
 		$cmd = $this->input->getArgument('cmd');
 		try {
 			if(preg_match('/^dump /', $cmd))
