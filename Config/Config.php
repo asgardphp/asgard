@@ -12,9 +12,9 @@ class Config extends \Asgard\Common\Bag implements ConfigInterface {
 	public function loadDir($dir, $env=null) {
 		$files = glob($dir.'/*.yml');
 		usort($files, function($a, $b) {
-			if(strpos($a, '.locale.') !== false)
+			if(strpos($a, '.local.') !== false)
 				return 1;
-			if(strpos($b, '.locale.') !== false)
+			if(strpos($b, '.local.') !== false)
 				return -1;
 		});
 		foreach($files as $filename) {
