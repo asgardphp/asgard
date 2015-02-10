@@ -17,7 +17,6 @@ class DynamicGroup extends Group {
 	 */
 	protected $default_render;
 
-	#todo name?
 	/**
 	 * Constructor.
 	 * @param callable $cb

@@ -2,11 +2,55 @@
 namespace Asgard\Orm\Tests;
 
 class ORMTest extends \PHPUnit_Framework_TestCase {
+	public function testNamesConflict() {
+		// return;
+		$em = new \Asgard\Entity\EntityManager;
+		$dataMapper = new \Asgard\Orm\DataMapper(new \Asgard\Db\DB([
+			// 'driver' => 'sqlite',
+			// 'database' => ':memory:',
+			'database' => 'asgard_test',
+			'user' => 'root',
+			'password' => '',
+			'host' => 'localhost',
+		]), $em);
+		(new \Asgard\Orm\ORMMigrations($dataMapper))->autoMigrate([
+			$em->get('Asgard\Orm\Tests\Fixtures\NamesConflict\A'),
+			$em->get('Asgard\Orm\Tests\Fixtures\NamesConflict\B'),
+			$em->get('Asgard\Orm\Tests\Fixtures\NamesConflict\C'),
+		]);
+
+		$orm = $dataMapper->orm('Asgard\Orm\Tests\Fixtures\NamesConflict\A');
+
+		$this->assertEquals(
+			'SELECT a.* FROM `a` INNER JOIN `b` `parent` ON `parent`.`id` = `a`.`parent_id` INNER JOIN `c` `parent1` ON `parent1`.`id` = `parent`.`parent_id` INNER JOIN `b` `childs` ON `childs`.`parent_id` = `parent1`.`id` INNER JOIN `a` `childs1` ON `childs1`.`parent_id` = `childs`.`id` GROUP BY `a`.`id` ORDER BY `a`.`id` DESC',
+			$orm->join([
+				'parent' => [
+					'parent' => [
+						'childs' => 'childs'
+					]
+				]
+			])->getDAL()->dbgSelect()
+		);
+
+		$orm = $dataMapper->orm('Asgard\Orm\Tests\Fixtures\NamesConflict\A');
+		$this->assertEquals(
+			'SELECT a.* FROM `a` INNER JOIN `b` `parent` ON `parent`.`id` = `a`.`parent_id` INNER JOIN `c` `parent1` ON `parent1`.`id` = `parent`.`parent_id` INNER JOIN `b` `childs` ON `childs`.`parent_id` = `parent1`.`id` INNER JOIN `a` `childs1` ON `childs1`.`parent_id` = `childs`.`id` GROUP BY `a`.`id` ORDER BY `a`.`id` DESC',
+			$orm->parent()->parent()->childs()->childs()->getDAL()->dbgSelect()
+		);
+
+		#with conditions
+		$orm = $dataMapper->orm('Asgard\Orm\Tests\Fixtures\NamesConflict\A');
+		$this->assertEquals(
+			'SELECT a.* FROM `a` INNER JOIN `b` `parent` ON `parent`.`id` = `a`.`parent_id` INNER JOIN `c` `parent1` ON `parent1`.`id` = `parent`.`parent_id` INNER JOIN `b` `childs` ON `childs`.`parent_id` = `parent1`.`id` INNER JOIN `a` `childs1` ON `childs1`.`parent_id` = `childs`.`id` WHERE `parent1`.`a`=\'b\' GROUP BY `a`.`id` ORDER BY `a`.`id` DESC',
+			$orm->parent()->parent()->where('a','b')->childs()->childs()->getDAL()->dbgSelect()
+		);
+	}
+
 	public function testHasOne() {
 		#Deps
 		$db = new \Asgard\Db\DB([
 			'driver' => 'sqlite',
-			'database' => 'test.db',
+			'database' => ':memory:',
 		]);
 		$em = new \Asgard\Entity\EntityManager;
 		$dataMapper = new \Asgard\Orm\DataMapper($db, $em);

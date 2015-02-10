@@ -118,17 +118,20 @@ class ORM implements ORMInterface {
 		$relation = $this->dataMapper->relation($this->definition, $relationName);
 		$reverseRelation = $relation->reverse();
 		$reverseRelationName = $reverseRelation->get('name');
-		if($reverseRelation->isPolymorphic())
-			$reverseRelationName .= '|'.$this->definition->getClass();
+		// if($reverseRelation->isPolymorphic())
+		// 	$reverseRelationName .= '|'.$this->definition->getClass();
 		$relation_entity = $relation->get('entity');
 
 		$table = $this->getTable();
-		$alias = $reverseRelation->getName();
+		$alias = $reverseRelationName;
+		// $alias = $this->getNewAlias($table, $this->getAliases($this->join));
+		// if($this->where)
+		// 	d($relationName, $this->where, $reverseRelationName, $table, $alias, $this->join, $this->getAliases($this->join));
 		$where = $this->updateConditions($this->where, $table, $alias);
 
 		return $this->dataMapper->orm($relation_entity)
 			->where($where)
-			->join([$reverseRelationName => $this->join]);
+			->join($reverseRelationName, $this->join);
 	}
 
 	/**
@@ -156,6 +159,14 @@ class ORM implements ORMInterface {
 		return $this->$name()->get();
 	}
 
+	protected function getNewAlias($name, array $existing) {
+		$i=1;
+		$alias = $name;
+		while(in_array($alias, $existing))
+			$alias = $name.$i++;
+		return $alias;
+	}
+
 	/**
 	 * {@inheritDoc}
 	*/
@@ -163,21 +174,95 @@ class ORM implements ORMInterface {
 		if(is_string($relation))
 			$relation = $this->dataMapper->relation($this->definition, $relation);
 
-		$alias = $relation->getName();
-		if($alias == $this->getTable()) #todo conflits entre jointures, et conditions
-			$alias = $alias.'2';
+		$relationName = $relation->getName();
+		$alias = $this->getNewAlias($relationName, $this->getAliases($this->join));
 
-		$this->join($relation->getName().' '.$alias);
+		if($alias !== $relationName)
+			$relationName .= ' '.$alias;
+
+		$this->join($relationName);
 		$this->where($alias.'.id', $entity->id);
 
 		return $this;
 	}
 
+	protected function getAliases(array $jointures) {
+		$aliases = [];
+		foreach($jointures as $name=>$subjointures) {
+			if(is_array($subjointures)) {
+				if(!is_numeric($name)) {
+					$exp = explode(' ', $name);
+					$alias = count($exp) > 1 ? $exp[1]:$exp[0];
+					$aliases[] = $alias;
+				}
+				$aliases = array_merge($aliases, $this->getAliases($subjointures));
+			}
+			else {
+				$name = $subjointures;
+				$exp = explode(' ', $name);
+				$alias = count($exp) > 1 ? $exp[1]:$exp[0];
+				$aliases[] = $alias;
+			}
+		}
+		return $aliases;
+	}
+
+	public function setJointuresAliases($jointures, array $existing=[]) {
+		if(is_array($jointures)) {
+			foreach($clone=$jointures as $k=>$v) {
+				$name = $alias = $k;
+				if(!is_numeric($k)) {
+					$alias = $this->getNewAlias($k, $existing);
+
+					if($alias !== $name) {
+						$name .= ' '.$alias;
+						unset($jointures[$k]);
+						$this->where = $this->updateConditions($this->where, $k, $alias);#replace old name in conditions
+					}
+
+					$existing[] = $alias;
+				}
+
+				$jointures[$name] = $newJointures = $this->setJointuresAliases($v, $existing);
+				$newJointures = (array)$newJointures;
+				$existing = array_merge($existing, $this->getAliases($newJointures)); #add new aliases
+			}
+		}
+		else {
+			$name = $alias = $jointures;
+			$alias = $this->getNewAlias($name, $existing);
+			if($alias !== $name) {
+				$name .= ' '.$alias;
+				$this->where = $this->updateConditions($this->where, $jointures, $alias);#replace old name in conditions
+			}
+			return $name;
+		}
+
+		return $jointures;
+	}
+
 	/**
 	 * {@inheritDoc}
 	*/
-	public function join($relations) {
-		$this->join[] = $relations;
+	public function join($relation, array $subrelations=null) {
+		$aliases = array_merge([$this->getTable()], $this->getAliases($this->join));
+		
+		if($subrelations) {
+			$alias = $relation;
+			$i=1;
+			while(in_array($alias, $aliases))
+				$alias = $relation.$i++;
+			$aliases[] = $alias;
+			if($alias !== $relation)
+				$relation .= ' '.$alias;
+			$subrelations = $this->setJointuresAliases($subrelations, $aliases);
+			$this->join[$relation] = $subrelations;
+		}
+		else {
+			$relations = $this->setJointuresAliases($relation, $aliases);
+			$this->join[] = $relations;
+		}
+
 		return $this;
 	}
 
@@ -278,6 +363,10 @@ class ORM implements ORMInterface {
 	 * {@inheritDoc}
 	*/
 	public function getDAL() {
+		// d($this->join);
+		// d($this->join['parent']['parent']['childs'][0]);
+		// d($this->join[0]['parent'][0]['parent parent2'][0]['childs'][0]['childs childs2']);
+		// d($this->join[0]['parent']['parent parent2']['childs']); #childs childs2
 		$dal = new \Asgard\Db\DAL($this->dataMapper->getDB());
 		$table = $this->getTable();
 		$dal->orderBy($this->orderBy);
@@ -321,42 +410,38 @@ class ORM implements ORMInterface {
 	 * @param \Asgard\Entity\Definition $definition The entity class from which jointures are built.
 	 * @param string                    $table The table from which to performs jointures.
 	*/
-	protected function recursiveJointures(\Asgard\Db\DAL $dal, array $jointures, \Asgard\Entity\Definition $definition, $table) {
-		#todo refactoriser
+	protected function recursiveJointures(\Asgard\Db\DAL $dal, $jointures, \Asgard\Entity\Definition $definition, $table) {
 		$alias = null;
-		foreach($jointures as $relation) {
-			if(is_array($relation)) {
-				foreach($relation as $k=>$v) {
-					if(is_numeric($k)) {
-						if(!$v instanceof EntityRelation) {
-							if(strpos($v, ' '))
-								list($v, $alias) = explode(' ', $v);
-							$v = $this->dataMapper->relation($definition, $v);
-						}
-						$this->jointure($dal, $v, $alias, $table);
-					}
-					else {
-						$relationName = $k;
-						if(strpos($relationName, ' '))
-							list($relationName, $alias) = explode(' ', $relationName);
-						$recJoins = $v;
-						$relation = $this->dataMapper->relation($definition, $relationName);
+		if(is_array($jointures)) {
+			foreach($jointures as $k=>$v) {
+				if(!is_numeric($k)) {
+					$relationName = $k;
+					if(strpos($relationName, ' '))
+						list($relationName, $alias) = explode(' ', $relationName);
+					else
+						$alias = null;
+					$recJoins = $v;
+					try{
+					$relation = $this->dataMapper->relation($definition, $relationName);
+				}catch(\Exception $e) {
+					d($k, $v, $jointures);
+				}
+					$this->jointure($dal, $relation, $alias, $table);
 
-						$this->jointure($dal, $relation, $alias, $table);
-						if(!is_array($recJoins))
-							$recJoins = [$recJoins];
-						$this->recursiveJointures($dal, $recJoins, $relation->getTargetDefinition(), $relation->getName());
-					}
+					$tableAlias = $alias ? $alias:$relationName;
+
+					$this->recursiveJointures($dal, $v, $relation->getTargetDefinition(), $tableAlias);
 				}
+				else
+					$this->recursiveJointures($dal, $v, $definition, $table);
 			}
-			else {
-				if(!$relation instanceof EntityRelation) {
-					if(strpos($relation, ' '))
-						list($relation, $alias) = explode(' ', $relation);
-					$relation = $this->dataMapper->relation($definition, $relation);
-				}
-				$this->jointure($dal, $relation, $alias, $table);
-			}
+		}
+		else {
+			$relation = $jointures;
+			if(strpos($relation, ' '))
+				list($relation, $alias) = explode(' ', $relation);
+			$relation = $this->dataMapper->relation($definition, $relation);
+			$this->jointure($dal, $relation, $alias, $table);
 		}
 	}
 
@@ -374,7 +459,6 @@ class ORM implements ORMInterface {
 		$relationDefinition = $relation->getTargetDefinition();
 		if($alias === null)
 			$alias = $relationName;
-		#todo conflict betweeen jointures
 
 		switch($relation->type()) {
 			case 'hasOne':
@@ -598,7 +682,7 @@ class ORM implements ORMInterface {
 		$i18nTable = $this->getTranslationTable();
 		preg_match_all('/(?<![\.a-z0-9-_`\(\)])([a-z0-9-_]+)(?![\.a-z0-9-_`\(\)])/', $sql, $matches);
 		foreach($matches[0] as $property) {
-			if($this->definition->hasProperty($property)) #todo problem with entity_id?
+			if($this->definition->hasProperty($property))
 				$table = $this->definition->property($property)->get('i18n') ? $i18nTable:$table;
 			$sql = preg_replace('/(?<![\.a-z0-9-_`\(\)])('.$property.')(?![\.a-z0-9-_`\(\)])/', $table.'.$1', $sql);
 		}
