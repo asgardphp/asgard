@@ -222,7 +222,7 @@ class Response {
 	 * @return Response
 	 */
 	public function redirect($url='') {
-		if(!preg_match('/^http:\/\//', $url))
+		if(!preg_match('/^(?:\/|\\\\|\w:\\\\|\w:\/).*$/', $url) && !preg_match('/^[a-zA-Z0-9]*:\/\//', $url))#relative
 			$url = $this->request->url->to($url);
 		$this->headers['Location'] = $url;
 		return $this;

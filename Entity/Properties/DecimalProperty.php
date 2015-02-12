@@ -2,14 +2,14 @@
 namespace Asgard\Entity\Properties;
 
 /**
- * Double Property.
+ * Decimal Property.
  * @author Michel Hognerud <michel@hognerud.com>
  */
-class DoubleProperty extends \Asgard\Entity\Property {
+class DecimalProperty extends \Asgard\Entity\Property {
 	/**
 	 * {@inheritDoc}
 	 */
 	public function getSQLType() {
-		return 'double';
+		return 'decimal';
 	}
 }

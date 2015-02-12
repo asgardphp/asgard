@@ -121,11 +121,13 @@ class Container implements ContainerInterface {
 			if(!in_array($name, $this->doNotPersist))
 				$this->instances[$name] = $instance;
 		}
+		else
+			$instance = $this->instances[$name];
 
 		if(isset($this->parents[$name]) && !$this->instances[$name] instanceof $this->parents[$name])
 			throw new \Exception('The service "'.$name.'" did not return a subclass of '.$this->parents[$name]);
 
-		return $this->instances[$name];
+		return $instance;
 	}
 
 	/**

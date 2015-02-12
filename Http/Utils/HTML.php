@@ -188,7 +188,7 @@ class HTML implements HTMLInterface {
 	 */
 	public function printJSInclude() {
 		foreach($this->include_js as $js) {
-			if(preg_match('/http:\/\//', $js))
+			if(preg_match('/^(?:\/|\\\\|\w:\\\\|\w:\/).*$/', $js) || preg_match('/^[a-zA-Z0-9]*:\/\//', $js))#absolute
 				echo '<script type="text/javascript" src="'.$js.'"></script>'."\n";
 			else
 				echo '<script type="text/javascript" src="'.$this->getRequest()->url->to($js).'"></script>'."\n";
@@ -200,7 +200,7 @@ class HTML implements HTMLInterface {
 	 */
 	public function printCSSInclude() {
 		foreach($this->include_css as $css) {
-			if(preg_match('/http:\/\//', $css))
+			if(preg_match('/^(?:\/|\\\\|\w:\\\\|\w:\/).*$/', $css) || preg_match('/^[a-zA-Z0-9]*:\/\//', $css))#absolute
 				echo '<link rel="stylesheet" href="'.$css.'"/>'."\n";
 			else
 				echo '<link rel="stylesheet" href="'.$this->getRequest()->url->to($css).'"/>'."\n";
