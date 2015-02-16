@@ -141,8 +141,7 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		#Migration
 		$container->setParentClass('MigrationManager', 'Asgard\Migration\MigrationManagerInterface');
 		$container->register('MigrationManager', function($container) {
-			$mm = new \Asgard\Migration\MigrationManager($container['kernel']['root'].'/migrations/', $container['db'], $container['schema'], $container);
-			return $mm;
+			return new \Asgard\Migration\MigrationManager($container['kernel']['root'].'/migrations/', $container['db'], $container['schema'], $container);
 		});
 
 		#Common
@@ -239,12 +238,11 @@ class Bundle extends \Asgard\Core\BundleLoader {
 
 		if($container->has('console')) {
 			$root = $container['kernel']['root'];
-
 			$em = $container['entityManager'];
-			$mm = $container['MigrationManager'];
 
 			#if database is available
 			if($container['config']['database']) {
+				$mm = $container['MigrationManager'];
 				$db = $container['db'];
 				$schema = $container['schema'];
 				$dataMapper = $container['dataMapper'];
