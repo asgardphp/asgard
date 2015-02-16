@@ -232,7 +232,7 @@ class GenerateCommand extends \Asgard\Console\Command {
 	 * @return boolean
 	 */
 	protected function addToTests($tests, $dst, $overrideFiles=false) {
-		if(!$tests)
+		if($tests)
 			return true;
 
 		$res = '';

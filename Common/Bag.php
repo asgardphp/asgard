@@ -21,16 +21,14 @@ class Bag implements BagInterface {
 	}
 
 	/**
-	 * Return all data.
-	 * @return array
+	 * {@inheritDoc}
 	 */
 	public function all() {
 		return $this->data;
 	}
 
 	/**
-	 * Clear data.
-	 * @return Bag  $this
+	 * {@inheritDoc}
 	 */
 	public function clear() {
 		$this->data = [];
@@ -38,27 +36,21 @@ class Bag implements BagInterface {
 	}
 
 	/**
-	 * Return number of elements.
-	 * @return integer
+	 * {@inheritDoc}
 	 */
 	public function size() {
 		return count($this->data);
 	}
 
 	/**
-	 * Set all elements.
-	 * @param array $data
-	 * @return Bag  $this
+	 * {@inheritDoc}
 	 */
 	public function setAll($data) {
 		return $this->clear()->set($data);
 	}
 
 	/**
-	 * Set a value.
-	 * @param string|array $path    nested keys separated by ".".
-	 * @param mixed        $value
-	 * @return Bag         $this
+	 * {@inheritDoc}
 	 */
 	public function set($path, $value=null) {
 		#to set multiple elements at once
@@ -73,10 +65,7 @@ class Bag implements BagInterface {
 	}
 
 	/**
-	 * Get a value.
-	 * @param string $path    nested keys separated by ".".
-	 * @param mixed  $default
-	 * @return mixed
+	 * {@inheritDoc}
 	 */
 	public function get($path, $default=null) {
 		if(!$this->has($path))
@@ -85,18 +74,14 @@ class Bag implements BagInterface {
 	}
 
 	/**
-	 * Check if has element.
-	 * @param string $path    nested keys separated by ".".
-	 * @return boolean
+	 * {@inheritDoc}
 	 */
 	public function has($path) {
 		return \Asgard\Common\ArrayUtils::_isset($this->data, $path);
 	}
 
 	/**
-	 * Delete an element.
-	 * @param string $path    nested keys separated by ".".
-	 * @return Bag  $this
+	 * {@inheritDoc}
 	 */
 	public function delete($path) {
 		\Asgard\Common\ArrayUtils::_unset($this->data, $path);

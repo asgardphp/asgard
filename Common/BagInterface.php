@@ -56,7 +56,7 @@ interface BagInterface extends \ArrayAccess {
 
 	/**
 	 * Check if has element.
-	 * @param string $path    nested keys separated by ".".
+	 * @param  string  $path nested keys separated by ".".
 	 * @return boolean
 	 * @api
 	 */
