@@ -368,7 +368,6 @@ class DataMapper implements DataMapperInterface {
 				continue;
 			$rel = $this->relation($entity->getDefinition(), $relation);
 
-			$type = $rel->type();
 			if($rel->get('many'))
 				$this->related($entity, $relation)->sync($entity->data['properties'][$relation]->all());
 			elseif(!$rel->reverse()->get('many'))
@@ -384,25 +383,7 @@ class DataMapper implements DataMapperInterface {
 	public function related(\Asgard\Entity\Entity $entity, $name) {
 		$rel = $this->relation($entity->getDefinition(), $name);
 
-				return $this->getCollectionOrmFactory()->create($entity, $name, $this, $this->locale, $this->prefix);
-		switch($rel->type()) {
-			case 'hasOne':
-			case 'belongsTo':
-				$link = $rel->getLink();
-				if($rel->isPolymorphic()) {
-					$relEntity = $entity->get($rel->getLinkType());
-					if(!$relEntity)
-						return;
-				}
-				else
-					$relEntity = $rel->get('entity');
-				return $this->orm($relEntity)->where('id', $entity->get($link));
-			case 'hasMany':
-			case 'HMABT':
-				return $this->getCollectionOrmFactory()->create($entity, $name, $this, $this->locale, $this->prefix);
-			default:
-				throw new \Exception('Relation '.$rel->type().' does not exist.');
-		}
+		return $this->getCollectionOrmFactory()->create($entity, $name, $this, $this->locale, $this->prefix);
 	}
 
 	/**
@@ -506,6 +487,7 @@ class DataMapper implements DataMapperInterface {
 	 * {@inheritDoc}
 	 */
 	public function relation(\Asgard\Entity\Definition $definition, $name) {
+		$name = strtolower($name);
 		#polymorphic
 		if(strpos($name, '|')) {
 			list($name, $class) = explode('|', $name);
@@ -521,6 +503,7 @@ class DataMapper implements DataMapperInterface {
 	 * {@inheritDoc}
 	 */
 	public function hasRelation(\Asgard\Entity\Definition $definition, $name) {
+		$name = strtolower($name);
 		return isset($this->relations($definition)[$name]);
 	}
 

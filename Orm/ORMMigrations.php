@@ -258,6 +258,9 @@ class ORMMigrations {
 			foreach($table->changedColumns as $colName=>$col)
 				$colsRes .= $this->updateColumn($colName, $col);
 
+			foreach($table->renamedColumns as $colName=>$col)
+				$colsRes .= $this->renameColumn($colName, $col);
+
 			foreach($table->removedColumns as $colName=>$col)
 				$colsRes .= $this->dropColumn($colName);
 
@@ -290,6 +293,17 @@ class ORMMigrations {
 	 */
 	protected function dropColumn($col) {
 		return "\n\t\$table->dropColumn('$col');";
+	}
+
+	/**
+	 * Generate code to rename a column.
+	 * @param  string $col
+	 * @return string
+	 */
+	protected function renameColumn($name, \Doctrine\DBAL\Schema\Column $col) {
+		$res = "\n\t\$table->renameColumn('$name', '".$col->getName()."');";
+
+		return $res;
 	}
 
 	/**

@@ -50,11 +50,12 @@ interface ORMInterface {
 	/**
 	 * Joins a relation to the search. Useful when having conditions involving relations.
 	 *
-	 * @param string|EntityRelation|array $relations The name of the relation or an array of relations.
+	 * @param string|EntityRelation|array $relations    The name of the relation or an array of relations.
+	 * @param array                       $subrelations Nested relations.
 	 *
 	 * @return ORMInterface $this
 	*/
-	public function join($relations);
+	public function join($relation, array $subrelations=null);
 
 	/**
 	 * Returns the name of the table.

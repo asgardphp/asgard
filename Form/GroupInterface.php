@@ -159,7 +159,7 @@ interface GroupInterface extends \ArrayAccess, \Iterator {
 
 	/**
 	 * Get top parent form.
-	 * @return GroupInterface
+	 * @return FormInterface
 	 */
 	public function getTopForm();
 

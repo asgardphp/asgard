@@ -93,6 +93,7 @@ abstract class Entity {
 	 * @return boolean
 	 */
 	public function __isset($name) {
+		$name = strtolower($name);
 		return isset($this->data['properties'][$name]);
 	}
 
@@ -101,6 +102,7 @@ abstract class Entity {
 	 * @param string $name
 	 */
 	public function __unset($name) {
+		$name = strtolower($name);
 		unset($this->data['properties'][$name]);
 	}
 
@@ -287,6 +289,9 @@ abstract class Entity {
 	 * @param string       $locale
 	 */
 	public function _set($name, $value=null, $locale=null) {
+		if(is_string($name))
+			$name = strtolower($name);
+
 		if(is_array($name)) {
 			$locale = $value;
 			$vars = $name;
@@ -323,6 +328,9 @@ abstract class Entity {
 	 * @param boolean      $hook
 	 */
 	public function set($name, $value=null, $locale=null, $hook=true) {
+		if(is_string($name))
+			$name = strtolower($name);
+
 		#setting multiple properties at once
 		if(is_array($name)) {
 			$vars = $name;
@@ -363,6 +371,8 @@ abstract class Entity {
 	 * @return mixed
 	 */
 	public function _get($name, $locale=null) {
+		$name = strtolower($name);
+		
 		if(!$locale)
 			$locale = $this->getLocale();
 

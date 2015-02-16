@@ -114,7 +114,7 @@ class PolymorphicCollectionORM implements CollectionORMInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function join($relations) { throw new \Exception('Not implemented'); }
+	public function join($relation, array $subrelations=null) { throw new \Exception('Not implemented'); }
 
 	/**
 	 * {@inheritDoc}
@@ -145,8 +145,6 @@ class PolymorphicCollectionORM implements CollectionORMInterface {
 	 * {@inheritDoc}
 	 */
 	public function first() {
-		$classes = [];
-
 		$classes = $this->relation->get('entities');
 
 		foreach($classes as $class) {
@@ -172,8 +170,6 @@ class PolymorphicCollectionORM implements CollectionORMInterface {
 	 */
 	public function get() {
 		$entities = [];
-		$classes = [];
-
 		$classes = $this->relation->get('entities');
 
 		foreach($classes as $class) {

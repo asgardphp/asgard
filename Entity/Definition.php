@@ -283,6 +283,7 @@ class Definition {
 	 * @param string|array|Property $property
 	 */
 	public function addProperty($name, $property=null) {
+		$name = strtolower($name);
 		if($property === null)
 			$property = 'text';
 		if(is_string($property))
@@ -323,6 +324,7 @@ class Definition {
 	 * @return boolean
 	 */
 	public function hasProperty($name) {
+		$name = strtolower($name);
 		return isset($this->properties[$name]);
 	}
 
@@ -332,6 +334,7 @@ class Definition {
 	 * @return Property
 	 */
 	public function property($name) {
+		$name = strtolower($name);
 		return $this->properties[$name];
 	}
 

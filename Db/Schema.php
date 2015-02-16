@@ -109,8 +109,26 @@ class Schema implements SchemaInterface {
 			if(!$tableDiff)
 				$tableDiff = new \Doctrine\DBAL\Schema\TableDiff($tableName);
 
-			if($renamedColumns = $clone->getRenamedColumns())
+			if($renamedColumns = $clone->getRenamedColumns()) {
+				#wtf doctrine? it reverses column names for renaming.
+				foreach($clone = $renamedColumns as $k=>$v) {
+					$name = $v->getName();
+					$newV = new \Doctrine\DBAL\Schema\Column($k, $v->getType(), [
+						'type' => $v->getType(),
+						'length' => $v->getLength(),
+						'precision' => $v->getPrecision(),
+						'scale' => $v->getScale(),
+						'unsigned' => $v->getUnsigned(),
+						'fixed' => $v->getFixed(),
+						'notnull' => $v->getNotnull(),
+						'default' => $v->getDefault(),
+						'platformoptions' => $v->getPlatformOptions(),
+					]);
+					unset($renamedColumns[$k]);
+					$renamedColumns[$name] = $newV;
+				}
 				$tableDiff->renamedColumns = $renamedColumns;
+			}
 
 			$queries = $platform->getAlterTableSQL($tableDiff);
 			foreach($queries as $query)

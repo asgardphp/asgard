@@ -12,7 +12,7 @@ class SwiftMessage extends \Swift_Message {
 	 * @return SwiftMessage $this
 	 */
 	public function subject($subject) {
-		return parent::setSubject($subject);
+		return $this->setSubject($subject);
 	}
 
 	/**
@@ -21,7 +21,7 @@ class SwiftMessage extends \Swift_Message {
 	 * @return SwiftMessage $this
 	 */
 	public function to($to) {
-		return parent::setTo($to);
+		return $this->setTo($to);
 	}
 
 	/**
@@ -30,7 +30,7 @@ class SwiftMessage extends \Swift_Message {
 	 * @return SwiftMessage $this
 	 */
 	public function from($from) {
-		return parent::setFrom($from);
+		return $this->setFrom($from);
 	}
 
 	/**
@@ -39,7 +39,7 @@ class SwiftMessage extends \Swift_Message {
 	 * @return SwiftMessage $this
 	 */
 	public function cc($cc) {
-		return parent::setCc($cc);
+		return $this->setCc($cc);
 	}
 
 	/**
@@ -48,7 +48,7 @@ class SwiftMessage extends \Swift_Message {
 	 * @return SwiftMessage $this
 	 */
 	public function bcc($bcc) {
-		return parent::setBcc($bcc);
+		return $this->setBcc($bcc);
 	}
 
 	/**
@@ -57,7 +57,7 @@ class SwiftMessage extends \Swift_Message {
 	 * @return SwiftMessage $this
 	 */
 	public function html($html) {
-		return parent::addPart($html, 'text/html');
+		return $this->addPart($html, 'text/html');
 	}
 
 	/**
@@ -66,7 +66,7 @@ class SwiftMessage extends \Swift_Message {
 	 * @return SwiftMessage $this
 	 */
 	public function text($text) {
-		return parent::addPart($text, 'text/plain');
+		return $this->addPart($text, 'text/plain');
 	}
 
 	/**
@@ -118,7 +118,7 @@ class SwiftMessage extends \Swift_Message {
 			$attachment->setFilename($options['filename']);
 		if(isset($options['mime']))
 			$attachment->setContentType($options['mime']);
-		return parent::attach($attachment);
+		return $this->attach($attachment);
 	}
 
 	/**
@@ -133,7 +133,7 @@ class SwiftMessage extends \Swift_Message {
 			$attachment->setFilename($options['filename']);
 		if(isset($options['mime']))
 			$attachment->setContentType($options['mime']);
-		return parent::attach($attachment);
+		return $this->attach($attachment);
 	}
 
 	/**
@@ -148,7 +148,7 @@ class SwiftMessage extends \Swift_Message {
 			$image->setFilename($options['filename']);
 		if(isset($options['mime']))
 			$image->setContentType($options['mime']);
-		return parent::embed($image);
+		return $this->embed($image);
 	}
 
 	/**
@@ -163,6 +163,6 @@ class SwiftMessage extends \Swift_Message {
 			$image->setFilename($options['filename']);
 		if(isset($options['mime']))
 			$image->setContentType($options['mime']);
-		return parent::embed($image);
+		return $this->embed($image);
 	}
 }

@@ -145,7 +145,7 @@ class ORM implements ORMInterface {
 		foreach($conditions as $k=>$v) {
 			if(is_array($v))
 				$v = $this->updateConditions($v, $table, $alias);
-			$k = preg_replace('/(?<![\.a-z0-9-_`\(\)])'.$table.'\./', $alias.'.', $k);
+			$k = preg_replace('/(?<![\.a-zA-Z0-9-_`\(\)])'.$table.'\./', $alias.'.', $k);
 			$res[$k] = $v;
 		}
 
@@ -180,8 +180,8 @@ class ORM implements ORMInterface {
 		if($alias !== $relationName)
 			$relationName .= ' '.$alias;
 
-		$this->join($relationName);
 		$this->where($alias.'.id', $entity->id);
+		$this->join($relationName);
 
 		return $this;
 	}
@@ -210,14 +210,18 @@ class ORM implements ORMInterface {
 	public function setJointuresAliases($jointures, array $existing=[]) {
 		if(is_array($jointures)) {
 			foreach($clone=$jointures as $k=>$v) {
-				$name = $alias = $k;
-				if(!is_numeric($k)) {
-					$alias = $this->getNewAlias($k, $existing);
+				$name = $k;
+				if(!is_numeric($name)) {
+					$exp = explode(' ', $name);
+					$origName = $exp[0];
+					$oldAlias = count($exp) > 1 ? $exp[1]:$exp[0];
 
-					if($alias !== $name) {
-						$name .= ' '.$alias;
+					$alias = $this->getNewAlias($oldAlias, $existing);
+
+					if($alias !== $oldAlias) {
+						$name = $origName.' '.$alias;
 						unset($jointures[$k]);
-						$this->where = $this->updateConditions($this->where, $k, $alias);#replace old name in conditions
+						$this->where = $this->updateConditions($this->where, $oldAlias, $alias);#replace old name in conditions
 					}
 
 					$existing[] = $alias;
@@ -229,11 +233,15 @@ class ORM implements ORMInterface {
 			}
 		}
 		else {
-			$name = $alias = $jointures;
-			$alias = $this->getNewAlias($name, $existing);
-			if($alias !== $name) {
-				$name .= ' '.$alias;
-				$this->where = $this->updateConditions($this->where, $jointures, $alias);#replace old name in conditions
+			$name = $jointures;
+			$exp = explode(' ', $name);
+			$origName = $exp[0];
+			$oldAlias = count($exp) > 1 ? $exp[1]:$exp[0];
+
+			$alias = $this->getNewAlias($oldAlias, $existing);
+			if($alias !== $oldAlias) {
+				$name = $origName.' '.$alias;
+				$this->where = $this->updateConditions($this->where, $oldAlias, $alias);#replace old name in conditions
 			}
 			return $name;
 		}
@@ -363,10 +371,6 @@ class ORM implements ORMInterface {
 	 * {@inheritDoc}
 	*/
 	public function getDAL() {
-		// d($this->join);
-		// d($this->join['parent']['parent']['childs'][0]);
-		// d($this->join[0]['parent'][0]['parent parent2'][0]['childs'][0]['childs childs2']);
-		// d($this->join[0]['parent']['parent parent2']['childs']); #childs childs2
 		$dal = new \Asgard\Db\DAL($this->dataMapper->getDB());
 		$table = $this->getTable();
 		$dal->orderBy($this->orderBy);
@@ -420,12 +424,7 @@ class ORM implements ORMInterface {
 						list($relationName, $alias) = explode(' ', $relationName);
 					else
 						$alias = null;
-					$recJoins = $v;
-					try{
 					$relation = $this->dataMapper->relation($definition, $relationName);
-				}catch(\Exception $e) {
-					d($k, $v, $jointures);
-				}
 					$this->jointure($dal, $relation, $alias, $table);
 
 					$tableAlias = $alias ? $alias:$relationName;
@@ -680,11 +679,11 @@ class ORM implements ORMInterface {
 	protected function replaceTable($sql) {
 		$table = $this->getTable();
 		$i18nTable = $this->getTranslationTable();
-		preg_match_all('/(?<![\.a-z0-9-_`\(\)])([a-z0-9-_]+)(?![\.a-z0-9-_`\(\)])/', $sql, $matches);
+		preg_match_all('/(?<![\.a-zA-Z0-9-_`\(\)])([a-zA-Z0-9-_]+)(?![\.a-zA-Z0-9-_`\(\)])/', $sql, $matches);
 		foreach($matches[0] as $property) {
 			if($this->definition->hasProperty($property))
 				$table = $this->definition->property($property)->get('i18n') ? $i18nTable:$table;
-			$sql = preg_replace('/(?<![\.a-z0-9-_`\(\)])('.$property.')(?![\.a-z0-9-_`\(\)])/', $table.'.$1', $sql);
+			$sql = preg_replace('/(?<![\.a-zA-Z0-9-_`\(\)])('.$property.')(?![\.a-zA-Z0-9-_`\(\)])/', $table.'.$1', $sql);
 		}
 
 		return $sql;
