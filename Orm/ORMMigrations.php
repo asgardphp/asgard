@@ -301,7 +301,7 @@ class ORMMigrations {
 	 * @return string
 	 */
 	protected function renameColumn($name, \Doctrine\DBAL\Schema\Column $col) {
-		$res = "\n\t\$table->renameColumn('$name', '".$col->getName()."');";
+		$res = "\n\t\$table->rename('$name', '".$col->getName()."');";
 
 		return $res;
 	}
