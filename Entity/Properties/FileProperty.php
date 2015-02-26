@@ -64,8 +64,10 @@ class FileProperty extends \Asgard\Entity\Property {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getSQLType() {
-		return 'string';
+	public function getORMParameters() {
+		return [
+			'type' => 'string',
+		];
 	}
 
 	/**

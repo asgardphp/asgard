@@ -17,22 +17,18 @@ class BooleanProperty extends \Asgard\Entity\Property {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getSQLType() {
-		return 'integer';
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getSQLLength() {
-		return 1;
+	public function getORMParameters() {
+		return [
+			'type' => 'integer',
+			'length' => 1,
+		];
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function _getDefault() {
-		return false;
+		return null;
 	}
 
 	/**

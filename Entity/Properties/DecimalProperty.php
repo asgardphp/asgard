@@ -9,7 +9,10 @@ class DecimalProperty extends \Asgard\Entity\Property {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getSQLType() {
-		return 'decimal';
+	public function getORMParameters() {
+		return [
+			'type' => 'decimal',
+			'scale' => 6,
+		];
 	}
 }

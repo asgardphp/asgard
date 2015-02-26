@@ -66,8 +66,10 @@ class DateProperty extends \Asgard\Entity\Property {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getSQLType() {
-		return 'date';
+	public function getORMParameters() {
+		return [
+			'type' => 'date',
+		];
 	}
 
 	/**

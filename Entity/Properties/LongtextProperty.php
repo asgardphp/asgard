@@ -9,7 +9,9 @@ class LongtextProperty extends \Asgard\Entity\Property {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getSQLType() {
-		return 'text';
+	public function getORMParameters() {
+		return [
+			'type' => 'text',
+		];
 	}
 }

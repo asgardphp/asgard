@@ -290,11 +290,4 @@ class Property {
 	public function doSet($val, Entity $entity, $name) {
 		return $val;
 	}
-
-	/**
-	 * Return the length for SQL field.
-	 */
-	public function getSQLLength() {
-		return $this->get('length') ? $this->get('length'):255;
-	}
 }

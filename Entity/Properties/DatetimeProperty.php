@@ -67,8 +67,10 @@ class DatetimeProperty extends \Asgard\Entity\Property {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getSQLType() {
-		return 'datetime';
+	public function getORMParameters() {
+		return [
+			'type' => 'datetime',
+		];
 	}
 
 	/**

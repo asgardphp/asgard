@@ -65,52 +65,40 @@ class CollectionORM extends ORM implements CollectionORMInterface {
 				$ids[$k] = ['id'=>(int)$v, 'class'=>$this->relation->getTargetDefinition()->getClass()];
 		}
 
+		$this->truncate();
+
+		if(!$ids)
+			return $this;
+
 		switch($this->relation->type()) {
 			case 'hasOne':
 			case 'hasMany':
 				$relationDefinition = $this->relation->getTargetDefinition();
 				$link = $this->relation->reverse()->getLink();
-				$dal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->dataMapper->getTable($relationDefinition));
+
+				foreach($ids as $k=>$v)
+					$ids[$k] = $v['id'];
+				$newDal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->dataMapper->getTable($relationDefinition));
+				$newDal->where('id IN ('.implode(', ', $ids).')');
 				if($this->relation->reverse()->isPolymorphic()) {
 					$linkType = $this->relation->reverse()->getLinkType();
-					$dal->where([$link => $this->parent->id, $linkType => get_class($this->parent)])->update([$link => null, $linkType => null]);
+					$newDal->update([$link => $this->parent->id, $linkType => get_class($this->parent)]);
 				}
 				else
-					$dal->where([$link => $this->parent->id])->update([$link => null]);
-
-				if($ids) {
-					foreach($ids as $k=>$v)
-						$ids[$k] = $v['id'];
-					$newDal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->dataMapper->getTable($relationDefinition));
-					$newDal->where('id IN ('.implode(', ', $ids).')');
-					if($this->relation->reverse()->isPolymorphic()) {
-						$linkType = $this->relation->reverse()->getLinkType();
-						$newDal->update([$link => $this->parent->id, $linkType => get_class($this->parent)]);
-					}
-					else
-						$newDal->update([$link => $this->parent->id]);
-				}
+					$newDal->update([$link => $this->parent->id]);
 				break;
 			case 'HMABT':
 				$dal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->relation->getAssociationTable());
-				$dal->where($this->relation->getLinkA(), $this->parent->id);
-				if($this->relation->reverse()->isPolymorphic())
-					$dal->where($this->relation->reverse()->getLinkType(), get_class($this->parent));
-				$dal->delete();
-
-				if($ids) {
-					$dal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->relation->getAssociationTable());
-					$i = 1;
-					foreach($ids as $entity) {
-						$params = [$this->relation->getLinkA() => $this->parent->id, $this->relation->getLinkB() => $entity['id']];
-						if($this->relation->get('sortable'))
-							$params[$this->relation->getPositionField()] = $i++;
-						if($this->relation->reverse()->isPolymorphic())
-							$params[$this->relation->reverse()->getLinkType()] = get_class($this->parent);
-						elseif($this->relation->isPolymorphic())
-							$params[$this->relation->getLinkType()] = $entity['class'];
-						$dal->insert($params);
-					}
+				$i = 1;
+				foreach($ids as $entity) {
+					$params = [$this->relation->getLinkA() => $this->parent->id, $this->relation->getLinkB() => $entity['id']];
+					if($this->relation->get('sortable'))
+						$params[$this->relation->getPositionField()] = $i++;
+					if($this->relation->reverse()->isPolymorphic())
+						$params[$this->relation->reverse()->getLinkType()] = get_class($this->parent);
+					elseif($this->relation->isPolymorphic())
+						$params[$this->relation->getLinkType()] = $entity['class'];
+					$dal->insert($params);
 				}
 				break;
 			default:
@@ -208,6 +196,37 @@ class CollectionORM extends ORM implements CollectionORMInterface {
 				break;
 			default:
 				throw new \Exception('Collection only works with hasMany and HMABT');
+		}
+
+		return $this;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function truncate() {
+		switch($this->relation->type()) {
+			case 'hasOne':#todo also update parent entity
+			case 'hasMany':
+				$relationDefinition = $this->relation->getTargetDefinition();
+				$link = $this->relation->reverse()->getLink();
+				$dal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->dataMapper->getTable($relationDefinition));
+				if($this->relation->reverse()->isPolymorphic()) {
+					$linkType = $this->relation->reverse()->getLinkType();
+					$dal->where([$link => $this->parent->id, $linkType => get_class($this->parent)])->update([$link => null, $linkType => null]);
+				}
+				else
+					$dal->where([$link => $this->parent->id])->update([$link => null]);
+				break;
+			case 'HMABT':
+				$dal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->relation->getAssociationTable());
+				$dal->where($this->relation->getLinkA(), $this->parent->id);
+				if($this->relation->reverse()->isPolymorphic())
+					$dal->where($this->relation->reverse()->getLinkType(), get_class($this->parent));
+				$dal->delete();
+				break;
+			default:
+				throw new \Exception('Collection should only be used for hasMany and HMABT relations');
 		}
 
 		return $this;

@@ -99,6 +99,11 @@ class PolymorphicCollectionORM implements CollectionORMInterface {
 	/**
 	 * {@inheritDoc}
 	 */
+	public function truncate() { throw new \Exception('Not implemented'); }
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public function __call($relationName, array $args) { throw new \Exception('Not implemented'); }
 
 	/**

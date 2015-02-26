@@ -9,7 +9,9 @@ class IntegerProperty extends \Asgard\Entity\Property {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getSQLType() {
-		return 'integer';
+	public function getORMParameters() {
+		return [
+			'type' => 'integer',
+		];
 	}
 }

@@ -71,11 +71,6 @@ class ORMMigrations {
 			$table = $schema->createTable($dataMapper->getTable($definition));
 
 			foreach($definition->properties() as $name=>$prop) {
-				if($prop->get('orm'))
-					$col = $prop->get('orm');
-				else
-					$col = [];
-
 				#relations
 				if($prop->get('type') == 'entity') {
 					$relation = $dataMapper->relation($definition, $name);
@@ -130,20 +125,20 @@ class ORMMigrations {
 					continue;
 				}
 
+				$col = [];
+				if(method_exists($prop, 'getORMParameters'))
+					$col = $prop->getORMParameters();
+				if($ormCol = $prop->get('orm'))
+					$col = array_merge($col, $ormCol);
+
 				if($prop->get('many'))
 					$type = 'blob';
-				elseif(!isset($prop->get('orm')['type'])) {
-					if(method_exists($prop, 'getSQLType'))
-						$type = $prop->getSQLType();
-					else
-						throw new \Exception('Cannot convert '.$prop->type.' type');
-				}
+				elseif(!isset($col['type']))
+					throw new \Exception('Cannot convert '.get_class($prop).' type to SQL type.');
 				else
 					$type = $col['type'];
 				unset($col['type']);
 
-				if(!isset($col['length']))
-					$col['length'] = $prop->getSQLLength();
 				if(!isset($col['notnull']))
 					$col['notnull'] = false;
 				if(!isset($col['autoincrement']))

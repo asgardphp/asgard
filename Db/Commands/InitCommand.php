@@ -85,7 +85,13 @@ class InitCommand extends \Asgard\Console\Command {
 				}
 			}
 			else {
-				$db = \Asgard\Db\DB($config);
+				$db = new \Asgard\Db\DB([
+					'driver' => $driver,
+					'host' => $host,
+					'user' => $user,
+					'password' => $password,
+					'name' => $name,
+				]);
 				$db->getSchema()->getSchemaManager()->createDatabase($name);
 				$this->info('Database created.');
 			}

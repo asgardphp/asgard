@@ -9,8 +9,10 @@ class EmailProperty extends TextProperty {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getSQLType() {
-		return 'string';
+	public function getORMParameters() {
+		return [
+			'type' => 'string',
+		];
 	}
 
 	/**
