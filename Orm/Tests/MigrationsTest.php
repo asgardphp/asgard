@@ -179,7 +179,7 @@ class MigrationsTest extends \PHPUnit_Framework_TestCase {
 
 		static::$ormm->generateMigration([
 			static::$em->get('Asgard\Orm\Tests\Fixtures\Migrations\Post2'),
-			static::$em->get('Asgard\Orm\Tests\Fixtures\Migrations\Author'),
+			static::$em->get('Asgard\Orm\Tests\Fixtures\Migrations\Author2'),
 			static::$em->get('Asgard\Orm\Tests\Fixtures\Migrations\Category')
 		], 'Post');
 

@@ -462,6 +462,9 @@ class Definition {
 		if($hook)
 			$this->trigger('set', [$entity, $name, &$value, $locale]);
 
+		if(!$this->hasProperty($name))
+			return;
+
 		if($this->property($name)->get('setHook')) {
 			$hook  = $this->property($name)->get('setHook');
 			$value = call_user_func_array($hook, [$value]);

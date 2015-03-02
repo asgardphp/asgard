@@ -358,8 +358,13 @@ abstract class Entity {
 			else
 				$this->data['properties'][$name] = $value;
 		}
-		else
+		else {
+			if(is_array($value)) {
+				$coll = new ManyCollection($this, $name);
+				$value = $coll->setAll($value);
+			}
 			$this->data[$name] = $value;
+		}
 
 		return $this;
 	}

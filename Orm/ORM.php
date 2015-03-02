@@ -118,15 +118,11 @@ class ORM implements ORMInterface {
 		$relation = $this->dataMapper->relation($this->definition, $relationName);
 		$reverseRelation = $relation->reverse();
 		$reverseRelationName = $reverseRelation->get('name');
-		// if($reverseRelation->isPolymorphic())
-		// 	$reverseRelationName .= '|'.$this->definition->getClass();
 		$relation_entity = $relation->get('entity');
 
 		$table = $this->getTable();
 		$alias = $reverseRelationName;
-		// $alias = $this->getNewAlias($table, $this->getAliases($this->join));
-		// if($this->where)
-		// 	d($relationName, $this->where, $reverseRelationName, $table, $alias, $this->join, $this->getAliases($this->join));
+
 		$where = $this->updateConditions($this->where, $table, $alias);
 
 		return $this->dataMapper->orm($relation_entity)

@@ -61,6 +61,17 @@ class ManyCollection implements \ArrayAccess, \Iterator, \Countable {
 	}
 
 	/**
+	 * Set all elements/
+	 * @param array $elements
+	 */
+	public function setAll(array $elements) {
+		$this->elements = [];
+		foreach($elements as $e)
+			$this->add($e);
+		return $this;
+	}
+
+	/**
 	 * Remove an element.
 	 * @param  integer $offset
 	 */

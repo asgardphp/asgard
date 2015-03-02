@@ -495,8 +495,13 @@ class DataMapper implements DataMapperInterface {
 			$relation->setTargetDefinition($this->entityManager->get($class));
 			return $relation;
 		}
-		else
-			return $this->relations($definition)[$name];
+		else {
+			$relation = clone $this->relations($definition)[$name];
+			$reverseRelation = $relation->reverse();
+			if($reverseRelation->isPolymorphic())
+				$reverseRelation->setTargetDefinition($definition);
+			return $relation;
+		}
 	}
 
 	/**

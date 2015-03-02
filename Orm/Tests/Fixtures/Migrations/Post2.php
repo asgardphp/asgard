@@ -15,7 +15,7 @@ class Post2 extends \Asgard\Entity\Entity {
 			],
 			'author' => [
 				'type' => 'entity',
-				'entity' => 'Asgard\Orm\Tests\Fixtures\Migrations\Author',
+				'entity' => 'Asgard\Orm\Tests\Fixtures\Migrations\Author2',
 			],
 		];
 
