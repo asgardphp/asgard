@@ -168,7 +168,7 @@ class ErrorHandler {
 		if($kill) {
 			if(!headers_sent())
 				header(isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL']:''.' 500 Internal Server Error', true, 500);
-			if(true || $this->debug) {
+			if($this->debug) {
 				$trace = $this->getBacktraceFromException($e);
 
 				if($e instanceof PSRException)
@@ -216,22 +216,24 @@ class ErrorHandler {
 
 		$trace = $this->getBacktraceFromException($e);
 
-		$this->log($severity, $msg, $e->getFile(), $e->getLine(), $trace);
+		$this->log($severity, $msg, $e->getFile(), $e->getLine(), $e, $trace);
 	}
 
 	/**
 	 * Log an error.
-	 * @param  integer $severity
-	 * @param  string  $message
-	 * @param  string  $file
-	 * @param  integer $line
-	 * @param  array   $trace
+	 * @param  integer    $severity
+	 * @param  string     $message
+	 * @param  string     $file
+	 * @param  integer    $line
+	 * @param  \Exception $exception
+	 * @param  array      $trace
 	 */
-	public function log($severity, $message, $file, $line, $trace=null) {
+	public function log($severity, $message, $file, $line, $exception=null, $trace=null) {
 		if(!$this->isLogging())
 			return;
 
 		$context = [
+			'exception' => $exception,
 			'file' => $file,
 			'line' => $line,
 			'trace' => $trace,
