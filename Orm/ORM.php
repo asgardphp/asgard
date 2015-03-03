@@ -675,7 +675,7 @@ class ORM implements ORMInterface {
 	protected function replaceTable($sql) {
 		$table = $this->getTable();
 		$i18nTable = $this->getTranslationTable();
-		preg_match_all('/(?<![\.a-zA-Z0-9-_`\(\)])([a-zA-Z0-9-_]+)(?![\.a-zA-Z0-9-_`\(\)])/', $sql, $matches);
+		preg_match_all('/(?<![\.a-zA-Z0-9-_`\(\)])([a-z0-9-_][a-zA-Z0-9-_]*)(?![\.a-zA-Z0-9-_`\(\)])/', $sql, $matches);
 		foreach($matches[0] as $property) {
 			if($this->definition->hasProperty($property))
 				$table = $this->definition->property($property)->get('i18n') ? $i18nTable:$table;
