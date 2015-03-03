@@ -189,7 +189,7 @@ class Bundle extends \Asgard\Core\BundleLoader {
 				$container['db'],
 				$container['entityManager'],
 				$container['config']['locale'],
-				$container['config']['database/prefix'],
+				$container['config']['database.prefix'],
 				$container['orm_factory'],
 				$container['collectionOrm_factory']
 			);

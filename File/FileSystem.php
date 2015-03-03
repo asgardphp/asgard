@@ -214,9 +214,10 @@ class FileSystem {
 	 * @param  string $dst
 	 * @param  string $content
 	 * @param  integer $mode
+	 * @param  boolean $append
 	 * @return boolean      true for success, otherwise false
 	 */
-	public static function write($dst, $content, $mode=null) {
+	public static function write($dst, $content, $mode=null, $append=false) {
 		if($mode === null)
 			$mode = static::OVERRIDE;
 
@@ -228,7 +229,7 @@ class FileSystem {
 			return false;
 
 		static::mkdir(dirname($dst));
-		$r = file_put_contents($dst, $content);
+		$r = file_put_contents($dst, $content, $append ? FILE_APPEND:0);
 
 		if($r !== false)
 			return $dst;

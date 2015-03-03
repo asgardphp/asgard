@@ -37,6 +37,11 @@ class ErrorHandler {
 	 */
 	protected $debug;
 
+	public function __construct() {
+		if(php_sapi_name() === 'cli')
+			$this->debug = true;
+	}
+
 	/**
 	 * Set debug flag.
 	 * @param  boolean $debug
