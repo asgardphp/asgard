@@ -113,8 +113,8 @@ class Datetime extends \DateTime implements DatetimeInterface {
 	 */
 	public function __wakeup() {
 		parent::__wakeup();
-		if(!$this->carbon instanceof \__PHP_Incomplete_Class)
-			return static::createFromCarbon($this->carbon->__wakeup());
+		if(!$this->carbon instanceof \__PHP_Incomplete_Class && $carbon=$this->carbon->__wakeup())
+			return static::createFromCarbon($carbon);
 	}
 
 	/**

@@ -43,44 +43,53 @@ class DB implements DBInterface {
 	}
 
 	/**
+	 * Build the PDO instance.
+	 * @param  array  $config
+	 */
+	public function buildPDO(array $config=null) {
+		if(!$config)
+			$config = $this->config;
+		$driver = $config['driver'];
+		$user = isset($config['user']) ? $config['user']:'root';
+		$password = isset($config['password']) ? $config['password']:'';
+		$database = isset($config['database']) ? $config['database']:null;
+
+		switch($driver) {
+			case 'pgsql':
+				$parameters = 'pgsql:host='.$config['host'].(isset($config['port']) ? ' port='.$config['port']:'').($database ? ' dbname='.$database:'');
+				$this->pdo = new \PDO($parameters, $user, $password);
+				break;
+			case 'mssql':
+				$parameters = 'mssql:host='.$config['host'].($database ? ';dbname='.$database:'');
+				$this->pdo = new \PDO($parameters, $user, $password);
+				break;
+			case 'sqlite':
+				$this->pdo = new \PDO('sqlite:'.$database);
+	
+				$this->pdo->sqliteCreateFunction('concat', function() {
+					return implode('', func_get_args());
+				});
+				
+				$this->pdo->sqliteCreateFunction('md5', function($a) {
+					return md5($a);
+				}, 1);
+
+				break;
+			default:
+				$parameters = 'mysql:host='.$config['host'].(isset($config['port']) ? ';port='.$config['port']:'').($database ? ';dbname='.$database:'');
+				$this->pdo = new \PDO($parameters, $user, $password, [\PDO::MYSQL_ATTR_FOUND_ROWS => true, \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8']);
+		}
+		$this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+	}
+
+	/**
 	 * Get the PDO instance.
 	 * @param boolean $useDatabase Connect to database.
 	 * @return \PDO
 	 */
-	public function getPDO($useDatabase=true) {
+	public function getPDO() {
 		if(!$this->pdo) {
-			$config = $this->config;
-			$driver = $config['driver'];
-			$user = isset($config['user']) ? $config['user']:'root';
-			$password = isset($config['password']) ? $config['password']:'';
-			$database = isset($config['database']) && $useDatabase ? $config['database']:null;
-
-			switch($driver) {
-				case 'pgsql':
-					$parameters = 'pgsql:host='.$config['host'].(isset($config['port']) ? ' port='.$config['port']:'').($database ? ' dbname='.$database:'');
-					$this->pdo = new \PDO($parameters, $user, $password);
-					break;
-				case 'mssql':
-					$parameters = 'mssql:host='.$config['host'].($database ? ';dbname='.$database:'');
-					$this->pdo = new \PDO($parameters, $user, $password);
-					break;
-				case 'sqlite':
-					$this->pdo = new \PDO('sqlite:'.$database);
-		
-					$this->pdo->sqliteCreateFunction('concat', function() {
-						return implode('', func_get_args());
-					});
-					
-					$this->pdo->sqliteCreateFunction('md5', function($a) {
-						return md5($a);
-					}, 1);
-
-					break;
-				default:
-					$parameters = 'mysql:host='.$config['host'].(isset($config['port']) ? ';port='.$config['port']:'').($database ? ';dbname='.$database:'');
-					$this->pdo = new \PDO($parameters, $user, $password, [\PDO::MYSQL_ATTR_FOUND_ROWS => true, \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES utf8']);
-			}
-			$this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
+			$this->buildPDO();
 		}
 
 		return $this->pdo;
