@@ -174,10 +174,12 @@ class Kernel implements \ArrayAccess {
 	 * @return \Asgard\Cache\CacheInterface
 	 */
 	public function getCache() {
-		if($this->cache) {
+		if(!$this->cache) {
 			$class = $this->getConfig()['cache'];
+			if(!$class)
+				return;
 			$reflector = new \ReflectionClass($class);
-			return $reflector->newInstanceArgs([$this->params['root'].'/storage/cache/']);
+			$this->cache = $reflector->newInstanceArgs([$this->params['root'].'/storage/cache/']);
 		}
 		else
 			return $this->cache;
