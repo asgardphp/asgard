@@ -307,6 +307,12 @@ class HttpKernel implements HttpKernelInterface {
 		$controller = new $controllerClass();
 		$controller->setContainer($this->container);
 
+		$this->prepareController($controller, $action, $request, $route);
+
+		return $controller->run($action, $request);
+	}
+
+	public function prepareController($controller, $action, Request $request, Route $route=null) {
 		$this->addFilters($controller, $action, $request, $route);
 
 		if($this->templateEngineFactory)
@@ -315,8 +321,6 @@ class HttpKernel implements HttpKernelInterface {
 			foreach($this->templatePathSolvers as $cb)
 				$controller->addTemplatePathSolver($cb);
 		}
-
-		return $controller->run($action, $request);
 	}
 
 	/**
