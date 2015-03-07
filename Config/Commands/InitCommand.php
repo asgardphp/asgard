@@ -36,7 +36,7 @@ class InitCommand extends \Asgard\Console\Command {
 	 * {@inheritDoc}
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
-		$this->initConfig('yml.yml');
+		$this->initConfig('key.yml');
 	}
 
 	/**
