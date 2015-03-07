@@ -38,8 +38,7 @@ class ErrorHandler {
 	protected $debug;
 
 	public function __construct() {
-		if(php_sapi_name() === 'cli')
-			$this->debug = true;
+		$this->debug = true;
 	}
 
 	/**
@@ -173,7 +172,7 @@ class ErrorHandler {
 		if($kill) {
 			if(!headers_sent())
 				header(isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL']:''.' 500 Internal Server Error', true, 500);
-			if($this->debug) {
+			if(php_sapi_name() === 'cli' || $this->debug) {
 				$trace = $this->getBacktraceFromException($e);
 
 				if($e instanceof PSRException)

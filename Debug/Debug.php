@@ -153,7 +153,12 @@ EOT;
 				$r .= '<div style="display:none"><ul>';
 				foreach($next['args'] as $arg) {
 					$r .= '<li>';
-					$r .= '<pre>'.static::var_dump_to_string($arg).'</pre>';
+					if(gettype($arg) === 'object')
+						$r .= '<pre>'.get_class($arg).'</pre>';
+					elseif(gettype($arg) === 'array')
+						$r .= '<pre>Array('.count($arg).')</pre>';
+					else
+						$r .= '<pre>'.$arg.'</pre>';
 					$r .= "</li>\n";
 				}
 				$r .= '</ul></div>';
