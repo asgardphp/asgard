@@ -132,10 +132,9 @@ class EntityRelation {
 
 	/**
 	 * Get the table of a HMABT table.
-	 * @param  string $prefix table prefix
 	 * @return string
 	 */
-	public function getAssociationTable($prefix=null) {
+	public function getAssociationTable() {
 		if($this->type() !== 'HMABT')
 			throw new \Exception('Association table can only be used for HMABT relations.');
 
@@ -150,9 +149,9 @@ class EntityRelation {
 			$relationEntityShortName = $this->getTargetDefinition()->getShortName();
 
 		if($entityShortName < $relationEntityShortName)
-			return $prefix.$entityShortName.'_'.$relationEntityShortName;
+			return $this->dataMapper->getPrefix().$entityShortName.'_'.$relationEntityShortName;
 		else
-			return $prefix.$relationEntityShortName.'_'.$entityShortName;
+			return $this->dataMapper->getPrefix().$relationEntityShortName.'_'.$entityShortName;
 	}
 
 	/**

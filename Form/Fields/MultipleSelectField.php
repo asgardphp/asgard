@@ -79,4 +79,15 @@ class MultipleSelectField extends \Asgard\Form\Field {
 
 		return $this->getTopForm()->getWidget('checkbox', $this->name.'[]', $value, $options);
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getValidationRules() {
+		if(isset($this->options['choices'])) {
+			$validation['allin'] = [array_keys($this->options['choices'])];
+		}
+
+		return $validation;
+	}
 }

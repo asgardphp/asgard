@@ -80,6 +80,10 @@ class DataMapper implements DataMapperInterface {
 		return $this->getOrmFactory()->create($definition, $this, $this->locale, $this->prefix);
 	}
 
+	public function getPrefix() {
+		return $this->prefix;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */

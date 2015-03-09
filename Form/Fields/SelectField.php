@@ -70,4 +70,15 @@ class SelectField extends \Asgard\Form\Field {
 		}
 		return $radios;
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getValidationRules() {
+		if(isset($this->options['choices'])) {
+			$validation['in'] = [array_keys($this->options['choices'])];
+		}
+
+		return $validation;
+	}
 }
