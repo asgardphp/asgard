@@ -558,7 +558,7 @@ class DAL {
 	 * @return string
 	 */
 	protected function replace($condition, $setTable=true) {
-		$condition = preg_replace_callback('/[a-z_][a-zA-Z0-9._]*(?![^\(]*\))/', function($matches) use($setTable) {
+		$condition = preg_replace_callback('/(?<![\.a-zA-Z0-9_`\(\)])[a-z_][a-zA-Z0-9._]*(?![^\(]*\))/', function($matches) use($setTable) {
 			if($setTable && strpos($matches[0], '.')===false && count($this->joins) > 0 && count($this->tables)===1)
 				$matches[0] = array_keys($this->tables)[0].'.'.$matches[0];
 
@@ -584,10 +584,7 @@ class DAL {
 	 */
 	protected function identifierQuotes($str) {
 		#for every word
-		return preg_replace_callback('/(?<=\s|^)[a-zA-Z0-9._]*/', function($matches) {
-			#if the word in not only uppercase letters (sql keyword)
-			if(!preg_match('/[a-z0-9._]/', $matches[0]))
-				return $matches[0];
+		return preg_replace_callback('/(?<=\s|^)[a-z_][a-zA-Z0-9._]*/', function($matches) {
 			$res = [];
 			foreach(explode('.', $matches[0]) as $substr)
 				$res[] = '`'.$substr.'`';
@@ -605,7 +602,7 @@ class DAL {
 			return '*';
 		else {
 			foreach($this->columns as $alias=>$table) {
-				if($alias !== $table) {
+				if((string)$alias !== (string)$table) {
 					if($this->isIdentifier($table))
 						$select[] = $this->identifierQuotes($table).' AS '.$this->identifierQuotes($alias);
 					else
