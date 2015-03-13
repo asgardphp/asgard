@@ -72,6 +72,7 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			$form = new \Asgard\Entityform\EntityForm($entity, $params, $request, $EntityFieldSolver, $container['dataMapper']);
 			$form->setWidgetManager(clone $container['WidgetManager']);
 			$form->setTranslator($container['translator']);
+			$form->setValidatorFactory($container['validator_factory']);
 			return $form;
 		});
 		$container->setParentClass('form', 'Asgard\Form\FormInterface');
@@ -81,6 +82,7 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			$form = new \Asgard\Form\Form($name, $params, $request, $fields);
 			$form->setWidgetManager(clone $container['WidgetManager']);
 			$form->setTranslator($container['translator']);
+			$form->setValidatorFactory($container['validator_factory']);
 			return $form;
 		});
 
@@ -145,6 +147,10 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		});
 
 		#Common
+		$container->setParentClass('intl', 'Asgard\Common\Intl');
+		$container->register('intl', function($container) {
+			return \Asgard\Common\Intl::singleton()->setTranslator($container['translator']);
+		});
 		$container->setParentClass('paginator', 'Asgard\Common\PaginatorInterface');
 		$container->register('paginator', function($container, $count, $page, $per_page) {
 			return new \Asgard\Common\Paginator($count, $page, $per_page, $container['httpKernel']->getRequest());
@@ -159,11 +165,12 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		$container->register('validator', function($container) {
 			$validator = new \Asgard\Validation\Validator;
 			$validator->setRegistry($container['rulesregistry']);
+			$validator->setTranslator($container['translator']);
 			return $validator;
 		});
 		$container->setParentClass('validator_factory', 'Asgard\Validation\ValidatorFactoryInterface');
 		$container->register('validator_factory', function($container) {
-			return new \Asgard\Validation\ValidatorFactory($container['rulesRegistry']);
+			return new \Asgard\Validation\ValidatorFactory($container['rulesRegistry'], $container['translator']);
 		});
 		$container->setParentClass('rulesregistry', 'Asgard\Validation\RulesRegistryInterface');
 		$container->register('rulesregistry', function() { return new \Asgard\Validation\RulesRegistry; } );

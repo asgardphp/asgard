@@ -86,7 +86,7 @@ class Validator implements ValidatorInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function setTranslator(TranslatorInterface $translator) {
+	public function setTranslator(TranslatorInterface $translator=null) {
 		$this->translator = $translator;
 		return $this;
 	}

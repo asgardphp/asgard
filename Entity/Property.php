@@ -32,6 +32,14 @@ class Property {
 		$this->params = $params;
 	}
 
+	public function getFormParameters() {
+		$params = $this->get('form');
+		if($this->get('in'))
+			$params['choices'] = $this->get('in');
+		
+		return $params;
+	}
+
 	/**
 	 * __sleep magic method.
 	 * @return array
@@ -180,6 +188,8 @@ class Property {
 		$validator->rules($rules);
 		if($this->get('required'))
 			$validator->rule('required', true);
+		if($this->get('in'))
+			$validator->rule('in', [array_keys($this->get('in'))]);
 	}
 
 	/**

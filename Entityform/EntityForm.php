@@ -217,7 +217,10 @@ class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 		}
 		elseif($field instanceof \Asgard\Form\Field) {
 			$options = $this->getEntityFieldOptions($property);
-			$options['default'] = $this->getDefaultValue($entity, $name, $property, $locale);
+			if(isset($options['hidden']) && $options['hidden'])
+				$options['default'] = '';
+			else
+				$options['default'] = $this->getDefaultValue($entity, $name, $property, $locale);
 			$field->setOptions($options);
 		}
 
@@ -230,17 +233,8 @@ class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 	 * @return array
 	 */
 	protected function getEntityFieldOptions(\Asgard\Entity\Property $property) {
-		$options = [];
+		$options = $property->getFormParameters();
 		$options['form'] = $this;
-
-		if($property->get('form.validation')) {
-			$options['validation'] = $property->get('form.validation');
-			if($property->get('form.messages'))
-				$options['messages'] = $property->get('form.messages');
-		}
-
-		if($property->get('form.hidden'))
-			$options['hidden'] = true;
 
 		return $options;
 	}
@@ -254,9 +248,7 @@ class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 	 * @return mixed
 	 */
 	protected function getDefaultValue(\Asgard\Entity\Entity $entity, $name, $property, $locale) {
-		if($property->get('form.hidden'))
-			return '';
-		elseif($entity->get($name, $locale) !== null)
+		if($entity->get($name, $locale) !== null)
 			return $entity->get($name, $locale);
 	}
 

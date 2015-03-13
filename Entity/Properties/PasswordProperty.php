@@ -18,6 +18,16 @@ class PasswordProperty extends \Asgard\Entity\Property {
 	/**
 	 * {@inheritDoc}
 	 */
+	public function getFormParameters() {
+		$params = $this->get('form');
+		if(!isset($params['hidden']))
+			$params['hidden'] = true;
+		return $params;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public function doSet($val, \Asgard\Entity\Entity $entity, $name) {
 		if($val === null)
 			return null;
