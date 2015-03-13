@@ -41,6 +41,18 @@ class Datetime extends \DateTime implements DatetimeInterface {
 		$this->setTimezone($this->carbon->getTimezone());
 	}
 
+	public function setTimestamp($time) {
+		return static::createFromCarbon($this->carbon->setTimestamp($time));
+	}
+
+	public function modify($modify) {
+		return static::createFromCarbon($this->carbon->modify($modify));
+	}
+
+	public function setISODate($year, $month, $day=1) {
+		return static::createFromCarbon($this->carbon->setISODate($year, $month, $day));
+	}
+
 	/**
 	 * Object cloning.
 	 */
@@ -88,7 +100,7 @@ class Datetime extends \DateTime implements DatetimeInterface {
 	 */
 	public function sub($interval) {
 		parent::sub($interval);
-		return $this->carbon->sub($interval);
+		return static::createFromCarbon($this->carbon->sub($interval));
 	}
 
 	/**
