@@ -36,8 +36,8 @@ interface CollectionORMInterface extends ORMInterface {
 	public function remove($ids);
 
 	/**
-	 * Truncate the relation entities.
+	 * Clear the relation entities.
 	 * @return CollectionORMInterface $this
 	 */
-	public function truncate();
+	public function clear();
 }

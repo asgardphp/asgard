@@ -65,7 +65,7 @@ class CollectionORM extends ORM implements CollectionORMInterface {
 				$ids[$k] = ['id'=>(int)$v, 'class'=>$this->relation->getTargetDefinition()->getClass()];
 		}
 
-		$this->truncate();
+		$this->clear();
 
 		if(!$ids)
 			return $this;
@@ -204,7 +204,7 @@ class CollectionORM extends ORM implements CollectionORMInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function truncate() {
+	public function clear() {
 		switch($this->relation->type()) {
 			case 'hasOne':#todo also update parent entity
 			case 'hasMany':
