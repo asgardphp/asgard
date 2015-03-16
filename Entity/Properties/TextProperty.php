@@ -11,7 +11,7 @@ class TextProperty extends \Asgard\Entity\Property {
 	 */
 	public function getORMParameters() {
 		return [
-			'type' => 'string',
+			'type' => 'text',
 		];
 	}
 }

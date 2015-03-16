@@ -279,9 +279,9 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 
 		#property
 		$property = Classes\News::property('title');
-		$this->assertTrue($property instanceof \Asgard\Entity\Properties\TextProperty);
+		$this->assertTrue($property instanceof \Asgard\Entity\Properties\StringProperty);
 		$this->assertEquals('title', $property->getName());
-		$this->assertEquals('text', $property->get('type'));
+		$this->assertEquals('string', $property->get('type'));
 
 		#properties
 		$properties = Classes\News::properties();

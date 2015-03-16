@@ -2,16 +2,16 @@
 namespace Asgard\Entity\Properties;
 
 /**
- * Longtext Property.
+ * String Property.
  * @author Michel Hognerud <michel@hognerud.com>
  */
-class LongtextProperty extends \Asgard\Entity\Property {
+class StringProperty extends \Asgard\Entity\Property {
 	/**
 	 * {@inheritDoc}
 	 */
 	public function getORMParameters() {
 		return [
-			'type' => 'text',
+			'type' => 'string',
 		];
 	}
 }

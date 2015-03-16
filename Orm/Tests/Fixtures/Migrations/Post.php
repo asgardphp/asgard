@@ -12,7 +12,7 @@ class Post extends \Asgard\Entity\Entity {
 			],
 			'posted' => 'date',
 			'content' => [
-				'type' => 'longtext',
+				'type' => 'text',
 				'i18n' => true
 			],
 			'author' => [

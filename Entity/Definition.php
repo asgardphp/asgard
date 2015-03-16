@@ -285,7 +285,7 @@ class Definition {
 	public function addProperty($name, $property=null) {
 		$name = strtolower($name);
 		if($property === null)
-			$property = 'text';
+			$property = 'string';
 		if(is_string($property))
 			$property = ['type'=>$property];
 		if(is_array($property)) {
@@ -297,7 +297,7 @@ class Definition {
 			}
 
 			if(!isset($property['type']) || !$property['type'])
-				$property['type'] = 'text';
+				$property['type'] = 'string';
 
 			$type = $property['type'];
 			$property = $this->getContainer()->make('Asgard.Entity.PropertyType.'.$type, [$property], function($params) use($type) {
