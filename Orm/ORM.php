@@ -123,6 +123,7 @@ class ORM implements ORMInterface {
 		$table = $this->getTable();
 		$alias = $reverseRelationName;
 
+		$this->where = $this->processConditions($this->where);
 		$where = $this->updateConditions($this->where, $table, $alias);
 
 		return $this->dataMapper->orm($relation_entity)
@@ -141,6 +142,8 @@ class ORM implements ORMInterface {
 		foreach($conditions as $k=>$v) {
 			if(is_array($v))
 				$v = $this->updateConditions($v, $table, $alias);
+			else
+				$v = preg_replace('/(?<![\.a-zA-Z0-9-_`\(\)])'.$table.'\./', $alias.'.', $v);
 			$k = preg_replace('/(?<![\.a-zA-Z0-9-_`\(\)])'.$table.'\./', $alias.'.', $k);
 			$res[$k] = $v;
 		}
@@ -695,8 +698,10 @@ class ORM implements ORMInterface {
 	protected function processConditions(array $conditions) {
 		foreach($conditions as $k=>$v) {
 			if(!is_array($v)) {
-				if(is_numeric($k))
+				if(is_numeric($k)) {
 					$newK = $k;
+					$v = $this->replaceTable($v);
+				}
 				else
 					$newK = $this->replaceTable($k);
 				$conditions[$newK] = $v;

@@ -57,6 +57,19 @@ class Tracker {
 			if(isset($tracking[$migration]))
 				$migrations[$migration] = array_merge($migrations[$migration], $tracking[$migration]);
 		}
+
+		uasort($migrations, function($a, $b) {
+			if(isset($a['migrated']) && !isset($b['migrated']))
+				return -1;
+			elseif(!isset($a['migrated']) && isset($b['migrated']))
+				return 1;
+			elseif(isset($a['migrated']) && isset($b['migrated'])) {
+				if($a['migrated'] !== $b['migrated'])
+					return $a['migrated'] > $b['migrated'];
+			}
+			return $a['added'] > $b['added'];
+		});
+		
 		return $migrations;
 	}
 
@@ -197,10 +210,11 @@ class Tracker {
 				return -1;
 			elseif(!isset($a['migrated']) && isset($b['migrated']))
 				return 1;
-			elseif(isset($a['migrated']) && isset($b['migrated']))
-				return $a['migrated'] > $b['migrated'];
-			else
-				return $a['added'] > $b['added'];
+			elseif(isset($a['migrated']) && isset($b['migrated'])) {
+				if($a['migrated'] !== $b['migrated'])
+					return $a['migrated'] > $b['migrated'];
+			}
+			return $a['added'] > $b['added'];
 		});
 
 		$migrations = [];
@@ -209,29 +223,4 @@ class Tracker {
 
 		file_put_contents($this->dir.'/migrations.json', json_encode($migrations, JSON_PRETTY_PRINT));
 	}
-
-	// /**
-	//  * Persist migration statuses.
-	//  * @param  array $res
-	//  */
-	// protected function writeTracking($res) {
-	// 	uasort($res, function($a, $b) {
-	// 		if(isset($a['migrated']) && !isset($b['migrated']))
-	// 			return -1;
-	// 		elseif(!isset($a['migrated']) && isset($b['migrated']))
-	// 			return 1;
-	// 		elseif(isset($a['migrated']) && isset($b['migrated']))
-	// 			return $a['migrated'] > $b['migrated'];
-	// 		else
-	// 			return $a['added'] > $b['added'];
-	// 	});
-
-	// 	$tracking = [];
-	// 	foreach($res as $migration=>$params) {
-	// 		if(isset($params['migrated']))
-	// 			$tracking[$migration] = ['migrated'=>$params['migrated']];
-	// 	}
-
-	// 	file_put_contents($this->dir.'/tracking.json', json_encode($tracking, JSON_PRETTY_PRINT));
-	// }
 }
