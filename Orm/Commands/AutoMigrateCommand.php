@@ -63,15 +63,16 @@ class AutoMigrateCommand extends \Asgard\Console\Command {
 				$definitions[] = $definition;
 		}
 		$migration = $om->generateMigration($definitions, $migration);
-		if($mm->has($migration))
+		if($mm->has($migration)) {
 			$this->info('The migration was successfully generated.');
+
+			if($mm->migrate($migration))
+				$this->info('Migration succeded.');
+			else
+				$this->error('Migration failed.');
+		}
 		else
 			$this->error('The migration could not be generated.');
-
-		if($mm->migrate($migration))
-			$this->info('Migration succeded.');
-		else
-			$this->error('Migration failed.');
 	}
 
 	/**
