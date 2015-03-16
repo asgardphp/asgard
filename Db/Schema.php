@@ -31,7 +31,7 @@ class Schema implements SchemaInterface {
 	 */
 	public function emptyAll() {
 		foreach($this->listTables() as $table)
-			$this->db->query($this->getPlatform()->getTruncateTableSQL($table->getName()));
+			$this->emptyTable($table->getName());
 	}
 
 	/**
@@ -39,7 +39,7 @@ class Schema implements SchemaInterface {
 	 */
 	public function dropAll() {
 		foreach($this->listTables() as $table)
-			$this->db->query($this->getPlatform()->getDropTableSQL($table->getName()));
+			$this->drop($table->getName());
 	}
 
 	public function listTables() {
@@ -68,7 +68,7 @@ class Schema implements SchemaInterface {
 	 * {@inheritDoc}
 	 */
 	public function emptyTable($tableName) {
-		$this->db->query($this->getPlatform()->getTruncateTableSQL($tableName));
+		$this->db->query($this->getPlatform()->getTruncateTableSQL('`'.$tableName.'`'));
 	}
 
 	/**
@@ -76,7 +76,7 @@ class Schema implements SchemaInterface {
 	 */
 	public function drop($table) {
 		try {
-			$this->db->query($this->getPlatform()->getDropTableSQL($table));
+			$this->db->query($this->getPlatform()->getDropTableSQL('`'.$table.'`'));
 		} catch(\Asgard\Db\DBException $e) {}
 	}
 
