@@ -36,6 +36,6 @@ class ShowEnvironmentCommand extends \Asgard\Console\Command {
 	 * {@inheritDoc}
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
-		$this->info('You are now using enviornment: '.$this->kernel->getEnv());
+		$this->info('You are now using environment: '.$this->kernel->getEnv());
 	}
 }

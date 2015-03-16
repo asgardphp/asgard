@@ -292,7 +292,7 @@ class ORM implements ORMInterface {
 	 *
 	 * @return \Asgard\Entity\Entity
 	*/
-	protected function toEntity(array $raw, \Asgard\Entity\Definition $definition=null) {
+	protected function hydrate(array $raw, \Asgard\Entity\Definition $definition=null) {
 		if(!$definition)
 			$definition = $this->definition;
 		$new = $definition->make([], $this->locale);
@@ -326,7 +326,7 @@ class ORM implements ORMInterface {
 		if(!($r = $this->tmp_dal->next()))
 			return null;
 		else
-			return $this->toEntity($r);
+			return $this->hydrate($r);
 	}
 
 	/**
@@ -534,7 +534,7 @@ class ORM implements ORMInterface {
 		foreach($rows as $row) {
 			if(!$row['id'])
 				continue;
-			$entities[] = $this->toEntity($row);
+			$entities[] = $this->hydrate($row);
 			$ids[] = $row['id'];
 		}
 
@@ -605,7 +605,7 @@ class ORM implements ORMInterface {
 							$filter = array_values($filter);
 							$mres = [];
 							foreach($filter as $m)
-								$mres[] = $this->toEntity($m, $relationDefinition);
+								$mres[] = $this->hydrate($m, $relationDefinition);
 							$entity->$relationName = $mres;
 						}
 						break;

@@ -94,7 +94,7 @@ class Kernel implements \ArrayAccess {
 	}
 
 	/**
-	 * Set the enviornment.
+	 * Set the environment.
 	 * @param string $env
 	 */
 	public function setEnv($env) {
@@ -142,7 +142,7 @@ class Kernel implements \ArrayAccess {
 	}
 
 	/**
-	 * Set the default enviornment.
+	 * Set the default environment.
 	 */
 	protected function setDefaultEnvironment() {
 		#Using _ENV_ and $_SERVER only as the last chance to guess the environment.

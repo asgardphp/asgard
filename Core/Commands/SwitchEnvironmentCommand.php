@@ -39,7 +39,7 @@ class SwitchEnvironmentCommand extends \Asgard\Console\Command {
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$env = $this->input->getArgument('env');
 		\Asgard\File\FileSystem::write($this->kernel['root'].'/storage/environment', $env);
-		$this->info('You are now using enviornment: '.$env);
+		$this->info('You are now using environment: '.$env);
 	}
 
 	/**
