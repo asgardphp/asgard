@@ -11,7 +11,7 @@ class Post2 extends \Asgard\Entity\Entity {
 				]
 			],
 			'content2' => [
-				'type' => 'longtext',
+				'type' => 'text',
 			],
 			'author' => [
 				'type' => 'entity',

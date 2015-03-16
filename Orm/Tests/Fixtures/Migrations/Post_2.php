@@ -30,7 +30,7 @@ class Post extends \Asgard\Migration\DBMigration {
 		});
 		
 		$this->container['schema']->table('post', function($table) {
-			$table->addColumn('content2', 'text', [
+			$table->addColumn('content2', 'string', [
 			]);
 			$table->changeColumn('title', [
 				'default' => 'b',

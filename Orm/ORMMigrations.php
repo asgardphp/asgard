@@ -173,6 +173,12 @@ class ORMMigrations {
 			if(isset($definition->get('orm')['indexes'])) {
 				foreach($definition->get('orm')['indexes'] as $index) {
 					$index['type'] = strtoupper($index['type']);
+
+					foreach($index['columns'] as $col) {
+						if(in_array($table->getColumn($col)->getType()->getName(), ['text', 'blob']))
+							throw new \Exception('Table '.$table->getName().' cannot have indexes with text/blog columns.');
+					}
+
 					if($index['type'] == 'PRIMARY')
 						$table->setPrimaryKey($index['columns'], 'PRIMARY');
 					else {

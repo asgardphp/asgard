@@ -99,7 +99,7 @@ class PolymorphicCollectionORM implements CollectionORMInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function truncate() { throw new \Exception('Not implemented'); }
+	public function clear() { throw new \Exception('Not implemented'); }
 
 	/**
 	 * {@inheritDoc}
