@@ -39,6 +39,8 @@ class Datetime extends \DateTime implements DatetimeInterface {
 	protected function update() {
 		$this->setTimestamp($this->carbon->getTimestamp());
 		$this->setTimezone($this->carbon->getTimezone());
+		parent::setDate($this->carbon->format('Y'), $this->carbon->format('m'), $this->carbon->format('d'));
+		parent::setTime($this->carbon->format('H'), $this->carbon->format('i'), $this->carbon->format('s'));
 	}
 
 	public function setTimestamp($time) {
@@ -331,7 +333,9 @@ class Datetime extends \DateTime implements DatetimeInterface {
 	 * {@inheritDoc}
 	 */
 	public function setDate($year, $month, $day) {
-		return static::createFromCarbon($this->carbon->setDate($year, $month, $day));
+		$this->carbon->setDate($year, $month, $day);
+		parent::setDate($year, $month, $day);
+		return $this;
 	}
 
 	/**
