@@ -432,7 +432,7 @@ class Definition {
 		if($this->hasProperty($name)) {
 			if($this->property($name)->get('setHook')) {
 				$hook = $this->property($name)->get('setHook');
-				$value = call_user_func_array($hook, [$value]);
+				$value = call_user_func_array($hook, [$value, $entity]);
 			}
 
 			if($this->property($name)->get('i18n')) {

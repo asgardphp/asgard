@@ -211,7 +211,7 @@ class GenerateCommand extends \Asgard\Console\Command {
 			$container['hooks']->trigger('Asgard.Core.Generate.bundleBuild', [&$bundle, $root.'app/'.ucfirst($bundle['name']).'/', $generator]);
 		}
 
-		foreach($bundles as $name=>$bundle) {
+		foreach($bundles as $name=>&$bundle) {
 			$container['hooks']->trigger('Asgard.Core.Generate.postBundleBuild', [&$bundle, $root.'app/'.ucfirst($bundle['name']).'/', $generator]);
 
 			if($bundle['tests']) {

@@ -696,18 +696,20 @@ class ORM implements ORMInterface {
 	 * @return array FormInterfaceatted conditions.
 	*/
 	protected function processConditions(array $conditions) {
-		foreach($conditions as $k=>$v) {
-			if(!is_array($v)) {
-				if(is_numeric($k))
-					$newK = $k;
+		foreach($cp=$conditions as $k=>$v) {
+			if(is_numeric($k) || in_array(strtolower($k), ['and', 'or'])) {
+				$newK = $k;
+				if(is_array($v))
+					$v = $this->processConditions($v);
 				else
-					$newK = $this->replaceTable($k);
-				$conditions[$newK] = $v;
-				if($newK != $k)
-					unset($conditions[$k]);
+					$v = $this->replaceTable($v);
 			}
 			else
-				$conditions[$k] = $this->processConditions($conditions[$k]);
+				$newK = $this->replaceTable($k);
+
+			if($newK != $k)
+				unset($conditions[$k]);
+			$conditions[$newK] = $v;
 		}
 
 		return $conditions;
