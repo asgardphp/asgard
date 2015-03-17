@@ -20,7 +20,7 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			if($cache = $container['kernel']->getCache())
 				return $cache;
 			else
-				return new \Asgard\Cache\Cache;#null cacher
+				return new \Asgard\Cache\Cache;#null cache
 		});
 
 		#Db

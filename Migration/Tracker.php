@@ -21,7 +21,7 @@ class Tracker {
 	 * Constructor.
 	 * @param string $dir
 	 */
-	public function __construct($dir, \Asgard\Db\DBInterface $db) {
+	public function __construct($dir, \Asgard\Db\DBInterface $db=null) {
 		$this->dir = $dir;
 		$this->db = $db;
 	}
