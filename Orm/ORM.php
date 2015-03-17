@@ -698,10 +698,8 @@ class ORM implements ORMInterface {
 	protected function processConditions(array $conditions) {
 		foreach($conditions as $k=>$v) {
 			if(!is_array($v)) {
-				if(is_numeric($k)) {
+				if(is_numeric($k))
 					$newK = $k;
-					$v = $this->replaceTable($v);
-				}
 				else
 					$newK = $this->replaceTable($k);
 				$conditions[$newK] = $v;
