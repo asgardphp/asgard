@@ -265,8 +265,8 @@ class ORMMigrations {
 			foreach($table->removedColumns as $colName=>$col)
 				$colsRes .= $this->dropColumn($colName);
 
-			foreach($table->addedIndexes as $indexName=>$index)
-				$colsRes .= $this->createIndex($indexName, $index);
+			foreach($table->addedIndexes as $index)
+				$colsRes .= $this->createIndex($index);
 
 			foreach($table->removedIndexes as $indexName=>$index)
 				$colsRes .= $this->dropIndex($indexName);
@@ -319,8 +319,8 @@ class ORMMigrations {
 		foreach($table->getColumns() as $colName=>$col)
 			$res .= $this->createColumn($colName, $col);
 
-		foreach($table->getIndexes() as $indexName=>$index)
-			$res .= $this->createIndex($indexName, $index);
+		foreach($table->getIndexes() as $index)
+			$res .= $this->createIndex($index);
 
 		$res .= "\n});\n\n";
 
@@ -370,17 +370,16 @@ class ORMMigrations {
 
 	/**
 	 * Build an index.
-	 * @param  string                      $indexName
 	 * @param  \Doctrine\DBAL\Schema\Index $index
 	 * @return string
 	 */
-	protected function createIndex($indexName, $index) {
+	protected function createIndex($index) {
 		if($index->isPrimary())
 			$res = "\n\t\$table->setPrimaryKey(\n\t\t".$this->outputPHP($index->getColumns(), 2)."\n\t);";
 		elseif($index->isUnique())
-			$res = "\n\t\$table->addUniqueIndex(\n\t\t".$this->outputPHP($index->getColumns(), 2).",\n\t\t'".$indexName."'\n\t);";
+			$res = "\n\t\$table->addUniqueIndex(\n\t\t".$this->outputPHP($index->getColumns(), 2)."\n\t);";
 		else
-			$res = "\n\t\$table->addIndex(\n\t\t".$this->outputPHP($index->getColumns(), 2).",\n\t\t'".$indexName."'\n\t);";
+			$res = "\n\t\$table->addIndex(\n\t\t".$this->outputPHP($index->getColumns(), 2)."\n\t);";
 		
 		return $res;
 	}
