@@ -895,7 +895,7 @@ class DAL {
 			$selectDal->replaceTable($this->getDefaultTable(), 'thisIsAUniqueAlias');
 
 			foreach($this->db->getSchema()->table($this->getDefaultTable(true))->getColumns() as $colName=>$col)
-				$selectDal->where('thisIsAUniqueAlias.'.$colName.' <> '.$this->getDefaultTable(true).'.'.$colName);
+				$selectDal->where('(thisIsAUniqueAlias.'.$colName.' IS NULL AND '.$this->getDefaultTable(true).'.'.$colName.' IS NULL OR thisIsAUniqueAlias.'.$colName.' = '.$this->getDefaultTable(true).'.'.$colName.')');
 
 			$selectSql = $selectDal->buildSQL();
 
@@ -969,7 +969,7 @@ class DAL {
 			$selectDal->replaceTable($this->getDefaultTable(), 'thisIsAUniqueAlias');
 
 			foreach($this->db->getSchema()->table($this->getDefaultTable(true))->getColumns() as $colName=>$col)
-				$selectDal->where('thisIsAUniqueAlias.'.$colName.' <> '.$this->getDefaultTable(true).'.'.$colName);
+				$selectDal->where('(thisIsAUniqueAlias.'.$colName.' IS NULL AND '.$this->getDefaultTable(true).'.'.$colName.' IS NULL OR thisIsAUniqueAlias.'.$colName.' = '.$this->getDefaultTable(true).'.'.$colName.')');
 			$selectSql = $selectDal->buildSQL();
 
 			$params = array_merge($params, $selectDal->getParameters());

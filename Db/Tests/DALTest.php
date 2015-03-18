@@ -246,9 +246,8 @@ class DALTest extends \PHPUnit_Framework_TestCase {
 			'title' => 'bla',
 			'content' => 'ble',
 		]);
-		#$this->assertEquals('UPDATE `news` `n` SET `title`=?, `content`=? WHERE `id`>?', $sql);
-		$this->assertEquals('UPDATE `news` SET `title`=?, `content`=? WHERE EXISTS (SELECT 1 FROM `news` `thisIsAUniqueAlias` WHERE `id`>? AND `thisIsAUniqueAlias`.`id` <> `news`.`id` AND `thisIsAUniqueAlias`.`title` <> `news`.`title` AND `thisIsAUniqueAlias`.`content` <> `news`.`content` AND `thisIsAUniqueAlias`.`category_id` <> `news`.`category_id` AND `thisIsAUniqueAlias`.`author_id` <> `news`.`author_id` AND `thisIsAUniqueAlias`.`score` <> `news`.`score` ORDER BY `id` ASC LIMIT 5)', $sql);
 		#$this->assertEquals('UPDATE `news` `n` SET `title`=?, `content`=? WHERE `id`>? ORDER BY `id` ASC LIMIT 5', $sql);
+		$this->assertEquals('UPDATE `news` SET `title`=?, `content`=? WHERE EXISTS (SELECT 1 FROM `news` `thisIsAUniqueAlias` WHERE `id`>? AND (thisIsAUniqueAlias.id IS NULL AND news.id IS NULL OR thisIsAUniqueAlias.id = news.id) AND (thisIsAUniqueAlias.title IS NULL AND news.title IS NULL OR thisIsAUniqueAlias.title = news.title) AND (thisIsAUniqueAlias.content IS NULL AND news.content IS NULL OR thisIsAUniqueAlias.content = news.content) AND (thisIsAUniqueAlias.category_id IS NULL AND news.category_id IS NULL OR thisIsAUniqueAlias.category_id = news.category_id) AND (thisIsAUniqueAlias.author_id IS NULL AND news.author_id IS NULL OR thisIsAUniqueAlias.author_id = news.author_id) AND (thisIsAUniqueAlias.score IS NULL AND news.score IS NULL OR thisIsAUniqueAlias.score = news.score) ORDER BY `id` ASC LIMIT 5)', $sql);
 		$this->assertEquals(['bla', 'ble', 3], $dal->getParameters());
 		$this->assertEquals(0, $dal->update(['title' => 'bla', 'content' => 'ble']));
 
@@ -265,7 +264,7 @@ class DALTest extends \PHPUnit_Framework_TestCase {
 		/* DELETE */
 		$dal = $this->getDAL()->from('news n')->where('id>?', 3)->orderBy('id ASC')->limit(5);
 		#$this->assertEquals('DELETE FROM `news` WHERE `id`>? ORDER BY `id` ASC LIMIT 5', $dal->buildDeleteSQL());
-		$this->assertEquals('DELETE FROM `news` WHERE EXISTS (SELECT 1 FROM `news` `thisIsAUniqueAlias` WHERE `id`>? AND `thisIsAUniqueAlias`.`id` <> `news`.`id` AND `thisIsAUniqueAlias`.`title` <> `news`.`title` AND `thisIsAUniqueAlias`.`content` <> `news`.`content` AND `thisIsAUniqueAlias`.`category_id` <> `news`.`category_id` AND `thisIsAUniqueAlias`.`author_id` <> `news`.`author_id` AND `thisIsAUniqueAlias`.`score` <> `news`.`score` ORDER BY `id` ASC LIMIT 5)', $dal->buildDeleteSQL());
+		$this->assertEquals('DELETE FROM `news` WHERE EXISTS (SELECT 1 FROM `news` `thisIsAUniqueAlias` WHERE `id`>? AND (thisIsAUniqueAlias.id IS NULL AND news.id IS NULL OR thisIsAUniqueAlias.id = news.id) AND (thisIsAUniqueAlias.title IS NULL AND news.title IS NULL OR thisIsAUniqueAlias.title = news.title) AND (thisIsAUniqueAlias.content IS NULL AND news.content IS NULL OR thisIsAUniqueAlias.content = news.content) AND (thisIsAUniqueAlias.category_id IS NULL AND news.category_id IS NULL OR thisIsAUniqueAlias.category_id = news.category_id) AND (thisIsAUniqueAlias.author_id IS NULL AND news.author_id IS NULL OR thisIsAUniqueAlias.author_id = news.author_id) AND (thisIsAUniqueAlias.score IS NULL AND news.score IS NULL OR thisIsAUniqueAlias.score = news.score) ORDER BY `id` ASC LIMIT 5)', $dal->buildDeleteSQL());
 		$this->assertEquals([3], $dal->getParameters());
 		$this->assertEquals(0, $dal->delete());
 
