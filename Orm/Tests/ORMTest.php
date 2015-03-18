@@ -3,7 +3,6 @@ namespace Asgard\Orm\Tests;
 
 class ORMTest extends \PHPUnit_Framework_TestCase {
 	public function testNamesConflict() {
-		// return;
 		$em = new \Asgard\Entity\EntityManager;
 		$dataMapper = new \Asgard\Orm\DataMapper(new \Asgard\Db\DB([
 			'driver' => 'sqlite',

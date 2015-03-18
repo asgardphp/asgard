@@ -8,6 +8,23 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 		\Asgard\Entity\EntityManager::setInstance($entityManager);
 	}
 
+	public function testChanged() {
+		#Fixtures
+		$a = new Classes\Comment([
+			'content' => 'foo',
+			'news' =>  new Classes\News([
+				'name' => 'bar',
+			])
+		]);
+
+		$a->name = 'bar';
+		$a->news = new Classes\News([
+			'content' => 'bar',
+		]);
+
+		$this->assertEquals(['content', 'news'], $a->getChanged());
+	}
+
 	public function testToArray() {
 		$date = new \Asgard\Common\Datetime;
 

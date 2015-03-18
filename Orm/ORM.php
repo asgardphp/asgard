@@ -317,7 +317,7 @@ class ORM implements ORMInterface {
 				$data[$k] = $entity->getDefinition()->property($k)->unserialize($v, $entity, $k);
 		}
 
-		return $entity->_set($data, $locale);
+		return $entity->_set($data, $locale, null, false);
 	}
 
 	/**

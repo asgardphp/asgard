@@ -293,14 +293,19 @@ class DataMapper implements DataMapperInterface {
 			}
 		}
 
+		$orm = $this->orm(get_class($entity));
+		$isNew = !isset($entity->id) || !$entity->id || $orm->reset()->where(['id'=>$entity->id])->getDAL()->count() === 0;
+
 		$vars = $i18n = [];
 		#process data
 		foreach($entity->getDefinition()->properties() as $name=>$prop) {
 			#i18n properties
 			if($prop->get('i18n')) {
 				$values = $entity->get($name, $entity->getLocales());
-				foreach($values as $locale=>$v)
-					$i18n[$locale][$name] = $entity->getDefinition()->property($name)->serialize($v);
+				foreach($values as $locale=>$v) {
+					if($isNew || in_array($name, $entity->getChangedI18N($locale)))
+						$i18n[$locale][$name] = $entity->getDefinition()->property($name)->serialize($v);
+				}
 			}
 			#relations with a single entity
 			elseif($prop->get('type') == 'entity') {
@@ -329,23 +334,18 @@ class DataMapper implements DataMapperInterface {
 				}
 			}
 			#other properties
-			else {
+			elseif($isNew || in_array($name, $entity->getChanged())) {
 				$value = $entity->get($name);
 				$vars[$name] = $prop->serialize($value);
 			}
 		}
 
 		#Persist
-		$orm = $this->orm(get_class($entity));
-		#new
-		if(!isset($entity->id) || !$entity->id)
-			$entity->id = $orm->getDAL()->insert($vars);
-		#existing
-		elseif(count($vars) > 0) {
-			if($orm->reset()->where(['id'=>$entity->id])->getDAL()->count())
-				$orm->reset()->where(['id'=>$entity->id])->getDAL()->update($vars);
-			else
+		if(count($vars) > 0) {
+			if($isNew)
 				$entity->id = $orm->getDAL()->insert($vars);
+			else
+				$orm->reset()->where(['id'=>$entity->id])->getDAL()->update($vars);
 		}
 
 		#Persist i18n
@@ -370,6 +370,8 @@ class DataMapper implements DataMapperInterface {
 		foreach($this->relations($entity->getDefinition()) as $relation => $params) {
 			if(!isset($entity->data['properties'][$relation]))
 				continue;
+			if(!$isNew && !in_array($relation, $entity->getChanged()))
+				continue;
 			$rel = $this->relation($entity->getDefinition(), $relation);
 
 			if($rel->get('many'))
@@ -377,6 +379,8 @@ class DataMapper implements DataMapperInterface {
 			elseif(!$rel->reverse()->get('many'))
 				$this->related($entity, $relation)->sync($entity->data['properties'][$relation]);
 		}
+
+		$entity->resetChanged();
 
 		return $entity;
 	}
@@ -414,15 +418,11 @@ class DataMapper implements DataMapperInterface {
 	public function getRelated(\Asgard\Entity\Entity $entity, $name) {
 		$orm = $this->related($entity, $name);
 		$rel = $this->relation($entity->getDefinition(), $name);
-		// d($orm);
-		// try {
+
 		if($rel->get('many'))
 			return $orm->get();
 		else
 			return $orm->first();
-	// }catch(\Exception $e){
-	// 	d($orm);
-	// }
 	}
 
 	/**

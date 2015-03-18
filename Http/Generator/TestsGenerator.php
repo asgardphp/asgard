@@ -40,7 +40,7 @@ class TestsGenerator {
 
 		$original = file_get_contents($dst);
 		$tests = trim($tests);
-		$res = preg_replace('/\s*(\}\s*\})$/', "\n\t\t".$tests."\n\t".'\1', $original);
+		$res = preg_replace('/(\s*\})$/', "\n\t\t".$tests."\n\t".'\1', $original);
 		\Asgard\File\FileSystem::write($dst, $res);
 	}
 
@@ -82,35 +82,43 @@ class TestsGenerator {
 			if(!$method)
 				$method = 'get';
 
+			$testName = str_replace('\\', '', $route->getController()).ucfirst($route->getAction());
+
 			#get
 			if($method === 'get' || $method === 'delete') {
 				if(strpos($route->getRoute(), ':') !== false) {
 					#get params
 					$res[] = '
-		/*
+	/*
+	public function test'.$testName.'() {
 		$browser = $this->createBrowser();
 		$this->assertTrue($browser->'.$method.'(\''.$route->getRoute().'\')->isOK(), \''.strtoupper($method).' '.$route->getRoute().'\');
-		*/
-		';
+	}
+	*/
+	';
 				}
 				else {
 					$res[] = '
+	public function test'.$testName.'() {
 		$browser = $this->createBrowser();
 		$this->assertTrue($browser->'.$method.'(\''.$route->getRoute().'\')->isOK(), \''.strtoupper($method).' '.$route->getRoute().'\');
-		';
+	}
+	';
 				}
 			}
 			else {
 				#post/put params
 				$res[] = '
-		/*
+	/*
+	public function test'.$testName.'() {
 		$browser = $this->createBrowser();
 		$this->assertTrue($browser->'.$method.'(\''.strtoupper($method).' '.$route->getRoute().'\',
 			[],
 			[],
 		)->isOK(), \''.$route->getRoute().'\');
-		*/
-		';
+	}
+	*/
+	';
 			}
 		}
 
@@ -126,8 +134,6 @@ class TestsGenerator {
 	protected function createTestFile($dst) {
 		\Asgard\File\FileSystem::write($dst, '<?php
 class '.explode('.', basename($dst))[0].' extends \Asgard\Http\Test {
-	public function test() {
-	}
 }');
 	}
 }
