@@ -19,6 +19,23 @@ class SelectWidget extends \Asgard\Form\Widget {
 		$value = $this->value;
 		$choices = isset($options['choices']) ? $options['choices']:[];
 
+		if($this->field
+			&& $this->field->getOption('placeholder')
+			&& !isset($options['placeholder'])
+			&& $this->field->required()) {
+				$options['placeholder'] = true;
+		}
+		if(isset($options['placeholder']) && $options['placeholder']) {
+			$placeholder = $options['placeholder'];
+			if($placeholder === true) {
+				if($translator = $this->form->getTopForm()->getTranslator())
+					$placeholder = $translator->trans('Choose');
+				else
+					$placeholder = 'Choose';
+			}
+			$choices = [''=>$placeholder] + $choices;
+		}
+
 		$str = '';
 		foreach($choices as $k=>$v) {
 			if($value == $k) {

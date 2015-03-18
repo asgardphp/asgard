@@ -50,6 +50,10 @@ abstract class Field {
 		$this->setoptions($options);
 	}
 
+	public function required() {
+		return !isset($this->getOption('validation')['required']) || !$this->getOption('validation')['required'];
+	}
+
 	/**
 	 * Return the name.
 	 * @return string

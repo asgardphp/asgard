@@ -18,9 +18,13 @@ class TimeWidget extends \Asgard\Form\Widget {
 
 		$form = $this->field->getParent()->getTopForm();
 
+		$seconds = array_combine(range(1, 60), range(1, 60));
+		$minutes = array_combine(range(1, 60), range(1, 60));
+		$hours = array_combine(range(1, 24), range(1, 24));
+
 		return
-			$form->getWidget('select', $this->field->name().'[second]', $second, ['id'=>$this->field->getID().'-second', 'choices'=>array_combine(range(1, 60), range(1, 60))]).
-			$form->getWidget('select', $this->field->name().'[minute]', $minute, ['id'=>$this->field->getID().'-minute', 'choices'=>array_combine(range(1, 60), range(1, 60))]).
-			$form->getWidget('select', $this->field->name().'[hour]', $hour, ['id'=>$this->field->getID().'-hour', 'choices'=>array_combine(range(1, 24), range(1, 24))]);
+			$form->getWidget('select', $this->field->name().'[second]', $second, ['id'=>$this->field->getID().'-second', 'choices'=>$seconds]).
+			$form->getWidget('select', $this->field->name().'[minute]', $minute, ['id'=>$this->field->getID().'-minute', 'choices'=>$minutes]).
+			$form->getWidget('select', $this->field->name().'[hour]', $hour, ['id'=>$this->field->getID().'-hour', 'choices'=>$hours]);
 	}
 }

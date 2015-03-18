@@ -18,8 +18,12 @@ class DateWidget extends \Asgard\Form\Widget {
 
 		$form = $this->field->getParent()->getTopForm();
 
-		return $form->getWidget('select', $this->field->name().'[day]', $day, ['id'=>$this->field->getID().'-day', 'choices'=>array_combine(range(1, 31), range(1, 31))]).
-			$form->getWidget('select', $this->field->name().'[month]', $month, ['id'=>$this->field->getID().'-month', 'choices'=>array_combine(range(1, 12), range(1, 12))]).
-			$form->getWidget('select', $this->field->name().'[year]', $year, ['id'=>$this->field->getID().'-year', 'choices'=>array_combine(range(date('Y'), date('Y')-50), range(date('Y'), date('Y')-50))]);
+		$days = array_combine(range(1, 31), range(1, 31));
+		$months = array_combine(range(1, 12), range(1, 12));
+		$years = array_combine(range(date('Y'), date('Y')-50), range(date('Y'), date('Y')-50));
+
+		return $form->getWidget('select', $this->field->name().'[day]', $day, ['id'=>$this->field->getID().'-day', 'choices'=>$days]).
+			$form->getWidget('select', $this->field->name().'[month]', $month, ['id'=>$this->field->getID().'-month', 'choices'=>$months]).
+			$form->getWidget('select', $this->field->name().'[year]', $year, ['id'=>$this->field->getID().'-year', 'choices'=>$years]);
 	}
 }
