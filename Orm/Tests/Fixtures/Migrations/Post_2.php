@@ -1,5 +1,5 @@
 <?php
-class Post extends \Asgard\Migration\DBMigration {
+class Post_123 extends \Asgard\Migration\DBMigration {
 	public function up() {
 		$this->container['schema']->create('author', function($table) {
 			$table->addColumn('id', 'integer', [

@@ -37,9 +37,13 @@ class BrowserTest extends \PHPUnit_Framework_TestCase {
 		\Asgard\File\FileSystem::copy(__DIR__.'/fixtures/migrations', __DIR__.'/migrations');
 		$mm = $this->getMigrationManager();
 		$mm->create('up();', 'down();', 'Amigration');
-		$this->assertTrue(file_exists(__DIR__.'/migrations/Amigration.php'));
+		$this->assertEquals(1, count(glob(__DIR__.'/migrations/Amigration_*.php')));
+
+		$c = $this->normalize(file_get_contents(glob(__DIR__.'/migrations/Amigration_*.php')[0]));
+		$c2 = preg_replace('/Amigration_[0-9]+/', 'Amigration_123', $c);
+
 		$this->assertEquals('<?php'."\n".
-'class Amigration extends \Asgard\Migration\Migration {'."\n".
+'class Amigration_123 extends \Asgard\Migration\Migration {'."\n".
 '	public function up() {'."\n".
 '		up();'."\n".
 '	}'."\n".
@@ -47,14 +51,18 @@ class BrowserTest extends \PHPUnit_Framework_TestCase {
 '	public function down() {'."\n".
 '		down();'."\n".
 '	}'."\n".
-'}', $this->normalize(file_get_contents(__DIR__.'/migrations/Amigration.php')));
+'}', $c2);
+
 		$this->assertRegExp('/\{'."\n".
-'    "Amigration": \{'."\n".
+'    "Amigration_[0-9]+": \{'."\n".
 '        "added": [0-9.]+'."\n".
 '    \}'."\n".
 '\}/', file_get_contents(__DIR__.'/migrations/migrations.json'));
 
-		$mm->remove('Amigration');
+		preg_match('/Amigration_[0-9]+/', $c, $matches);
+		$name = $matches[0];
+
+		$mm->remove($name);
 		$this->assertRegExp('/\[\s*\]/', file_get_contents(__DIR__.'/migrations/migrations.json'));
 	}
 

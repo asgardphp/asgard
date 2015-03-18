@@ -184,12 +184,16 @@ class MigrationsTest extends \PHPUnit_Framework_TestCase {
 		], 'Post');
 
 		$this->assertRegExp('/\{'."\n".
-'    "Post": \{'."\n".
+'    "Post_[0-9.]+": \{'."\n".
 '        "added": [0-9.]+'."\n".
 '    \}'."\n".
 '\}/', file_get_contents(__DIR__.'/migrations/migrations.json'));
 
-		$this->assertEquals(self::lines(file_get_contents(__DIR__.'/Fixtures/Migrations/Post_2.php')), self::lines(file_get_contents(__DIR__.'/migrations/Post.php')));
+		$c1 = self::lines(file_get_contents(__DIR__.'/Fixtures/Migrations/Post_2.php'));
+		$c2 = self::lines(file_get_contents(glob(__DIR__.'/migrations/Post_*.php')[0]));
+		$c2 = preg_replace('/Post_[0-9]+/', 'Post_123', $c2);
+
+		$this->assertEquals($c1, $c2);
 	}
 
 	private static function lines($s) {
