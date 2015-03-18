@@ -64,15 +64,9 @@ class DB implements DBInterface {
 				$this->pdo = new \PDO($parameters, $user, $password);
 				break;
 			case 'sqlite':
-				$this->pdo = new \PDO('sqlite:'.$database);
+				$pdo = $this->pdo = new \PDO('sqlite:'.$database);
 	
-				$this->pdo->sqliteCreateFunction('concat', function() {
-					return implode('', func_get_args());
-				});
-				
-				$this->pdo->sqliteCreateFunction('md5', function($a) {
-					return md5($a);
-				}, 1);
+				require_once __DIR__.'/sqlite_functions.php';
 
 				break;
 			default:
@@ -88,9 +82,8 @@ class DB implements DBInterface {
 	 * @return \PDO
 	 */
 	public function getPDO() {
-		if(!$this->pdo) {
+		if(!$this->pdo)
 			$this->buildPDO();
-		}
 
 		return $this->pdo;
 	}
