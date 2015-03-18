@@ -961,7 +961,6 @@ class DAL implements \Iterator {
 	public function buildDeleteSQL(array $del_tables=[]) {
 		$params = [];
 
-		// if($this->db->getConn()->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\MySqlPlatform) {
 		if($this->db->getPDO()->getAttribute(\PDO::ATTR_DRIVER_NAME) === 'mysql') {
 			$tables = $this->buildTables(count($del_tables) > 0);
 			$orderBy = $this->buildOrderBy();
@@ -973,7 +972,6 @@ class DAL implements \Iterator {
 			list($where, $whereparams) = $this->buildWhere();
 			$params = array_merge($params, $whereparams);
 
-			// if($this->db->getConn()->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\MySqlPlatform && $del_tables) {
 			if($this->db->getPDO()->getAttribute(\PDO::ATTR_DRIVER_NAME) === 'mysql' && $del_tables) {
 				foreach($del_tables as $k=>$v)
 					$del_tables[$k] = '`'.$v.'`';
