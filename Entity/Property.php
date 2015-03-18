@@ -186,6 +186,8 @@ class Property {
 		if(!is_array($rules))
 			$rules = [$rules];
 		$validator->rules($rules);
+		if($this->get('length'))
+			$validator->rule('maxlength', $this->get('length'));
 		if($this->get('required'))
 			$validator->rule('required', true);
 		if($this->get('in'))
