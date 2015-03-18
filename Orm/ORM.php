@@ -825,4 +825,25 @@ class ORM implements ORMInterface {
 
 		return $this;
 	}
+
+	function rewind() {
+		if(!$this->tmp_dal)
+			$this->tmp_dal = $this->getDAL();
+		$this->tmp_dal->rewind();
+	}
+
+	function current() {
+		if(!($r = $this->tmp_dal->current()))
+			return null;
+		else
+			return $this->hydrate($r);
+	}
+
+	function key() {
+		$this->tmp_dal->key();
+	}
+
+	function valid() {
+		return $this->tmp_dal->valid();
+	}
 }

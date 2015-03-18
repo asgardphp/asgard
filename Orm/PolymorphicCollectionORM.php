@@ -265,4 +265,12 @@ class PolymorphicCollectionORM implements CollectionORMInterface {
 	 * {@inheritDoc}
 	 */
 	public function reset() { throw new \Exception('Not implemented'); }
+
+	function rewind() { throw new \Exception('Not implemented'); }
+
+	function current() { throw new \Exception('Not implemented'); }
+
+	function key() { throw new \Exception('Not implemented'); }
+
+	function valid() { throw new \Exception('Not implemented'); }
 }

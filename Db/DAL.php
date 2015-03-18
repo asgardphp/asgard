@@ -6,7 +6,7 @@ namespace Asgard\Db;
  * @author Michel Hognerud <michel@hognerud.com>
  * @api
  */
-class DAL {
+class DAL implements \Iterator {
 	/**
 	 * Database instance.
 	 * @var DBInterface
@@ -82,6 +82,11 @@ class DAL {
 	 * @var Query
 	 */
 	protected $query;
+	/**
+	 * Current row.
+	 * @var array
+	 */
+	protected $current;
 
 	/**
 	 * Constructor.
@@ -246,7 +251,25 @@ class DAL {
 	public function next() {
 		if($this->query === null)
 			$this->query();
-		return $this->query->next();
+		return $this->current = $this->query->next();
+	}
+
+	public function current() {
+		if(!$this->current)
+			$this->next();
+		return $this->current;
+	}
+
+	function rewind() {
+		$this->query();
+	}
+
+	function key() {
+		return;
+	}
+
+	function valid() {
+		return is_array($this->current());
 	}
 
 	/**
