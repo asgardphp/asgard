@@ -152,10 +152,14 @@ class GenerateCommand extends \Asgard\Console\Command {
 						else
 							$generator->processFile(__DIR__.'/bundle_template/html/_entity/index.php', $dst.'html/'.strtolower($bundle['entities'][$name]['meta']['name'].'/index.php'), ['bundle'=>$bundle, 'entity'=>$entity]);
 						if($bundle['tests']) {
-							$indexRoute = $container['resolver']->getRouteFor([$class, 'index'])->getRoute();
+							$route = $container['resolver']->getRouteFor([$class, 'index']);
+							$indexRoute = $route->getRoute();
+							$testName = str_replace('\\', '', $route->getController()).ucfirst($route->getAction());
 							$tests[$indexRoute] = '
+	public function test'.$testName.'() {
 		$browser = $this->createBrowser();
-		$this->assertTrue($browser->get(\''.$indexRoute.'\')->isOK(), \'GET '.$indexRoute.'\');';
+		$this->assertTrue($browser->get(\''.$indexRoute.'\')->isOK(), \'GET '.$indexRoute.'\');
+	}';
 						}
 					}
 					if(in_array('show', $entity['front']) || isset($entity['front']['show'])) {
@@ -164,10 +168,14 @@ class GenerateCommand extends \Asgard\Console\Command {
 						else
 							$generator->processFile(__DIR__.'/bundle_template/html/_entity/show.php', $dst.'html/'.strtolower($bundle['entities'][$name]['meta']['name'].'/show.php'), ['bundle'=>$bundle, 'entity'=>$entity]);
 						if($bundle['tests']) {
-							$showRoute = $container['resolver']->getRouteFor([$class, 'show'])->getRoute();
+							$route = $container['resolver']->getRouteFor([$class, 'show']);
+							$showRoute = $route->getRoute();
+							$testName = str_replace('\\', '', $route->getController()).ucfirst($route->getAction());
 							$tests[$showRoute] = '
+	public function test'.$testName.'() {
 		$browser = $this->createBrowser();
-		$this->assertTrue($browser->get(\''.$showRoute.'\')->isOK(), \'GET '.$showRoute.'\');';
+		$this->assertTrue($browser->get(\''.$showRoute.'\')->isOK(), \'GET '.$showRoute.'\');
+	}';
 						}
 					}
 				}
@@ -185,13 +193,17 @@ class GenerateCommand extends \Asgard\Console\Command {
 				foreach($controller['actions'] as $action=>$params) {
 					if($bundle['tests']) {
 						try {
-							$actionRoute = $container['resolver']->getRouteFor([$class, 'index'])->getRoute();
+							$route = $container['resolver']->getRouteFor([$class, 'index']);
+							$actionRoute = $route->getRoute();
 						} catch(\Exception $e) {
 							continue;
 						}
+						$testName = str_replace('\\', '', $route->getController()).ucfirst($route->getAction());
 						$tests[$actionRoute] = '
+	public function test'.$testName.'() {
 		$browser = $this->createBrowser();
-		$this->assertTrue($browser->get(\''.$actionRoute.'\')->isOK(), \'GET '.$actionRoute.'\');';
+		$this->assertTrue($browser->get(\''.$actionRoute.'\')->isOK(), \'GET '.$actionRoute.'\');
+	}';
 					}
 					if($params['template'])
 						$templateFile = $dst.'html/'.strtolower(preg_replace('/Controller$/', '', $controller['name'])).'/'.$params['template'];
@@ -226,21 +238,21 @@ class GenerateCommand extends \Asgard\Console\Command {
 
 	/**
 	 * Add a new tests file.
-	 * @param array   $tests
-	 * @param string  $dst
-	 * @param boolean $overrideFiles
+	 * @param  array   $tests
+	 * @param  string  $dst
+	 * @param  boolean $overrideFiles
 	 * @return boolean
 	 */
 	protected function addToTests($tests, $dst, $overrideFiles=false) {
-		if($tests)
+		if(!$tests)
 			return true;
 
 		$res = '';
 		foreach($tests as $route=>$test) {
 			$test = trim($test);
 			if(strpos($route, ':') !== false)
-				$test = "/*\n\t\t".$test."\n"."\t\t*/";
-			$res .= "\t\t".$test."\n\n";
+				$test = "/*\n\t".$test."\n"."\t*/";
+			$res .= "\t".$test."\n\n";
 		}
 
 		if(!$overrideFiles && file_exists($dst))
@@ -248,9 +260,7 @@ class GenerateCommand extends \Asgard\Console\Command {
 
 		file_put_contents($dst, '<?php
 class '.basename($dst, '.php').' extends \Asgard\Http\Test {
-	public function test1() {
-		'.trim($res).'
-	}
+	'.trim($res).'
 }');
 
 		return true;
