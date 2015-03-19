@@ -20,6 +20,27 @@ class InstallCommand extends \Asgard\Console\Command {
 	 * {@inheritDoc}
 	 */
 	protected $description = 'Install a module into your application';
+	/**
+	 * Db.
+	 * @var \Asgard\Db\DBInterface
+	 */
+	protected $db;
+	/**
+	 * Schema.
+	 * @var \Asgard\Db\SchemaInterface
+	 */
+	protected $schema;
+
+	/**
+	 * Constructor.
+	 * @param \Asgard\Db\DBInterface                            $db
+	 * @param \Asgard\Db\SchemaInterface                        $schema
+	 */
+	public function __construct(\Asgard\Db\DBInterface $db, \Asgard\Db\SchemaInterface $schema) {
+		$this->db = $db;
+		$this->schema = $schema;
+		parent::__construct();
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -105,7 +126,7 @@ class InstallCommand extends \Asgard\Console\Command {
 			}
 		}
 
-		$publisher = new Publisher($this->getContainer(), $this->output);
+		$publisher = new Publisher($this->db, $this->schema, $this->output, $this->getContainer());
 
 		$publisher->publish($tmp.'/app', $root.'/app');
 		$publisher->publish($tmp.'/config', $root.'/config');

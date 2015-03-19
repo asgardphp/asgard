@@ -20,6 +20,27 @@ class PublishCommand extends \Asgard\Console\Command {
 	 * {@inheritDoc}
 	 */
 	protected $description = 'Publish a bundle files';
+	/**
+	 * Db.
+	 * @var \Asgard\Db\DBInterface
+	 */
+	protected $db;
+	/**
+	 * Schema.
+	 * @var \Asgard\Db\SchemaInterface
+	 */
+	protected $schema;
+
+	/**
+	 * Constructor.
+	 * @param \Asgard\Db\DBInterface                            $db
+	 * @param \Asgard\Db\SchemaInterface                        $schema
+	 */
+	public function __construct(\Asgard\Db\DBInterface $db, \Asgard\Db\SchemaInterface $schema) {
+		$this->db = $db;
+		$this->schema = $schema;
+		parent::__construct();
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -37,7 +58,7 @@ class PublishCommand extends \Asgard\Console\Command {
 		$migrate = $this->input->getOption('migrate');
 		$root = $this->getContainer()['kernel']['root'];
 
-		$publisher = new Publisher($this->getContainer(), $this->output);
+		$publisher = new Publisher($this->db, $this->schema, $this->output, $this->getContainer());
 
 		#copy app
 		if($publishApp && file_exists($bundle.'/app')) {
