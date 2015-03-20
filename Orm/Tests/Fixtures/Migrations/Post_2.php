@@ -1,7 +1,7 @@
 <?php
 class Post_123 extends \Asgard\Migration\DBMigration {
 	public function up() {
-		$this->container['schema']->create('author', function($table) {
+		$this->schema->create('author', function($table) {
 			$table->addColumn('id', 'integer', [
 				'notnull' => true,
 				'autoincrement' => true,
@@ -15,7 +15,7 @@ class Post_123 extends \Asgard\Migration\DBMigration {
 			);
 		});
 		
-		$this->container['schema']->create('category', function($table) {
+		$this->schema->create('category', function($table) {
 			$table->addColumn('id', 'integer', [
 				'notnull' => true,
 				'autoincrement' => true,
@@ -29,7 +29,7 @@ class Post_123 extends \Asgard\Migration\DBMigration {
 			);
 		});
 		
-		$this->container['schema']->table('post', function($table) {
+		$this->schema->table('post', function($table) {
 			$table->addColumn('content2', 'string', [
 			]);
 			$table->changeColumn('title', [
@@ -47,11 +47,11 @@ class Post_123 extends \Asgard\Migration\DBMigration {
 	}
 
 	public function down() {
-		$this->container['schema']->drop('author');
+		$this->schema->drop('author');
 		
-		$this->container['schema']->drop('category');
+		$this->schema->drop('category');
 		
-		$this->container['schema']->table('post', function($table) {
+		$this->schema->table('post', function($table) {
 			$table->addColumn('posted', 'date', [
 			]);
 			$table->changeColumn('title', [

@@ -40,22 +40,25 @@ class Tracker {
 
 	/**
 	 * Return the list of registered migratins.
+	 * @param  $db   Fetch the database information.
 	 * @return array
 	 */
-	public function getList() {
+	public function getList($db=true) {
 		if(!file_exists($this->dir.'/migrations.json'))
 			return [];
 		$migrations = json_decode(file_get_contents($this->dir.'/migrations.json'), true);
 
-		$this->createTable();
+		if($db) {
+			$tracking = [];
 
-		$tracking = [];
-		foreach($this->db->dal()->from('_migrations')->get() as $r)
-			$tracking[$r['name']] = ['migrated' => strtotime($r['migrated'])];
+			$this->createTable();
+			foreach($this->db->dal()->from('_migrations')->get() as $r)
+				$tracking[$r['name']] = ['migrated' => strtotime($r['migrated'])];
 
-		foreach($migrations as $migration=>$params) {
-			if(isset($tracking[$migration]))
-				$migrations[$migration] = array_merge($migrations[$migration], $tracking[$migration]);
+			foreach($migrations as $migration=>$params) {
+				if(isset($tracking[$migration]))
+					$migrations[$migration] = array_merge($migrations[$migration], $tracking[$migration]);
+			}
 		}
 
 		uasort($migrations, function($a, $b) {
@@ -105,7 +108,7 @@ class Tracker {
 	 * @return boolean            true if registered, false otherwise
 	 */
 	public function has($migration) {
-		$list = $this->getList();
+		$list = $this->getList(false);
 		return isset($list[$migration]);
 	}
 
@@ -156,7 +159,7 @@ class Tracker {
 	 * @param string $migrationName
 	 */
 	public function add($migrationName) {
-		$list = $this->getList();
+		$list = $this->getList(false);
 		if(isset($list[$migrationName]))
 			return;
 		$list[$migrationName] = ['added'=>time()+microtime()];
@@ -168,7 +171,7 @@ class Tracker {
 	 * @param  string $migrationName
 	 */
 	public function remove($migrationName) {
-		$list = $this->getList();
+		$list = $this->getList(false);
 		unset($list[$migrationName]);
 		$this->writeMigrations($list);
 	}

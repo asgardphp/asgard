@@ -295,6 +295,9 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			$container['console']->add($migrationUnmigrate);
 			$container['console']->add($migrationRefresh);
 
+			$migrationCreate = new \Asgard\Migration\Commands\CreateCommand($container['kernel']['root'].'/migrations');
+			$container['console']->add($migrationCreate);
+
 			$showEnv = new \Asgard\Core\Commands\PublishCommand($container['db'], $container['schema']);
 			$container['console']->add($showEnv);
 
