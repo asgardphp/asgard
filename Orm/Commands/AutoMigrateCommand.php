@@ -51,7 +51,7 @@ class AutoMigrateCommand extends \Asgard\Console\Command {
 	 * {@inheritDoc}
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
-		$migration = $this->input->getArgument('migration') ? $this->input->getArgument('migration'):'Automigrate';
+		$migration = $this->input->getArgument('migration') ? $this->input->getArgument('migration'):'Migration';
 
 		$dm = $this->dataMapper;
 		$mm = $this->MigrationManager;

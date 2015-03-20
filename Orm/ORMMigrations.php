@@ -272,7 +272,7 @@ class ORMMigrations {
 				$colsRes .= $this->dropIndex($indexName);
 
 			if($colsRes)
-				$res .= "\$this->container['schema']->table('$tableName', function(\$table) {".$colsRes."\n});\n\n";
+				$res .= "\$this->schema->table('$tableName', function(\$table) {".$colsRes."\n});\n\n";
 		}
 
 		return trim($res, "\n");
@@ -284,7 +284,7 @@ class ORMMigrations {
 	 * @return string
 	 */
 	protected function dropTable($table) {
-		return "\$this->container['schema']->drop('$table');\n\n";
+		return "\$this->schema->drop('$table');\n\n";
 	}
 
 	/**
@@ -314,7 +314,7 @@ class ORMMigrations {
 	 * @return string
 	 */
 	protected function createTable($tableName, $table) {
-		$res = "\$this->container['schema']->create('$tableName', function(\$table) {";
+		$res = "\$this->schema->create('$tableName', function(\$table) {";
 
 		foreach($table->getColumns() as $colName=>$col)
 			$res .= $this->createColumn($colName, $col);
