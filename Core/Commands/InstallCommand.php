@@ -36,7 +36,7 @@ class InstallCommand extends \Asgard\Console\Command {
 	 * @param \Asgard\Db\DBInterface                            $db
 	 * @param \Asgard\Db\SchemaInterface                        $schema
 	 */
-	public function __construct(\Asgard\Db\DBInterface $db, \Asgard\Db\SchemaInterface $schema) {
+	public function __construct(\Asgard\Db\DBInterface $db=null, \Asgard\Db\SchemaInterface $schema=null) {
 		$this->db = $db;
 		$this->schema = $schema;
 		parent::__construct();
