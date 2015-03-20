@@ -103,9 +103,6 @@ class Browser implements BrowserInterface {
 			array $headers=[],
 			array $server=[]
 		) {
-		if(defined('_TESTING_'))
-			file_put_contents(_TESTING_, $url."\n", FILE_APPEND);
-
 		#build request
 		$get = [];
 		$url = ltrim($url, '/');

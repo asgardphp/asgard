@@ -70,7 +70,7 @@ class PublishCommand extends \Asgard\Console\Command {
 
 		#copy tests
 		if($publishTests && file_exists($bundle.'/tests')) {
-			if($publisher->publish($bundle.'/tests', $root.'/tests'))
+			if($publisher->publishTests($bundle.'/tests', $root.'/tests'))
 				$this->info('Test files have been published.');
 			else
 				$this->comment('Test files could not be published.');

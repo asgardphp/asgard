@@ -55,6 +55,34 @@ class Publisher {
 	}
 
 	/**
+	 * Publish tests from a directory to another.
+	 * @param  string $src
+	 * @param  string $dstDir
+	 * @return boolean true for success
+	 */
+	public function publishTests($src, $dstDir) {
+		$r = true;
+		foreach(glob($src.'/*') as $file) {
+			if(basename($file) === 'ignore.txt') {
+				if(file_exists($dstDir.'/ignore.txt'))
+					$c = trim(file_get_contents($dstDir.'/ignore.txt'), "\n")."\n";
+				else
+					$c = '';
+				$c = trim($c, "\n")."\n";
+				$c .= file_get_contents($file);
+				$c = trim($c, "\n");
+				\Asgard\File\FileSystem::write($dstDir.'/ignore.txt', $c);
+			}
+			else {
+				$dst = $dstDir.'/'.basename($file);
+				if(!$this->copy($file, $dst))
+					$r = false;
+			}
+		}
+		return $r;
+	}
+
+	/**
 	 * Publish migration files.
 	 * @param  string  $src
 	 * @param  string  $dstDir

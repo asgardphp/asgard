@@ -52,31 +52,18 @@ class TestsGenerator {
 	protected function doGenerateTests(&$count) {
 		$root = $this->container['kernel']['root'];
 
-		exec('phpunit', $res);
-
-		if(!is_array($res))
-			return false;
-		if(strpos(implode("\n", $res), 'No tests executed') === false) {
-			if(strpos(implode("\n", $res), 'OK (') === false)
-				return false;
-		}
-
-		if(file_exists($root.'/tests/tested.txt'))
-			$tested = array_filter(explode("\n", file_get_contents($root.'/tests/tested.txt')));
-		else
-			$tested = [];
 		if(file_exists($root.'/tests/ignore.txt'))
-			$tested = array_merge(array_filter(explode("\n", file_get_contents($root.'/tests/ignore.txt'))));
-		\Asgard\File\FileSystem::delete($root.'/tests/tested.txt');
+			$ignore = array_merge(array_filter(explode("\n", file_get_contents($root.'/tests/ignore.txt'))));
+		else
+			$ignore = [];
 
 		$routes = $this->container['resolver']->getRoutes();
 
 		$res = [];
 		foreach($routes as $route) {
-			foreach($tested as $url) {
-				if($this->container['resolver']->matchWith($route->getRoute(), $url) !== false)
-					continue 2;
-			}
+			$routeStr = $route->getController().':'.$route->getAction();
+			if(in_array($routeStr, $ignore))
+				continue;
 
 			$method = strtolower($route->get('method'));
 			if(!$method)

@@ -22,43 +22,43 @@ class Route {
 	 */
 	protected $action;
 	/**
-	 * Route parameters.
+	 * Route options.
 	 * @var array
 	 */
-	protected $parameters;
+	protected $options;
 
 	/**
 	 * Constructor.
 	 * @param string          $route
 	 * @param string          $controller
 	 * @param string|callable $action
-	 * @param array           $parameters
+	 * @param array           $options
 	 */
-	public function __construct($route, $controller, $action, $parameters=[]) {
+	public function __construct($route, $controller, $action, $options=[]) {
 		$this->route = $route;
 		$this->controller = $controller;
 		$this->action = $action;
-		$this->parameters = $parameters;
+		$this->options = $options;
 	}
 
 	/**
-	 * Get an parameter.
+	 * Get an option.
 	 * @param  string $name
 	 * @return mixed
 	 */
 	public function get($name) {
-		if(!isset($this->parameters[$name]))
+		if(!isset($this->options[$name]))
 			return;
-		return $this->parameters[$name];
+		return $this->options[$name];
 	}
 
 	/**
-	 * Set a parameter.
+	 * Set a option.
 	 * @param string $name
 	 * @param mixed $value
 	 */
 	public function set($name, $value) {
-		$this->parameters[$name] = $value;
+		$this->options[$name] = $value;
 	}
 
 	/**
