@@ -5,7 +5,9 @@ class NewsHook extends \Asgard\Entity\Entity {
 	public static function definition(\Asgard\Entity\Definition $definition) {
 		$definition->properties = [
 			'title' => [
-				'setHook' => ['Asgard\Entity\Tests\Classes\NewsHook', 'reverse'],
+				'hooks' => [
+					'set' => ['Asgard\Entity\Tests\Classes\NewsHook', 'reverse'],
+				]
 			],
 		];
 
