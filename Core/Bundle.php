@@ -298,12 +298,6 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			$migrationCreate = new \Asgard\Migration\Commands\CreateCommand($container['kernel']['root'].'/migrations');
 			$container['console']->add($migrationCreate);
 
-			$showEnv = new \Asgard\Core\Commands\PublishCommand($container['db'], $container['schema']);
-			$container['console']->add($showEnv);
-
-			$showEnv = new \Asgard\Core\Commands\InstallCommand($container['db'], $container['schema']);
-			$container['console']->add($showEnv);
-
 			$showEnv = new \Asgard\Core\Commands\ShowEnvironmentCommand($container['kernel']);
 			$container['console']->add($showEnv);
 
