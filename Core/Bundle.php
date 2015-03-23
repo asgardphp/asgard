@@ -280,8 +280,8 @@ class Bundle extends \Asgard\Core\BundleLoader {
 				$migrationRollback = new \Asgard\Migration\Commands\RollbackCommand($root.'/migrations', $db, $schema);
 				$migrationUnmigrate = new \Asgard\Migration\Commands\UnmigrateCommand($root.'/migrations', $db, $schema);
 				$migrationRefresh = new \Asgard\Migration\Commands\RefreshCommand($container['kernel']['root'].'/migrations', $db, $schema);
-				$install = new \Asgard\Core\Commands\InstallCommand($container['kernel']['root'].'/migrations', $db, $schema);
-				$publish = new \Asgard\Core\Commands\PublishCommand($container['kernel']['root'].'/migrations', $db, $schema);
+				$install = new \Asgard\Core\Commands\InstallCommand($db, $schema);
+				$publish = new \Asgard\Core\Commands\PublishCommand($db, $schema);
 			}
 			else {
 				$migrationMigrate = new \Asgard\Migration\Commands\MigrateCommand($container['kernel']['root'].'/migrations');
@@ -289,8 +289,8 @@ class Bundle extends \Asgard\Core\BundleLoader {
 				$migrationRollback = new \Asgard\Migration\Commands\RollbackCommand($root.'/migrations');
 				$migrationUnmigrate = new \Asgard\Migration\Commands\UnmigrateCommand($root.'/migrations');
 				$migrationRefresh = new \Asgard\Migration\Commands\RefreshCommand($container['kernel']['root'].'/migrations');
-				$install = new \Asgard\Core\Commands\InstallCommand($container['kernel']['root'].'/migrations');
-				$publish = new \Asgard\Core\Commands\PublishCommand($container['kernel']['root'].'/migrations');
+				$install = new \Asgard\Core\Commands\InstallCommand;
+				$publish = new \Asgard\Core\Commands\PublishCommand;
 			}
 
 			$container['console']->add($migrationMigrate);
