@@ -609,8 +609,12 @@ class DAL implements \Iterator {
 		#for every word
 		return preg_replace_callback('/(?<=\s|^)[a-z_][a-zA-Z0-9._]*/', function($matches) {
 			$res = [];
-			foreach(explode('.', $matches[0]) as $substr)
-				$res[] = '`'.$substr.'`';
+			foreach(explode('.', $matches[0]) as $substr) {
+				if(preg_match('/^[a-z_][a-zA-Z0-9_]*$/', $substr))
+					$res[] = '`'.$substr.'`';
+				else
+					$res[] = $substr;
+			}
 			return implode('.', $res);
 		}, $str);
 	}
@@ -631,12 +635,8 @@ class DAL implements \Iterator {
 					else
 						$select[] = $table.' AS '.$this->identifierQuotes($alias);
 				}
-				else {
-					if($this->isIdentifier($table))
-						$select[] = $this->identifierQuotes($table);
-					else
-						$select[] = $table;
-				}
+				else
+					$select[] = $this->identifierQuotes($table);
 			}
 		}
 		return implode(', ', $select);
@@ -1180,7 +1180,7 @@ class DAL implements \Iterator {
 	 * @api
 	 */
 	public function count($what=null, $group_by=null) {
-		$r = $this->_function('count', $what, $group_by);
+		$r = $this->_function('COUNT', $what, $group_by);
 		if(!is_array($r))
 			$r = (int)$r;
 		return $r;
@@ -1194,7 +1194,7 @@ class DAL implements \Iterator {
 	 * @api
 	 */
 	public function min($what, $group_by=null) {
-		return $this->_function('min', $what, $group_by);
+		return $this->_function('MIN', $what, $group_by);
 	}
 
 	/**
@@ -1205,7 +1205,7 @@ class DAL implements \Iterator {
 	 * @api
 	 */
 	public function max($what, $group_by=null) {
-		return $this->_function('max', $what, $group_by);
+		return $this->_function('MAX', $what, $group_by);
 	}
 
 	/**
@@ -1216,7 +1216,7 @@ class DAL implements \Iterator {
 	 * @api
 	 */
 	public function avg($what, $group_by=null) {
-		return $this->_function('avg', $what, $group_by);
+		return $this->_function('AVG', $what, $group_by);
 	}
 
 	/**
@@ -1227,7 +1227,7 @@ class DAL implements \Iterator {
 	 * @api
 	 */
 	public function sum($what, $group_by=null) {
-		return $this->_function('sum', $what, $group_by);
+		return $this->_function('SUM', $what, $group_by);
 	}
 
 	/**
