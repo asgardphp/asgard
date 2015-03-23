@@ -321,11 +321,17 @@ class DataMapper implements DataMapperInterface {
 						if($rel->isPolymorphic())
 							$vars[$rel->getLinkType()] = get_class($relatedEntity);
 					}
-					elseif($relatedEntity) {
-						#array with class and id
+					elseif($relatedEntity !== null) {
 						if($rel->isPolymorphic()) {
-							$vars[$rel->getLinkType()] = $relatedEntity[0];
-							$vars[$link] = $relatedEntity[1];
+							if($relatedEntity) {
+								if(!is_array($relatedEntity))
+									throw new \Exception('Polymorphic entities must be an object or an array.');
+								#array with class and id
+								$vars[$rel->getLinkType()] = $relatedEntity[0];
+								$vars[$link] = $relatedEntity[1];
+							}
+							else
+								$vars[$rel->getLinkType()] = $vars[$link] = null;
 						}
 						#id
 						else
