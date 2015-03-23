@@ -307,42 +307,44 @@ class DataMapper implements DataMapperInterface {
 						$i18n[$locale][$name] = $entity->getDefinition()->property($name)->serialize($v);
 				}
 			}
-			#relations with a single entity
-			elseif($prop->get('type') == 'entity') {
-				$rel = $this->relation($entity->getDefinition(), $name);
-				if(!$rel->get('many')) {
-					$link = $rel->getLink();
-					$relatedEntity = $entity->data['properties'][$name];
-					#entity object
-					if(is_object($relatedEntity)) {
-						if($relatedEntity->isNew())
-							$this->save($relatedEntity, null, $force);
-						$vars[$link] = $relatedEntity->id;
-						if($rel->isPolymorphic())
-							$vars[$rel->getLinkType()] = get_class($relatedEntity);
-					}
-					elseif($relatedEntity !== null) {
-						if($rel->isPolymorphic()) {
-							if($relatedEntity) {
-								if(!is_array($relatedEntity))
-									throw new \Exception('Polymorphic entities must be an object or an array.');
-								#array with class and id
-								$vars[$rel->getLinkType()] = $relatedEntity[0];
-								$vars[$link] = $relatedEntity[1];
-							}
-							else
-								$vars[$rel->getLinkType()] = $vars[$link] = null;
-						}
-						#id
-						else
-							$vars[$link] = $relatedEntity;
-					}
-				}
-			}
 			#other properties
 			elseif($isNew || in_array($name, $entity->getChanged())) {
-				$value = $entity->get($name);
-				$vars[$name] = $prop->serialize($value);
+				#relations with a single entity
+				if($prop->get('type') == 'entity') {
+					$rel = $this->relation($entity->getDefinition(), $name);
+					if(!$rel->get('many')) {
+						$link = $rel->getLink();
+						$relatedEntity = $entity->data['properties'][$name];
+						#entity object
+						if(is_object($relatedEntity)) {
+							if($relatedEntity->isNew())
+								$this->save($relatedEntity, null, $force);
+							$vars[$link] = $relatedEntity->id;
+							if($rel->isPolymorphic())
+								$vars[$rel->getLinkType()] = get_class($relatedEntity);
+						}
+						elseif($relatedEntity !== null) {
+							if($rel->isPolymorphic()) {
+								if($relatedEntity) {
+									if(!is_array($relatedEntity))
+										throw new \Exception('Polymorphic entities must be an object or an array.');
+									#array with class and id
+									$vars[$rel->getLinkType()] = $relatedEntity[0];
+									$vars[$link] = $relatedEntity[1];
+								}
+								else
+									$vars[$rel->getLinkType()] = $vars[$link] = null;
+							}
+							#id
+							else
+								$vars[$link] = $relatedEntity;
+						}
+					}
+				}
+				else {
+					$value = $entity->get($name);
+					$vars[$name] = $prop->serialize($value);
+				}
 			}
 		}
 
