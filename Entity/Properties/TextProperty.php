@@ -12,6 +12,7 @@ class TextProperty extends \Asgard\Entity\Property {
 	public function getORMParameters() {
 		return [
 			'type' => 'text',
+			'length' => $this->get('length') ? $this->get('length'):65535,
 		];
 	}
 }
