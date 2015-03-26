@@ -16,25 +16,25 @@ abstract class Entity {
 		'translations'        => [],
 	];
 	/**
-	 * Changed attributes.
+	 * changed attributes.
 	 * @var array
 	 */
-	protected $_changed = [];
+	protected $changed = [];
 	/**
-	 * Changed i18n attributes.
+	 * changed i18n attributes.
 	 * @var array
 	 */
-	protected $_translationsChanged = [];
+	protected $translationschanged = [];
 	/**
 	 * Default locale.
 	 * @var string
 	 */
-	protected $_locale;
+	protected $locale;
 	/**
 	 * Entity manager.
 	 * @var EntityManager
 	 */
-	protected $_entityManager;
+	protected $entityManager;
 
 	/**
 	 * Constructor.
@@ -53,9 +53,9 @@ abstract class Entity {
 	 * @return string
 	 */
 	public function getLocale() {
-		if($this->_locale === null)
-			$this->_locale = $this->getDefinition()->getEntityManager()->getDefaultLocale();
-		return $this->_locale;
+		if($this->locale === null)
+			$this->locale = $this->getDefinition()->getEntityManager()->getDefaultLocale();
+		return $this->locale;
 	}
 
 	/**
@@ -63,7 +63,7 @@ abstract class Entity {
 	 * @param EntityManager $em
 	 */
 	public function setEntityManager($em) {
-		$this->_entityManager = $em;
+		$this->entityManager = $em;
 		return $this;
 	}
 
@@ -72,7 +72,7 @@ abstract class Entity {
 	 * @param string $locale
 	 */
 	public function setLocale($locale) {
-		$this->_locale = $locale;
+		$this->locale = $locale;
 	}
 
 	public function __sleep() {
@@ -147,9 +147,9 @@ abstract class Entity {
 	 * @return Definition
 	 */
 	public function getDefinition() {
-		if(!$this->_entityManager)
+		if(!$this->entityManager)
 			return $this->getStaticDefinition();
-		return $this->_entityManager->get(get_called_class());
+		return $this->entityManager->get(get_called_class());
 	}
 
 	/**
@@ -318,30 +318,36 @@ abstract class Entity {
 			if($this->getDefinition()->property($name)->get('i18n') && $locale !== $this->getLocale()) {
 				if($locale == 'all') {
 					foreach($value as $locale => $v) {
+						if(isset($this->data['translations'][$locale][$name]) && $v === $this->data['translations'][$locale][$name])
+							continue;
 						$this->data['translations'][$locale][$name] = $v;
 						if($change) {
-							if(!isset($this->_translationsChanged[$locale]))
-								$this->_translationsChanged[$locale] = [];
-							$this->_translationsChanged[$locale][$name] = true;
+							if(!isset($this->translationschanged[$locale]))
+								$this->translationschanged[$locale] = [];
+							$this->translationschanged[$locale][$name] = true;
 						}
 					}
 				}
 				else {
+					if(isset($this->data['translations'][$locale][$name]) && $value === $this->data['translations'][$locale][$name])
+						return $this;
 					$this->data['translations'][$locale][$name] = $value;
 					if($change) {
-						if(!isset($this->_translationsChanged[$locale]))
-							$this->_translationsChanged[$locale] = [];
-						$this->_translationsChanged[$locale][$name] = true;
+						if(!isset($this->translationschanged[$locale]))
+							$this->translationschanged[$locale] = [];
+						$this->translationschanged[$locale][$name] = true;
 					}
 				}
 			}
 			else {
+				if(isset($this->data['properties'][$name]) && $value === $this->data['properties'][$name])
+					return $this;
 				$this->data['properties'][$name] = $value;
 				if($change) {
 					if($this->getDefinition()->property($name)->get('i18n'))
-						$this->_translationsChanged[$this->getLocale()][$name] = true;
+						$this->translationschanged[$this->getLocale()][$name] = true;
 					else
-						$this->_changed[$name] = true;
+						$this->changed[$name] = true;
 				}
 			}
 		}
@@ -388,30 +394,36 @@ abstract class Entity {
 			if($this->getDefinition()->property($name)->get('i18n') && $locale !== $this->getLocale()) {
 				if($locale == 'all') {
 					foreach($value as $locale => $v) {
+						if(isset($this->data['translations'][$locale][$name]) && $v === $this->data['translations'][$locale][$name])
+							continue;
 						$this->data['translations'][$locale][$name] = $v;
 						if($change) {
-							if(!isset($this->_translationsChanged[$locale]))
-								$this->_translationsChanged[$locale] = [];
-							$this->_translationsChanged[$locale][$name] = true;
+							if(!isset($this->translationschanged[$locale]))
+								$this->translationschanged[$locale] = [];
+							$this->translationschanged[$locale][$name] = true;
 						}
 					}
 				}
 				else {
+					if(isset($this->data['translations'][$locale][$name]) && $value === $this->data['translations'][$locale][$name])
+						return $this;
 					$this->data['translations'][$locale][$name] = $value;
 					if($change) {
-						if(!isset($this->_translationsChanged[$locale]))
-							$this->_translationsChanged[$locale] = [];
-						$this->_translationsChanged[$locale][$name] = true;
+						if(!isset($this->translationschanged[$locale]))
+							$this->translationschanged[$locale] = [];
+						$this->translationschanged[$locale][$name] = true;
 					}
 				}
 			}
 			else {
+				if(isset($this->data['properties'][$name]) && $value === $this->data['properties'][$name])
+					return $this;
 				$this->data['properties'][$name] = $value;
 				if($change) {
 					if($this->getDefinition()->property($name)->get('i18n'))
-						$this->_translationsChanged[$this->getLocale()][$name] = true;
+						$this->translationschanged[$this->getLocale()][$name] = true;
 					else
-						$this->_changed[$name] = true;
+						$this->changed[$name] = true;
 				}
 			}
 		}
@@ -443,8 +455,8 @@ abstract class Entity {
 				#multiple locales at once
 				if(is_array($locale)) {
 					$res = [];
-					foreach($locale as $_locale)
-						$res[$_locale] = $this->get($name, $_locale);
+					foreach($locale as $locale)
+						$res[$locale] = $this->get($name, $locale);
 					return $res;
 				}
 				elseif(isset($this->data['translations'][$locale][$name]))
@@ -606,21 +618,21 @@ abstract class Entity {
 		return $e;
 	}
 
-	public function getChanged() {
-		return array_merge(array_keys($this->_changed), $this->getChangedI18N($this->getLocale()));
+	public function getchanged() {
+		return array_merge(array_keys($this->changed), $this->getchangedI18N($this->getLocale()));
 	}
 
-	public function getChangedI18N($locale=null) {
+	public function getchangedI18N($locale=null) {
 		if(!$locale)
-			return array_keys($this->_translationsChanged);
-		elseif(isset($this->_translationsChanged[$locale]))
-			return array_keys($this->_translationsChanged[$locale]);
+			return array_keys($this->translationschanged);
+		elseif(isset($this->translationschanged[$locale]))
+			return array_keys($this->translationschanged[$locale]);
 		else
 			return [];
 	}
 
-	public function resetChanged() {
-		$this->_changed             = [];
-		$this->_translationsChanged = [];
+	public function resetchanged() {
+		$this->changed             = [];
+		$this->translationschanged = [];
 	}
 }

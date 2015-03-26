@@ -876,6 +876,9 @@ class DAL implements \Iterator {
 		$params = [];
 
 		if($this->db->getPDO()->getAttribute(\PDO::ATTR_DRIVER_NAME) === 'mysql') {
+			list($jointures, $joinparams) = $this->buildJointures();
+			$params = $joinparams;
+
 			$set = [];
 			foreach($values as $k=>$v) {
 				if($v instanceof Raw)
@@ -890,9 +893,6 @@ class DAL implements \Iterator {
 			$tables = $this->buildTables(true);
 			$orderBy = $this->buildOrderBy();
 			$limit = $this->buildLimit();
-
-			list($jointures, $joinparams) = $this->buildJointures();
-			$params = array_merge($params, $joinparams);
 
 			list($where, $whereparams) = $this->buildWhere();
 			$params = array_merge($params, $whereparams);
