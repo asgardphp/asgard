@@ -75,7 +75,7 @@ class Test extends \PHPUnit_Framework_TestCase {
 		$v = new v;
 		$this->assertTrue($v->rule(function($input) { return $input >= 5; })->valid(7));
 
-		$report = (new v)->attributes(	['title'=>['min'=>5], 'content'=>v::min(5)])->errors(['title'=>2, 'content'=>1]);
+		$report = (new v)->attributes(['title'=>['min'=>5], 'content'=>v::min(5)])->errors(['title'=>2, 'content'=>1]);
 		$first = [];
 		foreach($report->attributes() as $attribute=>$r)
 			$first[$attribute] = $r->first();
@@ -246,5 +246,25 @@ class Test extends \PHPUnit_Framework_TestCase {
 		} catch(\Exception $e) {
 			$this->assertTrue(true);
 		}
+	}
+
+	public function testGroups() {
+		$v = new v;
+		$v->rules([
+			'min' => [
+				5,
+			],
+			'max' => [
+				3,
+				'groups' => [
+					'test'
+				]
+			],
+		]);
+		$this->assertFalse($v->valid(3));
+		$this->assertTrue($v->valid(3, ['test']));
+		$this->assertTrue($v->valid(6, ['default']));
+		$this->assertFalse($v->valid(6, ['default', 'test']));
+		$this->assertFalse($v->valid(2, ['default', 'test']));
 	}
 }

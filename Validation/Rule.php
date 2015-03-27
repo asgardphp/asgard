@@ -13,6 +13,12 @@ abstract class Rule {
 	protected $handleEach = false;
 
 	/**
+	 * Groups.
+	 * @var array
+	 */
+	protected $groups;
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct() {}
@@ -51,4 +57,39 @@ abstract class Rule {
 	 * @return null
 	 */
 	public function handleEach($handleEach) { $this->handleEach = $handleEach; }
+
+	/**
+	 * Set the groups.
+	 * @param array|null $groups
+	 */
+	public function setGroups(array $groups=null) {
+		$this->groups = $groups;
+		return $this;
+	}
+
+	/**
+	 * Return the groups.
+	 * @return array
+	 */
+	public function getGroups() {
+		return $this->groups;
+	}
+
+	/**
+	 * Check if the validator belongs to some groups.
+	 * @param  array $groups
+	 * @return boolean
+	 */
+	public function belongsToGroups(array $groups, Validator $validator) {
+		if($this->groups === null) {
+			return $validator->belongsToGroups($groups);
+		}
+		else {
+			foreach($groups as $group) {
+				if(in_array($group, $this->groups))
+					return true;
+			}
+			return false;
+		}
+	}
 }

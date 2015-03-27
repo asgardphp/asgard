@@ -226,4 +226,23 @@ interface ValidatorInterface {
 	 * @return mixed
 	 */
 	public function get($key);
+
+	/**
+	 * Set the groups.
+	 * @param array|null $groups
+	 */
+	public function setGroups(array $groups=null);
+
+	/**
+	 * Return the groups.
+	 * @return array
+	 */
+	public function getGroups();
+
+	/**
+	 * Check if the validator belongs to some groups.
+	 * @param  array $groups
+	 * @return boolean
+	 */
+	public function belongsToGroups(array $groups);
 }

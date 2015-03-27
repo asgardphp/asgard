@@ -49,7 +49,7 @@ interface RulesRegistryInterface {
 	 * @param  array $params rule parameters
 	 * @return Rule
 	 */
-	public function getRule($rule, $params=[]);
+	public function getRule($rule, array $params=[]);
 
 	/**
 	 * Get the name of a rule.

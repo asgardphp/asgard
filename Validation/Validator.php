@@ -76,6 +76,12 @@ class Validator implements ValidatorInterface {
 	protected $formatParameters;
 
 	/**
+	 * Groups.
+	 * @var array
+	 */
+	protected $groups;
+
+	/**
 	 * Constructor.
 	 * @param RulesRegistryInterface $registry
 	 */
@@ -292,20 +298,36 @@ class Validator implements ValidatorInterface {
 	 * {@inheritDoc}
 	 */
 	public function getRule($rule, array $params) {
+		if(isset($params['groups'])) {
+			$groups = $params['groups'];
+			unset($params['groups']);
+		}
+		else
+			$groups = null;
+
 		#validator
 		if($rule instanceof static)
-			return $rule;
+		{}
+			// return $rule;
 		#rule
 		elseif($rule instanceof Rule)
-			return $rule;
+		{}
+			// return $rule;
 		#callback
 		elseif($rule instanceof \Closure) {
 			$reflection = new \ReflectionClass('Asgard\Validation\Rules\Callback');
-			return $reflection->newInstance($rule);
+			// return $reflection->newInstance($rule);
+			$rule = $reflection->newInstance($rule);
 		}
 		#string
 		elseif(is_string($rule))
-			return $this->getRegistry()->getRule($rule, $params);
+		 // {
+			$rule = $this->getRegistry()->getRule($rule, $params);
+		// }
+
+		$rule->setGroups($groups);
+
+		return $rule;
 	}
 
 	/**
@@ -374,10 +396,10 @@ class Validator implements ValidatorInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function validRule($rule) {
+	public function validRule($rule, array $groups=[]) {
 		if($rule instanceof static) {
 			$rule->setInput($this->input);
-			if($rule->valid() === false)
+			if($rule->valid(null, $groups) === false)
 				return false;
 		}
 		elseif($rule instanceof Rule) {
@@ -408,7 +430,10 @@ class Validator implements ValidatorInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function valid($input=null) {
+	public function valid($input=null, array $groups=[]) {
+		if(!$groups)
+			$groups = ['default'];
+
 		if($input === null)
 			$input = $this->getInput();
 		else
@@ -424,11 +449,15 @@ class Validator implements ValidatorInterface {
 		$i=0; #rules may be added on the fly
 		while(isset($this->rules[$i])) {
 			$rule = $this->rules[$i++];
-			if($this->validRule($rule) === false)
+			if(!$rule->belongsToGroups($groups, $this))
+				continue;
+			if($this->validRule($rule, $groups) === false)
 				return false;
 		}
 		foreach($this->attributes as $name=>$validator) {
-			if($validator->valid($input->attribute($name)) === false)
+			if(!$validator->belongsToGroups($groups))
+				continue;
+			if($validator->valid($input->attribute($name), $groups) === false)
 				return false;
 		}
 		return true;
@@ -437,15 +466,21 @@ class Validator implements ValidatorInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function errors($input=null) {
-		$errors = $this->_errors($input);
+	public function errors($input=null, array $groups=[]) {
+		if(!$groups)
+			$groups = ['default'];
+
+		$errors = $this->_errors($input, $groups);
 		return new Report($errors);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public function _errors($input=null) {
+	public function _errors($input=null, array $groups=[]) {
+		if(!$groups)
+			$groups = ['default'];
+
 		if($input === null)
 			$input = $this->getInput();
 		else
@@ -465,7 +500,9 @@ class Validator implements ValidatorInterface {
 			$i=0; #rules may be added on the fly
 			while(isset($this->rules[$i])) {
 				$rule = $this->rules[$i++];
-				if($this->validRule($rule) === false) {
+				if(!$rule->belongsToGroups($groups, $this))
+					continue;
+				if($this->validRule($rule, $groups) === false) {
 					if($rule instanceof Rule) {
 						$origName = $name = strtolower($this->getRegistry()->getRuleName($rule));
 						if(isset($errors['rules'][$name])) {
@@ -476,11 +513,13 @@ class Validator implements ValidatorInterface {
 						$errors['rules'][strtolower($name)] = $this->buildRuleMessage($origName, $rule, null, $input->input());
 					}
 					elseif($rule instanceof static)
-						$errors = $this->mergeErrors($errors, $rule->_errors($input));
+						$errors = $this->mergeErrors($errors, $rule->_errors($input, $groups));
 				}
 			}
 			foreach($this->attributes as $attribute=>$validator) {
-				$attrErrors = $validator->_errors($input->attribute($attribute));
+				if(!$validator->belongsToGroups($groups))
+					continue;
+				$attrErrors = $validator->_errors($input->attribute($attribute), $groups);
 				if($attrErrors['self'] || $attrErrors['attributes']) {
 					if(isset($errors['attributes'][$attribute]))
 						$errors['attributes'][$attribute] = $this->mergeErrors($errors['attributes'][$attribute], $attrErrors);
@@ -641,5 +680,39 @@ class Validator implements ValidatorInterface {
 			return $this->parent->get($key);
 		}
 		return $this->params[$key];
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function setGroups(array $groups=null) {
+		$this->groups = $groups;
+		return $this;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getGroups() {
+		return $this->groups;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function belongsToGroups(array $groups) {
+		if($this->groups === null) {
+			if(!$this->parent)
+				return in_array('default', $groups);
+			else
+				return $this->parent->belongsToGroups($groups);
+		}
+		else {
+			foreach($groups as $group) {
+				if(in_array($group, $this->groups))
+					return true;
+			}
+			return false;
+		}
 	}
 }

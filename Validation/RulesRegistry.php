@@ -91,7 +91,7 @@ class RulesRegistry implements RulesRegistryInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getRule($rule, $params=[]) {
+	public function getRule($rule, array $params=[]) {
 		if($rule === 'required' || $rule === 'isNull')
 			return;
 
