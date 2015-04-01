@@ -1,5 +1,5 @@
 <?php
-namespace Tester;
+namespace Asgard\Tester;
 
 class Fixtures {
 	protected $mm;

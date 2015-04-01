@@ -1,5 +1,5 @@
 <?php
-namespace Tester;
+namespace Asgard\Tester;
 
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
@@ -99,7 +99,7 @@ class RunCommand extends \Asgard\Console\Command {
 	 */
 	protected function getOptions() {
 		return [
-			['config', null, InputOption::VALUE_REQUIRED, 'Configuration class.', 'Tester\Config'],
+			['config', null, InputOption::VALUE_REQUIRED, 'Configuration class.', 'Asgard\Tester\Config'],
 			['output', null, InputOption::VALUE_OPTIONAL, 'Output tests. Test class name is optional.', null],
 		];
 	}

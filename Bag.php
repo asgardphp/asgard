@@ -1,5 +1,5 @@
 <?php
-namespace Tester;
+namespace Asgard\Tester;
 
 class Bag extends \Asgard\Common\Bag {
 	public $accessed = [];

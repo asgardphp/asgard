@@ -1,5 +1,5 @@
 <?php
-namespace Tester;
+namespace Asgard\Tester;
 
 class CurlConverter {
 	protected function match($pattern, $str) {

@@ -1,5 +1,5 @@
 <?php
-namespace Tester;
+namespace Asgard\Tester;
 
 class Browser extends \Asgard\Http\Browser\Browser {
 	public function request(\Asgard\Http\Request $request) {
