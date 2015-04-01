@@ -3,6 +3,8 @@ namespace Asgard\Form\Tests;
 
 class CSRFFieldTest extends \PHPUnit_Framework_TestCase {
 	public function test() {
+		\Asgard\Container\Container::singleton()['session'] = new \Asgard\Common\Bag;
+
 		$form = new \Asgard\Form\Form;
 		$request = new \Asgard\Http\Request;
 		$request->setMethod('post');

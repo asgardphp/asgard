@@ -76,7 +76,7 @@ abstract class Entity {
 	}
 
 	public function __sleep() {
-		return ['data', 'locale'];
+		return ['data', 'locale', 'changed', 'translationschanged'];
 	}
 
 	/**

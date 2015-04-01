@@ -2,7 +2,7 @@
 namespace Asgard\Http\Utils;
 
 /**
- * Store messages in the session and display them on the next page.
+ * Store messages in the container and display them on the next page.
  * @author Michel Hognerud <michel@hognerud.com>
  */
 class Flash {
@@ -12,10 +12,10 @@ class Flash {
 	 */
 	protected $messages = [];
 	/**
-	 * Kernel dependency.
-	 * @var \Asgard\Http\HttpKernel
+	 * container dependency.
+	 * @var \Asgard\Container\ContainerInterface
 	 */
-	protected $kernel;
+	protected $container;
 	/**
 	 * Display callback.
 	 * @var callable
@@ -34,10 +34,10 @@ class Flash {
 
 	/**
 	 * Constructor.
-	 * @param \Asgard\Http\HttpKernel $kernel
+	 * @param \Asgard\Container\ContainerInterface $container
 	 */
-	public function __construct(\Asgard\Http\HttpKernel $kernel) {
-		$this->kernel = $kernel;
+	public function __construct(\Asgard\Container\ContainerInterface $container) {
+		$this->container = $container;
 	}
 
 	/**
@@ -47,18 +47,18 @@ class Flash {
 	protected function fetch() {
 		if($this->fetched)
 			return;
-		if($this->kernel->getRequest()->session->has('messages'))
-			$this->messages = $this->kernel->getRequest()->session['messages'];
+		if($this->container['session']->has('messages'))
+			$this->messages = $this->container['session']['messages'];
 		$this->fetched = true;
 		return $this;
 	}
 
 	/**
-	 * Persist messages into the session.
+	 * Persist messages into the container.
 	 * @return string
 	 */
 	protected function persist() {
-		$this->kernel->getRequest()->session['messages'] = $this->messages;
+		$this->container['session']['messages'] = $this->messages;
 	}
 
 	/**

@@ -1,11 +1,11 @@
 <?php
-namespace Asgard\Http;
+namespace Asgard\Common;
 
 /**
- * Session manager.
+ * Session.
  * @author Michel Hognerud <michel@hognerud.com>
  */
-class SessionManager implements \Asgard\Common\BagInterface {
+class Session implements BagInterface {
 	/**
 	 * Constructor.
 	 */
@@ -62,7 +62,7 @@ class SessionManager implements \Asgard\Common\BagInterface {
 	 * @return boolean
 	 */
 	public function has($path) {
-		return \Asgard\Common\ArrayUtils::_isset($_SESSION, $path);
+		return ArrayUtils::_isset($_SESSION, $path);
 	}
 
 	/**
@@ -70,7 +70,7 @@ class SessionManager implements \Asgard\Common\BagInterface {
 	 * @param  string $path
 	 */
 	public function delete($path) {
-		\Asgard\Common\ArrayUtils::_unset($_SESSION, $path);
+		ArrayUtils::_unset($_SESSION, $path);
 	}
 
 	/**
@@ -81,7 +81,7 @@ class SessionManager implements \Asgard\Common\BagInterface {
 	public function get($path, $default=null) {
 		if(!$this->has($path))
 			return $default;
-		return \Asgard\Common\ArrayUtils::get($_SESSION, $path);
+		return ArrayUtils::get($_SESSION, $path);
 	}
 
 	/**
@@ -96,7 +96,7 @@ class SessionManager implements \Asgard\Common\BagInterface {
 				static::set($k, $v);
 		}
 		else
-			\Asgard\Common\ArrayUtils::set($_SESSION, $path, $value);
+			ArrayUtils::set($_SESSION, $path, $value);
 	}
 
 	/**

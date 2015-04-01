@@ -17,6 +17,11 @@ class Browser implements BrowserInterface {
 	 */
 	protected $session;
 	/**
+	 * Session bag.
+	 * @var \Asgard\Container\ContainerInterface
+	 */
+	protected $container;
+	/**
 	 * Last response.
 	 * @var \Asgard\Http\Response
 	 */
@@ -36,10 +41,15 @@ class Browser implements BrowserInterface {
 	 * Constructor.
 	 * @param \Asgard\Http\HttpKernelInterface $httpKernel
 	 */
-	public function __construct(\Asgard\Http\HttpKernelInterface $httpKernel) {
+	public function __construct(\Asgard\Http\HttpKernelInterface $httpKernel, \Asgard\Container\ContainerInterface $container=null) {
 		$this->httpKernel = $httpKernel;
+		$this->container = $container;
 		$this->cookies = new \Asgard\Common\Bag;
 		$this->session = new \Asgard\Common\Bag;
+	}
+
+	public function getSession() {
+		return $this->session;
 	}
 
 	/**
@@ -47,13 +57,6 @@ class Browser implements BrowserInterface {
 	 */
 	public function getCookies() {
 		return $this->cookies;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getSession() {
-		return $this->session;
 	}
 
 	/**
@@ -118,9 +121,8 @@ class Browser implements BrowserInterface {
 		$this->createTemporaryFiles($request->file->all());
 		$request->header->setAll($headers);
 		$request->server->setAll($server);
+		$request->cookie = clone $this->cookies;
 		$request->setMethod($method);
-		$request->cookie = $this->cookies;
-		$request->session = $this->session;
 		if(count($post))
 			$request->body = http_build_query($post);
 		else
@@ -134,11 +136,21 @@ class Browser implements BrowserInterface {
 	}
 
 	public function request(\Asgard\Http\Request $request) {
+		if($this->container) {
+			$beforeSession = $this->container['session'];
+			$beforeCookies = $this->container['cookies'];
+			$this->container['session'] = $this->session;
+			$this->container['cookies'] = $this->cookies;
+		}
+
 		$res = $this->httpKernel->process($request, $this->catchException);
 
+		if($this->container) {
+			$this->container['session'] = $beforeSession;
+			$this->container['cookies'] = $beforeCookies;
+		}
+
 		$this->last = $res;
-		$this->cookies = $request->cookie;
-		$this->session = $request->session;
 
 		return $res;
 	}

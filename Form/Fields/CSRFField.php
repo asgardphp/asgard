@@ -27,11 +27,12 @@ class CSRFField extends \Asgard\Form\Fields\HiddenField {
 	 * @return string
 	 */
 	protected function generateToken() {
-		if($this->parent->getRequest()->session->has('_csrf_token'))
-			return $this->parent->getRequest()->session['_csrf_token'];
+		$session = \Asgard\Container\Container::singleton()['session'];
+		if($session->has('_csrf_token'))
+			return $session['_csrf_token'];
 		else {
 			$token = \Asgard\Common\Tools::randstr();
-			return $this->parent->getRequest()->session['_csrf_token'] = $token;
+			return $session['_csrf_token'] = $token;
 		}
 	}
 
@@ -40,6 +41,7 @@ class CSRFField extends \Asgard\Form\Fields\HiddenField {
 	 * @return boolean
 	 */
 	public function valid() {
-		return $this->value == $this->parent->getRequest()->session['_csrf_token'];
+		$session = \Asgard\Container\Container::singleton()['session'];
+		return $this->value == $session['_csrf_token'];
 	}
 }

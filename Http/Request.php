@@ -42,11 +42,6 @@ class Request implements \ArrayAccess {
 	 */
 	public $header;
 	/**
-	 * Session input.
-	 * @var \Asgard\Common\BagInterface
-	 */
-	public $session;
-	/**
 	 * Request body.
 	 * @var string
 	 */
@@ -76,7 +71,6 @@ class Request implements \ArrayAccess {
 		$this->server = clone $this->server;
 		$this->cookie = clone $this->cookie;
 		$this->header = clone $this->header;
-		$this->session = clone $this->session;
 		$this->url = clone $this->url;
 	}
 
@@ -109,7 +103,6 @@ class Request implements \ArrayAccess {
 		$this->server = new \Asgard\Common\Bag;
 		$this->cookie = new \Asgard\Common\Bag;
 		$this->header = new \Asgard\Common\Bag;
-		$this->session = new \Asgard\Common\Bag;
 	}
 
 	/**
@@ -123,8 +116,7 @@ class Request implements \ArrayAccess {
 		$request->setFiles($_FILES);
 		$request->header->setAll(static::getAllHeaders());
 		$request->server->setAll($_SERVER);
-		$request->cookie = new CookieManager;
-		$request->session = new SessionManager;
+		$request->cookie->setAll($_COOKIE);
 		$request->body = file_get_contents('php://input');
 
 		$server = trim($request->server['SERVER_NAME'], '/');

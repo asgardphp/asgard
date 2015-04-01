@@ -245,7 +245,7 @@ EOT;
 		$res .= static::inputs($r, 'post', 'POST');
 		$res .= static::inputs($r, 'file', 'FILES');
 		$res .= static::inputs($r, 'cookie', 'COOKIES');
-		$res .= static::inputs($r, 'session', 'SESSION');
+		// $res .= static::inputs($r, 'session', 'SESSION');
 		$res .= static::inputs($r, 'server', 'SERVER');
 		$res .= '</div>';
 		return $res;

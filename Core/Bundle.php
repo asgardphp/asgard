@@ -112,26 +112,32 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		});
 		$container->setParentClass('browser', 'Asgard\Http\Browser\BrowserInterface');
 		$container->register('browser', function($container) {
-			$browser = new \Asgard\Http\Browser\Browser($container['httpKernel']);
+			$browser = new \Asgard\Http\Browser\Browser($container['httpKernel'], $container);
 			if(getenv('catch') !== false)
 				$browser->catchException((bool)getenv('catch'));
 			return $browser;
 		});
 		$container->setParentClass('cookieManager', 'Asgard\Common\BagInterface');
 		$container->register('cookies', function($container) {
-			return $container['httpKernel']->getRequest()->cookie;
-		}, false);
-		$container->setParentClass('sessionManager', 'Asgard\Common\BagInterfacer');
+			if(php_sapi_name() === 'cli')
+				return new \Asgard\Common\Bag;
+			else
+				return new \Asgard\Http\CookieManager;
+		});
+		$container->setParentClass('sessionManager', 'Asgard\Common\BagInterface');
 		$container->register('session', function($container) {
-			return $container['httpKernel']->getRequest()->session;
-		}, false);
+			if(php_sapi_name() === 'cli')
+				return new \Asgard\Common\Bag;
+			else
+				return new \Asgard\Common\Session;
+		});
 		$container->setParentClass('html', 'Asgard\Http\Utils\HTMLInterface');
 		$container->register('html', function($container) {
 			return new \Asgard\Http\Utils\HTML($container['httpKernel']);
 		});
 		$container->setParentClass('flash', 'Asgard\Http\Utils\Flash');
 		$container->register('flash', function($container) {
-			return new \Asgard\Http\Utils\Flash($container['httpKernel']);
+			return new \Asgard\Http\Utils\Flash($container);
 		});
 		$container->setParentClass('url', 'Asgard\Http\URLInterface');
 		$container->register('url', function($container) {
