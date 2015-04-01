@@ -189,11 +189,16 @@ class '.$name.' extends '.$class.' {
 		return $this->unmigrate($this->tracker->getLast());
 	}
 
+	public function migrateUntil($migrationName) {
+		foreach($this->tracker->getUntil($migrationName) as $_migrationName)
+			$this->migrate($_migrationName);
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
 	public function rollbackUntil($migrationName) {
-		foreach($this->tracker->getUntil($migrationName) as $_migrationName)
+		foreach($this->tracker->getDownUntil($migrationName) as $_migrationName)
 			$this->unmigrate($_migrationName);
 	}
 }

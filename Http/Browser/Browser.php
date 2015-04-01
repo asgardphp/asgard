@@ -130,6 +130,10 @@ class Browser implements BrowserInterface {
 		$request->url->setHost('localhost');
 		$request->url->setRoot('');
 
+		return $this->request($request);
+	}
+
+	public function request(\Asgard\Http\Request $request) {
 		$res = $this->httpKernel->process($request, $this->catchException);
 
 		$this->last = $res;

@@ -22,11 +22,14 @@ class Field {
 	 */
 	protected $type;
 
+	public $node;
+
 	/**
 	 * Constructor.
 	 * @param \DOMElement $node
 	 */
 	function __construct(\DOMElement $node) {
+		$this->node = $node;
 		$nodeName = $node->nodeName;
 
 		switch($nodeName) {
@@ -35,20 +38,15 @@ class Field {
 				$inputValue = $node->getAttribute('value');
 				$this->type = $inputType;
 				switch($inputType) {
-					case 'text':
-					case 'password':
-					case 'hidden':
-						$this->value = $inputValue;
-						break;
-					case 'submit':
-					case 'image':
-						$this->value = $inputValue;
-						break;
 					case 'radio':
 					case 'checkbox':
 						$this->addChoice($node);
 						break;
 					case 'file':
+						break;
+					default:
+						$this->value = $inputValue;
+						$this->value = $inputValue;
 						break;
 				}
 				break;
@@ -64,6 +62,8 @@ class Field {
 
 				foreach($xpath->query('descendant::option', $root) as $option_node) {
 					$value = $option_node->getAttribute('value');
+					if(!$value)
+						$value = $option_node->nodeValue;
 					$this->choices[] = $value;
 					if($option_node->getAttribute('selected') == 'selected') {
 						if($multiple)
@@ -100,6 +100,14 @@ class Field {
 					$this->value = $inputValue;
 				break;
 		}
+	}
+
+	/**
+	 * Get the field's choices.
+	 * @return array
+	 */
+	public function getChoices() {
+		return $this->choices;
 	}
 
 	/**
@@ -143,6 +151,20 @@ class FormParser {
 	 */
 	protected $submit = null;
 
+	public function __construct(\DOMNode $node) {
+		$document = new \DOMDocument('1.0', 'UTF-8');
+		$node = $document->importNode($node, true);
+		$root = $document->appendchild($document->createElement('_root'));
+		$root->appendchild($node);
+		$xpath = new \DOMXPath($document);
+
+		foreach ($xpath->query('descendant::input | descendant::textarea | descendant::select', $root) as $node) {
+			if (!$node->hasAttribute('name'))
+				continue;
+			$this->add($node);
+		}
+	}
+
 	/**
 	 * Check if it contains a field.
 	 * @param  string  $name
@@ -168,6 +190,14 @@ class FormParser {
 	 */
 	public function set($name, Field $value) {
 		$this->fields[$name] = $value;
+	}
+
+	/**
+	 * Set the fields.
+	 * @return array
+	 */
+	public function getFields() {
+		return $this->fields;
 	}
 
 	/**
@@ -239,22 +269,12 @@ class FormParser {
 	 * @param  string $html
 	 * @param  string $xpath xpath to form
 	 */
-	public function parse($html, $xpath) {
+	public static function parse($html, $xpath) {
 		$doc = new \DOMDocument();
 		$doc->loadHTML($html);
 		$domxpath = new \DOMXPath($doc);
 		$node = $domxpath->evaluate($xpath)->item(0);
 
-		$document = new \DOMDocument('1.0', 'UTF-8');
-		$node = $document->importNode($node, true);
-		$root = $document->appendchild($document->createElement('_root'));
-		$root->appendchild($node);
-		$xpath = new \DOMXPath($document);
-
-		foreach ($xpath->query('descendant::input | descendant::textarea | descendant::select', $root) as $node) {
-			if (!$node->hasAttribute('name'))
-				continue;
-			$this->add($node);
-		}
+		return new static($node);
 	}
 }

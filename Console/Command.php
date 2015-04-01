@@ -163,4 +163,8 @@ class Command extends \Symfony\Component\Console\Command\Command {
 	public function question($msg) {
 		$this->output->writeln('<question>'.$msg.'</question>');
 	}
+
+	public function getOutput() {
+		return $this->output;
+	}
 }

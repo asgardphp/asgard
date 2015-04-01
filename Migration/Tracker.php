@@ -136,12 +136,24 @@ class Tracker {
 		}
 	}
 
+	public function getUntil($untilMigration) {
+		$list = [];
+		if(!in_array($untilMigration, array_keys($this->getList())))
+			throw new \Exception($untilMigration.' is not in the list.');
+		foreach($this->getList() as $migration=>$params) {
+			$list[] = $migration;
+			if($migration == $untilMigration)
+				break;
+		}
+		return $list;
+	}
+
 	/**
 	 * Get all migrations until a given migration name
 	 * @param  string $untilMigration
 	 * @return arra
 	 */
-	public function getUntil($untilMigration) {
+	public function getDownUntil($untilMigration) {
 		$list = [];
 		if(!in_array($untilMigration, array_keys($this->getList())))
 			throw new \Exception($untilMigration.' is not in the list.');

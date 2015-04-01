@@ -69,6 +69,17 @@ class Request implements \ArrayAccess {
 		'format'	=>	'html',
 	];
 
+	public function __clone() {
+		$this->get = clone $this->get;
+		$this->post = clone $this->post;
+		$this->file = clone $this->file;
+		$this->server = clone $this->server;
+		$this->cookie = clone $this->cookie;
+		$this->header = clone $this->header;
+		$this->session = clone $this->session;
+		$this->url = clone $this->url;
+	}
+
 	/**
 	 * Return the default instance.
 	 * @return Request

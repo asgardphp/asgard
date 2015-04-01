@@ -37,7 +37,7 @@ class ListCommand extends \Asgard\Console\Command {
 	 * {@inheritDoc}
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
-		$table = $this->getHelperSet()->get('table');
+		$table = new \Symfony\Component\Console\Helper\Table($this->output);
 		$headers = ['Name', 'Type', 'Parent'];
 		$optClass = $this->input->getOption('class');
 		if($optClass)
