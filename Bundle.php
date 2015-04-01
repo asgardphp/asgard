@@ -14,10 +14,10 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			$db = $container['db'];
 			$mm = $container['migrationManager'];
 
-			$runCommand = new \Asgard\Migration\Commands\RunCommand($httpKernel, $resolver, $db, $mm);
+			$runCommand = new \Asgard\Tester\RunCommand($httpKernel, $resolver, $db, $mm);
 			$container['console']->add($runCommand);
 
-			$curlCommand = new \Asgard\Migration\Commands\CurlCommand();
+			$curlCommand = new \Asgard\Tester\CurlCommand();
 			$container['console']->add($curlCommand);
 		}
 	}
