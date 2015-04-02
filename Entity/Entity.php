@@ -262,30 +262,32 @@ abstract class Entity {
 
 	/**
 	 * Check if entity is valid.
+	 * @param  array   $groups validation groups
 	 * @return boolean
 	 */
-	public function valid() {
+	public function valid($groups=[]) {
 		$data = $this->toArrayRaw();
 		$validator = $this->getValidator();
-		return $this->getDefinition()->trigger('validation', [$this, $validator, &$data], function($chain, $entity, $validator, &$data) {
+		return $this->getDefinition()->trigger('validation', [$this, $validator, $groups, &$data], function($chain, $entity, $validator, $groups, &$data) {
 			return $validator->valid($data);
 		});
 	}
 
 	/**
 	 * Return entity errors.
+	 * @param  array   $groups validation groups
 	 * @return array
 	 */
-	public function errors() {
+	public function errors($groups=[]) {
 		$data = $this->toArrayRaw();
 		$validator = $this->getValidator();
-		$errors = $this->getDefinition()->trigger('validation', [$this, $validator, &$data], function($chain, $entity, $validator, &$data) {
-			return $validator->errors($data);
+		$errors = $this->getDefinition()->trigger('validation', [$this, $validator, $groups, &$data], function($chain, $entity, $validator, $groups, &$data) {
+			return $validator->errors($data, $groups);
 		});
 
 		$e = [];
 		foreach($data as $property=>$value) {
-			if($propertyErrors = $errors->attribute($property)->errors())
+			if($propertyErrors = $errors->attribute($property)->errors(null, $groups))
 				$e[$property] = $propertyErrors;
 		}
 
@@ -583,35 +585,37 @@ abstract class Entity {
 	/**
 	 * Check if entity and translations are valid.
 	 * @param  array $locales
+	 * @param  array $groups validation groups
 	 * @return boolean
 	 */
-	public function validI18N(array $locales=[]) {
+	public function validI18N(array $locales=[], $groups=[]) {
 		if(!$locales)
 			$locales = $this->getLocales();
 		$data = $this->toArrayRawI18N($locales);
 		$validator = $this->getValidator($locales);
-		return $this->getDefinition()->trigger('validation', [$this, $validator, &$data], function($chain, $entity, $validator, &$data) {
-			return $validator->valid($data);
+		return $this->getDefinition()->trigger('validation', [$this, $validator, $groups, &$data], function($chain, $entity, $validator, $groups, &$data) {
+			return $validator->valid($data, $groups);
 		});
 	}
 
 	/**
 	 * Return errors for entity and translations.
 	 * @param  array $locales
+	 * @param  array $groups validation groups
 	 * @return array
 	 */
-	public function errorsI18N(array $locales=[]) {
+	public function errorsI18N(array $locales=[], $groups=[]) {
 		if(!$locales)
 			$locales = $this->getLocales();
 		$data = $this->toArrayRawI18N($locales);
 		$validator = $this->getValidator($locales);
-		$errors = $this->getDefinition()->trigger('validation', [$this, $validator, &$data], function($chain, $entity, $validator, &$data) {
-			return $validator->errors($data);
+		$errors = $this->getDefinition()->trigger('validation', [$this, $validator, $groups, &$data], function($chain, $entity, $validator, $groups, &$data) {
+			return $validator->errors($data, $groups);
 		});
 
 		$e = [];
 		foreach($data as $property=>$value) {
-			if($propertyErrors = $errors->attribute($property)->errors())
+			if($propertyErrors = $errors->attribute($property)->errors(null, $groups))
 				$e[$property] = $propertyErrors;
 		}
 
