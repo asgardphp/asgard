@@ -132,7 +132,7 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 	public function test5() {
 		$news = static::$dm->load('Asgard\Orm\Tests\Fixtures\I18n\News', 2);
 		$news->test = 'Hi';
-		static::$dm->save($news, null, true);
+		static::$dm->save($news, null, false);
 		$dal = new \Asgard\Db\DAL(static::$db, 'news_translation');
 		$r = $dal->where(['locale'=>'en', 'id'=>2])->first();
 		$this->assertEquals('Hi', $r['test']);

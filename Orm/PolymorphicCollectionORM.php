@@ -58,7 +58,7 @@ class PolymorphicCollectionORM implements CollectionORMInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function sync($entities, $force=false) {
+	public function sync($entities, $groups=[]) {
 		if(!is_array($entities))
 			$entities = [$entities];
 		$perclass = [];
@@ -69,7 +69,7 @@ class PolymorphicCollectionORM implements CollectionORMInterface {
 		foreach($perclass as $class=>$entities) {
 			$targetDefinition = $this->parent->getDefinition()->getEntityManager()->get($class);
 			$cORM = new CollectionORM($this->parent, $this->relation->getName(), $this->dataMapper, $this->locale, $this->prefix, $this->paginatorFactory, $targetDefinition);
-			$cORM->sync($entities);
+			$cORM->sync($entities, $groups);
 		}
 
 		return $this;

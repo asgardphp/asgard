@@ -71,12 +71,13 @@ class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\Pers
 
 	/**
 	 * Hook for the entity validation.
-	 * @param  \Asgard\Hook\Chain       $chain
-	 * @param  \Asgard\Entity\Entity        $entity
-	 * @param  AsgardValidationValidatorInterface    $validator
-	 * @param  array                        $data
+	 * @param  \Asgard\Hook\Chain                    $chain
+	 * @param  \Asgard\Entity\Entity                 $entity
+	 * @param  \Asgard\Validation\ValidatorInterface $validator
+	 * @param  array|null                            $groups
+	 * @param  array                                 $data
 	 */
-	public function hookValidation(\Asgard\Hook\Chain $chain, \Asgard\Entity\Entity $entity, \Asgard\Validation\ValidatorInterface $validator, array &$data) {
+	public function hookValidation(\Asgard\Hook\Chain $chain, \Asgard\Entity\Entity $entity, \Asgard\Validation\ValidatorInterface $validator, $groups, array &$data) {
 		$this->getDataMapper()->prepareValidator($entity, $validator);
 	}
 
@@ -193,12 +194,12 @@ class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\Pers
 
 	/**
 	 * Article::create()
-	 * @param  array  $values  default attributes
-	 * @param  boolean $force  skip validation
+	 * @param  array      $values  default attributes
+	 * @param  array|null $groups  validation groups
 	 * @return \Asgard\Entity\Entity
 	 */
-	public function static_create(array $values=[], $force=false) {
-		return $this->getDataMapper()->create($this->entityClass, $values, $force);
+	public function static_create(array $values=[], $groups=[]) {
+		return $this->getDataMapper()->create($this->entityClass, $values, $groups);
 	}
 
 	#Calls
@@ -206,12 +207,12 @@ class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\Pers
 	/**
 	 * $article->save()
 	 * @param  \Asgard\Entity\Entity $entity
-	 * @param  array               $values default attributes
-	 * @param  boolean             $force  skip validation
+	 * @param  array      $values default attributes
+	 * @param  array|null $groups  validation groups
 	 * @return DataMapperInterface
 	 */
-	public function call_save(\Asgard\Entity\Entity $entity, array $values=null, $force=false) {
-		return $this->getDataMapper()->save($entity, $values, $force);
+	public function call_save(\Asgard\Entity\Entity $entity, array $values=null, $groups=[]) {
+		return $this->getDataMapper()->save($entity, $values, $groups);
 	}
 
 	/**

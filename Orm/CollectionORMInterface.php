@@ -8,11 +8,11 @@ namespace Asgard\Orm;
 interface CollectionORMInterface extends ORMInterface {
 	/**
 	 * Update the related entities.
-	 * @param array                   $ids   array of entity ids
-	 * @param boolean                 $force true to skip validation
+	 * @param array                   $ids    array of entity ids
+	 * @param array|null              $groups validation groups
 	 * @return CollectionORMInterface $this
 	 */
-	public function sync($ids, $force=false);
+	public function sync($ids, $groups=[]);
 
 	/**
 	 * Add new entities to the relation.

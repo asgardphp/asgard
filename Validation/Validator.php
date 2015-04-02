@@ -305,25 +305,14 @@ class Validator implements ValidatorInterface {
 		else
 			$groups = null;
 
-		#validator
-		if($rule instanceof static)
-		{}
-			// return $rule;
-		#rule
-		elseif($rule instanceof Rule)
-		{}
-			// return $rule;
 		#callback
-		elseif($rule instanceof \Closure) {
+		if($rule instanceof \Closure) {
 			$reflection = new \ReflectionClass('Asgard\Validation\Rules\Callback');
-			// return $reflection->newInstance($rule);
 			$rule = $reflection->newInstance($rule);
 		}
 		#string
 		elseif(is_string($rule))
-		 // {
 			$rule = $this->getRegistry()->getRule($rule, $params);
-		// }
 
 		$rule->setGroups($groups);
 
@@ -430,7 +419,9 @@ class Validator implements ValidatorInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function valid($input=null, array $groups=[]) {
+	public function valid($input=null, $groups=[]) {
+		if($groups === null)
+			return true;
 		if(!$groups)
 			$groups = ['default'];
 
@@ -466,7 +457,9 @@ class Validator implements ValidatorInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function errors($input=null, array $groups=[]) {
+	public function errors($input=null, $groups=[]) {
+		if($groups === null)
+			return new Report([]);
 		if(!$groups)
 			$groups = ['default'];
 

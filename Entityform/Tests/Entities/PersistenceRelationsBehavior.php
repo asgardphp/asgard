@@ -71,12 +71,12 @@ class PersistenceRelationsBehavior extends \Asgard\Entity\Behavior implements \A
 	}
 
 	#Article::create()
-	public function static_create(array $values=[], $force=false) {
+	public function static_create(array $values=[], $validate=true) {
 	}
 
 	#Methods
 	#$article->save()
-	public function call_save(\Asgard\Entity\Entity $entity, array $values=null, $force=false) {
+	public function call_save(\Asgard\Entity\Entity $entity, array $values=null, $validate=true) {
 	}
 
 	#$article->destroy()

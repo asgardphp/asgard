@@ -43,19 +43,19 @@ interface PersistenceBehavior {
 	/**
 	 * Article::create()
 	 * @param  array   $attrs
-	 * @param  boolean $force
+	 * @param  boolean $validate
 	 * @return Entity
 	 */
-	public function static_create(array $attrs=[], $force=false);
+	public function static_create(array $attrs=[], $validate=true);
 
 	/**
 	 * $article->save()
 	 * @param  Entity  $entity
 	 * @param  array   $attrs
-	 * @param  boolean $force
+	 * @param  boolean $validate
 	 * @return Entity
 	 */
-	public function call_save(Entity $entity, array $attrs=null, $force=false);
+	public function call_save(Entity $entity, array $attrs=null, $validate=true);
 
 	/**
 	 * $article->destroy()

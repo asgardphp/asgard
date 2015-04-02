@@ -193,7 +193,7 @@ class ORMTest extends \PHPUnit_Framework_TestCase {
 					])
 				]
 			],
-			$force=true
+			$validate=null
 		);
 		$dataMapper->create('Asgard\Orm\Tests\Fixtures\ORM\Category',
 			[
@@ -208,7 +208,7 @@ class ORMTest extends \PHPUnit_Framework_TestCase {
 					])
 				]
 			],
-			$force=true
+			$validate=null
 		);
 
 		#load

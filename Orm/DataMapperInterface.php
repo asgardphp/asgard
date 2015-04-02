@@ -58,12 +58,12 @@ interface DataMapperInterface {
 
 	/**
 	 * Create and store an entity.
-	 * @param  string  $entityClass
-	 * @param  array   $values        default entity attributes
-	 * @param  boolean $force         skip validation
+	 * @param  string     $entityClass
+	 * @param  array      $values       default entity attributes
+	 * @param  array|null $groups       validation groups
 	 * @return \Asgard\Entity\Entity
 	 */
-	public function create($entityClass, $values=null, $force=false);
+	public function create($entityClass, $values=null, $groups=[]);
 
 	/**
 	 * Get DataMapper validator for entities.
@@ -97,10 +97,10 @@ interface DataMapperInterface {
 	 * Store an entity.
 	 * @param  \Asgard\Entity\Entity $entity
 	 * @param  array                 $values entity attributes
-	 * @param  boolean               $force  skip validation
+	 * @param  array|null            $groups validation groups
 	 * @return \Asgard\Entity\Entity $entity
 	 */
-	public function save(\Asgard\Entity\Entity $entity, $values=null, $force=false);
+	public function save(\Asgard\Entity\Entity $entity, $values=null, $groups=[]);
 
 	/**
 	 * Return the related entities of an entity.

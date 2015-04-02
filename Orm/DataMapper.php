@@ -165,9 +165,9 @@ class DataMapper implements DataMapperInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function create($entityClass, $values=null, $force=false) {
+	public function create($entityClass, $values=null, $groups=[]) {
 		$m = $this->getEntityManager()->get($entityClass)->make();
-		$this->save($m, $values, $force);
+		$this->save($m, $values, $groups);
 		return $m;
 	}
 
@@ -200,35 +200,36 @@ class DataMapper implements DataMapperInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function valid(\Asgard\Entity\Entity $entity) {
+	public function valid(\Asgard\Entity\Entity $entity, $groups=[]) {
 		$data = $entity->toArrayRaw();
 		$validator = $this->getValidator($entity);
 		foreach($this->relations($entity->getDefinition()) as $name=>$relation) {
 			$data[$name] = $this->related($entity, $name);
 			$validator->attribute($name, $relation->getRules());
 		}
-		return $entity->getDefinition()->trigger('validation', [$entity, $validator, &$data], function($chain, $entity, $validator, &$data) {
-			return $validator->valid($data);
+		return $entity->getDefinition()->trigger('validation', [$entity, $validator, $groups, &$data], function($chain, $entity, $validator, $groups, &$data) {
+			return $validator->valid($data, $groups);
 		});
 	}
 
 	/**
 	 * Return relations errors.
 	 * @param  \Asgard\Entity\Entity $entity
+	 * @param  array|null            $groups
 	 * @return array
 	 */
-	public function relationsErrors(\Asgard\Entity\Entity $entity) {
+	public function relationsErrors(\Asgard\Entity\Entity $entity, $groups=[]) {
 		$data = [];
 		$validator = $this->createValidator($entity);
 		foreach($this->relations($entity->getDefinition()) as $name=>$relation) {
 			$data[$name] = $this->related($entity, $name);
 			$relation->prepareValidator($validator->attribute($name));
 		}
-		$errors = $validator->errors($data);
+		$errors = $validator->errors($data, $groups);
 
 		$e = [];
 		foreach($data as $property=>$value) {
-			if($propertyErrors = $errors->attribute($property)->errors())
+			if($propertyErrors = $errors->attribute($property)->errors(null, $groups))
 				$e[$property] = $propertyErrors;
 		}
 
@@ -238,16 +239,16 @@ class DataMapper implements DataMapperInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function errors(\Asgard\Entity\Entity $entity) {
+	public function errors(\Asgard\Entity\Entity $entity, $groups=[]) {
 		$data = $entity->toArrayRaw();
 		$validator = $this->getValidator($entity);
-		$errors = $entity->getDefinition()->trigger('validation', [$entity, $validator, &$data], function($chain, $entity, $validator, &$data) {
-			return $validator->errors($data);
+		$errors = $entity->getDefinition()->trigger('validation', [$entity, $validator, $groups, &$data], function($chain, $entity, $validator, $groups, &$data) {
+			return $validator->errors($data, $groups);
 		});
 
 		$e = [];
 		foreach($data as $property=>$value) {
-			if($propertyErrors = $errors->attribute($property)->errors())
+			if($propertyErrors = $errors->attribute($property)->errors(null, $groups))
 				$e[$property] = $propertyErrors;
 		}
 
@@ -258,12 +259,12 @@ class DataMapper implements DataMapperInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function save(\Asgard\Entity\Entity $entity, $values=null, $force=false) {
+	public function save(\Asgard\Entity\Entity $entity, $values=null, $groups=[]) {
 		#set $values if any
 		if($values)
 			$entity->set($values);
 
-		if(!$force && $errors = $this->errors($entity)) {
+		if($groups!==null && $errors = $this->errors($entity, $groups)) {
 			$msg = implode("\n", \Asgard\Common\ArrayUtils::flatten($errors));
 			throw new EntityException($msg, $errors);
 		}
@@ -318,7 +319,7 @@ class DataMapper implements DataMapperInterface {
 						#entity object
 						if(is_object($relatedEntity)) {
 							if($relatedEntity->isNew())
-								$this->save($relatedEntity, null, $force);
+								$this->save($relatedEntity, null, $groups===null ? null:[]);
 							$vars[$link] = $relatedEntity->id;
 							if($rel->isPolymorphic())
 								$vars[$rel->getLinkType()] = get_class($relatedEntity);

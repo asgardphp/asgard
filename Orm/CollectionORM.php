@@ -50,7 +50,7 @@ class CollectionORM extends ORM implements CollectionORMInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function sync($ids, $force=false) {
+	public function sync($ids, $groups=[]) {
 		if(!$ids)
 			$ids = [];
 		if(!is_array($ids))
@@ -58,7 +58,7 @@ class CollectionORM extends ORM implements CollectionORMInterface {
 		foreach($ids as $k=>$v) {
 			if($v instanceof \Asgard\Entity\Entity) {
 				if($v->isNew())
-					$this->dataMapper->save($v, null, $force);
+					$this->dataMapper->save($v, null, $groups);
 				$ids[$k] = ['id'=>(int)$v->id, 'class'=>get_class($v)];
 			}
 			else
