@@ -194,7 +194,7 @@ class DAL implements \Iterator {
 	 * @param  string|array $conditions
 	 * @return DAL          $this
 	 */
-	protected function join($type, $table, $conditions=null) {
+	public function join($type, $table, $conditions=null) {
 		if(is_array($table)) {
 			foreach($table as $_table=>$_conditions)
 				$this->join($type, $_table, $_conditions);

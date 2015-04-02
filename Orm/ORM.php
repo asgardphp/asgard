@@ -454,15 +454,22 @@ class ORM implements ORMInterface {
 	protected function recursiveJointures(\Asgard\Db\DAL $dal, $jointures, \Asgard\Entity\Definition $definition, $table) {
 		$alias = null;
 		if(is_array($jointures)) {
-			foreach($jointures as $k=>$v) {
-				if(!is_numeric($k)) {
-					$relationName = $k;
+			foreach($jointures as $relation=>$v) {
+				#jointure type
+				if(preg_match('/^[^ ]+join /', $relation, $matches)) {
+					$type = trim($matches[0]);
+					$relation = preg_replace('/^[^ ]* /', '', $relation);
+				}
+				else
+					$type = 'innerjoin';
+				if(!is_numeric($relation)) {
+					$relationName = $relation;
 					if(strpos($relationName, ' '))
 						list($relationName, $alias) = explode(' ', $relationName);
 					else
 						$alias = null;
 					$relation = $this->dataMapper->relation($definition, $relationName);
-					$this->jointure($dal, $relation, $alias, $table);
+					$this->jointure($dal, $relation, $alias, $table, $type);
 
 					$tableAlias = $alias ? $alias:$relationName;
 
@@ -474,10 +481,17 @@ class ORM implements ORMInterface {
 		}
 		else {
 			$relation = $jointures;
+			#jointure type
+			if(preg_match('/^[^ ]+join /', $relation, $matches)) {
+				$type = trim($matches[0]);
+				$relation = preg_replace('/^[^ ]* /', '', $relation);
+			}
+			else
+				$type = 'innerjoin';
 			if(strpos($relation, ' '))
 				list($relation, $alias) = explode(' ', $relation);
 			$relation = $this->dataMapper->relation($definition, $relation);
-			$this->jointure($dal, $relation, $alias, $table);
+			$this->jointure($dal, $relation, $alias, $table, $type);
 		}
 	}
 
@@ -489,7 +503,7 @@ class ORM implements ORMInterface {
 	 * @param string         $alias How the related table will be referenced in the SQL query.
 	 * @param string         $ref_table The table from which to performs the jointure.
 	*/
-	protected function jointure(\Asgard\Db\DAL $dal, $relation, $alias, $ref_table) {
+	protected function jointure(\Asgard\Db\DAL $dal, $relation, $alias, $ref_table, $type='innnerjoin') {
 		$relationName = $relation->getName();
 
 		$relationDefinition = $relation->getTargetDefinition();
@@ -501,7 +515,7 @@ class ORM implements ORMInterface {
 			case 'belongsTo':
 				$link = $relation->getLink();
 				$table = $this->dataMapper->getTable($relationDefinition);
-				$dal->innerjoin([
+				$dal->join($type, [
 					$table.' '.$alias => $this->processConditions([
 						$alias.'.id = '.$ref_table.'.'.$link
 					])
@@ -511,14 +525,14 @@ class ORM implements ORMInterface {
 				$link = $relation->getLink();
 				$table = $this->dataMapper->getTable($relationDefinition);
 				if($relation->isPolymorphic()) {
-					$dal->innerjoin([
+					$dal->join($type, [
 						$table.' '.$alias => $this->processConditions([
 							$alias.'.'.$link.' = '.$ref_table.'.id',
 						])
 					]);
 				}
 				else {
-					$dal->innerjoin([
+					$dal->join($type, [
 						$table.' '.$alias => $this->processConditions([
 							$alias.'.'.$link.' = '.$ref_table.'.id',
 						])
@@ -527,7 +541,7 @@ class ORM implements ORMInterface {
 				break;
 			case 'HMABT':
 				if($relation->isPolymorphic()) {
-					$dal->innerjoin([
+					$dal->join($type, [
 						$relation->getAssociationTable($this->prefix) => $this->processConditions([
 							$relation->getAssociationTable($this->prefix).'.'.$relation->getLinkA().' = '.$ref_table.'.id',
 							$relation->getAssociationTable($this->prefix).'.'.$relation->getLinkType() => $relation->getTargetDefinition()->getClass(),
@@ -535,13 +549,13 @@ class ORM implements ORMInterface {
 					]);
 				}
 				else {
-					$dal->innerjoin([
+					$dal->join($type, [
 						$relation->getAssociationTable($this->prefix) => $this->processConditions([
 							$relation->getAssociationTable($this->prefix).'.'.$relation->getLinkA().' = '.$ref_table.'.id',
 						])
 					]);
 				}
-				$dal->innerjoin([
+				$dal->join($type, [
 					$this->dataMapper->getTable($relationDefinition).' '.$alias => $this->processConditions([
 						$relation->getAssociationTable($this->prefix).'.'.$relation->getLinkB().' = '.$alias.'.id',
 					])
