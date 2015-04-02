@@ -123,7 +123,7 @@ class Property {
 	 * @return boolean
 	 */
 	public function has($path) {
-		return \Asgard\Common\ArrayUtils::_isset($this->params, $path);
+		return \Asgard\Common\ArrayUtils::has($this->params, $path);
 	}
 
 	/**

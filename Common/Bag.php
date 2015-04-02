@@ -77,14 +77,14 @@ class Bag implements BagInterface {
 	 * {@inheritDoc}
 	 */
 	public function has($path) {
-		return \Asgard\Common\ArrayUtils::_isset($this->data, $path);
+		return \Asgard\Common\ArrayUtils::has($this->data, $path);
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function delete($path) {
-		\Asgard\Common\ArrayUtils::_unset($this->data, $path);
+		\Asgard\Common\ArrayUtils::delete($this->data, $path);
 		return $this;
 	}
 

@@ -374,7 +374,7 @@ class Definition {
 	 * @return Definition $this
 	 */
 	public function set($name, $value) {
-		$this->metas[$name] = $value;
+		return \Asgard\Common\ArrayUtils::set($this->metas, $name, $value);
 		return $this;
 	}
 
@@ -384,7 +384,7 @@ class Definition {
 	 * @return boolean
 	 */
 	public function has($name) {
-		return isset($this->metas[$name]);
+		return \Asgard\Common\ArrayUtils::has($this->metas, $name);
 	}
 
 	/**
@@ -393,8 +393,7 @@ class Definition {
 	 * @return mixed
 	 */
 	public function get($name) {
-		if(isset($this->metas[$name]))
-			return $this->metas[$name];
+		return \Asgard\Common\ArrayUtils::get($this->metas, $name);
 	}
 
 	/**

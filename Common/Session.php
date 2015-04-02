@@ -62,7 +62,7 @@ class Session implements BagInterface {
 	 * @return boolean
 	 */
 	public function has($path) {
-		return ArrayUtils::_isset($_SESSION, $path);
+		return ArrayUtils::has($_SESSION, $path);
 	}
 
 	/**
@@ -70,7 +70,7 @@ class Session implements BagInterface {
 	 * @param  string $path
 	 */
 	public function delete($path) {
-		ArrayUtils::_unset($_SESSION, $path);
+		ArrayUtils::delete($_SESSION, $path);
 	}
 
 	/**

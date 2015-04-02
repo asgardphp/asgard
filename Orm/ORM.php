@@ -76,6 +76,11 @@ class ORM implements ORMInterface {
 	 * @var \Asgard\Common\PaginatorFactoryInterface
 	 */
 	protected $paginatorFactory = null;
+	/**
+	 * Scopes/
+	 * @var array
+	 */
+	protected $scopes = [];
 
 	/**
 	 * Constructor.
@@ -95,10 +100,27 @@ class ORM implements ORMInterface {
 		$this->prefix           = $prefix;
 		$this->paginatorFactory = $paginatorFactory;
 
+		if($scopes = $definition->get('orm.scopes')) {
+			foreach($scopes as $name=>$scope)
+				$this->addScope($name, $scope);
+		}
+
 		if($this->definition->get('order_by'))
 			$this->orderBy($this->definition->get('order_by'));
 		else
 			$this->orderBy('id DESC');
+	}
+
+	public function addScope($name, $scope) {
+		if(isset($this->scopes[$name]))
+			throw new \Exception('Scope '.$name.' already exists.');
+		$this->scopes[$name] = $scope;
+		return $this;
+	}
+
+	public function removeScope($name) {
+		unset($this->scopes[$name]);
+		return $this;
 	}
 
 	/**
@@ -366,10 +388,21 @@ class ORM implements ORMInterface {
 		return $this->get();
 	}
 
+	public function applyScopes() {
+		foreach($this->scopes as $scope)
+			$scope->process($this);
+		return $this;
+	}
+
 	/**
 	 * {@inheritDoc}
 	*/
 	public function getDAL() {
+		$clone = clone $this;
+		return $clone->applyScopes()->_getDAL();
+	}
+
+	public function _getDAL() {
 		$dal = new \Asgard\Db\DAL($this->dataMapper->getDB());
 		$table = $this->getTable();
 		$dal->orderBy($this->orderBy);

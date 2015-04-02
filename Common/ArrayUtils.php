@@ -51,9 +51,9 @@ class ArrayUtils {
 	 * @return boolean
 	 * @api
 	 */
-	public static function _isset($arr, $str_path) {
+	public static function has($arr, $str_path) {
 		$path = explode('.', $str_path);
-		return static::array_isset($arr, $path);
+		return static::array_has($arr, $path);
 	}
 
 	/**
@@ -62,9 +62,9 @@ class ArrayUtils {
 	 * @param  string $str_path  nested keys separated by ".".
 	 * @api
 	 */
-	public static function _unset(&$arr, $str_path) {
+	public static function delete(&$arr, $str_path) {
 		$path = explode('.', $str_path);
-		static::array_unset($arr, $path);
+		static::array_delete($arr, $path);
 	}
 
 	/**
@@ -80,7 +80,10 @@ class ArrayUtils {
 		$lastkey = array_pop($path);
 		foreach($path as $parent)
 			$arr =& $arr[$parent];
-		$arr[$lastkey] = $value;
+		if($lastkey === '')
+			$arr[] = $value;
+		else
+			$arr[$lastkey] = $value;
 	}
 
 	/**
@@ -126,7 +129,7 @@ class ArrayUtils {
 	 * @return boolean
 	 * @api
 	 */
-	public static function array_isset($arr, $path) {
+	public static function array_has($arr, $path) {
 		if(!$path)
 			return;
 		if(!is_array($path))
@@ -146,7 +149,7 @@ class ArrayUtils {
 	 * @param  string|array $path  list of nested keys.
 	 * @api
 	 */
-	public static function array_unset(&$arr, $path) {
+	public static function array_delete(&$arr, $path) {
 		if(!$path)
 			return;
 		if(!is_array($path))
