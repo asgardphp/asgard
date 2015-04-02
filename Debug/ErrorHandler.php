@@ -71,6 +71,11 @@ class ErrorHandler {
 	 */
 	public function shutdownFunction() {
 		if(($e=error_get_last()) && $e !== static::$errorAtStart) {
+			foreach($this->ignoreDirs as $dir) {
+				if(strpos($e['file'], $dir) === 0)
+					return;
+			}
+
 			while(ob_get_level()) { ob_end_clean(); }
 			$exceptionHandler = set_exception_handler(function() {});
 			restore_exception_handler();
