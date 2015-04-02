@@ -123,6 +123,11 @@ class ORM implements ORMInterface {
 		return $this;
 	}
 
+	public function resetScopes() {
+		$this->scopes = [];
+		return $this;
+	}
+
 	/**
 	 * Return the definition.
 	 * @return \Asgard\Entity\Definition
