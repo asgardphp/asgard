@@ -6,6 +6,18 @@ namespace Asgard\Common;
  * @author Michel Hognerud <michel@hognerud.com>
  */
 class Session implements BagInterface {
+	static protected $singleton;
+
+	public static function singleton() {
+		if(!static::$singleton)
+			static::$singleton = new static;
+		return static::$singleton;
+	}
+
+	public static function setSingleton($singleton) {
+		static::$singleton = $singleton;
+	}
+
 	/**
 	 * Constructor.
 	 */

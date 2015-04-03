@@ -6,11 +6,14 @@ namespace Asgard\Form\Fields;
  * @author Michel Hognerud <michel@hognerud.com>
  */
 class CSRFField extends \Asgard\Form\Fields\HiddenField {
+	protected $session;
+
 	/**
 	 * {@inheritDoc}
 	 */
-	public function __construct(array $options=[]) {
+	public function __construct(array $options=[], \Asgard\Common\Session $session=null) {
 		parent::__construct($options);
+		$this->session = $session;
 		$this->options['validation']['required'] = true;
 		$this->options['validation']['callback'] = [[$this, 'valid']];
 		$this->options['messages']['required'] = 'CSRF token is invalid.';
@@ -22,12 +25,22 @@ class CSRFField extends \Asgard\Form\Fields\HiddenField {
 		};
 	}
 
+	protected function getSession() {
+		if(!$this->session) {
+			if(php_sapi_name() === 'cli')
+				$this->session = new \Asgard\Common\Bag;
+			else
+				$this->session = \Asgard\Common\Session::singleton();
+		}
+		return $this->session;
+	}
+
 	/**
 	 * Generate a new token.
 	 * @return string
 	 */
 	protected function generateToken() {
-		$session = \Asgard\Container\Container::singleton()['session'];
+		$session = $this->getSession();
 		if($session->has('_csrf_token'))
 			return $session['_csrf_token'];
 		else {
@@ -41,7 +54,7 @@ class CSRFField extends \Asgard\Form\Fields\HiddenField {
 	 * @return boolean
 	 */
 	public function valid() {
-		$session = \Asgard\Container\Container::singleton()['session'];
+		$session = $this->getSession();
 		return $this->value == $session['_csrf_token'];
 	}
 }
