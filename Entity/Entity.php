@@ -275,7 +275,7 @@ abstract class Entity {
 
 	/**
 	 * Return entity errors.
-	 * @param  array   $groups validation groups
+	 * @param  array|string|null $groups validation groups
 	 * @return array
 	 */
 	public function errors($groups=[]) {

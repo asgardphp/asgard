@@ -176,7 +176,7 @@ class Group implements GroupInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function errors() {
+	public function errors($validationGroups=[]) {
 		if(!$this->sent())
 			return [];
 
@@ -184,13 +184,13 @@ class Group implements GroupInterface {
 
 		foreach($this->fields as $name=>$field) {
 			if($field instanceof self) {
-				$errors[$name] = $field->errors();
+				$errors[$name] = $field->errors($validationGroups=[]);
 				if(count($errors[$name]) === 0)
 					unset($errors[$name]);
 			}
 		}
 
-		$this->errors = $errors + $this->myErrors();
+		$this->errors = $errors + $this->myErrors($validationGroups=[]);
 
 		$this->setErrors($this->errors);
 
@@ -527,10 +527,10 @@ class Group implements GroupInterface {
 	 * Return the group own errors.
 	 * @return array
 	 */
-	protected function myErrors() {
+	protected function myErrors($validationGroups=[]) {
 		$data = $this->data;
 
-		$report = $this->getValidator()->errors($data);
+		$report = $this->getValidator()->errors($data, $validationGroups);
 
 		$errors = [];
 		foreach($this->fields as $name=>$field) {

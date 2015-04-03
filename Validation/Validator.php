@@ -446,8 +446,6 @@ class Validator implements ValidatorInterface {
 				return false;
 		}
 		foreach($this->attributes as $name=>$validator) {
-			if(!$validator->belongsToGroups($groups))
-				continue;
 			if($validator->valid($input->attribute($name), $groups) === false)
 				return false;
 		}
@@ -510,8 +508,6 @@ class Validator implements ValidatorInterface {
 				}
 			}
 			foreach($this->attributes as $attribute=>$validator) {
-				if(!$validator->belongsToGroups($groups))
-					continue;
 				$attrErrors = $validator->_errors($input->attribute($attribute), $groups);
 				if($attrErrors['self'] || $attrErrors['attributes']) {
 					if(isset($errors['attributes'][$attribute]))
@@ -678,7 +674,9 @@ class Validator implements ValidatorInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function setGroups(array $groups=null) {
+	public function setGroups($groups=null) {
+		if(!is_array($groups) && $groups !== null)
+			$groups = [$groups];
 		$this->groups = $groups;
 		return $this;
 	}

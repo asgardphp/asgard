@@ -188,8 +188,8 @@ class Form extends Group implements FormInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function save() {
-		if($errors = $this->errors()) {
+	public function save($validationGroups=[]) {
+		if($errors = $this->errors($validationGroups)) {
 			$e = new FormException;
 			$e->errors = $errors;
 			throw $e;
@@ -263,8 +263,8 @@ class Form extends Group implements FormInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function isValid() {
-		return $this->sent() && !$this->errors();
+	public function isValid($validationGroups=[]) {
+		return $this->sent() && !$this->errors($validationGroups);
 	}
 
 	/**

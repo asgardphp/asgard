@@ -229,9 +229,9 @@ interface ValidatorInterface {
 
 	/**
 	 * Set the groups.
-	 * @param array|null $groups
+	 * @param array|string|null $groups
 	 */
-	public function setGroups(array $groups=null);
+	public function setGroups($groups=null);
 
 	/**
 	 * Return the groups.

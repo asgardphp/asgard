@@ -164,7 +164,7 @@ class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function errors($group=null) {
+	public function errors($validationGroups=[], $group=null) {
 		if(!$this->sent())
 			return [];
 
@@ -174,15 +174,15 @@ class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 		$errors = [];
 		if($group instanceof \Asgard\Form\Group) {
 			if($group instanceof static)
-				$errors = $group->myErrors();
+				$errors = $group->myErrors($validationGroups);
 			elseif($group instanceof \Asgard\Form\Group)
-				$errors = $group->errors();
+				$errors = $group->errors($validationGroups);
 			else
 				throw new \Exception('The field should not be a: '.get_class($group));
 
 			foreach($group as $name=>$sub_field) {
 				if($sub_field instanceof \Asgard\Form\Group) {
-					$group_errors = $this->errors($sub_field);
+					$group_errors = $this->errors($validationGroups, $sub_field);
 					if(count($group_errors) > 0)
 						$errors[$name] = $group_errors;
 				}
@@ -256,7 +256,7 @@ class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 	 * Return its own errors.
 	 * @return array
 	 */
-	protected function myErrors() {
+	protected function myErrors($validationGroups=[]) {
 		$data = $this->data();
 		$data = array_filter($data, function($v) {
 			if($v instanceof \Asgard\Http\HttpFile && $v->error())
@@ -272,6 +272,6 @@ class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 		else
 			$this->entity->set($data);
 
-		return array_merge(parent::myErrors(), $this->entity->errors());
+		return array_merge(parent::myErrors($validationGroups), $this->entity->errors($validationGroups));
 	}
 }

@@ -60,9 +60,11 @@ abstract class Rule {
 
 	/**
 	 * Set the groups.
-	 * @param array|null $groups
+	 * @param array|string|null $groups
 	 */
-	public function setGroups(array $groups=null) {
+	public function setGroups($groups=null) {
+		if(!is_array($groups) && $groups !== null)
+			$groups = [$groups];
 		$this->groups = $groups;
 		return $this;
 	}
@@ -81,9 +83,8 @@ abstract class Rule {
 	 * @return boolean
 	 */
 	public function belongsToGroups(array $groups, Validator $validator) {
-		if($this->groups === null) {
+		if($this->groups === null)
 			return $validator->belongsToGroups($groups);
-		}
 		else {
 			foreach($groups as $group) {
 				if(in_array($group, $this->groups))
