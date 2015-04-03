@@ -26,7 +26,7 @@ interface BagInterface extends \ArrayAccess {
 	 * @return integer
 	 * @api
 	 */
-	public function size();
+	public function count();
 
 	/**
 	 * Set all elements.

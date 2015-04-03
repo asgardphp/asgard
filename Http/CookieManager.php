@@ -27,7 +27,7 @@ class CookieManager implements \Asgard\Common\BagInterface {
 	 * Return the number of cookies.
 	 * @return integer
 	 */
-	public function size() {
+	public function count() {
 		return count($_COOKIE);
 	}
 

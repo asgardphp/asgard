@@ -38,7 +38,7 @@ class Bag implements BagInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function size() {
+	public function count() {
 		return count($this->data);
 	}
 

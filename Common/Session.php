@@ -56,7 +56,7 @@ class Session implements BagInterface {
 	 * Return the number of session variables.
 	 * @return integer
 	 */
-	public function size() {
+	public function count() {
 		return count($_SESSION);
 	}
 
