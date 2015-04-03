@@ -9,7 +9,8 @@
         "php": ">=5.4.0",
         "asgard/config": "0.*",
         "asgard/container": "0.*",
-        "asgard/common": "0.*"
+        "asgard/common": "0.*",
+        "classpreloader/classpreloader": "1.*"
     },
     "autoload": {
         "psr-4": {"Asgard\\Core\\": "."}
