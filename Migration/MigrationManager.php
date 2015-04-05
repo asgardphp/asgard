@@ -198,7 +198,7 @@ class '.$name.' extends '.$class.' {
 	 * {@inheritDoc}
 	 */
 	public function rollbackUntil($migrationName) {
-		foreach($this->tracker->getDownUntil($migrationName) as $_migrationName)
+		foreach($this->tracker->getRevereMigratedUntil($migrationName) as $_migrationName)
 			$this->unmigrate($_migrationName);
 	}
 }

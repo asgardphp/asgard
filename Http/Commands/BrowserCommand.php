@@ -49,7 +49,7 @@ class BrowserCommand extends \Asgard\Console\Command {
 		$body = $this->input->getOption('b');
 		$files = $this->input->getOption('f') ? json_decode($this->input->getOption('f'), true):[];
 
-		$browser = new \Asgard\Http\Browser\Browser($this->httpKernel);
+		$browser = new \Asgard\Http\Browser\Browser($this->httpKernel, $this->getContainer());
 		$browser->getCookies()->setAll($cookies);
 		$browser->getSession()->setAll($session);
 		$response = $browser->req($url, $method, $post, $files, $body, $headers, $server);

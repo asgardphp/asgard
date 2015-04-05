@@ -153,7 +153,7 @@ class Tracker {
 	 * @param  string $untilMigration
 	 * @return arra
 	 */
-	public function getDownUntil($untilMigration) {
+	public function getRevereMigratedUntil($untilMigration) {
 		$list = [];
 		if(!in_array($untilMigration, array_keys($this->getList())))
 			throw new \Exception($untilMigration.' is not in the list.');
