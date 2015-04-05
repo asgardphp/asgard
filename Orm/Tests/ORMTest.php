@@ -17,7 +17,7 @@ class ORMTest extends \PHPUnit_Framework_TestCase {
 		$orm = $dataMapper->orm('Asgard\Orm\Tests\Fixtures\NamesConflict\A');
 
 		$this->assertEquals(
-			'SELECT `a`.* FROM `a` INNER JOIN `b` `parent` ON `parent`.`id` = `a`.`parent_id` INNER JOIN `c` `parent1` ON `parent1`.`id` = `parent`.`parent_id` INNER JOIN `b` `childs` ON `childs`.`parent_id` = `parent1`.`id` INNER JOIN `a` `childs1` ON `childs1`.`parent_id` = `childs`.`id` GROUP BY `a`.`id` ORDER BY `a`.`id` DESC',
+			'SELECT `a`.* FROM `a` LEFT JOIN `b` `parent` ON `parent`.`id` = `a`.`parent_id` LEFT JOIN `c` `parent1` ON `parent1`.`id` = `parent`.`parent_id` LEFT JOIN `b` `childs` ON `childs`.`parent_id` = `parent1`.`id` LEFT JOIN `a` `childs1` ON `childs1`.`parent_id` = `childs`.`id` GROUP BY `a`.`id` ORDER BY `a`.`id` DESC',
 			$orm->join([
 				'parent' => [
 					'parent' => [
