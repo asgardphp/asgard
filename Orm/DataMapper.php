@@ -165,7 +165,7 @@ class DataMapper implements DataMapperInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function create($entityClass, $values=null, $groups=[]) {
+	public function create($entityClass, array $values=[], $groups=[]) {
 		$m = $this->getEntityManager()->get($entityClass)->make();
 		$this->save($m, $values, $groups);
 		return $m;
@@ -319,7 +319,7 @@ class DataMapper implements DataMapperInterface {
 						#entity object
 						if(is_object($relatedEntity)) {
 							if($relatedEntity->isNew())
-								$this->save($relatedEntity, null, $groups===null ? null:[]);
+								$this->save($relatedEntity, [], $groups===null ? null:[]);
 							$vars[$link] = $relatedEntity->id;
 							if($rel->isPolymorphic())
 								$vars[$rel->getLinkType()] = get_class($relatedEntity);

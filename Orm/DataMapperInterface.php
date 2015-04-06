@@ -63,7 +63,7 @@ interface DataMapperInterface {
 	 * @param  array|null $groups       validation groups
 	 * @return \Asgard\Entity\Entity
 	 */
-	public function create($entityClass, $values=null, $groups=[]);
+	public function create($entityClass, array $values=[], $groups=[]);
 
 	/**
 	 * Get DataMapper validator for entities.

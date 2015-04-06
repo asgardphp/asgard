@@ -58,7 +58,7 @@ class CollectionORM extends ORM implements CollectionORMInterface {
 		foreach($ids as $k=>$v) {
 			if($v instanceof \Asgard\Entity\Entity) {
 				if($v->isNew())
-					$this->dataMapper->save($v, null, $groups);
+					$this->dataMapper->save($v, [], $groups);
 				$ids[$k] = ['id'=>(int)$v->id, 'class'=>get_class($v)];
 			}
 			else
