@@ -21,13 +21,11 @@
         "jeremeamia/SuperClosure": "1.*",
         "psr/log": "1.*",
         "nesbot/carbon": "1.*",
-        "swiftmailer/swiftmailer": "5.0.*"
+        "swiftmailer/swiftmailer": "5.0.*",
+        "classpreloader/classpreloader": "1.*"
     },
     "require-dev": {
         "phpunit/phpunit": "4.*"
-    },
-    "suggest": {
-        "classpreloader/classpreloader": "1.*"
     },
     "replace": {
         "asgard/cache": "self.version",
