@@ -77,10 +77,15 @@ class ORM implements ORMInterface {
 	 */
 	protected $paginatorFactory = null;
 	/**
-	 * Scopes/
+	 * Scopes.
 	 * @var array
 	 */
 	protected $scopes = [];
+	/**
+	 * Reversed query.
+	 * @var boolean
+	 */
+	protected $reversed = false;
 
 	/**
 	 * Constructor.
@@ -111,6 +116,9 @@ class ORM implements ORMInterface {
 			$this->orderBy('id DESC');
 	}
 
+	/**
+	 * {@inheritDoc}
+	*/
 	public function addScope($name, $scope) {
 		if(isset($this->scopes[$name]))
 			throw new \Exception('Scope '.$name.' already exists.');
@@ -118,11 +126,17 @@ class ORM implements ORMInterface {
 		return $this;
 	}
 
+	/**
+	 * {@inheritDoc}
+	*/
 	public function removeScope($name) {
 		unset($this->scopes[$name]);
 		return $this;
 	}
 
+	/**
+	 * {@inheritDoc}
+	*/
 	public function resetScopes() {
 		$this->scopes = [];
 		return $this;
@@ -185,6 +199,28 @@ class ORM implements ORMInterface {
 		return $this->$name()->get();
 	}
 
+	/**
+	 * {@inheritDoc}
+	*/
+	public function reverse() {
+		$this->reversed = !$this->reversed;
+		return $this;
+	}
+
+	/**
+	 * {@inheritDoc}
+	*/
+	public function last() {
+		$c = clone $this;
+		return $c->reverse()->first();
+	}
+
+	/**
+	 * Get new alias if current already exists.
+	 * @param  string $name
+	 * @param  array  $existing
+	 * @return string
+	 */
 	protected function getNewAlias($name, array $existing) {
 		$i=1;
 		$alias = $name;
@@ -429,10 +465,16 @@ class ORM implements ORMInterface {
 		return $clone->applyScopes()->_getDAL();
 	}
 
+	/**
+	 * Build the DAL.
+	 * @return \Asgard\Db\DAL
+	 */
 	public function _getDAL() {
 		$dal = new \Asgard\Db\DAL($this->dataMapper->getDB());
 		$table = $this->getTable();
 		$dal->orderBy($this->orderBy);
+		if($this->reversed)
+			$dal->reverse();
 		$dal->limit($this->limit);
 		$dal->offset($this->offset);
 		$dal->groupBy($table.'.id');

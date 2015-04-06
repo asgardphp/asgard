@@ -100,6 +100,42 @@ class DAL implements \Iterator {
 	}
 
 	/**
+	 * Reverse the query order.
+	 * @return static
+	 */
+	public function reverse() {
+		if(!$this->orderBy)
+			throw new \Exception('Cannot reverse a query without order by.');
+
+		preg_match_all('/([^,])*([(].*?[)])([^,])*|([^,])+/', $this->orderBy, $e);
+		$e = $e[0];
+		foreach($e as $k=>$v) {
+			$v = preg_replace_callback('/(DESC|ASC)[\s]*/', function($r) {
+				$r = $r[0];
+				if(strpos($r, 'DESC') !== false)
+					return str_replace('DESC', 'ASC', $r);
+				else
+					return str_replace('ASC', 'DESC', $r);
+			}, $v, -1, $c);
+			if($c === 0)
+				$v = $v.' DESC';
+			$e[$k] = $v;
+		}
+		$orderBy = implode(', ', $e);
+
+		$this->orderBy($orderBy);
+		return $this;
+	}
+
+	/**
+	 * Return the last row.
+	 * @return array
+	 */
+	public function last() {
+		return $this->reverse()->first();
+	}
+
+	/**
 	 * Return a raw SQL object.
 	 * @param  string $sql
 	 * @return Raw
