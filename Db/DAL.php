@@ -1216,8 +1216,8 @@ class DAL implements \Iterator {
 
 	/**
 	 * Count number of rows.
+	 * @param  string $what
 	 * @param  string $group_by
-	 * @param string $what
 	 * @return string
 	 * @api
 	 */
@@ -1230,7 +1230,7 @@ class DAL implements \Iterator {
 
 	/**
 	 * Return the minimum value.
-	 * @param  string      $what
+	 * @param  string $what
 	 * @param  string $group_by
 	 * @return string
 	 * @api
@@ -1241,7 +1241,7 @@ class DAL implements \Iterator {
 
 	/**
 	 * Return the maximum value.
-	 * @param  string      $what
+	 * @param  string $what
 	 * @param  string $group_by
 	 * @return string
 	 * @api
