@@ -173,7 +173,7 @@ class DAL implements \Iterator {
 	/**
 	 * Remove a FROM table.
 	 * @param  string $what
-	 * @return DALm   $this
+	 * @return DAL   $this
 	 * @api
 	 */
 	public function removeFrom($what) {
@@ -1106,7 +1106,7 @@ class DAL implements \Iterator {
 	/**
 	 * Update rows.
 	 * @param  array  $values
-	 * @return Query
+	 * @return integer
 	 * @api
 	 */
 	public function update(array $values) {
@@ -1118,7 +1118,7 @@ class DAL implements \Iterator {
 	/**
 	 * Insert rows.
 	 * @param  array  $values
-	 * @return Query
+	 * @return integer
 	 * @api
 	 */
 	public function insert(array $values) {
@@ -1130,8 +1130,8 @@ class DAL implements \Iterator {
 
 	/**
 	 * Delete rows.
-	 * @param  array $tables
-	 * @return Query
+	 * @param  string[] $tables
+	 * @return integer
 	 * @api
 	 */
 	public function delete(array $tables=[]) {
@@ -1176,6 +1176,7 @@ class DAL implements \Iterator {
 	/**
 	 * Count number of rows.
 	 * @param  string $group_by
+	 * @param string $what
 	 * @return string
 	 * @api
 	 */
