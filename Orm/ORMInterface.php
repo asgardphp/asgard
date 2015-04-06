@@ -40,8 +40,8 @@ interface ORMInterface extends \Iterator {
 	/**
 	 * Limits the search to the entities related to the given entity.
 	 *
-	 * @param string                $relation The name of the relation.
-	 * @param \Asgard\Entity\Entity $entity The related entity.
+	 * @param Entity|Relation|string $relation The name of the relation.
+	 * @param \Asgard\Entity\Entity  $entity   The related entity.
 	 *
 	 * @return ORMInterface $this
 	*/

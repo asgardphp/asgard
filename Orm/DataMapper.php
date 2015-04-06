@@ -259,7 +259,7 @@ class DataMapper implements DataMapperInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function save(\Asgard\Entity\Entity $entity, $values=null, $groups=[]) {
+	public function save(\Asgard\Entity\Entity $entity, array $values=[], $groups=[]) {
 		#set $values if any
 		if($values)
 			$entity->set($values);

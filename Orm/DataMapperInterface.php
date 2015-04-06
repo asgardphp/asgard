@@ -100,7 +100,7 @@ interface DataMapperInterface {
 	 * @param  array|null            $groups validation groups
 	 * @return \Asgard\Entity\Entity $entity
 	 */
-	public function save(\Asgard\Entity\Entity $entity, $values=null, $groups=[]);
+	public function save(\Asgard\Entity\Entity $entity, array $values=[], $groups=[]);
 
 	/**
 	 * Return the related entities of an entity.
