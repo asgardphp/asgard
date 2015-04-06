@@ -229,7 +229,7 @@ class DataMapper implements DataMapperInterface {
 
 		$e = [];
 		foreach($data as $property=>$value) {
-			if($propertyErrors = $errors->attribute($property)->errors(null, $groups))
+			if($propertyErrors = $errors->attribute($property)->errors())
 				$e[$property] = $propertyErrors;
 		}
 
@@ -248,7 +248,7 @@ class DataMapper implements DataMapperInterface {
 
 		$e = [];
 		foreach($data as $property=>$value) {
-			if($propertyErrors = $errors->attribute($property)->errors(null, $groups))
+			if($propertyErrors = $errors->attribute($property)->errors())
 				$e[$property] = $propertyErrors;
 		}
 
@@ -398,8 +398,6 @@ class DataMapper implements DataMapperInterface {
 	 * {@inheritDoc}
 	 */
 	public function related(\Asgard\Entity\Entity $entity, $name) {
-		$rel = $this->relation($entity->getDefinition(), $name);
-
 		return $this->getCollectionOrmFactory()->create($entity, $name, $this, $this->locale, $this->prefix);
 	}
 

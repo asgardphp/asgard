@@ -564,26 +564,26 @@ class ORM implements ORMInterface {
 			case 'HMABT':
 				if($relation->isPolymorphic()) {
 					$dal->join($type, [
-						$relation->getAssociationTable($this->prefix) => $this->processConditions([
-							$relation->getAssociationTable($this->prefix).'.'.$relation->getLinkA().' = '.$ref_table.'.id',
-							$relation->getAssociationTable($this->prefix).'.'.$relation->getLinkType() => $relation->getTargetDefinition()->getClass(),
+						$relation->getAssociationTable() => $this->processConditions([
+							$relation->getAssociationTable().'.'.$relation->getLinkA().' = '.$ref_table.'.id',
+							$relation->getAssociationTable().'.'.$relation->getLinkType() => $relation->getTargetDefinition()->getClass(),
 						])
 					]);
 				}
 				else {
 					$dal->join($type, [
-						$relation->getAssociationTable($this->prefix) => $this->processConditions([
-							$relation->getAssociationTable($this->prefix).'.'.$relation->getLinkA().' = '.$ref_table.'.id',
+						$relation->getAssociationTable() => $this->processConditions([
+							$relation->getAssociationTable().'.'.$relation->getLinkA().' = '.$ref_table.'.id',
 						])
 					]);
 				}
 				$dal->join($type, [
 					$this->dataMapper->getTable($relationDefinition).' '.$alias => $this->processConditions([
-						$relation->getAssociationTable($this->prefix).'.'.$relation->getLinkB().' = '.$alias.'.id',
+						$relation->getAssociationTable().'.'.$relation->getLinkB().' = '.$alias.'.id',
 					])
 				]);
 				if($relation->reverse()->get('sortable'))
-					$dal->orderBy($relation->getAssociationTable($this->prefix).'.'.$relation->reverse()->getPositionField().' ASC');
+					$dal->orderBy($relation->getAssociationTable().'.'.$relation->reverse()->getPositionField().' ASC');
 				break;
 		}
 
@@ -900,24 +900,39 @@ class ORM implements ORMInterface {
 		return $this;
 	}
 
-	function rewind() {
+	/**
+	 * Rewind query.
+	 */
+	public function rewind() {
 		if(!$this->tmp_dal)
 			$this->tmp_dal = $this->getDAL();
 		$this->tmp_dal->rewind();
 	}
 
-	function current() {
+	/**
+	 * Return current entity.
+	 * @return \Asgard\Entity\Entity
+	 */
+	public function current() {
 		if(!($r = $this->tmp_dal->current()))
 			return null;
 		else
 			return $this->hydrate($r);
 	}
 
-	function key() {
-		$this->tmp_dal->key();
+	/**
+	 * Return currenty key.
+	 * @return integer
+	 */
+	public function key() {
+		return $this->tmp_dal->key();
 	}
 
-	function valid() {
+	/**
+	 * Check if iteration is still valid.
+	 * @return boolean
+	 */
+	public function valid() {
 		return $this->tmp_dal->valid();
 	}
 }

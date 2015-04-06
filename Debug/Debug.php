@@ -224,7 +224,8 @@ EOT;
 			$backtrace = debug_backtrace();
 
 		$r = '';
-		for($i=0; $i<count($backtrace); $i++) {
+		$c = count($backtrace);
+		for($i=0; $i<$c; $i++) {
 			$trace = $backtrace[$i];
 
 			if(isset($trace['file']))

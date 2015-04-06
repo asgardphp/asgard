@@ -266,11 +266,11 @@ class PolymorphicCollectionORM implements CollectionORMInterface {
 	 */
 	public function reset() { throw new \Exception('Not implemented'); }
 
-	function rewind() { throw new \Exception('Not implemented'); }
+	public function rewind() { throw new \Exception('Not implemented'); }
 
-	function current() { throw new \Exception('Not implemented'); }
+	public function current() { throw new \Exception('Not implemented'); }
 
-	function key() { throw new \Exception('Not implemented'); }
+	public function key() { throw new \Exception('Not implemented'); }
 
-	function valid() { throw new \Exception('Not implemented'); }
+	public function valid() { throw new \Exception('Not implemented'); }
 }

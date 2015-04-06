@@ -14,7 +14,7 @@ abstract class Rule {
 
 	/**
 	 * Groups.
-	 * @var array
+	 * @var array|null
 	 */
 	protected $groups;
 

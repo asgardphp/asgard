@@ -597,7 +597,7 @@ class DAL implements \Iterator {
 	 * @return boolean
 	 */
 	public static function isIdentifier($str) {
-		return preg_match('/^[a-z_][a-zA-Z0-9._]*$/', $str);
+		return (bool)preg_match('/^[a-z_][a-zA-Z0-9._]*$/', $str);
 	}
 
 	/**
@@ -823,6 +823,11 @@ class DAL implements \Iterator {
 		return implode(', ', $tables);
 	}
 
+	/**
+	 * Replace ? with raw queries.
+	 * @param  string &$sql
+	 * @param  array  &$params
+	 */
 	protected function replaceRaws(&$sql, &$params) {
 		$i = 0;
 		$sql = preg_replace_callback('/\?/', function() use(&$i, $params) {
@@ -1142,9 +1147,9 @@ class DAL implements \Iterator {
 
 	/**
 	 * Execute a math function.
-	 * @param  string      $fct
-	 * @param  string $what
-	 * @param  string $group_by
+	 * @param  string       $fct
+	 * @param  string       $what
+	 * @param  string       $group_by
 	 * @return array|string
 	 */
 	protected function _function($fct, $what=null, $group_by=null) {

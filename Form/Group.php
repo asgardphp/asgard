@@ -382,7 +382,8 @@ class Group implements GroupInterface {
 	public function getTopForm() {
 		if($this->parent)
 			return $this->parent->getTopForm();
-		return $this;
+		if($this instanceof FormInterface)
+			return $this;
 	}
 
 	/**

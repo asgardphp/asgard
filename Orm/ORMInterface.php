@@ -50,7 +50,7 @@ interface ORMInterface extends \Iterator {
 	/**
 	 * Joins a relation to the search. Useful when having conditions involving relations.
 	 *
-	 * @param string|EntityRelation|array $relations    The name of the relation or an array of relations.
+	 * @param string|EntityRelation|array $relation     The name of the relation or an array of relations.
 	 * @param array                       $subrelations Nested relations.
 	 *
 	 * @return ORMInterface $this
@@ -219,7 +219,7 @@ interface ORMInterface extends \Iterator {
 	 *
 	 * @param string $group_by To split the result according to a specific property.
 	 *
-	 * @return string|array The total or an array of total per value.
+	 * @return integer|array The total or an array of total per value.
 	*/
 	public function count($group_by=null);
 

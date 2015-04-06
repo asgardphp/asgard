@@ -77,7 +77,7 @@ class Validator implements ValidatorInterface {
 
 	/**
 	 * Groups.
-	 * @var array
+	 * @var array|null
 	 */
 	protected $groups;
 
