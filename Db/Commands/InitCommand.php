@@ -3,7 +3,6 @@ namespace Asgard\Db\Commands;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Console\Input\InputOption;
 
 /**
  * Init the database command.
@@ -33,6 +32,10 @@ class InitCommand extends \Asgard\Console\Command {
 		parent::__construct();
 	}
 
+	/**
+	 * @param string $question
+	 * @param string $default
+	 */
 	protected function ask($question, $default=null) {
 		$helper = $this->getHelperSet()->get('question');
 		$question = new \Symfony\Component\Console\Question\Question($question, $default);

@@ -134,8 +134,8 @@ class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\Pers
 
 	/**
 	 * Article::relation('parent')
-	 * @param  string $name relation name
-	 * @return array  relation parameters
+	 * @param  string $name   relation name
+	 * @return EntityRelation
 	 */
 	public function static_relation($name) {
 		return $this->getDataMapper()->relation($this->definition, $name);
@@ -177,7 +177,7 @@ class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\Pers
 
 	/**
 	 * Article::destroyAll()
-	 * @return DataMapperInterface number of destroyed entities
+	 * @return integer number of destroyed entities
 	 */
 	public function static_destroyAll() {
 		return $this->getDataMapper()->destroyAll($this->entityClass);
@@ -209,7 +209,7 @@ class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\Pers
 	 * @param  \Asgard\Entity\Entity $entity
 	 * @param  array      $values default attributes
 	 * @param  array|null $groups  validation groups
-	 * @return DataMapperInterface
+	 * @return \Asgard\Entity\Entity
 	 */
 	public function call_save(\Asgard\Entity\Entity $entity, array $values=null, $groups=[]) {
 		return $this->getDataMapper()->save($entity, $values, $groups);

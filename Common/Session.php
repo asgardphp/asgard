@@ -45,7 +45,7 @@ class Session implements BagInterface {
 
 	/**
 	 * Clear all session variables.
-	 * @return SessionManager $this
+	 * @return static $this
 	 */
 	public function clear() {
 		$_SESSION = [];

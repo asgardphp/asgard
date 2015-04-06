@@ -42,7 +42,7 @@ class Property {
 
 	/**
 	 * __sleep magic method.
-	 * @return array
+	 * @return string[]
 	 */
 	public function __sleep() {
 		foreach($this->params as $k=>$v) {

@@ -64,7 +64,7 @@ abstract class Controller {
 	 * Run the action.
 	 * @param  string  $action
 	 * @param  Request $request
-	 * @return mixed
+	 * @return Response
 	 */
 	public function run($action, $request=null) {
 		$this->action = $action;

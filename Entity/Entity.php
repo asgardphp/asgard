@@ -584,8 +584,8 @@ abstract class Entity {
 
 	/**
 	 * Check if entity and translations are valid.
-	 * @param  array $locales
-	 * @param  array $groups validation groups
+	 * @param  string[] $locales
+	 * @param  array    $groups validation groups
 	 * @return boolean
 	 */
 	public function validI18N(array $locales=[], $groups=[]) {
@@ -600,8 +600,8 @@ abstract class Entity {
 
 	/**
 	 * Return errors for entity and translations.
-	 * @param  array $locales
-	 * @param  array $groups validation groups
+	 * @param  string[] $locales
+	 * @param  array    $groups validation groups
 	 * @return array
 	 */
 	public function errorsI18N(array $locales=[], $groups=[]) {

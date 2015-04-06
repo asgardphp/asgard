@@ -250,8 +250,8 @@ class Serializer {
 
 	/**
 	 * Convert an array of entities to json. Static.
-	 * @param  array  $entities
-	 * @param  integer $depth
+	 * @param  Entity[] $entities
+	 * @param  integer  $depth
 	 * @return string
 	 */
 	public static function sArrayToJSON(array $entities, $depth=0) {

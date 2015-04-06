@@ -29,7 +29,7 @@ class ORMMigrations {
 
 	/**
 	 * Automatically migrate given entity definitions.
-	 * @param  array|\Asgard\Entity\Definition $definitions
+	 * @param \Asgard\Entity\Definition[]|\Asgard\Entity\Definition $definitions
 	 */
 	public function autoMigrate($definitions) {
 		if(!is_array($definitions))
@@ -62,7 +62,7 @@ class ORMMigrations {
 	/**
 	 * Generate schemas of entities.
 	 * @param  array $definitions
-	 * @return array
+	 * @return \Doctrine\DBAL\Schema\Schema
 	 */
 	protected function getEntitiesSchemas(array $definitions) {
 		$dataMapper = $this->dataMapper;
@@ -230,9 +230,9 @@ class ORMMigrations {
 
 	/**
 	 * Build the migration code by comparing the new schemas to the old ones.
-	 * @param  array   $newSchema
-	 * @param  array   $oldSchema
-	 * @param  boolean $drop       true to drop the old tables
+	 * @param  \Doctrine\DBAL\Schema\Schema $newSchema
+	 * @param  \Doctrine\DBAL\Schema\Schema $oldSchema
+	 * @param  boolean                      $drop       true to drop the old tables
 	 * @return string  migration code
 	 */
 	protected function buildMigration(\Doctrine\DBAL\Schema\Schema $newSchema, \Doctrine\DBAL\Schema\Schema $oldSchema, $drop) {
@@ -298,7 +298,8 @@ class ORMMigrations {
 
 	/**
 	 * Generate code to rename a column.
-	 * @param  string $col
+	 * @param  string                       $name
+	 * @param  \Doctrine\DBAL\Schema\Column $col
 	 * @return string
 	 */
 	protected function renameColumn($name, \Doctrine\DBAL\Schema\Column $col) {
@@ -329,7 +330,7 @@ class ORMMigrations {
 
 	/**
 	 * Generate the code to update a column.
-	 * @param  string $col                      column name
+	 * @param  string                           $name column name
 	 * @param  \Doctrine\DBAL\Schema\ColumnDiff $col
 	 * @return string
 	 */
@@ -351,7 +352,7 @@ class ORMMigrations {
 
 	/**
 	 * Generate the code to create a column.
-	 * @param  string $col                  column name
+	 * @param  string                       $name column name
 	 * @param  \Doctrine\DBAL\Schema\Column $col
 	 * @return string
 	 */
@@ -395,7 +396,9 @@ class ORMMigrations {
 
 	/**
 	 * Format PHP variables to string.
-	 * @param  mixed $v
+	 * @param  mixed   $v
+	 * @param  integer $tabs
+	 * @param  boolean $line
 	 * @return string
 	 */
 	public function outputPHP($v, $tabs=0, $line=false) {
