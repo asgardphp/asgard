@@ -93,7 +93,8 @@ class Resolver implements ResolverInterface {
 			$results = [];
 			/* EXTRACTS VARIABLES */
 			preg_match_all('/:([a-zA-Z0-9_]+)/', $route, $keys);
-			for($i=0; $i<count($keys[1]); $i++)
+			$c = count($keys[1]);
+			for($i=0; $i<$c; $i++)
 				$results[$keys[1][$i]] = $matches[$i+1][0];
 
 			return $results;
@@ -210,7 +211,7 @@ class Resolver implements ResolverInterface {
 				continue;
 			$count = 0;
 			$route = str_replace(':'.$symbol, $param, $route, $count);
-			if($count)
+			if($count > 0)
 				unset($params[$symbol]);
 		}
 		if($params)

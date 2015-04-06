@@ -115,7 +115,7 @@ class ListCommand extends \Asgard\Console\Command {
 		foreach($services as $row)
 			$table->addRow($row);
 
-		$table->render($this->output);
+		$table->render();
 	}
 
 	/**

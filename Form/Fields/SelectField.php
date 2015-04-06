@@ -75,6 +75,7 @@ class SelectField extends \Asgard\Form\Field {
 	 * {@inheritdoc}
 	 */
 	public function getValidationRules() {
+		$validation = parent::getValidationRules();
 		if(isset($this->options['choices']))
 			$validation['in'] = [array_keys($this->options['choices'])];
 

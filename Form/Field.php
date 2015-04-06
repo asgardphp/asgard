@@ -231,10 +231,11 @@ abstract class Field {
 	 */
 	public function getID() {
 		$parents = $this->getParents();
+		$c = count($parents);
 
-		if(count($parents) > 0) {
+		if($c > 0) {
 			$id = $parents[0].'-';
-			for($i=1; $i<count($parents); $i++)
+			for($i=1; $i<$c; $i++)
 				$id .= $parents[$i].'-';
 			$id .= $this->name;
 			return $id;
@@ -249,10 +250,11 @@ abstract class Field {
 	 */
 	public function name() {
 		$parents = $this->getParents();
+		$c = count($parents);
 
-		if(count($parents) > 0) {
+		if($c > 0) {
 			$id = $parents[0];
-			for($i=1; $i<count($parents); $i++)
+			for($i=1; $i<$c; $i++)
 				$id .= '['.$parents[$i].']';
 			$id .= '['.$this->name.']';
 			return $id;

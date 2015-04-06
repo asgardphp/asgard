@@ -127,4 +127,3 @@ interface HTMLInterface {
 	 */
 	public function printAll();
 }
-?>

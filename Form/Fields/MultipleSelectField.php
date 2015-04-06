@@ -84,9 +84,9 @@ class MultipleSelectField extends \Asgard\Form\Field {
 	 * {@inheritdoc}
 	 */
 	public function getValidationRules() {
-		if(isset($this->options['choices'])) {
+		$validation = parent::getValidationRules();
+		if(isset($this->options['choices']))
 			$validation['allin'] = [array_keys($this->options['choices'])];
-		}
 
 		return $validation;
 	}

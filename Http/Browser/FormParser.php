@@ -28,7 +28,7 @@ class Field {
 	 * Constructor.
 	 * @param \DOMElement $node
 	 */
-	function __construct(\DOMElement $node) {
+	public function __construct(\DOMElement $node) {
 		$this->node = $node;
 		$nodeName = $node->nodeName;
 

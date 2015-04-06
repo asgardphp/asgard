@@ -168,10 +168,8 @@ class Browser implements BrowserInterface {
 	public function submit($xpath='//form', $to=null, array $override=[]) {
 		if($this->last === null)
 			throw new \Exception('No page to submit from.');
-		libxml_use_internal_errors(true);
 
-		$parser = new FormParser;
-		$parser->parse($this->last->getContent(), $xpath);
+		$parser = FormParser::parse($this->last->getContent(), $xpath);
 		$res = $parser->values();
 		$this->merge($res, $override);
 

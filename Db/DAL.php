@@ -260,15 +260,15 @@ class DAL implements \Iterator {
 		return $this->current;
 	}
 
-	function rewind() {
+	public function rewind() {
 		$this->query();
 	}
 
-	function key() {
+	public function key() {
 		return;
 	}
 
-	function valid() {
+	public function valid() {
 		return is_array($this->current());
 	}
 

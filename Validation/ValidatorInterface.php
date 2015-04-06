@@ -174,31 +174,35 @@ interface ValidatorInterface {
 
 	/**
 	 * Check if a rule validates the input.
-	 * @param  string $rule    rule name
+	 * @param  string  $rule   rule name
+	 * @param  array   $groups validation groups
 	 * @return boolean         true if the input is valid, otherwise false.
 	 */
-	public function validRule($rule);
+	public function validRule($rule, array $groups=[]);
 
 	/**
 	 * Check the input is valid.
 	 * @param  mixed $input
+	 * @param  array|null $groups validation groups
 	 * @return boolean        true is the input is valid, false otherwise.
 	 */
-	public function valid($input=null);
+	public function valid($input=null, $groups=[]);
 
 	/**
 	 * Return the errors report.
-	 * @param  mixed $input
+	 * @param  mixed      $input
+	 * @param  array|null $groups validation groups
 	 * @return Report
 	 */
-	public function errors($input=null);
+	public function errors($input=null, $groups=[]);
 
 	/**
 	 * Return the raw errors.
 	 * @param  mixed $input
+	 * @param  array $groups validation groups
 	 * @return array
 	 */
-	public function _errors($input=null);
+	public function _errors($input=null, array $groups=[]);
 
 	/**
 	 * Get the validator name.

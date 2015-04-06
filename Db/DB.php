@@ -78,7 +78,6 @@ class DB implements DBInterface {
 
 	/**
 	 * Get the PDO instance.
-	 * @param boolean $useDatabase Connect to database.
 	 * @return \PDO
 	 */
 	public function getPDO() {

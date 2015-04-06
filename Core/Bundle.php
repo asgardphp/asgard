@@ -118,14 +118,14 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			return $browser;
 		});
 		$container->setParentClass('cookieManager', 'Asgard\Common\BagInterface');
-		$container->register('cookies', function($container) {
+		$container->register('cookies', function() {
 			if(php_sapi_name() === 'cli')
 				return new \Asgard\Common\Bag;
 			else
 				return new \Asgard\Http\CookieManager;
 		});
 		$container->setParentClass('sessionManager', 'Asgard\Common\BagInterface');
-		$container->register('session', function($container) {
+		$container->register('session', function() {
 			if(php_sapi_name() === 'cli')
 				return new \Asgard\Common\Bag;
 			else
@@ -304,6 +304,8 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			$container['console']->add($migrationRollback);
 			$container['console']->add($migrationUnmigrate);
 			$container['console']->add($migrationRefresh);
+			$container['console']->add($install);
+			$container['console']->add($publish);
 
 			$migrationCreate = new \Asgard\Migration\Commands\CreateCommand($container['kernel']['root'].'/migrations');
 			$container['console']->add($migrationCreate);

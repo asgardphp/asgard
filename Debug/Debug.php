@@ -123,12 +123,13 @@ $(function(){
 EOT;
 
 		#Backtrace
-		for($i=0; $i<count($backtrace); $i++) {
+		$c = count($backtrace);
+		for($i=0; $i<$c; $i++) {
 			$trace = $backtrace[$i];
 			if(isset($backtrace[$i+1]))
 				$next = $backtrace[$i+1];
 			else
-				$next = $backtrace[count($backtrace)-1];
+				$next = $backtrace[$c-1];
 
 			#Links
 			if(isset($trace['file'])) {

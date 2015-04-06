@@ -374,7 +374,7 @@ class Definition {
 	 * @return Definition $this
 	 */
 	public function set($name, $value) {
-		return \Asgard\Common\ArrayUtils::set($this->metas, $name, $value);
+		\Asgard\Common\ArrayUtils::set($this->metas, $name, $value);
 		return $this;
 	}
 
