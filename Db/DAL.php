@@ -959,7 +959,7 @@ class DAL implements \Iterator {
 
 	/**
 	 * Build a DELETE SQL query.
-	 * @param  array $del_tables
+	 * @param  string[] $del_tables
 	 * @return string
 	 * @api
 	 */
