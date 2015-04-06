@@ -15,6 +15,10 @@ interface WidgetManagerInterface {
 	/**
 	 * Return a widget.
 	 * @param  string|callable $widget
+	 * @param  string          $name
+	 * @param  mixed           $value
+	 * @param  array           $options
+	 * @param  FormInterface   $form
 	 * @return Widget Widget class or callback
 	 */
 	public function getWidget($widget, $name, $value, array $options, FormInterface $form);
@@ -25,6 +29,7 @@ interface WidgetManagerInterface {
 	 * @param  string          $name
 	 * @param  mixed           $value
 	 * @param  array           $options
+	 * @param  FormInterface   $form
 	 * @return Widget
 	 */
 	public function getWidgetInstance($widget, $name, $value, array $options, FormInterface $form);

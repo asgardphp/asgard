@@ -31,8 +31,9 @@ class MigrationManager implements MigrationManagerInterface {
 
 	/**
 	 * Constructor.
-	 * @param string $directory
-	 * @param \Asgard\Db\DBInterface $directory
+	 * @param string                               $directory
+	 * @param \Asgard\Db\DBInterface               $db
+	 * @param \Asgard\Db\SchemaInterface           $schema
 	 * @param \Asgard\Container\ContainerInterface $container
 	 */
 	public function __construct($directory, \Asgard\Db\DBInterface $db=null, \Asgard\Db\SchemaInterface $schema=null, \Asgard\Container\ContainerInterface $container=null) {

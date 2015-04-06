@@ -481,6 +481,7 @@ abstract class Entity {
 	 * Hard get data. With pre-processing.
 	 * @param  string       $name
 	 * @param  string|array $locale
+	 * @param  boolean      $hook
 	 * @return mixed
 	 */
 	public function get($name, $locale=null, $hook=true) {

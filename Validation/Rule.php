@@ -79,7 +79,8 @@ abstract class Rule {
 
 	/**
 	 * Check if the validator belongs to some groups.
-	 * @param  array $groups
+	 * @param  array     $groups
+	 * @param  Validator $validator
 	 * @return boolean
 	 */
 	public function belongsToGroups(array $groups, Validator $validator) {

@@ -51,6 +51,7 @@ class CookieManager implements \Asgard\Common\BagInterface {
 	/**
 	 * Get a cookie.
 	 * @param  string $path
+	 * @param  mixed  $default
 	 * @return mixed
 	 */
 	public function get($path, $default=null) {

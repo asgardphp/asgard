@@ -88,6 +88,7 @@ class Session implements BagInterface {
 	/**
 	 * Get a session variable.
 	 * @param  string $path
+	 * @param  mixed  $default
 	 * @return mixed
 	 */
 	public function get($path, $default=null) {

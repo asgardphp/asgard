@@ -57,7 +57,9 @@ class Generator {
 
 	/**
 	 * Format PHP variables to string.
-	 * @param  mixed $v
+	 * @param  mixed   $v
+	 * @param  integer $tabs
+	 * @param  boolean $line
 	 * @return string
 	 */
 	public function outputPHP($v, $tabs=0, $line=false) {

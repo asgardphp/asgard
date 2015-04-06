@@ -19,7 +19,8 @@ class ValidatorFactory implements ValidatorFactoryInterface {
 
 	/**
 	 * Constructor.
-	 * @param RulesRegistry $rulesRegistry
+	 * @param RulesRegistry                                      $rulesRegistry
+	 * @param \Symfony\Component\Translation\TranslatorInterface $translator
 	 */
 	public function __construct(RulesRegistry $rulesRegistry=null, \Symfony\Component\Translation\TranslatorInterface $translator=null) {
 		$this->rulesRegistry = $rulesRegistry;

@@ -25,6 +25,7 @@ class CollectionORM extends ORM implements CollectionORMInterface {
 	 * @param string                                   $locale        default locale
 	 * @param string                                   $prefix        tables prefix
 	 * @param \Asgard\Common\PaginatorFactoryInterface $paginatorFactory
+	 * @param \Asgard\Entity\Definition                $targetDefinition
 	 */
 	public function __construct(\Asgard\Entity\Entity $entity, $relationName, DataMapperInterface $dataMapper, $locale=null, $prefix=null, \Asgard\Common\PaginatorFactoryInterface $paginatorFactory=null, \Asgard\Entity\Definition $targetDefinition=null) {
 		$this->parent = $entity;

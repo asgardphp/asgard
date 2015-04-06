@@ -112,7 +112,8 @@ class Flash {
 
 	/**
 	 * Show all messages.
-	 * @param  string $cat
+	 * @param string  $cat
+	 * @param boolean $cb  Use the global callback.
 	 */
 	public function showAll($cat=null, $cb=true) {
 		$this->fetch();

@@ -39,7 +39,8 @@ class Browser implements BrowserInterface {
 
 	/**
 	 * Constructor.
-	 * @param \Asgard\Http\HttpKernelInterface $httpKernel
+	 * @param \Asgard\Http\HttpKernelInterface     $httpKernel
+	 * @param \Asgard\Container\ContainerInterface $container
 	 */
 	public function __construct(\Asgard\Http\HttpKernelInterface $httpKernel, \Asgard\Container\ContainerInterface $container=null) {
 		$this->httpKernel = $httpKernel;

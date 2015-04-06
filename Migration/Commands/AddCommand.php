@@ -36,7 +36,9 @@ class AddCommand extends \Asgard\Console\Command {
 
 	/**
 	 * Constructor.
-	 * @param string $migrationsDir
+	 * @param string                     $migrationsDir
+	 * @param \Asgard\Db\DBInterface     $db
+	 * @param \Asgard\Db\SchemaInterface $schema
 	 */
 	public function __construct($migrationsDir, \Asgard\Db\DBInterface $db, \Asgard\Db\SchemaInterface $schema) {
 		$this->migrationsDir = $migrationsDir;

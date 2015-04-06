@@ -10,9 +10,8 @@ interface HookManagerInterface {
 	 * Trigger a hook.
 	 * @param string    $name
 	 * @param array     $args
-	 * @param callable  $cb Default callback.
-	 * @param Chain $chain
-	 * @param HooksChain
+	 * @param callable  $cb   Default callback.
+	 * @param Chain     $chain
 	*/
 	public function trigger($name, array $args=[], $cb=null, &$chain=null);
 

@@ -30,7 +30,8 @@ class ListCommand extends \Asgard\Console\Command {
 
 	/**
 	 * Constructor.
-	 * @param string $migrationsDir
+	 * @param string                 $migrationsDir
+	 * @param \Asgard\Db\DBInterface $db
 	 */
 	public function __construct($migrationsDir, \Asgard\Db\DBInterface $db) {
 		$this->migrationsDir = $migrationsDir;
