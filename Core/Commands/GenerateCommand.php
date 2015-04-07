@@ -162,6 +162,7 @@ class GenerateCommand extends \Asgard\Console\Command {
 		$this->assertTrue($browser->get(\''.$indexRoute.'\')->isOK(), \'GET '.$indexRoute.'\');
 	}',
 								'routes' => $route,
+								'commented' => strpos($indexRoute, ':') !== false
 							];
 						}
 					}
@@ -180,7 +181,8 @@ class GenerateCommand extends \Asgard\Console\Command {
 		$browser = $this->createBrowser();
 		$this->assertTrue($browser->get(\''.$showRoute.'\')->isOK(), \'GET '.$showRoute.'\');
 	}',
-								'routes' => $route,
+								'routes' => $route,,
+								'commented' => strpos($showRoute, ':') !== false
 							];
 						}
 					}
@@ -212,6 +214,7 @@ class GenerateCommand extends \Asgard\Console\Command {
 		$this->assertTrue($browser->get(\''.$actionRoute.'\')->isOK(), \'GET '.$actionRoute.'\');
 	}',
 							'routes' => $route,
+							'commented' => strpos($actionRoute, ':') !== false
 						];
 					}
 					if($params['template'])
@@ -266,7 +269,10 @@ class GenerateCommand extends \Asgard\Console\Command {
 		$res = '';
 		foreach($tests as $t) {
 			$test = trim($t['test']);
-			$res .= "\t".$test."\n\n";
+			if(isset($test['commented']) && $test['commented'])
+				$res .= "\n\t/*\n\t".$test."\n\t*/\n\n";
+			else
+				$res .= "\t".$test."\n\n";
 			if(isset($t['routes'])) {
 				if(!is_array($t['routes']))
 					$t['routes'] = [$t['routes']];

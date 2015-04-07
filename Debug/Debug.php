@@ -261,7 +261,7 @@ EOT;
 	 * @return string
 	 */
 	protected static function inputs(\Asgard\Http\Request $r, $input, $name) {
-		if($r->$input->size()) {
+		if($r->$input->count()) {
 			$res = '<div><span class="toggle"><span>+</span>'.$name.':</span>';
 			$res .= '<div style="display:none"><ul>';
 			foreach($r->get->all() as $k=>$v) {

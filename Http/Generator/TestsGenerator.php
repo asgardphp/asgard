@@ -52,18 +52,25 @@ class TestsGenerator {
 	protected function doGenerateTests(&$count) {
 		$root = $this->container['kernel']['root'];
 
-		if(file_exists($root.'/tests/ignore.txt'))
-			$ignore = array_merge(array_filter(explode("\n", file_get_contents($root.'/tests/ignore.txt'))));
-		else
+		if(file_exists($root.'/tests/ignore.txt')) {
+			$c = trim(file_get_contents($root.'/tests/ignore.txt'), "\n")."\n";
+			$ignore = array_merge(array_filter(explode("\n", $c)));
+		}
+		else {
+			$c = '';
 			$ignore = [];
+		}
 
 		$routes = $this->container['resolver']->getRoutes();
+		$c = '';
 
 		$res = [];
 		foreach($routes as $route) {
 			$routeStr = $route->getController().':'.$route->getAction();
 			if(in_array($routeStr, $ignore))
 				continue;
+
+			$c .= $routeStr."\n";
 
 			$method = strtolower($route->get('method'));
 			if(!$method)
@@ -108,6 +115,9 @@ class TestsGenerator {
 	';
 			}
 		}
+
+		$c = trim($c, "\n");
+		\Asgard\File\FileSystem::write($root.'/tests/ignore.txt', $c);
 
 		$count = count($res);
 
