@@ -102,13 +102,6 @@ interface ORMInterface extends \Iterator {
 	public function first();
 
 	/**
-	 * Returns all the entities from the search list.
-	 *
-	 * @return array
-	*/
-	public function all();
-
-	/**
 	 * Returns the DAL object used to build queries.
 	 *
 	 * @return \Asgard\Db\DAL

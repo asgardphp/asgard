@@ -444,13 +444,6 @@ class ORM implements ORMInterface {
 		return $res[0];
 	}
 
-	/**
-	 * {@inheritDoc}
-	*/
-	public function all() {
-		return $this->get();
-	}
-
 	public function applyScopes() {
 		foreach($this->scopes as $scope)
 			$scope->process($this);
