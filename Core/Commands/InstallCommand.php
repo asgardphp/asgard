@@ -131,7 +131,7 @@ class InstallCommand extends \Asgard\Console\Command {
 		$publisher->publish($tmp.'/app', $root.'/app');
 		$publisher->publish($tmp.'/config', $root.'/config');
 		$publisher->publish($tmp.'/tests', $root.'/tests');
-		$publisher->publish($tmp.'/web', $root.'/web');
+		$publisher->publishTests($tmp.'/web', $root.'/web');
 		$publisher->publishMigrations($tmp.'/migrations', $root.'/migrations', $migrate);
 
 		#composer

@@ -62,7 +62,6 @@ class TestsGenerator {
 		}
 
 		$routes = $this->container['resolver']->getRoutes();
-		$c = '';
 
 		$res = [];
 		foreach($routes as $route) {

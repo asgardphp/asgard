@@ -181,7 +181,7 @@ class GenerateCommand extends \Asgard\Console\Command {
 		$browser = $this->createBrowser();
 		$this->assertTrue($browser->get(\''.$showRoute.'\')->isOK(), \'GET '.$showRoute.'\');
 	}',
-								'routes' => $route,,
+								'routes' => $route,
 								'commented' => strpos($showRoute, ':') !== false
 							];
 						}
@@ -269,7 +269,7 @@ class GenerateCommand extends \Asgard\Console\Command {
 		$res = '';
 		foreach($tests as $t) {
 			$test = trim($t['test']);
-			if(isset($test['commented']) && $test['commented'])
+			if(isset($t['commented']) && $t['commented'])
 				$res .= "\n\t/*\n\t".$test."\n\t*/\n\n";
 			else
 				$res .= "\t".$test."\n\n";
