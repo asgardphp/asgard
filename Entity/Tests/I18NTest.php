@@ -10,6 +10,7 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function test() {
+		$serializer = new \Asgard\Entity\Serializer;
 		$post = new Fixtures\Post([], 'en');
 
 		$post->title = 'Hello';
@@ -57,7 +58,7 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 				'en' => 'Hello',
 				'fr' => 'Bonjour'
 			]
-		]]), \Asgard\Entity\Serializer::sArrayToJSONI18N([$post]));
+		]]), $serializer->arrayToJSONI18N([$post]));
 
 		#validation
 		$post->set('title', 'a', 'fr');
@@ -74,6 +75,7 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testMultiple() {
+		$serializer = new \Asgard\Entity\Serializer;
 		$post = new Fixtures\PostMultiple([], 'en');
 
 		$post->titles = ['Hello'];
@@ -120,7 +122,7 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 				'en' => ['Hello'],
 				'fr' => ['Bonjour']
 			]
-		]]), \Asgard\Entity\Serializer::sArrayToJSONI18N([$post]));
+		]]), $serializer->arrayToJSONI18N([$post]));
 
 		#validation
 		$post->set('titles', ['a'], 'fr');

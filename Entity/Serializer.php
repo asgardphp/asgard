@@ -236,25 +236,4 @@ class Serializer {
 			$entities[$k] = $entity->toArray($depth);
 		return json_encode($entities);
 	}
-
-	/**
-	 * Convert many entities to JSON with translations. Static.
-	 * @param  array  $entities
-	 * @param  array $locales
-	 * @param  integer $depth
-	 * @return string
-	 */
-	public static function sArrayToJSONI18N(array $entities, array $locales=[], $depth=0) {
-		return static::singleton()->arrayToJSONI18N($entities, $locales, $depth);
-	}
-
-	/**
-	 * Convert an array of entities to json. Static.
-	 * @param  Entity[] $entities
-	 * @param  integer  $depth
-	 * @return string
-	 */
-	public static function sArrayToJSON(array $entities, $depth=0) {
-		return static::singleton()->arrayToJSON($entities, $depth);
-	}
 }
