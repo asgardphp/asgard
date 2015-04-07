@@ -132,7 +132,8 @@ class DAL implements \Iterator {
 	 * @return array
 	 */
 	public function last() {
-		return $this->reverse()->first();
+		$c = clone $this;
+		return $c->reverse()->first();
 	}
 
 	/**

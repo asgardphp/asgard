@@ -37,7 +37,7 @@ class InstallCommand extends \Asgard\Console\Command {
 	 * @param \Asgard\Db\SchemaInterface $schema
 	 */
 	public function __construct(\Asgard\Db\DBInterface $db=null, \Asgard\Db\SchemaInterface $schema=null) {
-		$this->db = $db;
+		$this->db     = $db;
 		$this->schema = $schema;
 		parent::__construct();
 	}
@@ -130,8 +130,8 @@ class InstallCommand extends \Asgard\Console\Command {
 
 		$publisher->publish($tmp.'/app', $root.'/app');
 		$publisher->publish($tmp.'/config', $root.'/config');
-		$publisher->publish($tmp.'/tests', $root.'/tests');
-		$publisher->publishTests($tmp.'/web', $root.'/web');
+		$publisher->publishTests($tmp.'/tests', $root.'/tests');
+		$publisher->publish($tmp.'/web', $root.'/web');
 		$publisher->publishMigrations($tmp.'/migrations', $root.'/migrations', $migrate);
 
 		#composer
@@ -150,6 +150,10 @@ class InstallCommand extends \Asgard\Console\Command {
 			foreach($asgard['scripts'] as $script)
 				include $tmp.'/'.$script;
 		}
+
+		try {
+			\Asgard\File\FileSystem::delete($tmp);
+		} catch(\Exception $e) {}
 
 		$modules[] = $name;
 
