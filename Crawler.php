@@ -22,18 +22,15 @@ class Crawler {
 	public function getRequestId($request) {
 		$post = $request->post->all();
 		$file = $request->file->all();
-		// $session = $request->session->all();
 		$cookies = $request->cookie->all();
 
 		ksort($post);
 		ksort($file);
-		// ksort($session);
 		ksort($cookies);
 
 		$url = $request->url->full();
 		$body = $request->body;
 
-		// $id = sha1(serialize($post).serialize($file).serialize($session).serialize($cookies).$url.$body);
 		$id = sha1(serialize($post).serialize($file).serialize($cookies).$url.$body);
 
 		return $id;
