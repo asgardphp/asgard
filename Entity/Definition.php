@@ -108,7 +108,7 @@ class Definition {
 
 	/**
 	 * __sleep magic method.
-	 * @return array
+	 * @return string[]
 	 */
 	public function __sleep() {
 		return ['entityClass', 'metas', 'properties', 'behaviors', 'messages', 'calls', 'statics', 'staticsCatchAll', 'callsCatchAll'];
