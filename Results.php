@@ -40,8 +40,8 @@ class Results {
 			foreach($actions as $action=>$results) {
 				usort($tmp[$controller][$action], function($a, $b) {
 					if($a['coverage']->count() === $b['coverage']->count()) {
-						$as = $a['request']->get->size() + $a['request']->post->size() + $a['request']->file->size() + $a['request']->session->size() + $a['request']->cookie->size();
-						$bs = $b['request']->get->size() + $b['request']->post->size() + $b['request']->file->size() + $b['request']->session->size() + $b['request']->cookie->size();
+						$as = $a['request']->get->count() + $a['request']->post->count() + $a['request']->file->count() + $a['request']->cookie->count();
+						$bs = $b['request']->get->count() + $b['request']->post->count() + $b['request']->file->count() + $b['request']->cookie->count();
 
 						return $as > $bs;#todo sort by parameters if same simplicity
 					}
@@ -72,8 +72,8 @@ class '.$name.' extends \Asgard\Http\Test {
 					$post = $request->post->all();
 					$get = $request->get->all();
 					$file = $request->file->all();
-					$session = $request->session->getAccessed();
-					$cookies = $request->cookie->getAccessed();
+					$session = $request->sessionAccessed;
+					$cookies = $request->cookiesAccessed;
 
 					$res .= "
 	#Response code: ".$response->getCode()."

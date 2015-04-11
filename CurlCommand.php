@@ -25,7 +25,7 @@ class CurlCommand extends \Asgard\Console\Command {
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$curl = $this->input->getArgument('curl');
 
-		$conv = new \Tester\CurlConverter;
+		$conv = new CurlConverter;
 
 		$output->writeln($conv->convert($curl));
 	}

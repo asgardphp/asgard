@@ -5,7 +5,6 @@ class Bag extends \Asgard\Common\Bag {
 	public $accessed = [];
 
 	public function get($path, $default=null) {
-		// d($path);
 		$this->accessed[] = $path;
 		return parent::get($path, $default);
 	}

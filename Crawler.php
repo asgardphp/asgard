@@ -9,10 +9,7 @@ class Crawler {
 	protected $resolver;
 	protected $results;
 	protected $browser;
-	// public $host;
-	// public $root;
 	public $coverage = [];
-	// public $appRoot = 'C:\Users\Michel\Documents\cloud\projects\asgardcrawler\app'; #todo
 
 	public function __construct($console, $config, $resolver, $results, $browser) {
 		$this->console = $console;
@@ -25,18 +22,19 @@ class Crawler {
 	public function getRequestId($request) {
 		$post = $request->post->all();
 		$file = $request->file->all();
-		$session = $request->session->all();
+		// $session = $request->session->all();
 		$cookies = $request->cookie->all();
 
 		ksort($post);
 		ksort($file);
-		ksort($session);
+		// ksort($session);
 		ksort($cookies);
 
 		$url = $request->url->full();
 		$body = $request->body;
 
-		$id = sha1(serialize($post).serialize($file).serialize($session).serialize($cookies).$url.$body);
+		// $id = sha1(serialize($post).serialize($file).serialize($session).serialize($cookies).$url.$body);
+		$id = sha1(serialize($post).serialize($file).serialize($cookies).$url.$body);
 
 		return $id;
 	}
@@ -90,7 +88,6 @@ class Crawler {
 	public function belongsTo($url, $root) {
 		$pr = parse_url($root);
 		$pu = parse_url($url);
-		// d($root, $url);
 		if($pr['host'] !== $pu['host'])
 			return false;
 		if(isset($pr['path']) && strpos($pu['path'], $pr['path']) !== 0)

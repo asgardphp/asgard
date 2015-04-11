@@ -117,7 +117,7 @@ class CurlConverter {
 		$post = [];
 		$files = [];
 		parse_str($body, $post);
-		if(!$post && $headers['Content-Type'])
+		if(!$post && isset($headers['Content-Type']))
 			$this->parse_raw_http_request($body, $headers['Content-Type'], $post, $files);
 		if($post || $files)
 			$body = '';
