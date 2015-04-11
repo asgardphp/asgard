@@ -8,18 +8,11 @@ namespace Asgard\Common;
  */
 interface PaginatorInterface {
 	/**
-	 * Get start position.
-	 * @return integer
-	 * @api
-	 */
-	public function getStart();
-
-	/**
 	 * Get limit.
 	 * @return integer
 	 * @api
 	 */
-	public function getLimit();
+	public function getPerPage();
 
 	/**
 	 * Get number of pages.
@@ -33,14 +26,14 @@ interface PaginatorInterface {
 	 * @return integer
 	 * @api
 	 */
-	public function getFirstNbr();
+	public function getFirst();
 
 	/**
 	 * Get last element position.
 	 * @return integer
 	 * @api
 	 */
-	public function getLastNbr();
+	public function getLast();
 
 	/**
 	 * Render the pagination.

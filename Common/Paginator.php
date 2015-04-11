@@ -44,14 +44,7 @@ class Paginator implements PaginatorInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getStart() {
-		return ($this->page-1)*$this->per_page;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getLimit() {
+	public function getPerPage() {
 		return $this->per_page;
 	}
 
@@ -65,8 +58,8 @@ class Paginator implements PaginatorInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getFirstNbr() {
-		$first = $this->getStart()+1;
+	public function getFirst() {
+		$first = ($this->page-1)*$this->per_pag+1;
 		if($first > $this->total)
 			return $this->total;
 		else
@@ -76,8 +69,8 @@ class Paginator implements PaginatorInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getLastNbr() {
-		$last = $this->getStart()+$this->getLimit();
+	public function getLast() {
+		$last = $this->getFirst()-1+$this->getPerPage();
 		if($last > $this->total)
 			return $this->total;
 		else

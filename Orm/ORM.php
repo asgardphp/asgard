@@ -164,12 +164,23 @@ class ORM implements ORMInterface {
 		$table = $this->getTable();
 		$alias = $reverseRelationName;
 
-		$this->where = $this->processConditions($this->where);
-		$where = $this->updateConditions($this->where, $table, $alias);
+		$c = clone $this;
+		$c->applyScopes();
+
+		$where = $this->processConditions($c->getWhere());
+		$where = $this->updateConditions($where, $table, $alias);
 
 		return $this->dataMapper->orm($relation_entity)
 			->where($where)
 			->join('innerjoin '.$reverseRelationName, $this->join);
+	}
+
+	/**
+	 * Return the where conditions.
+	 * @return array
+	 */
+	public function getWhere() {
+		return $this->where;
 	}
 
 	/**

@@ -13,12 +13,6 @@ class Schema implements SchemaInterface {
 	protected $db;
 
 	/**
-	 * Doctrine connection instance.
-	 * @var \Doctrine\DBAL\Connection
-	 */
-	protected $conn;
-
-	/**
 	 * Constructor.
 	 * @param DBInterface $db
 	 */
