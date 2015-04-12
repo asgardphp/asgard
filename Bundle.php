@@ -19,6 +19,28 @@ class Bundle extends \Asgard\Core\BundleLoader {
 
 			$curlCommand = new \Asgard\Tester\CurlCommand();
 			$container['console']->add($curlCommand);
+
+			$config = $container['config']['tester.coverage'];
+			if(!is_array($config))
+				$config = [];
+			if(!isset($config['include'])) {
+				$config['include'] = [
+					$container['kernel']['root'].'/app/'
+				];
+			}
+			if(!isset($config['exclude'])) {
+				$config['exclude'] = [
+					$container['kernel']['root'].'/app/Kernel.php',
+					$container['kernel']['root'].'/app/helpers.php',
+					$container['kernel']['root'].'/app/bootstrap_all.php',
+					$container['kernel']['root'].'/app/bootstrap_prod.php',
+					$container['kernel']['root'].'/app/bootstrap_dev.php',
+					$container['kernel']['root'].'/app/bootstrap_test.php',
+					$container['kernel']['root'].'/app/Logger.php',
+				];
+			}
+			$coverageCommand = new \Asgard\Tester\CoverageCommand($config);
+			$container['console']->add($coverageCommand);
 		}
 	}
 }
