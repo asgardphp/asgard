@@ -69,6 +69,7 @@ class Schema implements SchemaInterface {
 	 * {@inheritDoc}
 	 */
 	public function drop($table) {
+		#attempt to drop table
 		try {
 			$this->db->query($this->getPlatform()->getDropTableSQL('`'.$table.'`'));
 		} catch(\Asgard\Db\DBException $e) {}

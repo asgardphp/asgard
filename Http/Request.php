@@ -158,6 +158,7 @@ class Request implements \ArrayAccess {
 	 * @return mixed
 	 */
 	public function getJSON() {
+		#attempt to decode json
 		try {
 			return json_decode($this->body, true);
 		} catch(\Exception $e) {}

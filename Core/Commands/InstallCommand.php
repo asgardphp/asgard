@@ -151,6 +151,7 @@ class InstallCommand extends \Asgard\Console\Command {
 				include $tmp.'/'.$script;
 		}
 
+		#attempt to delete temporary files
 		try {
 			\Asgard\File\FileSystem::delete($tmp);
 		} catch(\Exception $e) {}

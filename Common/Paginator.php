@@ -59,7 +59,7 @@ class Paginator implements PaginatorInterface {
 	 * {@inheritDoc}
 	 */
 	public function getFirst() {
-		$first = ($this->page-1)*$this->per_pag+1;
+		$first = ($this->page-1)*$this->per_page+1;
 		if($first > $this->total)
 			return $this->total;
 		else

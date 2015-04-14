@@ -22,13 +22,6 @@ interface DataMapperInterface {
 	public function orm($entityClass);
 
 	/**
-	 * Return all entities of a class.
-	 * @param  string $entityClass
-	 * @return array
-	 */
-	public function all($entityClass);
-
-	/**
 	 * Destroy all entities of a clas.
 	 * @param  string     $entityClass
 	 * @return integer

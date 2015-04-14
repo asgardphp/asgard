@@ -87,13 +87,6 @@ class DataMapper implements DataMapperInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function all($entityClass) {
-		return $this->orm($entityClass)->all();
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public function destroyAll($entityClass) {
 		$count = 0;
 		foreach($this->all($entityClass) as $entity)
