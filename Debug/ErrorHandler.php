@@ -176,7 +176,8 @@ class ErrorHandler {
 
 		if($kill) {
 			if(!headers_sent())
-				header(isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL']:''.' 500 Internal Server Error', true, 500);
+				http_response_code(500);
+
 			if(php_sapi_name() === 'cli' || $this->debug) {
 				$trace = $this->getBacktraceFromException($e);
 
