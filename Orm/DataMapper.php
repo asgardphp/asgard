@@ -89,7 +89,7 @@ class DataMapper implements DataMapperInterface {
 	 */
 	public function destroyAll($entityClass) {
 		$count = 0;
-		foreach($this->all($entityClass) as $entity)
+		foreach($this->orm($entityClass) as $entity)
 			$count += $this->destroy($entity) ? 1:0;
 		return $count;
 	}
