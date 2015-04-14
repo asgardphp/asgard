@@ -131,7 +131,7 @@ class ArrayUtils {
 	 */
 	public static function array_has($arr, $path) {
 		if(!$path)
-			return;
+			return false;
 		if(!is_array($path))
 			$path = [$path];
 		foreach($path as $key) {
