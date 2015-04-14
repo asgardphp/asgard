@@ -34,6 +34,11 @@ abstract class Controller {
 	 * @var array
 	 */
 	protected $afterFilters = [];
+	/**
+	 * Parameters.
+	 * @var array
+	 */
+	protected $parameters = [];
 
 	/**
 	 * Add a filter.
@@ -173,5 +178,34 @@ abstract class Controller {
 			return $this->container['resolver']->url($action, $params);
 		else
 			return $this->container['resolver']->url([get_called_class(), $action], $params);
+	}
+
+	/**
+	 * Get parameter.
+	 * @param  string $name
+	 * @return mixed
+	 */
+	public function get($name) {
+		return \Asgard\Common\ArrayUtils::get($this->parameters, $name);
+	}
+
+	/**
+	 * Set parameter.
+	 * @param  string $name
+	 * @param  mixed  $value
+	 * @return static
+	 */
+	public function set($name, $value) {
+		\Asgard\Common\ArrayUtils::set($this->parameters, $name, $value);
+		return $this;
+	}
+
+	/**
+	 * Check if parameter exists.
+	 * @param  string $name
+	 * @return static
+	 */
+	public function has($name) {
+		return \Asgard\Common\ArrayUtils::has($this->parameters, $name);
 	}
 }
