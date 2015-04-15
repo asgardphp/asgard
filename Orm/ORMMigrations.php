@@ -364,6 +364,16 @@ class ORMMigrations {
 			$res .= "\n		'autoincrement' => true,";
 		if($col->getDefault())
 			$res .= "\n		'default' => '".$col->getDefault()."',";
+		if($col->getScale())
+			$res .= "\n		'scale' => ".$col->getScale().",";
+		if($col->getPrecision())
+			$res .= "\n		'precision' => ".$col->getPrecision().",";
+		if($col->getLength())
+			$res .= "\n		'length' => ".$col->getLength().",";
+		if($col->getFixed())
+			$res .= "\n		'length' => true,";
+		if($col->getUnsigned())
+			$res .= "\n		'length' => true,";
 		$res .= "\n	]);";
 
 		return $res;
