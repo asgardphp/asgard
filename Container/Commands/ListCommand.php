@@ -61,7 +61,7 @@ class ListCommand extends \Asgard\Console\Command {
 				$defined = \Asgard\File\FileSystem::relativeTo($root, $r->getFileName()).':'.$r->getStartLine();
 			}
 
-			if($service instanceof \Jeremeamia\SuperClosure\SerializableClosure)
+			if($service instanceof \SuperClosure\SerializableClosure)
 				$service = $service->getClosure();
 
 			$r = new \ReflectionFunction($service);

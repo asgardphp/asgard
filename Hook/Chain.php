@@ -55,7 +55,7 @@ class Chain {
 	*/
 	public function run(array $args) {
 		foreach($this->calls as $call) {
-			if($call instanceof \Jeremeamia\SuperClosure\SerializableClosure)
+			if($call instanceof \SuperClosure\SerializableClosure)
 				$call = $call->getClosure();
 			$res = call_user_func_array($call, array_merge([$this], $args));
 			$this->executed++;

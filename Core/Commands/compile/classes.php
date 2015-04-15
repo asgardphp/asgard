@@ -298,7 +298,7 @@ return array_map('realpath', [
 	$root.'/vendor/asgard/vendor/doctrine/dbal/lib/Doctrine/DBAL/Types/Type.php',
 	$root.'/vendor/doctrine/instantiator/src/Doctrine/Instantiator/Instantiator.php',
 	$root.'/vendor/doctrine/instantiator/src/Doctrine/Instantiator/InstantiatorInterface.php',
-	$root.'/vendor/asgard/vendor/jeremeamia/SuperClosure/src/Jeremeamia/SuperClosure/SerializableClosure.php',
+	$root.'/vendor/asgard/vendor/jeremeamia/SuperClosure/src/SerializableClosure.php',
 	$root.'/vendor/asgard/vendor/psr/log/Psr/Log/LoggerInterface.php',
 	$root.'/vendor/asgard/vendor/psr/log/Psr/Log/LogLevel.php',
 	$root.'/vendor/asgard/vendor/symfony/translation/Symfony/Component/Translation/MessageCatalogue.php',

@@ -1,7 +1,7 @@
 <?php
 namespace Asgard\Entity;
 
-use Jeremeamia\SuperClosure\SerializableClosure;
+use SuperClosure\SerializableClosure;
 
 /**
  * Entity definition property.

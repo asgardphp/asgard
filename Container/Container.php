@@ -1,7 +1,7 @@
 <?php
 namespace Asgard\Container;
 
-use Jeremeamia\SuperClosure\SerializableClosure;
+use SuperClosure\SerializableClosure;
 
 /**
  * Services container.

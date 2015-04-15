@@ -207,6 +207,20 @@ class Bundle extends \Asgard\Core\BundleLoader {
 				$container['collectionOrm_factory']
 			);
 		});
+
+		#translations
+		$container->register('translationResources', function() {
+			return new \Asgard\Core\TranslationResources;
+		});
+
+		$container->register('translator', function($container) {
+			$locale = $container['config']['locale'];
+			$translator = new \Symfony\Component\Translation\Translator($locale, new \Symfony\Component\Translation\MessageSelector());
+			$translator->addLoader('yaml', new \Symfony\Component\Translation\Loader\YamlFileLoader());
+			foreach($container['translationResources']->getFiles($locale) as $file)
+				$translator->addResource('yaml', $file, $locale);
+			return $translator;
+		});
 	}
 
 	/**
@@ -242,14 +256,12 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			}
 		});
 
-		if($container->has('translator')) {
-			foreach(glob($this->getPath().'/../Common/translations/'.$container['translator']->getLocale().'/*') as $file)
-				$container['translator']->addResource('yaml', $file, $container['translator']->getLocale());
-			foreach(glob($this->getPath().'/../Validation/translations/'.$container['translator']->getLocale().'/*') as $file)
-				$container['translator']->addResource('yaml', $file, $container['translator']->getLocale());
-			foreach(glob($this->getPath().'/../Form/translations/'.$container['translator']->getLocale().'/*') as $file)
-				$container['translator']->addResource('yaml', $file, $container['translator']->getLocale());
-		}
+		foreach(glob($this->getPath().'/../Common/translations/*') as $dir)
+			$container['translationResources']->add(basename($dir), $dir);
+		foreach(glob($this->getPath().'/../Validation/translations/*') as $dir)
+			$container['translationResources']->add(basename($dir), $dir);
+		foreach(glob($this->getPath().'/../Form/translations/*') as $dir)
+			$container['translationResources']->add(basename($dir), $dir);
 
 		if($container->has('console')) {
 			$root = $container['kernel']['root'];

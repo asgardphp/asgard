@@ -99,8 +99,7 @@ class BundleLoader {
 		if($container->has('resolver'))
 			$container['resolver']->addRoutes($routes);
 
-		if($container->has('translator'))
-			$this->loadTranslations($container['translator']);
+		$this->loadTranslations();
 
 		if($container->has('console')) {
 			$this->loadCommands($container['console']);
@@ -122,11 +121,10 @@ class BundleLoader {
 
 	/**
 	 * Load bundle's translations.
-	 * @param  \Symfony\Component\Translation\Translator $translator
 	 */
-	protected function loadTranslations($translator) {
-		foreach(glob($this->getPath().'/translations/'.$translator->getLocale().'/*') as $file)
-			$translator->addResource('yaml', $file, $translator->getLocale());
+	protected function loadTranslations() {
+		foreach(glob($this->getPath().'/translations/*') as $dir)
+			$container['translationResources']->add(basename($dir), $dir);
 	}
 
 	/**

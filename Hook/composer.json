@@ -7,7 +7,7 @@
     }],
     "require": {
         "php": ">=5.4.0",
-        "jeremeamia/SuperClosure": "1.*",
+        "jeremeamia/SuperClosure": "2.*",
         "doctrine/annotations": "1.*",
         "asgard/container": "0.*"
     },

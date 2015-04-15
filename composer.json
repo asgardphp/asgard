@@ -18,7 +18,7 @@
         "symfony/translation": "2.*",
         "symfony/console": "2.*",
         "symfony/config": "2.*",
-        "jeremeamia/SuperClosure": "1.*",
+        "jeremeamia/SuperClosure": "2.*",
         "psr/log": "1.*",
         "nesbot/carbon": "1.*",
         "swiftmailer/swiftmailer": "5.0.*",

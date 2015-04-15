@@ -1,7 +1,7 @@
 <?php
 namespace Asgard\Hook;
 
-use Jeremeamia\SuperClosure\SerializableClosure;
+use SuperClosure\SerializableClosure;
 
 /**
  * The hooks manager.
