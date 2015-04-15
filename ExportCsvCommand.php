@@ -28,8 +28,14 @@ class ExportCsvCommand extends \Asgard\Console\Command {
 	 * @var array
 	 */
 	protected $directories;
+	/**
+	 * Translation resources.
+	 * @var \Asgard\Core\translationResources
+	 */
+	protected $translationResources;
 
-	public function __construct(\Symfony\Component\Translation\TranslatorInterface $translator, $directories=null) {
+	public function __construct(\Asgard\Core\translationResources $translationResources, \Symfony\Component\Translation\TranslatorInterface $translator, $directories=null) {
+		$this->translationResources = $translationResources;
 		$this->translator = $translator;
 		if(!is_array($directories))
 			$directories = [$directories];
@@ -45,7 +51,29 @@ class ExportCsvCommand extends \Asgard\Console\Command {
 		$dstLocale = $this->input->getArgument('dstLocale');
 		$file = $this->input->getArgument('file');
 
+		$translations = [];
+		$container = $this->getContainer();
+		$yaml = new \Symfony\Component\Yaml\Parser;
+
+		$translator = $this->translator;
+		$translator->addLoader('array', new \Symfony\Component\Translation\Loader\ArrayLoader);
+
+		$translationResources = $this->translationResources;
+
+		$srcFiles = $translationResources->getFiles($srcLocale);
+		$dstFiles = $translationResources->getFiles($dstLocale);
+
+		foreach($srcFiles as $file) {
+			$_translations = $yaml->parse(file_get_contents($file));
+			$translations = array_merge($translations, $_translations);
+			$translator->addResource('array', $_translations, $srcLocale);
+		}
+		foreach($dstFiles as $file)
+			$translator->addResource('yaml', $file, $dstLocale);
+
 		$e = new Extractor;
+		$e->addStrings(array_keys($translations));
+
 		foreach($this->directories as $dir)
 			$e->parseDirectory($dir);
 
@@ -61,7 +89,6 @@ class ExportCsvCommand extends \Asgard\Console\Command {
 			]);
 			foreach($res as $r)
 				$csv->add($r);
-
 			file_put_contents($file, $csv->render());
 
 			$this->info('Translations exported with success.');

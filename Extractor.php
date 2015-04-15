@@ -61,6 +61,10 @@ class Extractor {
 		}
 	}
 
+	public function addStrings(array $strings) {
+		$this->strings = array_merge($this->strings, $strings);
+	}
+
 	public function getListWithTranslation($translator, $srcLocale, $dstLocale) {
 		$res = [];
 		foreach($this->getStrings() as $s) {

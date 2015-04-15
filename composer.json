@@ -7,7 +7,7 @@
         "email": "michel@hognerud.net"
     }],
     "require": {
-        "nikic/php-parser": "~1.1",
+        "nikic/php-parser": "~1.2",
         "symfony/yaml": "2.*",
         "symfony/translation": "2.*",
         "h0gar/csv": "0.*"

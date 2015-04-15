@@ -28,8 +28,14 @@ class ExportYamlCommand extends \Asgard\Console\Command {
 	 * @var array
 	 */
 	protected $directories;
+	/**
+	 * Translation resources.
+	 * @var \Asgard\Core\translationResources
+	 */
+	protected $translationResources;
 
-	public function __construct(\Symfony\Component\Translation\TranslatorInterface $translator, $directories=null) {
+	public function __construct(\Asgard\Core\translationResources $translationResources, \Symfony\Component\Translation\TranslatorInterface $translator, $directories=null) {
+		$this->translationResources = $translationResources;
 		$this->translator = $translator;
 		if(!is_array($directories))
 			$directories = [$directories];
@@ -41,10 +47,33 @@ class ExportYamlCommand extends \Asgard\Console\Command {
 	 * {@inheritDoc}
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
-		$dst = $this->input->getArgument('dst');
+		$srcLocale = $this->input->getArgument('srcLocale');
 		$dstLocale = $this->input->getArgument('dstLocale');
+		$file = $this->input->getArgument('file');
+
+		$translations = [];
+		$container = $this->getContainer();
+		$yaml = new \Symfony\Component\Yaml\Parser;
+
+		$translator = $this->translator;
+		$translator->addLoader('array', new \Symfony\Component\Translation\Loader\ArrayLoader);
+
+		$translationResources = $this->translationResources;
+
+		$srcFiles = $translationResources->getFiles($srcLocale);
+		$dstFiles = $translationResources->getFiles($dstLocale);
+
+		foreach($srcFiles as $file) {
+			$_translations = $yaml->parse(file_get_contents($file));
+			$translations = array_merge($translations, $_translations);
+			$translator->addResource('array', $_translations, $srcLocale);
+		}
+		foreach($dstFiles as $file)
+			$translator->addResource('yaml', $file, $dstLocale);
 
 		$e = new Extractor;
+		$e->addStrings(array_keys($translations));
+
 		foreach($this->directories as $dir)
 			$e->parseDirectory($dir);
 
@@ -53,9 +82,9 @@ class ExportYamlCommand extends \Asgard\Console\Command {
 		if(!$res)
 			$this->comment('No translations to export.');
 		else {
-			$dumper = new \Symfony\Component\Yaml\Dumper();
+			$dumper = new \Symfony\Component\Yaml\Dumper;
 			$yaml = $dumper->dump($res, 1);
-			file_put_contents($dst, $yaml);
+			file_put_contents($file, $yaml);
 
 			$this->info('Translations exported with success.');
 		}
@@ -66,8 +95,9 @@ class ExportYamlCommand extends \Asgard\Console\Command {
 	 */
 	protected function getArguments() {
 		return [
+			['srcLocale', InputArgument::REQUIRED, 'Source locale.'],
 			['dstLocale', InputArgument::REQUIRED, 'Destination locale.'],
-			['dst', InputArgument::REQUIRED, 'Destination file.'],
+			['file', InputArgument::REQUIRED, 'Destination file.'],
 		];
 	}
 }
