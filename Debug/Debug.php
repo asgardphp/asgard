@@ -13,6 +13,11 @@ class Debug {
 	 * @var string
 	 */
 	protected static $url;
+	/**
+	 * Output format.
+	 * @var boolean
+	 */
+	protected static $format;
 
 	/**
 	 * Create the backtrace and forward it to dWithTrace.
@@ -31,11 +36,11 @@ class Debug {
 		while(ob_get_length())
 			ob_end_clean();
 
-		if(php_sapi_name() != 'cli')
+		if(static::$format === 'html')
 			echo '<pre>';
 		foreach(array_slice(func_get_args(), 1) as $arg)
 			var_dump($arg);
-		if(php_sapi_name() != 'cli')
+		if(static::$format === 'html')
 			echo '</pre>';
 
 		die(static::getReport($trace));
@@ -50,6 +55,14 @@ class Debug {
 	}
 
 	/**
+	 * Output format.
+	 * @param string $format
+	 */
+	public static function setFormat($format) {
+		static::$format = $format;
+	}
+
+	/**
 	 * Return the HTML or CLI debug report.
 	 * @param  array  $backtrace
 	 * @return string
@@ -57,13 +70,13 @@ class Debug {
 		public static function getReport(array $backtrace) {
 		$r = '';
 
-		if(php_sapi_name() === 'cli')
-			$r .= static::getCLIBacktrace($backtrace);
-		else {
+		if(static::$format === 'html') {
 			$request = \Asgard\Http\Request::singleton();
 			$r .= static::getHTMLBacktrace($request, $backtrace);
 			$r .= static::getHTMLRequest($request);
 		}
+		else
+			$r .= static::getCLIBacktrace($backtrace);
 
 		return $r;
 	}

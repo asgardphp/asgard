@@ -281,6 +281,13 @@ class Intl {
 		];
 	}
 
+	public function getCountry($code) {
+		if(isset($this->countryNames[$code])) {
+			$country = $this->countryNames[$code];
+			return $this->trans($country);
+		}
+	}
+
 	public function setTranslator(\Symfony\Component\Translation\TranslatorInterface $translator) {
 		$this->translator = $translator;
 		return $this;
@@ -291,6 +298,8 @@ class Intl {
 			$res = $this->translator->trans('intl.countries.'.$name);
 			if($res !== 'intl.countries.'.$name)
 				return $res;
+			else
+				return $name;
 		}
 		return $def;
 	}
