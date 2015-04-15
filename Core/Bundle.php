@@ -243,6 +243,8 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		});
 
 		if($container->has('translator')) {
+			foreach(glob($this->getPath().'/../Common/translations/'.$container['translator']->getLocale().'/*') as $file)
+				$container['translator']->addResource('yaml', $file, $container['translator']->getLocale());
 			foreach(glob($this->getPath().'/../Validation/translations/'.$container['translator']->getLocale().'/*') as $file)
 				$container['translator']->addResource('yaml', $file, $container['translator']->getLocale());
 			foreach(glob($this->getPath().'/../Form/translations/'.$container['translator']->getLocale().'/*') as $file)

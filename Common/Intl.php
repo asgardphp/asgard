@@ -79,7 +79,7 @@ class Intl {
 			'DM' => 'Dominica',
 			'DO' => 'Dominican Republic',
 			'NQ' => 'Dronning Maud Land',
-			'DD' => 'East Germany',
+			// 'DD' => 'East Germany',
 			'EC' => 'Ecuador',
 			'EG' => 'Egypt',
 			'SV' => 'El Salvador',
@@ -281,27 +281,23 @@ class Intl {
 		];
 	}
 
-	public function getCountry($code) {
-		if(isset($this->countryNames[$code])) {
-			$country = $this->countryNames[$code];
-			return $this->trans($country);
-		}
-	}
-
 	public function setTranslator(\Symfony\Component\Translation\TranslatorInterface $translator) {
 		$this->translator = $translator;
 		return $this;
 	}
 
-	public function trans($name, $def=null) {
+	public function getCountry($code, $def=null) {
 		if($this->translator) {
-			$res = $this->translator->trans('intl.countries.'.$name);
-			if($res !== 'intl.countries.'.$name)
+			$res = $this->translator->trans('intl.countries.'.$code);
+			if($res !== 'intl.countries.'.$code)
 				return $res;
-			else
-				return $name;
 		}
-		return $def;
+		if($def)
+			return $def;
+		elseif(isset($this->countryNames[$code]))
+			return $this->countryNames[$code];
+		else
+			return $code;
 	}
 
 	public function setCountryNames(array $names) {
@@ -312,7 +308,7 @@ class Intl {
 	public function getCountryNames() {
 		$names = [];
 		foreach($this->countryNames as $k=>$v)
-			$names[$k] = $this->trans($k, $v);
+			$names[$k] = $this->getCountry($k, $v);
 		uasort($names, function($a, $b) {
 			return \Asgard\Common\Tools::removeAccents($a) > \Asgard\Common\Tools::removeAccents($b);
 		});

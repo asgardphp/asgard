@@ -6,13 +6,33 @@ namespace Asgard\Entity\Properties;
  * @author Michel Hognerud <michel@hognerud.com>
  */
 class CountryProperty extends \Asgard\Entity\Property {
+	protected $intl;
+
 	/**
 	 * {@inheritDoc}
 	 */
-	public function __construct(array $params) {
-		if(!isset($params['in']))
-			$params['in'] = \Asgard\Common\Intl::singleton()->getCountryNames();
-		parent::__construct($params);
+	public function getFormParameters() {
+		$params = parent::getFormParameters();
+		$params['choices'] = $this->getIntl()->getCountryNames();
+		return $params;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function prepareValidator(\Asgard\Validation\ValidatorInterface $validator) {
+		parent::prepareValidator($validator);
+		$validator->rule('in', [array_keys($this->getIntl()->getCountryNames())]);
+	}
+
+	public function seIntl($intl) {
+		$this->intl = $intl;
+	}
+
+	public function getIntl() {
+		if(!$this->intl)
+			$this->intl = \Asgard\Common\Intl::singleton();
+		return $this->intl;
 	}
 
 	/**

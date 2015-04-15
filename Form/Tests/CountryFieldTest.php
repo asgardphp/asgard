@@ -10,8 +10,8 @@ class CountryFieldTest extends \PHPUnit_Framework_TestCase {
 		$form->setRequest($request);
 		$form['field'] = new \Asgard\Form\Fields\CountryField(['default' => 'AF']);
 
-		$this->assertTrue(strpos((string)($form['field']->def()), '<option value="ZM">ZAMBIA</option>') !== false);
-		$this->assertTrue(strpos((string)($form['field']->def()), '<option value="SD" selected="selected">SUDAN</option>') !== false);
+		$this->assertTrue(strpos((string)($form['field']->def()), '<option value="ZM">Zambia</option>') !== false);
+		$this->assertTrue(strpos((string)($form['field']->def()), '<option value="SD" selected="selected">Sudan</option>') !== false);
 		$this->assertEquals('SD', $form['field']->value());
 	}
 }
