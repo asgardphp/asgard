@@ -6,10 +6,37 @@ namespace Asgard\Config;
  * @author Michel Hognerud <michel@hognerud.com>
  */
 class Config extends \Asgard\Common\Bag implements ConfigInterface {
+	protected $cache;
+
+	public function __construct($cache=null) {
+		$this->cache = $cache;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
 	public function loadDir($dir, $env=null) {
+		if($this->cache && $res = $this->cache->fetch('config.dir.'.$dir.'.'.$env))
+			$this->set($res);
+		else {
+			$res = $this->_loadDir($dir, $env);
+			$this->set($res);
+			if($this->cache)
+				$this->cache->save('config.dir.'.$dir.'.'.$env, $res);
+		}
+		return $this;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function loadFile($filename) {
+		$this->set($this->_loadFile($filename));
+		return $this;
+	}
+
+	protected function _loadDir($dir, $env=null) {
+		$res = [];
 		$files = glob($dir.'/*.yml');
 		usort($files, function($a, $b) {
 			if(strpos($a, '.local.') !== false)
@@ -19,27 +46,25 @@ class Config extends \Asgard\Common\Bag implements ConfigInterface {
 		});
 		foreach($files as $filename) {
 			if(is_dir($filename))
-				$this->loadDir($filename);
+				$res = array_merge($res, $this->_loadDir($filename));
 			else {
 				$basename = basename($filename);
 				if(preg_match('/^[^_]+.[^.]+$/', $basename))
-					$this->loadFile($filename);
+					$res = array_merge($res, $this->_loadFile($filename));
 				if($env !== null && preg_match('/^.+_'.$env.'.[^.]+$/', $basename))
-					$this->loadFile($filename);
+					$res = array_merge($res, $this->_loadFile($filename));
 			}
 		}
-		return $this;
+		return $res;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function loadFile($filename) {
+
+	protected function _loadFile($filename) {
 		$yaml = new \Symfony\Component\Yaml\Parser();
 		if(($r = file_get_contents($filename))) {
 			if(is_array($res = $yaml->parse($r)))
-				$this->set($res);
+				return $res;
 		}
-		return $this;
+		return [];
 	}
 }

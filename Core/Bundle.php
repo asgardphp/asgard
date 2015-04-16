@@ -18,7 +18,7 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		$container->setParentClass('cache', 'Asgard\Cache\CacheInterface');
 		$container->register('cache', function($container) {
 			if($cache = $container['kernel']->getCache())
-				return $cache;
+				return new \Asgard\Cache\Cache($cache);
 			else
 				return new \Asgard\Cache\Cache;#null cache
 		});
@@ -100,7 +100,8 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			if($container->has('templateEngine_factory'))
 				$httpKernel->setTemplateEngineFactory($container['templateEngine_factory']);
 			$httpKernel->setHookManager($container['hooks']);
-			$httpKernel->setErrorHandler($container['errorHandler']);
+			if($container->has('errorHandler'))
+				$httpKernel->setErrorHandler($container['errorHandler']);
 			$httpKernel->setTranslator($container['translator']);
 			$httpKernel->setResolver($container['resolver']);
 			$container['resolver']->setHttpKernel($httpKernel);

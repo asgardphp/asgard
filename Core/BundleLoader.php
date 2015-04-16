@@ -78,7 +78,7 @@ class BundleLoader {
 	 * @param  \Asgard\Container\ContainerInterface $container
 	 */
 	public function run(\Asgard\Container\ContainerInterface $container) {
-		$bundleData = $container['cache']->fetch('bundles/'.$this->getID());
+		$bundleData = $container['cache']->fetch('bundles.'.$this->getID());
 		if($bundleData !== false) {
 			$hooks = $bundleData['hooks'];
 			$routes = $bundleData['routes'];
@@ -87,7 +87,7 @@ class BundleLoader {
 			$hooks = $container->has('hooks') ? $this->loadHooks():[];
 			$routes = $container->has('resolver') ? $this->loadControllers():[];
 
-			$container['cache']->save('bundles/'.$this->getID(), [
+			$container['cache']->save('bundles.'.$this->getID(), [
 				'hooks' => $hooks,
 				'routes' => $routes,
 			]);

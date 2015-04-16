@@ -50,6 +50,10 @@ class Kernel implements \ArrayAccess {
 		$this->setEnv($env);
 	}
 
+	public function setCache($cache) {
+		$this->cache = $cache;
+	}
+
 	/**
 	 * Get the services container.
 	 * @return \Asgard\Container\ContainerInterface
@@ -77,7 +81,7 @@ class Kernel implements \ArrayAccess {
 	 */
 	public function getConfig() {
 		if(!$this->config) {
-			$this->config = $config = new \Asgard\Config\Config;
+			$this->config = $config = new \Asgard\Config\Config($this->getCache());
 			if(file_exists($this->params['root'].'/config'))
 				$config->loadDir($this->params['root'].'/config', $this->getEnv());
 		}
@@ -124,8 +128,6 @@ class Kernel implements \ArrayAccess {
 
 		$this->bundles = $this->doGetBundles();
 		$container = $this->getContainer();
-
-		$container['config'] = $this->getConfig();
 
 		if($this->params['env']) {
 			if(file_exists($this->params['root'].'/app/bootstrap_'.strtolower($this->params['env']).'.php'))
@@ -174,15 +176,7 @@ class Kernel implements \ArrayAccess {
 	 * @return \Asgard\Cache\CacheInterface
 	 */
 	public function getCache() {
-		if(!$this->cache) {
-			$class = $this->getConfig()['cache'];
-			if(!$class)
-				return;
-			$reflector = new \ReflectionClass($class);
-			$this->cache = $reflector->newInstanceArgs([$this->params['root'].'/storage/cache/']);
-		}
-		else
-			return $this->cache;
+		return $this->cache;
 	}
 
 	/**
@@ -205,6 +199,7 @@ class Kernel implements \ArrayAccess {
 		#use the Container default instance, in case someones uses it
 		$container = $this->container = \Asgard\Container\Container::singleton();
 		$container['kernel'] = $this;
+		$container['config'] = $this->getConfig();
 
 		foreach($bundles as $bundle)
 			$bundle->buildContainer($container);
@@ -265,61 +260,61 @@ class Kernel implements \ArrayAccess {
 	 */
 	protected function doGetBundles() {
 		$cache = $this->getCache();
-		if($cache) {
-			if(($res = $cache->fetch('bundles')) !== false)
-				return $res;
-		}
+		if($cache)
+			$bundles = $cache->fetch('bundles');
 
-		$bundles = array_merge($this->addedBundles, $this->getBundles());
+		if(!isset($bundles) || $bundles === false) {
+			$bundles = array_merge($this->addedBundles, $this->getBundles());
 
-		$newBundles = false;
-		foreach($bundles as $k=>$v) {
-			if(is_string($v)) {
-				$bundle = realpath($v);
-				if(!$bundle)
-					throw new \Exception('Bundle '.$v.' does not exist.');
-				unset($bundles[$k]);
-				$bundles[$bundle] = null;
-				$newBundles = true;
+			$newBundles = false;
+			foreach($bundles as $k=>$v) {
+				if(is_string($v)) {
+					$bundle = realpath($v);
+					if(!$bundle)
+						throw new \Exception('Bundle '.$v.' does not exist.');
+					unset($bundles[$k]);
+					$bundles[$bundle] = null;
+					$newBundles = true;
 
-				if(file_exists($bundle.'/Bundle.php'))
-					require_once $bundle.'/Bundle.php';
-			}
-		}
-		if($newBundles) {
-			foreach(get_declared_classes() as $class) {
-				if(!is_subclass_of($class, 'Asgard\Core\BundleLoader'))
-					continue;
-				$reflector = new \ReflectionClass($class);
-				$dir = dirname($reflector->getFileName());
-				if(array_key_exists($dir, $bundles) && $bundles[$dir] === null) {
-					unset($bundles[$dir]);
-					$bundles[] = new $class;
+					if(file_exists($bundle.'/Bundle.php'))
+						require_once $bundle.'/Bundle.php';
 				}
 			}
-		}
-		foreach($bundles as $bundle=>$obj) {
-			if($obj === null) {
-				$obj = new BundleLoader;
-				$obj->setPath($bundle);
-				$bundles[$bundle] = $obj;
+			if($newBundles) {
+				foreach(get_declared_classes() as $class) {
+					if(!is_subclass_of($class, 'Asgard\Core\BundleLoader'))
+						continue;
+					$reflector = new \ReflectionClass($class);
+					$dir = dirname($reflector->getFileName());
+					if(array_key_exists($dir, $bundles) && $bundles[$dir] === null) {
+						unset($bundles[$dir]);
+						$bundles[] = new $class;
+					}
+				}
 			}
-		}
-
-		#Remove duplicates
-		foreach($bundles as $k=>$b) {
-			for($i=$k+1; isset($bundles[$i]); $i++) {
-				if($b->getPath() === $bundles[$i]->getPath())
-					unset($bundles[$i]);
+			foreach($bundles as $bundle=>$obj) {
+				if($obj === null) {
+					$obj = new BundleLoader;
+					$obj->setPath($bundle);
+					$bundles[$bundle] = $obj;
+				}
 			}
-		}
 
-		if($cache)
-			$cache->save('bundles', $bundles);
+			#Remove duplicates
+			foreach($bundles as $k=>$b) {
+				for($i=$k+1; isset($bundles[$i]); $i++) {
+					if($b->getPath() === $bundles[$i]->getPath())
+						unset($bundles[$i]);
+				}
+			}
 
-		foreach($bundles as $bundle) {
-			$bundle->setHooksAnnotationReader($this->getHooksAnnotationReader());
-			$bundle->setControllersAnnotationReader($this->getControllersAnnotationReader());
+			foreach($bundles as $bundle) {
+				$bundle->setHooksAnnotationReader($this->getHooksAnnotationReader());
+				$bundle->setControllersAnnotationReader($this->getControllersAnnotationReader());
+			}
+
+			if($cache)
+				$cache->save('bundles', $bundles);
 		}
 
 		return $bundles;
