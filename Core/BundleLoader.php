@@ -99,7 +99,8 @@ class BundleLoader {
 		if($container->has('resolver'))
 			$container['resolver']->addRoutes($routes);
 
-		$this->loadTranslations();
+		if($container->has('translationResources'))
+			$this->loadTranslations($container['translationResources']);
 
 		if($container->has('console')) {
 			$this->loadCommands($container['console']);
@@ -122,9 +123,9 @@ class BundleLoader {
 	/**
 	 * Load bundle's translations.
 	 */
-	protected function loadTranslations() {
+	protected function loadTranslations($translationResources) {
 		foreach(glob($this->getPath().'/translations/*') as $dir)
-			$container['translationResources']->add(basename($dir), $dir);
+			$translationResources->add(basename($dir), $dir);
 	}
 
 	/**

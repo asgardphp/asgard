@@ -46,13 +46,13 @@ class Config extends \Asgard\Common\Bag implements ConfigInterface {
 		});
 		foreach($files as $filename) {
 			if(is_dir($filename))
-				$res = array_merge($res, $this->_loadDir($filename));
+				$res = array_merge($this->_loadDir($filename), $res);
 			else {
 				$basename = basename($filename);
 				if(preg_match('/^[^_]+.[^.]+$/', $basename))
-					$res = array_merge($res, $this->_loadFile($filename));
+					$res = array_merge($this->_loadFile($filename), $res);
 				if($env !== null && preg_match('/^.+_'.$env.'.[^.]+$/', $basename))
-					$res = array_merge($res, $this->_loadFile($filename));
+					$res = array_merge($this->_loadFile($filename), $res);
 			}
 		}
 		return $res;

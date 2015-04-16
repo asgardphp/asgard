@@ -54,7 +54,7 @@ class TestsGenerator {
 
 		if(file_exists($root.'/tests/ignore.txt')) {
 			$c = trim(file_get_contents($root.'/tests/ignore.txt'), "\n")."\n";
-			$ignore = array_merge(array_filter(explode("\n", $c)));
+			$ignore = array_merge(array_filter(array_map(function($a){return trim($a, '\\');}, explode("\n", $c))));
 		}
 		else {
 			$c = '';
