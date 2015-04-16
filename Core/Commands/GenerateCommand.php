@@ -277,7 +277,7 @@ class GenerateCommand extends \Asgard\Console\Command {
 				if(!is_array($t['routes']))
 					$t['routes'] = [$t['routes']];
 				foreach($t['routes'] as $route) {
-					$routeStr = $route->getController().':'.$route->getAction();
+					$routeStr = trim($route->getController().':'.$route->getAction(), '\\');
 					$c .= $routeStr."\n";
 				}
 			}
