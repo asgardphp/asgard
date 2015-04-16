@@ -299,6 +299,7 @@ class ErrorHandler {
 	 */
 	public static function getPHPError($code) {
 		$errors = [
+			0 => '???',
 			1 => 'E_ERROR',
 			2 => 'E_WARNING',
 			4 => 'E_PARSE',

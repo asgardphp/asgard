@@ -10,7 +10,8 @@
         "asgard/config": "0.*",
         "asgard/container": "0.*",
         "asgard/common": "0.*",
-        "classpreloader/classpreloader": "1.*"
+        "classpreloader/classpreloader": "1.*",
+        "composer/composer": "1.*"
     },
     "autoload": {
         "psr-4": {"Asgard\\Core\\": "."}

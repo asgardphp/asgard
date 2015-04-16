@@ -25,6 +25,16 @@ class Cache implements CacheInterface {
 	}
 
 	/**
+	 * __call magic method.
+	 * @param  string $name
+	 * @param  array  $args
+	 * @return mixed
+	 */
+	public function __call($name, array $args) {
+		return call_user_func_array([$this->driver, $name], $args);
+	}
+
+	/**
 	 * Set the driver
 	 * @param \Doctrine\Common\Cache\Cache $driver Doctrine cache object
 	 * @api

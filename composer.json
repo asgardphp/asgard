@@ -22,7 +22,8 @@
         "psr/log": "1.*",
         "nesbot/carbon": "1.*",
         "swiftmailer/swiftmailer": "5.0.*",
-        "classpreloader/classpreloader": "1.*"
+        "classpreloader/classpreloader": "1.*",
+        "composer/composer": "1.*"
     },
     "require-dev": {
         "phpunit/phpunit": "4.*"
