@@ -209,18 +209,30 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			);
 		});
 
-		#translations
-		$container->register('translationResources', function() {
-			return new \Asgard\Core\TranslationResources;
-		});
-
 		$container->register('translator', function($container) {
 			$locale = $container['config']['locale'];
 			$translator = new \Symfony\Component\Translation\Translator($locale, new \Symfony\Component\Translation\MessageSelector());
 			$translator->addLoader('yaml', new \Symfony\Component\Translation\Loader\YamlFileLoader());
-			foreach($container['translationResources']->getFiles($locale) as $file)
-				$translator->addResource('yaml', $file, $locale);
+			foreach(glob($this->getPath().'/../Validation/translations/'.$translator->getLocale().'/*') as $file)
+				$translator->addResource('yaml', $file, $translator->getLocale());
+			foreach(glob($this->getPath().'/../Form/translations/'.$translator->getLocale().'/*') as $file)
+				$translator->addResource('yaml', $file, $translator->getLocale());
 			return $translator;
+		});
+
+		#test builder
+		$container->setParentClass('testBuilder', 'Asgard\Tester\TestBuilderInterface');
+		$container->register('testBuilder', function($container) {
+			return new \Asgard\Tester\TestBuilder($container['kernel']['root'].'/tests');
+		});
+
+		#generator
+		$container->setParentClass('generator', 'Asgard\Generator\GeneratorEngineInterface');
+		$container->register('generator', function($container) {
+			$generatorEngine = new \Asgard\Generator\GeneratorEngine($container, $container['kernel']['root'].'/app');
+			$generatorEngine->addGenerator(new \Asgard\Generator\DefaultGenerator);
+			$generatorEngine->addGenerator(new \Asgard\Tester\TestsGenerator($container['testBuilder'], $container['resolver'], $container['controllersAnnotationReader']));
+			return $generatorEngine;
 		});
 	}
 
@@ -257,16 +269,13 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			}
 		});
 
-		foreach(glob($this->getPath().'/../Common/translations/*') as $dir)
-			$container['translationResources']->add(basename($dir), $dir);
-		foreach(glob($this->getPath().'/../Validation/translations/*') as $dir)
-			$container['translationResources']->add(basename($dir), $dir);
-		foreach(glob($this->getPath().'/../Form/translations/*') as $dir)
-			$container['translationResources']->add(basename($dir), $dir);
-
 		if($container->has('console')) {
 			$root = $container['kernel']['root'];
 			$em = $container['entityManager'];
+
+			#generator
+			$generateCommand = new \Asgard\Generator\Commands\GenerateCommand($container['generator']);
+			$container['console']->add($generateCommand);
 
 			#tester
 			$httpKernel = $container['httpKernel'];
@@ -341,21 +350,21 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			$container['console']->add($install);
 			$container['console']->add($publish);
 
-			$translationResources = $container['translationResources'];
+			// $translationResources = $container['translationResources'];
 			$translator = $container['translator'];
 			$root = $container['kernel']['root'];
 			$dir = $container['config']['translation.directories'];
 			if(!$dir)
 				$dir = [$root.'/app'];
 
-			$exportCsvCommand = new \Asgard\Translation\Commands\ExportCsvCommand($translationResources, $translator, $dir);
-			$container['console']->add($exportCsvCommand);
+			// $exportCsvCommand = new \Asgard\Translation\Commands\ExportCsvCommand($translationResources, $translator, $dir);
+			// $container['console']->add($exportCsvCommand);
 
 			$importCommand = new \Asgard\Translation\Commands\ImportCommand();
 			$container['console']->add($importCommand);
 
-			$exportYamlCommand = new \Asgard\Translation\Commands\ExportYamlCommand($translationResources, $translator, $dir);
-			$container['console']->add($exportYamlCommand);
+			// $exportYamlCommand = new \Asgard\Translation\Commands\ExportYamlCommand($translationResources, $translator, $dir);
+			// $container['console']->add($exportYamlCommand);
 
 			$migrationCreate = new \Asgard\Migration\Commands\CreateCommand($container['kernel']['root'].'/migrations');
 			$container['console']->add($migrationCreate);

@@ -1,11 +1,11 @@
 <?php
-namespace Asgard\Core;
+namespace Asgard\Generator;
 
 /**
  * Generator.
  * @author Michel Hognerud <michel@hognerud.com>
  */
-class Generator {
+class GeneratorEngine implements GeneratorEngineInterface {
 	use \Asgard\Container\ContainerAwareTrait;
 
 	/**
@@ -13,13 +13,21 @@ class Generator {
 	 * @var boolean
 	 */
 	protected $overrideFiles = false;
+	/**
+	 * Generators;
+	 * @var array
+	 */
+	protected $generators = [];
+
+	protected $appRoot;
 
 	/**
 	 * Constructor.
 	 * @param \Asgard\Container\ContainerInterface $container
 	 */
-	public function __construct(\Asgard\Container\ContainerInterface $container) {
+	public function __construct(\Asgard\Container\ContainerInterface $container, $appRoot) {
 		$this->container = $container;
+		$this->appRoot = $appRoot;
 	}
 
 	/**
@@ -31,16 +39,26 @@ class Generator {
 	}
 
 	/**
+	 * Return flag to override existing files.
+	 * @return boolean $overrideFiles
+	 */
+	public function getOverrideFiles() {
+		return $this->overrideFiles;
+	}
+
+	/**
 	 * Process a template file.
 	 * @param  string $_src
 	 * @param  string $_dst
 	 * @param  array $vars
 	 */
-	public function processFile($_src, $_dst, $vars) {
-		if(!$this->overrideFiles && file_exists($_dst))
+	public function processFile($src, $dst, $vars) {
+		if(!$this->overrideFiles && file_exists($dst))
 			return;
 		$container = $this->container;
 
+		$_src = $src;
+		$_dst = $dst;
 		extract($vars);
 
 		ob_start();
@@ -84,5 +102,30 @@ class Generator {
 		}
 		else
 			return $r.var_export($v, true);
+	}
+
+	public function addGenerator(AbstractGenerator $generator) {
+		$generator->setEngine($this);
+		$this->generators[] = $generator;
+	}
+
+	public function generate(array $bundles, $root) {
+		foreach($bundles as $name=>&$bundle) {
+			$bundle['name'] = $name;
+			foreach($this->generators as $generator)
+				$generator->preGenerate($bundle);
+		}
+
+		foreach($bundles as $bundle) {
+			$dst = $this->appRoot.'/'.ucfirst(strtolower($name)).'/';
+			foreach($this->generators as $generator)
+				$generator->generate($bundle, $root, $dst);
+		}
+
+		foreach($bundles as $bundle) {
+			$dst = $this->appRoot.'/'.ucfirst(strtolower($name)).'/';
+			foreach($this->generators as $generator)
+				$generator->postGenerate($bundle, $root, $dst);
+		}
 	}
 }
