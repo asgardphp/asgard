@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\Tester;
+namespace Asgard\Tester\Commands;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -25,7 +25,7 @@ class CurlCommand extends \Asgard\Console\Command {
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$curl = $this->input->getArgument('curl');
 
-		$conv = new CurlConverter;
+		$conv = new \Asgard\Tester\CurlConverter;
 
 		$output->writeln($conv->convert($curl));
 	}

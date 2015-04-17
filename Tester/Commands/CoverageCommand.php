@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\Tester;
+namespace Asgard\Tester\Commands;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -34,6 +34,10 @@ class CoverageCommand extends \Asgard\Console\Command {
 	 * @param array $config
 	 */
 	public function __construct(array $config) {
+		if(!isset($config['include']))
+			$config['include'] = [];
+		if(!isset($config['exclude']))
+			$config['exclude'] = [];
 		$this->config = $config;
 		parent::__construct();
 	}
@@ -62,7 +66,6 @@ class CoverageCommand extends \Asgard\Console\Command {
 			switch($cmd) {
 				case 'coverage':
 					$this->coverage($report);
-					// var_dump($this->elements);
 					break;
 				case 'quit':
 					return;

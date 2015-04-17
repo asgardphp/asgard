@@ -265,9 +265,24 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			$container['translationResources']->add(basename($dir), $dir);
 
 		if($container->has('console')) {
-
 			$root = $container['kernel']['root'];
 			$em = $container['entityManager'];
+
+			#tester
+			$httpKernel = $container['httpKernel'];
+			$resolver = $container['resolver'];
+			$db = $container->has('db') ? $container['db']:null;
+			$mm = $container->has('migrationsManager') ? $container['migrationManager']:null;
+
+			$runCommand = new \Asgard\Tester\Commands\RunCommand($httpKernel, $resolver, $db, $mm);
+			$container['console']->add($runCommand);
+
+			$curlCommand = new \Asgard\Tester\Commands\CurlCommand();
+			$container['console']->add($curlCommand);
+
+			$config = $container['config']['tester.coverage'];
+			$coverageCommand = new \Asgard\Tester\Commands\CoverageCommand($config);
+			$container['console']->add($coverageCommand);
 
 			#if database is available
 			if($container['config']['database']) {
@@ -322,7 +337,7 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			$container['console']->add($migrationRefresh);
 			$container['console']->add($install);
 			$container['console']->add($publish);
-			
+
 			$translationResources = $container['translationResources'];
 			$translator = $container['translator'];
 			$root = $container['kernel']['root'];

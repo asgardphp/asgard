@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\Tester;
+namespace Asgard\Tester\Commands;
 
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputInterface;
@@ -43,7 +43,7 @@ class RunCommand extends \Asgard\Console\Command {
 	 * Constructor.
 	 * @param string $dir
 	 */
-	public function __construct($httpKernel, $resolver, $db, $mm) {
+	public function __construct($httpKernel, $resolver, $db=null, $mm=null) {
 		$this->httpKernel = $httpKernel;
 		$this->resolver = $resolver;
 		$this->db = $db;
@@ -60,14 +60,14 @@ class RunCommand extends \Asgard\Console\Command {
 
 		$config = new $configClass();
 
-		$browser = new Browser($this->httpKernel);
+		$browser = new \Asgard\Tester\Browser($this->httpKernel);
 
-		$results = new Results;
+		$results = new \Asgard\Tester\Results;
 
 		if(!$config->coverage)
 			$config->coverage = [realpath('app')];
 
-		$crawler = new Crawler($this, $config, $this->resolver, $results, $browser);
+		$crawler = new \Asgard\Tester\Crawler($this, $config, $this->resolver, $results, $browser);
 
 		$request = new \Asgard\Http\Request;
 		$request->url->setUrl('');
@@ -81,11 +81,15 @@ class RunCommand extends \Asgard\Console\Command {
 			$i = 1;
 			while(file_exists('tests/'.$name.'.php'))
 				$name = $orig.'_'.$i++;
-			$fixturesFile = $name.'_fixtures.php';
 
 			#Fixtures
-			$fixtures = new Fixtures($this->db, $this->mm);
-			$fixtures->generate('tests/'.$fixturesFile);
+			if($this->db) {
+				$fixturesFile = $name.'_fixtures.php';
+				$fixtures = new \Asgard\Tester\Fixtures($this->db, $this->mm);
+				$fixtures->generate('tests/'.$fixturesFile);
+			}
+			else
+				$fixturesFile = null;
 
 			#Tests
 			$results->generate($name, $fixturesFile);

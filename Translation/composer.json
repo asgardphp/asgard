@@ -1,6 +1,5 @@
 {
     "name": "asgard/translation",
-    "type": "asgard-bundle",
     "license": "MIT",
     "authors": [{
         "name": "Michel Hognerud",

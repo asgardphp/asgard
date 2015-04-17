@@ -24,7 +24,7 @@ class Results {
 		
 	}
 
-	public function generate($name, $fixturesFile) {
+	public function generate($name, $fixturesFile=null) {
 		$tmp = [];
 
 		foreach($this->results as $id=>$res) {
@@ -53,8 +53,8 @@ class Results {
 		$res = '<?php
 class '.$name.' extends \Asgard\Http\Test {
 	public static function setUpBeforeClass() {
-		$container = \Asgard\Container\Container::singleton();
-		require __DIR__.\'/'.$fixturesFile.'\';
+		$container = \Asgard\Container\Container::singleton();'.($fixturesFile ? '
+		require __DIR__.\'/'.$fixturesFile.'\';':'').'
 	}
 ';
 
