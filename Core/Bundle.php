@@ -280,6 +280,9 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			$curlCommand = new \Asgard\Tester\Commands\CurlCommand();
 			$container['console']->add($curlCommand);
 
+			$httpTests = new \Asgard\Tester\Commands\GenerateTestsCommand($container['kernel']['root'].'/tests');
+			$container['console']->add($httpTests);
+
 			$config = $container['config']['tester.coverage'];
 			$coverageCommand = new \Asgard\Tester\Commands\CoverageCommand($config);
 			$container['console']->add($coverageCommand);
@@ -377,9 +380,6 @@ class Bundle extends \Asgard\Core\BundleLoader {
 
 			$dbInit = new \Asgard\Db\Commands\InitCommand($container['kernel']['root'].'/config');
 			$container['console']->add($dbInit);
-
-			$httpTests = new \Asgard\Http\Commands\GenerateTestsCommand($container['kernel']['root'].'/tests');
-			$container['console']->add($httpTests);
 
 			$httpBrowser = new \Asgard\Http\Commands\BrowserCommand($container['httpKernel']);
 			$container['console']->add($httpBrowser);

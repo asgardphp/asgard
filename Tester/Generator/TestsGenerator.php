@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\Http\Generator;
+namespace Asgard\Tester\Generator;
 
 /**
  * HTTP tests generator.

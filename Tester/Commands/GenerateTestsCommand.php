@@ -1,5 +1,5 @@
 <?php
-namespace Asgard\Http\Commands;
+namespace Asgard\Tester\Commands;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -40,7 +40,7 @@ class GenerateTestsCommand extends \Asgard\Console\Command {
 		$container = $this->getContainer();
 		$dst = $this->input->getArgument('dst') ? $this->dir.'/'.$this->input->getArgument('dst'):$this->dir.'/AutoTest.php';
 
-		$tg = new \Asgard\Http\Generator\TestsGenerator($container);
+		$tg = new \Asgard\Tester\Generator\TestsGenerator($container);
 		$count = $tg->generateTests($dst);
 		if($count === false)
 			$this->error('Tests generation failed. Tests should pass first. Check with the command: phpunit');
