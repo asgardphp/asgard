@@ -1,0 +1,22 @@
+{
+    "name": "asgard/tester",
+    "type": "asgard-bundle",
+    "license": "MIT",
+    "authors": [{
+        "name": "Michel Hognerud",
+        "email": "michel@hognerud.net"
+    }],
+    "require": {
+        "php": ">=5.4.0",
+        "h0gar/xpath": "0.*"
+    },
+    "autoload": {
+        "psr-4": {"Asgard\\Tester\\": "."}
+    },
+    "minimum-stability": "dev",
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.2-dev"
+        }
+    }
+}
