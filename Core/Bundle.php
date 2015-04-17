@@ -265,6 +265,7 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			$container['translationResources']->add(basename($dir), $dir);
 
 		if($container->has('console')) {
+
 			$root = $container['kernel']['root'];
 			$em = $container['entityManager'];
 
@@ -321,6 +322,22 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			$container['console']->add($migrationRefresh);
 			$container['console']->add($install);
 			$container['console']->add($publish);
+			
+			$translationResources = $container['translationResources'];
+			$translator = $container['translator'];
+			$root = $container['kernel']['root'];
+			$dir = $container['config']['translation.directories'];
+			if(!$dir)
+				$dir = [$root.'/app'];
+
+			$exportCsvCommand = new \Asgard\Translation\Commands\ExportCsvCommand($translationResources, $translator, $dir);
+			$container['console']->add($exportCsvCommand);
+
+			$importCommand = new \Asgard\Translation\Commands\ImportCommand();
+			$container['console']->add($importCommand);
+
+			$exportYamlCommand = new \Asgard\Translation\Commands\ExportYamlCommand($translationResources, $translator, $dir);
+			$container['console']->add($exportYamlCommand);
 
 			$migrationCreate = new \Asgard\Migration\Commands\CreateCommand($container['kernel']['root'].'/migrations');
 			$container['console']->add($migrationCreate);

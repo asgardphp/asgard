@@ -1,23 +1,23 @@
 <?php
-namespace Asgard\Translation;
+namespace Asgard\Translation\Commands;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 
 /**
- * Transltion csv export command.
+ * Translation yaml export command.
  * @author Michel Hognerud <michel@hognerud.com>
  */
-class ExportCsvCommand extends \Asgard\Console\Command {
+class ExportYamlCommand extends \Asgard\Console\Command {
 	/**
 	 * {@inheritDoc}
 	 */
-	protected $name = 'translation:export-csv';
+	protected $name = 'translation:export-yaml';
 	/**
 	 * {@inheritDoc}
 	 */
-	protected $description = 'Export new translations to a CSV file.';
+	protected $description = 'Export new translations to a YAML file.';
 	/**
 	 * Translator dependency.
 	 * @var \Symfony\Component\Translation\TranslatorInterface
@@ -34,7 +34,7 @@ class ExportCsvCommand extends \Asgard\Console\Command {
 	 */
 	protected $translationResources;
 
-	public function __construct(\Asgard\Core\translationResources $translationResources, \Symfony\Component\Translation\TranslatorInterface $translator, $directories=null) {
+	public function __construct(\Asgard\Core\TranslationResources $translationResources, \Symfony\Component\Translation\TranslatorInterface $translator, $directories=null) {
 		$this->translationResources = $translationResources;
 		$this->translator = $translator;
 		if(!is_array($directories))
@@ -71,25 +71,20 @@ class ExportCsvCommand extends \Asgard\Console\Command {
 		foreach($dstFiles as $file)
 			$translator->addResource('yaml', $file, $dstLocale);
 
-		$e = new Extractor;
+		$e = new \Asgard\Translation\Extractor;
 		$e->addStrings(array_keys($translations));
 
 		foreach($this->directories as $dir)
 			$e->parseDirectory($dir);
 
-		$res = $e->getListWithTranslation($this->translator, $srcLocale, $dstLocale);
+		$res = $e->getList($this->translator, $dstLocale);
 
 		if(!$res)
 			$this->comment('No translations to export.');
 		else {
-			$csv = new \H0gar\Csv\Csv([
-				'Key',
-				'Source',
-				'Translation'
-			]);
-			foreach($res as $r)
-				$csv->add($r);
-			file_put_contents($file, $csv->render());
+			$dumper = new \Symfony\Component\Yaml\Dumper;
+			$yaml = $dumper->dump($res, 1);
+			file_put_contents($file, $yaml);
 
 			$this->info('Translations exported with success.');
 		}
