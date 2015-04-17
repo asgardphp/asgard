@@ -1,0 +1,24 @@
+{
+    "name": "asgard/translation",
+    "type": "asgard-bundle",
+    "license": "MIT",
+    "authors": [{
+        "name": "Michel Hognerud",
+        "email": "michel@hognerud.net"
+    }],
+    "require": {
+        "nikic/php-parser": "~1.2",
+        "symfony/yaml": "2.*",
+        "symfony/translation": "2.*",
+        "h0gar/csv": "0.*"
+    },
+    "autoload": {
+        "psr-4": {"Asgard\\Tester\\": "."}
+    },
+    "minimum-stability": "dev",
+    "extra": {
+        "branch-alias": {
+            "dev-master": "0.2-dev"
+        }
+    }
+}
