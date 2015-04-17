@@ -96,7 +96,6 @@ class CurlConverter {
 			$headers[$name] = $value;
 			if($name === 'Cookie') {
 				$c = explode(';', $value);
-				// $cookies = [];
 				foreach($c as $cv) {
 					$e = explode('=', $cv);
 					$cname = trim($e[0]);
@@ -126,19 +125,6 @@ class CurlConverter {
 		else
 			$method = 'GET';
 
-// 		return [
-// 			'url' => $url,
-// 			'method' => $method,
-// 			'url' => $url,
-// 			'headers' => $headers,
-// 			'cookies' => $cookies,
-// 			'post' => $post,
-// 			'files' => $files,
-// 			'body' => $body,
-// 		];
-
-// extract($res);
-
 		$request = "\$browser = \$this->createBrowser();";
 		if($cookies)
 			$request .= '
@@ -147,10 +133,12 @@ $browser->getCookies()->setAll('.$this->outputPHP($cookies).');';
 \$response = \$browser->req(
 	'".$url."',
 	'".$method."'";
-		if($post || $files)
+		if($post || $files || $headers)
 			$request .= ', '.$this->outputPHP($post, 1);
-		if($files)
+		if($files || $headers)
 			$request .= ', '.$this->outputPHP($files, 1);
+		if($headers)
+			$request .= ', \'\', '.$this->outputPHP($headers, 1);
 		$request .= ');';
 		$request .= "
 \$this->assertTrue(\$response->isOk());";
