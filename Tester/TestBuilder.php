@@ -17,8 +17,8 @@ class TestBuilder implements TestBuilderInterface {
 		if(!$tests)
 			return true;
 
-		$name = ucfirst($name).'Test';
 		$dst = $this->getPath($name);
+		$name = ucfirst($name).'Test';
 
 		if(file_exists($this->dir.'/ignore.txt'))
 			$c = trim(file_get_contents($this->dir.'/ignore.txt'), "\n")."\n";

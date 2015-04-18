@@ -277,25 +277,6 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			$generateCommand = new \Asgard\Generator\Commands\GenerateCommand($container['generator']);
 			$container['console']->add($generateCommand);
 
-			#tester
-			$httpKernel = $container['httpKernel'];
-			$resolver = $container['resolver'];
-			$db = $container->has('db') ? $container['db']:null;
-			$mm = $container->has('migrationsManager') ? $container['migrationManager']:null;
-
-			$runCommand = new \Asgard\Tester\Commands\RunCommand($httpKernel, $resolver, $db, $mm);
-			$container['console']->add($runCommand);
-
-			$curlCommand = new \Asgard\Tester\Commands\CurlCommand();
-			$container['console']->add($curlCommand);
-
-			$httpTests = new \Asgard\Tester\Commands\GenerateTestsCommand($container['kernel']['root'].'/tests');
-			$container['console']->add($httpTests);
-
-			$config = $container['config']['tester.coverage'];
-			$coverageCommand = new \Asgard\Tester\Commands\CoverageCommand($config);
-			$container['console']->add($coverageCommand);
-
 			#if database is available
 			if($container['config']['database']) {
 				$mm = $container['MigrationManager'];
@@ -340,7 +321,27 @@ class Bundle extends \Asgard\Core\BundleLoader {
 				$migrationRefresh = new \Asgard\Migration\Commands\RefreshCommand($container['kernel']['root'].'/migrations');
 				$install = new \Asgard\Core\Commands\InstallCommand;
 				$publish = new \Asgard\Core\Commands\PublishCommand;
+
+				$db = null;
+				$mm = null;
 			}
+
+			#tester
+			$httpKernel = $container['httpKernel'];
+			$resolver = $container['resolver'];
+
+			$runCommand = new \Asgard\Tester\Commands\RunCommand($httpKernel, $resolver, $db, $mm);
+			$container['console']->add($runCommand);
+
+			$curlCommand = new \Asgard\Tester\Commands\CurlCommand();
+			$container['console']->add($curlCommand);
+
+			$httpTests = new \Asgard\Tester\Commands\GenerateTestsCommand($container['kernel']['root'].'/tests');
+			$container['console']->add($httpTests);
+
+			$config = $container['config']['tester.coverage'];
+			$coverageCommand = new \Asgard\Tester\Commands\CoverageCommand($config);
+			$container['console']->add($coverageCommand);
 
 			$container['console']->add($migrationMigrate);
 			$container['console']->add($migrationMigrateOne);
