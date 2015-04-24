@@ -85,7 +85,7 @@ class PolymorphicCollectionORM implements CollectionORMInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function create(array $params=[]) {
+	public function create(array $params=[], $groups=[]) {
 		throw new \Exception('Not implemented'); 
 	}
 

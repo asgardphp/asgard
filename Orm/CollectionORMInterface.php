@@ -23,10 +23,11 @@ interface CollectionORMInterface extends ORMInterface {
 
 	/**
 	 * Create a new entity and add it to the relation.
-	 * @param  array $params entity default attributes
+	 * @param  array      $params entity default attributes
+	 * @param  array|null $groups validation groups
 	 * @return \Asgard\Entity\Entity
 	 */
-	public function create(array $params=[]);
+	public function create(array $params=[], $groups=[]);
 
 	/**
 	 * Remove entities from the relation.

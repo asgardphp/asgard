@@ -21,8 +21,12 @@ class DateField extends \Asgard\Form\Field {
 	public function setValue($value) {
 		if(is_array($value) && isset($value['year']) && isset($value['month']) && isset($value['day']))
 			$this->value = \Asgard\Common\Date::createFromDate($value['year'], $value['month'], $value['day']);
-		elseif(is_string($value))
-			$this->value = \Asgard\Common\Date::createFromFormat('Y-m-d', $value);
+		elseif(is_string($value)) {
+			try {
+				$this->value = \Asgard\Common\Date::createFromFormat('Y-m-d', $value);
+			} catch(\Exception $e) {
+			}
+		}
 	}
 
 	/**

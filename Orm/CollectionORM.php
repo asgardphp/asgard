@@ -166,9 +166,9 @@ class CollectionORM extends ORM implements CollectionORMInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function create(array $params=[]) {
+	public function create(array $params=[], $groups=[]) {
 		$new = $this->make($params);
-		$this->dataMapper->save($new);
+		$this->dataMapper->save($new, [], $groups);
 		return $new;
 	}
 

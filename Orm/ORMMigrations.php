@@ -357,7 +357,9 @@ class ORMMigrations {
 	 * @return string
 	 */
 	protected function createColumn($name, \Doctrine\DBAL\Schema\Column $col) {
-		$res = "\n\t\$table->addColumn('$name', '".strtolower($col->getType())."', [";
+		$type = strtolower($col->getType());
+
+		$res = "\n\t\$table->addColumn('$name', '".$type."', [";
 		if($col->getNotnull())
 			$res .= "\n		'notnull' => true,";
 		if($col->getAutoincrement())
@@ -366,7 +368,7 @@ class ORMMigrations {
 			$res .= "\n		'default' => '".$col->getDefault()."',";
 		if($col->getScale())
 			$res .= "\n		'scale' => ".$col->getScale().",";
-		if($col->getPrecision())
+		if(in_array($type, ['decimal', 'float', 'double']) && $col->getPrecision())
 			$res .= "\n		'precision' => ".$col->getPrecision().",";
 		if($col->getLength())
 			$res .= "\n		'length' => ".$col->getLength().",";

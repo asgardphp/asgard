@@ -30,12 +30,15 @@ class EntityFieldSolver implements EntityFieldSolverInterface {
 		$this->add(function($property) {
 			$class = get_class($property);
 			switch($class) {
+				case 'Asgard\Entity\Properties\StringProperty':
 				case 'Asgard\Entity\Properties\TextProperty':
-				case 'Asgard\Entity\Properties\LongtextProperty':
-				case 'Asgard\Entity\Properties\DoubleProperty':
+				case 'Asgard\Entity\Properties\DecimalProperty':
 				case 'Asgard\Entity\Properties\IntegerProperty':
 				case 'Asgard\Entity\Properties\EmailProperty':
-					return new \Asgard\Form\Fields\TextField;
+					if($property->has('in'))
+						return new \Asgard\Form\Fields\SelectField;
+					else
+						return new \Asgard\Form\Fields\TextField;
 				case 'Asgard\Entity\Properties\BooleanProperty':
 					return new \Asgard\Form\Fields\BooleanField;
 				case 'Asgard\Entity\Properties\DateProperty':

@@ -50,9 +50,9 @@ class Config extends \Asgard\Common\Bag implements ConfigInterface {
 			else {
 				$basename = basename($filename);
 				if(preg_match('/^[^_]+.[^.]+$/', $basename))
-					$res = array_merge($this->_loadFile($filename), $res);
+					$res = array_merge($res, $this->_loadFile($filename));
 				if($env !== null && preg_match('/^.+_'.$env.'.[^.]+$/', $basename))
-					$res = array_merge($this->_loadFile($filename), $res);
+					$res = array_merge($res, $this->_loadFile($filename));
 			}
 		}
 		return $res;

@@ -5,10 +5,8 @@ class Post_123 extends \Asgard\Migration\DBMigration {
 			$table->addColumn('id', 'integer', [
 				'notnull' => true,
 				'autoincrement' => true,
-				'precision' => 10,
 			]);
 			$table->addColumn('name', 'string', [
-				'precision' => 10,
 				'length' => 255,
 			]);
 			$table->setPrimaryKey(
@@ -22,10 +20,8 @@ class Post_123 extends \Asgard\Migration\DBMigration {
 			$table->addColumn('id', 'integer', [
 				'notnull' => true,
 				'autoincrement' => true,
-				'precision' => 10,
 			]);
 			$table->addColumn('name', 'string', [
-				'precision' => 10,
 				'length' => 255,
 			]);
 			$table->setPrimaryKey(
@@ -37,7 +33,6 @@ class Post_123 extends \Asgard\Migration\DBMigration {
 		
 		$this->schema->table('post', function($table) {
 			$table->addColumn('content2', 'string', [
-				'precision' => 10,
 				'length' => 255,
 			]);
 			$table->changeColumn('title', [
@@ -61,7 +56,6 @@ class Post_123 extends \Asgard\Migration\DBMigration {
 		
 		$this->schema->table('post', function($table) {
 			$table->addColumn('posted', 'date', [
-				'precision' => 10,
 			]);
 			$table->changeColumn('title', [
 				'default' => 'a',

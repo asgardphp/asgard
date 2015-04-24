@@ -248,4 +248,8 @@ class Response {
 	public function isOK() {
 		return $this->getCode() >= 200 && $this->getCode() < 300;
 	}
+
+	public function back() {
+		return $this->redirect($this->request->server['HTTP_REFERER']);
+	}
 }
