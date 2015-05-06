@@ -479,7 +479,7 @@ class Validator implements ValidatorInterface {
 
 		$errors = ['self'=>null, 'rules'=>[], 'attributes'=>[]];
 		if($this->required instanceof \Closure)
-			$required = $this->required();
+			$required = call_user_func_array($this->required, [$input->input(), $input, $this]);
 		else
 			$required = $this->required;
 

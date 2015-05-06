@@ -33,6 +33,11 @@ class DAL implements \Iterator {
 	 */
 	protected $where   = [];
 	/**
+	 * Having conditions.
+	 * @var array
+	 */
+	protected $having   = [];
+	/**
 	 * Jointures.
 	 * @var array
 	 */
@@ -161,9 +166,12 @@ class DAL implements \Iterator {
 	 * @return DAL    $this
 	 * @api
 	 */
-	public function from($tables) {
+	public function from($tables, $alias=null) {
 		$this->tables = [];
-		return $this->addFrom($tables);
+		if(is_string($tables))
+			return $this->addFrom($tables);
+		else
+			return $this->addFrom([$alias => $tables]);
 	}
 
 	/**
@@ -187,20 +195,30 @@ class DAL implements \Iterator {
 		if(!$tables)
 			return $this;
 
-		$tables = explode(',', $tables);
-		foreach($tables as $tablestr) {
-			$tablestr = trim($tablestr);
-
-			preg_match('/(.*?) ([a-z_][a-zA-Z0-9_]*)?$/i', $tablestr, $matches);
-			if(isset($matches[2])) {
-				$alias = $matches[2];
-				$table = $matches[1];
+		if(is_string($tables))
+			$tables = explode(',', $tables);
+		elseif(!is_array($tables))
+			$tables = [$tables];
+		foreach($tables as $k=>$tablestr) {
+			if($tablestr instanceof Raw) {
+				$table = $tablestr;
+				$alias = $k;
 			}
-			else
-				$alias = $table = $tablestr;
+			else {
+				$tablestr = trim($tablestr);
 
-			if(isset($this->tables[$alias]))
-				throw new \Exception('Table alias '.$alias.' is already used.');
+				preg_match('/(.*?) ([a-z_][a-zA-Z0-9_]*)?$/i', $tablestr, $matches);
+				if(isset($matches[2])) {
+					$alias = $matches[2];
+					$table = $matches[1];
+				}
+				else
+					$alias = $table = $tablestr;
+
+				if(isset($this->tables[$alias]))
+					throw new \Exception('Table alias '.$alias.' is already used.');
+			}
+			
 			$this->tables[$alias] = $table;
 		}
 
@@ -535,6 +553,15 @@ class DAL implements \Iterator {
 		return $this;
 	}
 
+	public function having($conditions, $values=null) {
+		if($values !== null)
+			$this->having[] = [$conditions => $values];
+		else
+			$this->having[] = $conditions;
+
+		return $this;
+	}
+
 	/**
 	 * Format the conditions.
 	 * @param  array   $params
@@ -707,6 +734,14 @@ class DAL implements \Iterator {
 			return ['', []];
 	}
 
+	protected function buildHaving($default=null) {
+		$r = $this->processConditions($this->having, 'and', false, $default!==null ? $default:$this->getDefaultTable());
+		if($r[0])
+			return [' HAVING '.$r[0], $r[1]];
+		else
+			return ['', []];
+	}
+
 	/**
 	 * Build GROUP BY.
 	 * @return string
@@ -852,7 +887,9 @@ class DAL implements \Iterator {
 		if(!$this->tables)
 			throw new \Exception('Must set tables with method from($tables) before running the query.');
 		foreach($this->tables as $alias=>$table) {
-			if($alias !== $table && $with_alias)
+			if($table instanceof Raw)
+				$tables[] = '('.$table.') `'.$alias.'`';
+			elseif($alias !== $table && $with_alias)
 				$tables[] = '`'.$table.'` `'.$alias.'`';
 			else
 				$tables[] = '`'.$table.'`';
@@ -898,7 +935,10 @@ class DAL implements \Iterator {
 		list($where, $whereparams) = $this->buildWhere();
 		$params = array_merge($params, $whereparams);
 
-		$sql = 'SELECT '.$columns.' FROM '.$tables.$jointures.$where.$groupby.$orderBy.$limit;
+		list($having, $havingparams) = $this->buildHaving();
+		$params = array_merge($params, $havingparams);
+
+		$sql = 'SELECT '.$columns.' FROM '.$tables.$jointures.$where.$groupby.$having.$orderBy.$limit;
 
 		$this->replaceRaws($sql, $params);
 
@@ -1192,25 +1232,27 @@ class DAL implements \Iterator {
 	protected function _function($fct, $what=null, $group_by=null) {
 		if($what === null)
 			$what = '*';
+		$fct = strtoupper($fct);
 
-		$dal = clone $this;
+		$clone = clone $this;
+		if($fct === 'COUNT')
+			$clone->limit(null);
 		if($group_by) {
-			$dal->select($group_by.' groupby, '.strtoupper($fct).'('.$what.') '.$fct)
+			$subquery = $clone->dbgSelect(); #todo use parameters
+			$dal = new static($this->db);
+			$dal->select($group_by.' groupby, '.$fct.'('.$what.') '.$fct)
 			    ->groupBy($group_by)
-			    ->offset(null)
-			    ->orderBy(null)
-			    ->limit(null);
+			    ->from($this->raw($subquery), 's');
 			$res = [];
 			foreach($dal->get() as $v)
 				$res[$v['groupby']] = $v[$fct];
 			return $res;
 		}
 		else {
+			$subquery = $clone->dbgSelect(); #todo use parameters
+			$dal = new static($this->db);
 			$dal->select($fct.'('.$what.') '.$fct)
-			    ->groupBy(null)
-			    ->offset(null)
-			    ->orderBy(null)
-			    ->limit(null);
+			    ->from($this->raw($subquery), 's');
 			return \Asgard\Common\ArrayUtils::array_get($dal->first(), $fct);
 		}
 	}
@@ -1284,7 +1326,7 @@ class DAL implements \Iterator {
 		return preg_replace_callback('/\?/', function() use(&$i, $params) {
 			$rep = $params[$i++];
 			if(is_string($rep))
-				$rep = "'$rep'";
+				$rep = "'".addslashes($rep)."'";
 			return $rep;
 		}, $sql);
 	}

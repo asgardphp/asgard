@@ -37,4 +37,11 @@ class BooleanProperty extends \Asgard\Entity\Property {
 	public function getFormField() {
 		return 'Asgard\Form\Fields\BooleanField';
 	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function toString($val) {
+		return $val ? '1':'0';
+	}
 }

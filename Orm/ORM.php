@@ -27,6 +27,11 @@ class ORM implements ORMInterface {
 	 */
 	protected $where = [];
 	/**
+	 * Having conditions.
+	 * @var array
+	 */
+	protected $having = [];
+	/**
 	 * OrderBy.
 	 * @var string
 	 */
@@ -86,6 +91,11 @@ class ORM implements ORMInterface {
 	 * @var boolean
 	 */
 	protected $reversed = false;
+	/**
+	 * Selects.
+	 * @var array
+	 */
+	protected $selects = [];
 
 	/**
 	 * Constructor.
@@ -154,6 +164,10 @@ class ORM implements ORMInterface {
 	 * {@inheritDoc}
 	*/
 	public function __call($relationName, array $args) {
+		return $this->relation($relationName);
+	}
+
+	public function relation($relationName) {
 		if(!$this->dataMapper->hasRelation($this->definition, $relationName))
 			throw new \Exception('Relation '.$relationName.' does not exist.');
 		$relation = $this->dataMapper->relation($this->definition, $relationName);
@@ -288,7 +302,6 @@ class ORM implements ORMInterface {
 					$type = '';
 					if(preg_match('/^[^ ]+join /', $name, $matches)) {
 						$type = $matches[0];
-						// d($name);
 						$name = preg_replace('/^[^ ]* /', '', $name);
 					}
 
@@ -469,6 +482,11 @@ class ORM implements ORMInterface {
 		return $clone->applyScopes()->_getDAL();
 	}
 
+	public function addSelect($select) {
+		$this->selects[] = $select;
+		return $this;
+	}
+
 	/**
 	 * Build the DAL.
 	 * @return \Asgard\Db\DAL
@@ -482,7 +500,9 @@ class ORM implements ORMInterface {
 		$dal->limit($this->limit);
 		$dal->offset($this->offset);
 		$dal->groupBy($table.'.id');
+		$dal->select($this->selects);
 
+		$dal->having($this->processConditions($this->having));
 		$dal->where($this->processConditions($this->where));
 
 		if($this->definition->isI18N()) {
@@ -492,7 +512,7 @@ class ORM implements ORMInterface {
 				if($property->get('i18n'))
 					$selects[] = $translation_table.'.'.$name;
 			}
-			$dal->select($selects);
+			$dal->addSelect($selects);
 			$dal->from($table);
 			$dal->leftjoin([
 				$translation_table => $this->processConditions([
@@ -502,7 +522,7 @@ class ORM implements ORMInterface {
 			]);
 		}
 		else {
-			$dal->select([$table.'.*']);
+			$dal->addSelect([$table.'.*']);
 			$dal->from($table);
 		}
 
@@ -852,6 +872,20 @@ class ORM implements ORMInterface {
 		return $this;
 	}
 
+	public function having($conditions, $val=null) {
+		if(!$conditions)
+			return $this;
+		if($val === null) {
+			if(!is_array($conditions))
+				$conditions = [$conditions];
+			$this->having[] = $this->processConditions($conditions);
+		}
+		else
+			$this->having[] = $this->processConditions([$conditions=>$val]);
+
+		return $this;
+	}
+
 	/**
 	 * {@inheritDoc}
 	*/
@@ -901,7 +935,7 @@ class ORM implements ORMInterface {
 	 * {@inheritDoc}
 	*/
 	public function count($group_by=null) {
-		return $this->getDAL()->count('DISTINCT '.$this->getTable().'.id', $group_by);
+		return $this->getDAL()->count('*', $group_by);
 	}
 
 	/**

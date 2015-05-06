@@ -294,6 +294,7 @@ class HttpKernel implements HttpKernelInterface {
 		if($route === null)
 			throw new Exceptions\NotFoundException;
 
+		$request->setRoute($route);
 		$controllerClass = $route->getController();
 		$action = $route->getAction();
 
@@ -336,7 +337,7 @@ class HttpKernel implements HttpKernelInterface {
 	 * @return Response
 	 */
 	protected function getExceptionResponse(\Exception $e) {
-		while(ob_get_length())
+		while(ob_get_level())
 			ob_end_clean();
 
 		$this->errorHandler->exceptionHandler($e, false);

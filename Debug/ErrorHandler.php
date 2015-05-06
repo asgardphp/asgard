@@ -76,7 +76,7 @@ class ErrorHandler {
 					return;
 			}
 
-			while(ob_get_level()) { ob_end_clean(); }
+			while(ob_get_level()) ob_end_clean();
 			$exceptionHandler = set_exception_handler(function() {});
 			restore_exception_handler();
 			$exception = new FatalErrorException($e['message'], $e['type'], 0, $e['file'], $e['line']);

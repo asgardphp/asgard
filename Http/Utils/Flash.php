@@ -146,13 +146,25 @@ class Flash {
 			if($cb)
 				echo $cb($msg, $type);
 			else
-				echo '<div class="flash '.$type.'">'.$msg.'</div>'."\n";
+				echo '<div class="alert'.$this->getClass($type).'" role="alert">'.$msg.'</div>'."\n";
 		}
 		if($cat)
 			unset($this->messages[$type][$cat]);
 		else
 			$this->messages[$type] = [];
 		$this->persist();
+	}
+
+	protected function getClass($type) {
+		$types = [
+			'error' => ' alert-danger',
+			'success' => ' alert-success',
+			'info' => ' alert-info',
+			'warning' => ' alert-warning',
+		];
+		if(!isset($types[$type]))
+			return '';
+		return $types[$type];
 	}
 
 	/**

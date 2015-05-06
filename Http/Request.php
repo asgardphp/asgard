@@ -63,6 +63,11 @@ class Request implements \ArrayAccess {
 	protected $params = [
 		'format'	=>	'html',
 	];
+	/**
+	 * Route.
+	 * @var Route
+	 */
+	protected $route;
 
 	public function __clone() {
 		$this->get = clone $this->get;
@@ -409,5 +414,14 @@ class Request implements \ArrayAccess {
 		}
 
 		return $name;
+	}
+
+	public function setRoute(Route $route) {
+		$this->route = $route;
+		return $this;
+	}
+
+	public function getRoute() {
+		return $this->route;
 	}
 }

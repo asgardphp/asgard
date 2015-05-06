@@ -33,8 +33,11 @@ class Debug {
 	 */
 	public static function dWithTrace(array $trace) {
 		#clear all active buffers
-		while(ob_get_length())
+		while(ob_get_level())
 			ob_end_clean();
+
+		if(!headers_sent())
+			http_response_code(500);
 
 		if(static::$format === 'html')
 			echo '<pre>';
