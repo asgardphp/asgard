@@ -78,6 +78,11 @@ class HttpKernel implements HttpKernelInterface {
 	 * @var ResolverInterface
 	 */
 	protected $resolver;
+	/**
+	 * Ob level before processing request.
+	 * @var integer
+	 */
+	protected $startObLevel;
 
 	/**
 	 * Constructor.
@@ -228,6 +233,7 @@ class HttpKernel implements HttpKernelInterface {
 		}
 		else {
 			try {
+				$this->startObLevel = ob_get_level();
 				$response = $this->processRaw($request);
 				if(!$response instanceof Response)
 					$response = (new Response())->setRequest($request)->setContent($response);
@@ -337,7 +343,7 @@ class HttpKernel implements HttpKernelInterface {
 	 * @return Response
 	 */
 	protected function getExceptionResponse(\Exception $e) {
-		while(ob_get_level())
+		while(ob_get_level() > $this->startObLevel)
 			ob_end_clean();
 
 		$this->errorHandler->exceptionHandler($e, false);

@@ -35,6 +35,7 @@ trait ViewableTrait {
 	 */
 	public function fragment($method, array $params=[]) {
 		$c = clone $this; #clone to allow nested fragments
+		$c->view = null;
 		$c->defaultView = $method;
 		return $c->runTemplate($method, $params);
 	}
