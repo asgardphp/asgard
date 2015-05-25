@@ -545,6 +545,8 @@ class DAL implements \Iterator {
 	 * @api
 	 */
 	public function where($conditions, $values=null) {
+		if(!$conditions)
+			return $this;
 		if($values !== null)
 			$this->where[] = [$conditions => $values];
 		else
@@ -554,6 +556,8 @@ class DAL implements \Iterator {
 	}
 
 	public function having($conditions, $values=null) {
+		if(!$conditions)
+			return $this;
 		if($values !== null)
 			$this->having[] = [$conditions => $values];
 		else
@@ -973,7 +977,11 @@ class DAL implements \Iterator {
 			$str = ' SET '.implode(', ', $set);
 
 			$tables = $this->buildTables(true);
-			$orderBy = $this->buildOrderBy();
+			#can't mix order by and joins in update
+			if($this->joins)
+				$orderBy = '';
+			else
+				$orderBy = $this->buildOrderBy();
 			$limit = $this->buildLimit();
 
 			list($where, $whereparams) = $this->buildWhere();

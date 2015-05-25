@@ -165,7 +165,7 @@ class Kernel implements \ArrayAccess {
 			}
 			$this->params['env'] = 'dev';
 		}
-		elseif(isset($_SERVER['HTTP_HOST']) && ($_SERVER['HTTP_HOST'] == '127.0.0.1' || $_SERVER['HTTP_HOST'] == 'localhost'))
+		elseif(php_sapi_name() === 'cli' || (isset($_SERVER['HTTP_HOST']) && ($_SERVER['HTTP_HOST'] == '127.0.0.1' || $_SERVER['HTTP_HOST'] == 'localhost')))
 			$this->params['env'] = 'dev';
 		else
 			$this->params['env'] = 'prod';

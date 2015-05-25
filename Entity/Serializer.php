@@ -70,6 +70,7 @@ class Serializer {
 				}
 			}
 			elseif($property->get('many')) {
+				$res[$name] = [];
 				foreach($entity->get($name) as $k=>$v)
 					$res[$name][$k] = $this->propertyToArray($v, $property);
 			}

@@ -38,11 +38,17 @@ class Config extends \Asgard\Common\Bag implements ConfigInterface {
 	protected function _loadDir($dir, $env=null) {
 		$res = [];
 		$files = glob($dir.'/*.yml');
-		usort($files, function($a, $b) {
-			if(strpos($a, '.local.') !== false)
+		usort($files, function($a, $b) use($env) {
+			if(strpos($a, '.local.') !== false && strpos($b, '.local.') === false)
 				return 1;
-			if(strpos($b, '.local.') !== false)
+			if(strpos($b, '.local.') !== false && strpos($a, '.local.') === false)
 				return -1;
+			if($env) {
+				if(strpos($a, '_'.$env) !== false)
+					return 1;
+				if(strpos($b, '_'.$env) !== false)
+					return -1;
+			}
 		});
 		foreach($files as $filename) {
 			if(is_dir($filename))

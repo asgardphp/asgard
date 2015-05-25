@@ -66,6 +66,7 @@ class DataMapper implements DataMapperInterface {
 		$res = $this->orm($entityClass)->where(['id' => $id])->getDAL()->first();
 		if($res)
 			$entity->_set(static::unserialize($entity, $res));
+		$entity->resetChanged();
 
 		if($entity->isNew())
 			return null;
@@ -262,127 +263,127 @@ class DataMapper implements DataMapperInterface {
 			throw new EntityException($msg, $errors);
 		}
 
-		$entity->getDefinition()->trigger('save', [$entity]);
-
-		#Files
-		foreach($entity->getDefinition()->properties() as $name=>$prop) {
-			if($prop instanceof \Asgard\Entity\Properties\FileProperty) {
-				if($prop->get('many')) {
-					$files = $entity->$name = array_values($entity->$name->all());
-					foreach($files as $k=>$file) {
-						if($file->shouldDelete()) {
-							$file->delete();
-							unset($files[$k]);
+		$entity->getDefinition()->trigger('save', [$entity], function(\Asgard\Hook\Chain $chain, $entity) use($groups) {
+			#Files
+			foreach($entity->getDefinition()->properties() as $name=>$prop) {
+				if($prop instanceof \Asgard\Entity\Properties\FileProperty) {
+					if($prop->get('many')) {
+						$files = $entity->$name = array_values($entity->$name->all());
+						foreach($files as $k=>$file) {
+							if($file->shouldDelete()) {
+								$file->delete();
+								unset($files[$k]);
+							}
+							else
+								$file->save();
 						}
+					}
+					elseif($file = $entity->get($name)) {
+						if($file->shouldDelete())
+							$file->delete();
 						else
 							$file->save();
 					}
 				}
-				elseif($file = $entity->get($name)) {
-					if($file->shouldDelete())
-						$file->delete();
-					else
-						$file->save();
-				}
 			}
-		}
 
-		$orm = $this->orm(get_class($entity));
-		$isNew = !isset($entity->id) || !$entity->id || $orm->reset()->where(['id'=>$entity->id])->getDAL()->count() === 0;
+			$orm = $this->orm(get_class($entity));
+			$isNew = !isset($entity->id) || !$entity->id || $orm->reset()->where(['id'=>$entity->id])->getDAL()->count() === 0;
 
-		$vars = $i18n = [];
-		#process data
-		foreach($entity->getDefinition()->properties() as $name=>$prop) {
-			#i18n properties
-			if($prop->get('i18n')) {
-				$values = $entity->get($name, $entity->getLocales());
-				foreach($values as $locale=>$v) {
-					if($isNew || in_array($name, $entity->getChangedI18N($locale)))
-						$i18n[$locale][$name] = $entity->getDefinition()->property($name)->serialize($v);
-				}
-			}
-			#other properties
-			elseif($isNew || in_array($name, $entity->getChanged())) {
-				#relations with a single entity
-				if($prop->get('type') == 'entity') {
-					$rel = $this->relation($entity->getDefinition(), $name);
-					if(!$rel->get('many')) {
-						$link = $rel->getLink();
-						$relatedEntity = $entity->data['properties'][$name];
-						#entity object
-						if(is_object($relatedEntity)) {
-							if($relatedEntity->isNew())
-								$this->save($relatedEntity, [], $groups===null ? null:[]);
-							$vars[$link] = $relatedEntity->id;
-							if($rel->isPolymorphic())
-								$vars[$rel->getLinkType()] = get_class($relatedEntity);
-						}
-						elseif($relatedEntity !== null) {
-							if($rel->isPolymorphic()) {
-								if($relatedEntity) {
-									if(!is_array($relatedEntity))
-										throw new \Exception('Polymorphic entities must be an object or an array.');
-									#array with class and id
-									$vars[$rel->getLinkType()] = $relatedEntity[0];
-									$vars[$link] = $relatedEntity[1];
-								}
-								else
-									$vars[$rel->getLinkType()] = $vars[$link] = null;
-							}
-							#id
-							else
-								$vars[$link] = $relatedEntity;
-						}
+			$vars = $i18n = [];
+			#process data
+			foreach($entity->getDefinition()->properties() as $name=>$prop) {
+				#i18n properties
+				if($prop->get('i18n')) {
+					$values = $entity->get($name, $entity->getLocales());
+					foreach($values as $locale=>$v) {
+						if($isNew || in_array($name, $entity->getChangedI18N($locale)))
+							$i18n[$locale][$name] = $entity->getDefinition()->property($name)->serialize($v);
 					}
 				}
-				else {
-					$value = $entity->get($name);
-					$vars[$name] = $prop->serialize($value);
+				#other properties
+				elseif($isNew || in_array($name, $entity->getChanged())) {
+					#relations with a single entity
+					if($prop->get('type') == 'entity') {
+						$rel = $this->relation($entity->getDefinition(), $name);
+						if(!$rel->get('many')) {
+							$link = $rel->getLink();
+							$relatedEntity = $entity->data['properties'][$name];
+							#entity object
+							if(is_object($relatedEntity)) {
+								if($relatedEntity->isNew())
+									$this->save($relatedEntity, [], $groups===null ? null:[]);
+								$vars[$link] = $relatedEntity->id;
+								if($rel->isPolymorphic())
+									$vars[$rel->getLinkType()] = get_class($relatedEntity);
+							}
+							elseif($relatedEntity !== null) {
+								if($rel->isPolymorphic()) {
+									if($relatedEntity) {
+										if(!is_array($relatedEntity))
+											throw new \Exception('Polymorphic entities must be an object or an array.');
+										#array with class and id
+										$vars[$rel->getLinkType()] = $relatedEntity[0];
+										$vars[$link] = $relatedEntity[1];
+									}
+									else
+										$vars[$rel->getLinkType()] = $vars[$link] = null;
+								}
+								#id
+								else
+									$vars[$link] = $relatedEntity;
+							}
+						}
+					}
+					else {
+						$value = $entity->get($name);
+						$vars[$name] = $prop->serialize($value);
+					}
 				}
 			}
-		}
 
-		#Persist
-		if(count($vars) > 0) {
-			if($isNew)
-				$entity->id = $orm->getDAL()->insert($vars);
-			else
-				$orm->reset()->where(['id'=>$entity->id])->getDAL()->update($vars);
-		}
-
-		#Persist i18n
-		foreach($i18n as $locale=>$values) {
-			$dal = new \Asgard\Db\DAL($this->db, $this->getTranslationTable($entity->getDefinition()));
-			if($dal->where(['id'=>$entity->id, 'locale'=>$locale])->count())
-				$dal->where(['id'=>$entity->id, 'locale'=>$locale])->update($values);
-			else {
-				$dal->insert(
-					array_merge(
-						$values,
-						[
-							'locale'=>$locale,
-							'id'=>$entity->id,
-						]
-					)
-				);
+			#Persist
+			if(count($vars) > 0) {
+				if($isNew)
+					$entity->id = $orm->getDAL()->insert($vars);
+				else
+					$orm->reset()->where(['id'=>$entity->id])->getDAL()->update($vars);
 			}
-		}
 
-		#Persist relations
-		foreach($this->relations($entity->getDefinition()) as $relation => $params) {
-			if(!isset($entity->data['properties'][$relation]))
-				continue;
-			if(!$isNew && !in_array($relation, $entity->getChanged()))
-				continue;
-			$rel = $this->relation($entity->getDefinition(), $relation);
+			#Persist i18n
+			foreach($i18n as $locale=>$values) {
+				$dal = new \Asgard\Db\DAL($this->db, $this->getTranslationTable($entity->getDefinition()));
+				if($dal->where(['id'=>$entity->id, 'locale'=>$locale])->count())
+					$dal->where(['id'=>$entity->id, 'locale'=>$locale])->update($values);
+				else {
+					$dal->insert(
+						array_merge(
+							$values,
+							[
+								'locale'=>$locale,
+								'id'=>$entity->id,
+							]
+						)
+					);
+				}
+			}
 
-			if($rel->get('many'))
-				$this->related($entity, $relation)->sync($entity->data['properties'][$relation]->all());
-			elseif(!$rel->reverse()->get('many'))
-				$this->related($entity, $relation)->sync($entity->data['properties'][$relation]);
-		}
+			#Persist relations
+			foreach($this->relations($entity->getDefinition()) as $relation => $params) {
+				if(!isset($entity->data['properties'][$relation]))
+					continue;
+				if(!$isNew && !in_array($relation, $entity->getChanged()))
+					continue;
+				$rel = $this->relation($entity->getDefinition(), $relation);
 
-		$entity->resetChanged();
+				if($rel->get('many'))
+					$this->related($entity, $relation)->sync($entity->data['properties'][$relation]->all());
+				elseif(!$rel->reverse()->get('many'))
+					$this->related($entity, $relation)->sync($entity->data['properties'][$relation]);
+			}
+
+			$entity->resetChanged();
+		});
 
 		return $entity;
 	}

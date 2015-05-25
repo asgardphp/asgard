@@ -26,6 +26,11 @@ class Resolver implements ResolverInterface {
 	 * @var array
 	 */
 	protected $results = [];
+	/**
+	 * Url object.
+	 * @var \Asgard\Http\URL
+	 */
+	protected $url;
 
 	/**
 	 * Constructor.
@@ -279,6 +284,14 @@ class Resolver implements ResolverInterface {
 	 * {@inheritDoc}
 	 */
 	public function getUrl() {
-		return $this->httpKernel->getRequest()->url;
+		if($this->url)
+			return $this->url;
+		else
+			return $this->httpKernel->getRequest()->url;
+	}
+
+	public function setUrl($url) {
+		$this->url = $url;
+		return $this;
 	}
 }

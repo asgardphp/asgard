@@ -76,7 +76,7 @@ class SelectField extends \Asgard\Form\Field {
 	 */
 	public function getValidationRules() {
 		$validation = parent::getValidationRules();
-		if(isset($this->options['choices']))
+		if(isset($this->options['choices']) && (!isset($this->options['restrictChoices']) || $this->options['restrictChoices']))
 			$validation['in'] = [array_keys($this->options['choices'])];
 
 		return $validation;

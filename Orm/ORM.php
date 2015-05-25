@@ -96,6 +96,11 @@ class ORM implements ORMInterface {
 	 * @var array
 	 */
 	protected $selects = [];
+	/**
+	 * Dal callbacks.
+	 * @var array
+	 */
+	protected $dalCallbacks = [];
 
 	/**
 	 * Constructor.
@@ -408,7 +413,9 @@ class ORM implements ORMInterface {
 		if(!$definition)
 			$definition = $this->definition;
 		$new = $definition->make([], $this->locale);
-		return static::unserialize($new, $raw);
+		static::unserialize($new, $raw);
+		$new->resetChanged();
+		return $new;
 	}
 
 	/**
@@ -453,6 +460,7 @@ class ORM implements ORMInterface {
 	*/
 	public function values($property) {
 		$res = [];
+		$this->tmp_dal = $this->getDAL();
 		while($one = $this->next())
 			$res[] = $one->get($property);
 		return $res;
@@ -528,7 +536,14 @@ class ORM implements ORMInterface {
 
 		$this->recursiveJointures($dal, $this->join, $this->definition, $this->getTable());
 
+		foreach($this->dalCallbacks as $cb)
+			$cb($dal);
+
 		return $dal;
+	}
+
+	public function dalCallback(callable $cb) {
+		$this->dalCallbacks[] = $cb;
 	}
 
 	/**
