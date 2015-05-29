@@ -8,7 +8,7 @@ composer create-project asgard/starter [folder] --stability dev
 
 ### Official Documentation
 
-Documentation for the entire framework can be found on the [Asgard website](http://asgard.com/docs).
+Documentation for the entire framework can be found on the [Asgard website](http://asgardphp.com/docs).
 
 ### Contributing To Asgard
 
