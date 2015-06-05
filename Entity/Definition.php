@@ -170,11 +170,7 @@ class Definition {
 					return $res;
 			}
 
-			try {
-				return $this->callStatic($name, $arguments);
-			} catch(\Exception $e) {
-				throw new \Exception('Method '.$name.' does not exist for entity '.$this->entityClass);
-			}
+			throw new \Exception('Method '.$name.' does not exist for entity '.$this->entityClass);
 		}
 	}
 

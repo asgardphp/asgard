@@ -210,7 +210,7 @@ class DataMapper implements DataMapperInterface {
 		foreach($this->relations($entity->getDefinition()) as $name=>$relation) {
 			$data[$name] = $this->related($entity, $name);
 			$relation->prepareValidator($validator->attribute($name));
-			$property = $entity->property($name);
+			$property = $entity->getDefinition()->property($name);
 			$validator->attribute($name)->ruleMessages($property->getMessages());
 		}
 		$errors = $validator->errors($data, $groups);
