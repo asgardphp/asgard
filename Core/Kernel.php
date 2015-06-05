@@ -123,11 +123,16 @@ class Kernel implements \ArrayAccess {
 		if($this->loaded)
 			return;
 
-		if($this->getEnv() == 'prod' && file_exists($this->params['root'].'/storage/compiled.php'))
+		$errorHandler = \Asgard\Debug\ErrorHandler::register();
+		if(php_sapi_name() !== 'cli')
+			\Asgard\Debug\Debug::setFormat('html');
+
+		if($this->getEnv() === 'prod' && file_exists($this->params['root'].'/storage/compiled.php'))
 			include_once $this->params['root'].'/storage/compiled.php';
 
 		$this->bundles = $this->doGetBundles();
 		$container = $this->getContainer();
+		$container['errorHandler'] = $errorHandler;
 
 		if($this->params['env']) {
 			if(file_exists($this->params['root'].'/app/bootstrap_'.strtolower($this->params['env']).'.php'))
