@@ -35,8 +35,8 @@ class DateProperty extends \Asgard\Entity\Property {
 	 * {@inheritDoc}
 	 */
 	protected function doSerialize($obj) {
-		if($obj === null)
-			return '';
+		if(!$obj)
+			return null;
 		return $obj->format('Y-m-d');
 	}
 
@@ -45,7 +45,7 @@ class DateProperty extends \Asgard\Entity\Property {
 	 */
 	protected function doUnserialize($str) {
 		if(!$str)
-			return new \Asgard\Common\Date;
+			return;
 		return \Asgard\Common\Date::createFromFormat('Y-m-d', $str);
 	}
 
@@ -59,7 +59,11 @@ class DateProperty extends \Asgard\Entity\Property {
 			#attempt to create date object
 			try {
 				return \Asgard\Common\Date::createFromFormat('Y-m-d', $val);
-			} catch(\Exception $e) {}
+			} catch(\Exception $e) {
+				try {
+					return \Asgard\Common\Date::createFromFormat('d/m/Y', $val);
+				} catch(\Exception $e) {}
+			}
 		}
 		return $val;
 	}

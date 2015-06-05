@@ -365,6 +365,10 @@ class Validator implements ValidatorInterface {
 		return $this;
 	}
 
+	public function getParent() {
+		return $this->parent;
+	}
+
 	/**
 	 * {@inheritDoc}
 	 */
