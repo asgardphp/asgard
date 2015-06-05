@@ -6,7 +6,7 @@ namespace Asgard\Cache;
  * @author Michel Hognerud <michel@hognerud.com>
  * @api
  */
-class Cache implements CacheInterface {
+class Cache implements CacheInterface, \Doctrine\Common\Cache\ClearableCache {
 	/**
 	 * Cache driver.
 	 * @var \Doctrine\Common\Cache\Cache
@@ -41,6 +41,13 @@ class Cache implements CacheInterface {
 	 */
 	public function setDriver(\Doctrine\Common\Cache\Cache $driver) {
 		$this->driver = $driver;
+	}
+
+	public function deleteAll() {
+		if(method_exists($this->driver, 'deleteAll'))
+			return $this->driver->deleteAll();
+		else
+			return false;
 	}
 
 	/**
