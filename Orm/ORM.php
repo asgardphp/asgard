@@ -230,6 +230,16 @@ class ORM implements ORMInterface {
 	}
 
 	/**
+	 * Load an entity.
+	 * @param  integer $id
+	 * @return \Asgard\Entity\Entity
+	 */
+	public function load($id) {
+		$clone = clone $this;
+		return $clone->where(['id' => $id])->first();
+	}
+
+	/**
 	 * {@inheritDoc}
 	*/
 	public function reverse() {

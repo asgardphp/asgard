@@ -2,6 +2,33 @@
 namespace Asgard\Orm\Tests;
 
 class ORMTest extends \PHPUnit_Framework_TestCase {
+	public function testLoad() {
+		$em = new \Asgard\Entity\EntityManager;
+		$dataMapper = new \Asgard\Orm\DataMapper(new \Asgard\Db\DB([
+			'driver' => 'sqlite',
+			'database' => ':memory:',
+		]), $em);
+		(new \Asgard\Orm\ORMMigrations($dataMapper))->autoMigrate([
+			$em->get('Asgard\Orm\Tests\Fixtures\ORM\A'),
+			$em->get('Asgard\Orm\Tests\Fixtures\ORM\B'),
+		]);
+
+		#Fixtures
+		$dataMapper->create('Asgard\Orm\Tests\Fixtures\ORM\A', [
+			'id' => 1,
+			'name' => 'foo',
+			'b' =>  $dataMapper->create('Asgard\Orm\Tests\Fixtures\ORM\B', [
+				'id' => 1,
+				'name' => 'bar',
+			])
+		]);
+
+		$a = $dataMapper->load('Asgard\Orm\Tests\Fixtures\ORM\A', 1);
+		$b = $dataMapper->related($a, 'b')->load(1);
+		
+		$this->assertInstanceOf('Asgard\Orm\Tests\Fixtures\ORM\B', $b);
+	}
+
 	public function testNamesConflict() {
 		$em = new \Asgard\Entity\EntityManager;
 		$dataMapper = new \Asgard\Orm\DataMapper(new \Asgard\Db\DB([
