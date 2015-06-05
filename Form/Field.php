@@ -47,6 +47,8 @@ abstract class Field {
 	 * @param array $options
 	 */
 	public function __construct(array $options=[]) {
+		if(!isset($options['trim']))
+			$options['trim'] = true;
 		$this->setoptions($options);
 	}
 
@@ -214,6 +216,9 @@ abstract class Field {
 	 * @param mixed $value
 	 */
 	public function setValue($value) {
+		if(is_string($value) && $this->getOption('trim'))
+			$value = trim($value);
+
 		$this->value = $value;
 	}
 
