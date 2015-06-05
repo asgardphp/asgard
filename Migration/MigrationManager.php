@@ -156,7 +156,7 @@ class '.$name.' extends '.$class.' {
 	 * {@inheritDoc}
 	 */
 	public function reset() {
-		foreach($this->tracker->getUpList() as $migrationName=>$params) {
+		foreach(array_reverse($this->tracker->getUpList()) as $migrationName=>$params) {
 			if($this->unmigrate($migrationName) === false)
 				return false;
 		}
