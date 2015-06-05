@@ -77,6 +77,9 @@ class CurlConverter {
 	}
 
 	public function convert($curl) {
+		$curl = str_replace('"%"', '%', $curl);
+		$curl = urldecode($curl);
+
 		$_url = $this->match('/curl "(.*?)(?<!%)"/', $curl);
 		$p = parse_url($_url);
 		$url = trim($p['path'].(isset($p['query']) ? '?'.$p['query']:''), '/');
