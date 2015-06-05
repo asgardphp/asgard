@@ -185,12 +185,6 @@ class DataMapper implements DataMapperInterface {
 	 */
 	public function prepareValidator($entity, $validator) {
 		$validator->set('dataMapper', $this);
-		foreach($entity->getDefinition()->properties() as $name=>$property) {
-			if($rules = $property->get('ormValidation')) {
-				$validator->attribute($name)->ruleMessages($property->getMessages());
-				$validator->attribute($name, $rules);
-			}
-		}
 	}
 
 	/**
@@ -199,10 +193,6 @@ class DataMapper implements DataMapperInterface {
 	public function valid(\Asgard\Entity\Entity $entity, $groups=[]) {
 		$data = $entity->toArrayRaw();
 		$validator = $this->getValidator($entity);
-		foreach($this->relations($entity->getDefinition()) as $name=>$relation) {
-			$data[$name] = $this->related($entity, $name);
-			$validator->attribute($name, $relation->getRules());
-		}
 		return $entity->getDefinition()->trigger('validation', [$entity, $validator, $groups, &$data], function($chain, $entity, $validator, $groups, &$data) {
 			return $validator->valid($data, $groups);
 		});
@@ -240,6 +230,7 @@ class DataMapper implements DataMapperInterface {
 	public function errors(\Asgard\Entity\Entity $entity, $groups=[]) {
 		$data = $entity->toArrayRaw();
 		$validator = $this->getValidator($entity);
+
 		$errors = $entity->getDefinition()->trigger('validation', [$entity, $validator, $groups, &$data], function($chain, $entity, $validator, $groups, &$data) {
 			return $validator->errors($data, $groups);
 		});
