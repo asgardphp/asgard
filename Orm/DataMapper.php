@@ -193,9 +193,8 @@ class DataMapper implements DataMapperInterface {
 	public function valid(\Asgard\Entity\Entity $entity, $groups=[]) {
 		$data = $entity->toArrayRaw();
 		$validator = $this->getValidator($entity);
-		return $entity->getDefinition()->trigger('validation', [$entity, $validator, $groups, &$data], function($chain, $entity, $validator, $groups, &$data) {
-			return $validator->valid($data, $groups);
-		});
+
+		return $validator->valid($data, $groups);
 	}
 
 	/**
@@ -231,9 +230,7 @@ class DataMapper implements DataMapperInterface {
 		$data = $entity->toArrayRaw();
 		$validator = $this->getValidator($entity);
 
-		$errors = $entity->getDefinition()->trigger('validation', [$entity, $validator, $groups, &$data], function($chain, $entity, $validator, $groups, &$data) {
-			return $validator->errors($data, $groups);
-		});
+		$errors = $validator->errors($data, $groups);
 
 		$e = [];
 		foreach($data as $property=>$value) {

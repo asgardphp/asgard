@@ -74,10 +74,8 @@ class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\Pers
 	 * @param  \Asgard\Hook\Chain                    $chain
 	 * @param  \Asgard\Entity\Entity                 $entity
 	 * @param  \Asgard\Validation\ValidatorInterface $validator
-	 * @param  array|null                            $groups
-	 * @param  array                                 $data
 	 */
-	public function hookValidation(\Asgard\Hook\Chain $chain, \Asgard\Entity\Entity $entity, \Asgard\Validation\ValidatorInterface $validator, $groups, array &$data) {
+	public function hookValidation(\Asgard\Hook\Chain $chain, \Asgard\Entity\Entity $entity, \Asgard\Validation\ValidatorInterface $validator) {
 		$this->getDataMapper()->prepareValidator($entity, $validator);
 	}
 

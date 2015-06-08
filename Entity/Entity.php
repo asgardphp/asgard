@@ -204,38 +204,26 @@ abstract class Entity {
 	 * @return \Asgard\Validation\ValidatorInterface
 	 */
 	public function prepareValidator(\Asgard\Validation\ValidatorInterface $validator, array $locales=[]) {
-		$messages = [];
+		$this->getDefinition()->trigger('validation', [$this, $validator], function($chain, $entity, $validator) use($locales) {
+			$messages = [];
 
-		foreach($this->getDefinition()->properties() as $name=>$property) {
-			if($locales && $property->get('i18n')) {
-				foreach($locales as $locale) {
-					if($property->get('many')) {
-						if($this->get($name, null, false) instanceof ManyCollection) {
-							foreach($this->get($name, null, false) as $k=>$v) {
-								$propValidator = $validator->attribute($name.'.'.$locale.'.'.$k);
-								$property->prepareValidator($propValidator);
-								$propValidator->formatParameters(function(&$params) use($name) {
-									$params['attribute'] = $name;
-								});
-								$propValidator->ruleMessages($property->getMessages());
+			foreach($this->getDefinition()->properties() as $name=>$property) {
+				if($locales && $property->get('i18n')) {
+					foreach($locales as $locale) {
+						if($property->get('many')) {
+							if($this->get($name, null, false) instanceof ManyCollection) {
+								foreach($this->get($name, null, false) as $k=>$v) {
+									$propValidator = $validator->attribute($name.'.'.$locale.'.'.$k);
+									$property->prepareValidator($propValidator);
+									$propValidator->formatParameters(function(&$params) use($name) {
+										$params['attribute'] = $name;
+									});
+									$propValidator->ruleMessages($property->getMessages());
+								}
 							}
 						}
-					}
-					else {
-						$propValidator = $validator->attribute($name.'.'.$locale);
-						$property->prepareValidator($propValidator);
-						$propValidator->formatParameters(function(&$params) use($name) {
-							$params['attribute'] = $name;
-						});
-						$propValidator->ruleMessages($property->getMessages());
-					}
-				}
-			}
-			else {
-				if($property->get('many')) {
-					if($this->get($name, null, false) instanceof ManyCollection) {
-						foreach($this->get($name, null, false) as $k=>$v) {
-							$propValidator = $validator->attribute($name.'.'.$k);
+						else {
+							$propValidator = $validator->attribute($name.'.'.$locale);
 							$property->prepareValidator($propValidator);
 							$propValidator->formatParameters(function(&$params) use($name) {
 								$params['attribute'] = $name;
@@ -245,17 +233,31 @@ abstract class Entity {
 					}
 				}
 				else {
-					$propValidator = $validator->attribute($name);
-					$property->prepareValidator($propValidator);
-					$propValidator->ruleMessages($property->getMessages());
+					if($property->get('many')) {
+						if($this->get($name, null, false) instanceof ManyCollection) {
+							foreach($this->get($name, null, false) as $k=>$v) {
+								$propValidator = $validator->attribute($name.'.'.$k);
+								$property->prepareValidator($propValidator);
+								$propValidator->formatParameters(function(&$params) use($name) {
+									$params['attribute'] = $name;
+								});
+								$propValidator->ruleMessages($property->getMessages());
+							}
+						}
+					}
+					else {
+						$propValidator = $validator->attribute($name);
+						$property->prepareValidator($propValidator);
+						$propValidator->ruleMessages($property->getMessages());
+					}
 				}
 			}
-		}
 
-		$messages = array_merge($messages, $this->getDefinition()->messages());
-		$validator->attributesMessages($messages);
+			$messages = array_merge($messages, $this->getDefinition()->messages());
+			$validator->attributesMessages($messages);
 
-		$validator->set('entity', $this);
+			$validator->set('entity', $this);
+		});
 
 		return $validator;
 	}
@@ -594,9 +596,7 @@ abstract class Entity {
 			$locales = $this->getLocales();
 		$data = $this->toArrayRawI18N($locales);
 		$validator = $this->getValidator($locales);
-		return $this->getDefinition()->trigger('validation', [$this, $validator, $groups, &$data], function($chain, $entity, $validator, $groups, &$data) {
-			return $validator->valid($data, $groups);
-		});
+		return $validator->valid($data, $groups);
 	}
 
 	/**
@@ -610,9 +610,7 @@ abstract class Entity {
 			$locales = $this->getLocales();
 		$data = $this->toArrayRawI18N($locales);
 		$validator = $this->getValidator($locales);
-		$errors = $this->getDefinition()->trigger('validation', [$this, $validator, $groups, &$data], function($chain, $entity, $validator, $groups, &$data) {
-			return $validator->errors($data, $groups);
-		});
+		$errors = $validator->errors($data, $groups);
 
 		$e = [];
 		foreach($data as $property=>$value) {
