@@ -19,8 +19,8 @@ class ExportYamlCommand extends \Asgard\Console\Command {
 	 */
 	protected $description = 'Export new translations to a YAML file.';
 	/**
-	 * Translator dependency.
-	 * @var \Symfony\Component\Translation\TranslatorInterface
+	 * Translation dependency.
+	 * @var \Asgard\Translation\Translation
 	 */
 	protected $translator;
 	/**
@@ -28,15 +28,9 @@ class ExportYamlCommand extends \Asgard\Console\Command {
 	 * @var array
 	 */
 	protected $directories;
-	/**
-	 * Translation resources.
-	 * @var \Asgard\Core\translationResources
-	 */
-	protected $translationResources;
 
-	public function __construct(\Asgard\Core\TranslationResources $translationResources, \Symfony\Component\Translation\TranslatorInterface $translator, $directories=null) {
-		$this->translationResources = $translationResources;
-		$this->translator = $translator;
+	public function __construct(\Asgard\Translation\Translation $translation, $directories=null) {
+		$this->translation = $translation;
 		if(!is_array($directories))
 			$directories = [$directories];
 		$this->directories = $directories;
@@ -51,25 +45,10 @@ class ExportYamlCommand extends \Asgard\Console\Command {
 		$dstLocale = $this->input->getArgument('dstLocale');
 		$file = $this->input->getArgument('file');
 
-		$translations = [];
-		$container = $this->getContainer();
-		$yaml = new \Symfony\Component\Yaml\Parser;
+		$this->translation->load($srcLocale);
+		$this->translation->load($dstLocale);
 
-		$translator = $this->translator;
-		$translator->addLoader('array', new \Symfony\Component\Translation\Loader\ArrayLoader);
-
-		$translationResources = $this->translationResources;
-
-		$srcFiles = $translationResources->getFiles($srcLocale);
-		$dstFiles = $translationResources->getFiles($dstLocale);
-
-		foreach($srcFiles as $file) {
-			$_translations = $yaml->parse(file_get_contents($file));
-			$translations = array_merge($translations, $_translations);
-			$translator->addResource('array', $_translations, $srcLocale);
-		}
-		foreach($dstFiles as $file)
-			$translator->addResource('yaml', $file, $dstLocale);
+		$translations = $this->translation->getTranslator()->getCatalogue($srcLocale)->all('messages');
 
 		$e = new \Asgard\Translation\Extractor;
 		$e->addStrings(array_keys($translations));
@@ -77,7 +56,7 @@ class ExportYamlCommand extends \Asgard\Console\Command {
 		foreach($this->directories as $dir)
 			$e->parseDirectory($dir);
 
-		$res = $e->getList($this->translator, $dstLocale);
+		$res = $e->getList($this->translation->getTranslator(), $dstLocale);
 
 		if(!$res)
 			$this->comment('No translations to export.');

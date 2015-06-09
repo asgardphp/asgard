@@ -20,7 +20,7 @@ class ExportCsvCommand extends \Asgard\Console\Command {
 	protected $description = 'Export new translations to a CSV file.';
 	/**
 	 * Translator dependency.
-	 * @var \Symfony\Component\Translation\TranslatorInterface
+	 * @var \Asgard\Translation\Translation
 	 */
 	protected $translator;
 	/**
@@ -28,15 +28,9 @@ class ExportCsvCommand extends \Asgard\Console\Command {
 	 * @var array
 	 */
 	protected $directories;
-	/**
-	 * Translation resources.
-	 * @var \Asgard\Core\translationResources
-	 */
-	protected $translationResources;
 
-	public function __construct(\Asgard\Core\TranslationResources $translationResources, \Symfony\Component\Translation\TranslatorInterface $translator, $directories=null) {
-		$this->translationResources = $translationResources;
-		$this->translator = $translator;
+	public function __construct(\Asgard\Translation\Translation $translation, $directories=null) {
+		$this->translation = $translation;
 		if(!is_array($directories))
 			$directories = [$directories];
 		$this->directories = $directories;
@@ -53,23 +47,11 @@ class ExportCsvCommand extends \Asgard\Console\Command {
 
 		$translations = [];
 		$container = $this->getContainer();
-		$yaml = new \Symfony\Component\Yaml\Parser;
 
-		$translator = $this->translator;
-		$translator->addLoader('array', new \Symfony\Component\Translation\Loader\ArrayLoader);
+		$this->translation->load($srcLocale);
+		$this->translation->load($dstLocale);
 
-		$translationResources = $this->translationResources;
-
-		$srcFiles = $translationResources->getFiles($srcLocale);
-		$dstFiles = $translationResources->getFiles($dstLocale);
-
-		foreach($srcFiles as $file) {
-			$_translations = $yaml->parse(file_get_contents($file));
-			$translations = array_merge($translations, $_translations);
-			$translator->addResource('array', $_translations, $srcLocale);
-		}
-		foreach($dstFiles as $file)
-			$translator->addResource('yaml', $file, $dstLocale);
+		$translations = $this->translation->getTranslator()->getCatalogue($srcLocale)->all('messages');
 
 		$e = new \Asgard\Translation\Extractor;
 		$e->addStrings(array_keys($translations));
@@ -77,7 +59,7 @@ class ExportCsvCommand extends \Asgard\Console\Command {
 		foreach($this->directories as $dir)
 			$e->parseDirectory($dir);
 
-		$res = $e->getListWithTranslation($this->translator, $srcLocale, $dstLocale);
+		$res = $e->getListWithTranslation($this->translation->getTranslator(), $srcLocale, $dstLocale);
 
 		if(!$res)
 			$this->comment('No translations to export.');
