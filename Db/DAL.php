@@ -627,6 +627,17 @@ class DAL implements \Iterator {
 		if($brackets && count($params) > 1)
 			$result = '('.$result.')';
 
+		#prepare mulltiple parameters in arrays
+		$result = preg_replace_callback('/\?/', function($a) use($pdoparams) {
+			static $i=0;
+			if(is_array($pdoparams[$i]))
+				return implode(',', array_fill(0, count($pdoparams[$i++]), '?'));
+			else {
+				$i++;
+				return '?';
+			}
+		}, $result);
+
 		$pdoparams = \Asgard\Common\ArrayUtils::flatten($pdoparams);
 
 		return [$result, $pdoparams];
