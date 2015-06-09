@@ -107,7 +107,7 @@ class FormTest extends \PHPUnit_Framework_TestCase {
 					'required' => 'Content is required.'
 				]
 			]
-		], $form->errors());
+		], $form->errors()->errors());
 		$this->assertFalse($form->isValid());
 		$form->csrf();
 		$this->assertEquals([
@@ -119,7 +119,7 @@ class FormTest extends \PHPUnit_Framework_TestCase {
 			'_csrf_token' => [
 				'required' => 'CSRF token is invalid.'
 			]
-		], $form->errors());
+		], $form->errors()->errors());
 
 		$this->assertEquals([
 			'_csrf_token' => [

@@ -382,7 +382,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 					'required' => 'Title is required.'
 				]
 			],
-			$news->errors()
+			$news->errors()->errors()
 		);
 
 		#set/get

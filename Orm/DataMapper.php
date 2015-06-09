@@ -184,7 +184,17 @@ class DataMapper implements DataMapperInterface {
 	 * {@inheritDoc}
 	 */
 	public function prepareValidator($entity, $validator) {
+		if($validator->get('datamapper_prepared'))
+			return;
+
+		$validator->set('datamapper_prepared', true);
 		$validator->set('dataMapper', $this);
+		foreach($entity->getDefinition()->properties() as $name=>$property) {
+			if($rules = $property->get('ormValidation'))
+				$validator->attribute($name, $rules);
+			if($this->hasRelation($entity->getDefinition(), $name))
+				$validator->attribute($name)->isNull(function(){return false;});
+		}
 	}
 
 	/**
@@ -206,21 +216,17 @@ class DataMapper implements DataMapperInterface {
 	public function relationsErrors(\Asgard\Entity\Entity $entity, $groups=[]) {
 		$data = [];
 		$validator = $this->createValidator($entity);
+		$validator->set('entity', $entity);
+		$validator->set('dataMapper', $this);
 		foreach($this->relations($entity->getDefinition()) as $name=>$relation) {
-			$data[$name] = $this->related($entity, $name);
+			$data[$name] = $entity->get($name, null, false);
 			$relation->prepareValidator($validator->attribute($name));
 			$property = $entity->getDefinition()->property($name);
 			$validator->attribute($name)->ruleMessages($property->getMessages());
-		}
-		$errors = $validator->errors($data, $groups);
-
-		$e = [];
-		foreach($data as $property=>$value) {
-			if($propertyErrors = $errors->attribute($property)->errors())
-				$e[$property] = $propertyErrors;
+			$validator->attribute($name)->isNull(function(){return false;});
 		}
 
-		return $e;
+		return $validator->errors($data, $groups);
 	}
 
 	/**
@@ -230,15 +236,7 @@ class DataMapper implements DataMapperInterface {
 		$data = $entity->toArrayRaw();
 		$validator = $this->getValidator($entity);
 
-		$errors = $validator->errors($data, $groups);
-
-		$e = [];
-		foreach($data as $property=>$value) {
-			if($propertyErrors = $errors->attribute($property)->errors())
-				$e[$property] = $propertyErrors;
-		}
-
-		return $e;
+		return $validator->errors($data, $groups);
 	}
 
 
@@ -250,9 +248,10 @@ class DataMapper implements DataMapperInterface {
 		if($values)
 			$entity->set($values);
 
-		if($groups!==null && $errors = $this->errors($entity, $groups)) {
-			$msg = implode("\n", \Asgard\Common\ArrayUtils::flatten($errors));
-			throw new EntityException($msg, $errors);
+		if($groups !== null) {
+			$errors = $this->errors($entity, $groups);
+			if(!$errors->valid())
+				throw new \Asgard\Entity\EntityException((string)$errors, $errors);
 		}
 
 		$entity->getDefinition()->trigger('save', [$entity], function(\Asgard\Hook\Chain $chain, $entity) use($groups) {

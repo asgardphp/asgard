@@ -66,12 +66,14 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 		$this->assertTrue($post->valid());
 		$this->assertFalse($post->validI18N(['fr', 'en']));
 
-		$this->assertEquals([], $post->errors());
+		$this->assertEquals([], $post->errors()->errors());
 		$this->assertEquals([
 			'title' => [
-				'fr' => 'Title is too short.'
+				'fr' => [
+					'minlength' => 'Title is too short.'
+				]
 			]
-		], $post->errorsI18N(['fr', 'en']));
+		], $post->errorsI18N(['fr', 'en'])->errors());
 	}
 
 	public function testMultiple() {
@@ -130,11 +132,15 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 		$this->assertTrue($post->valid());
 		$this->assertFalse($post->validI18N(['fr', 'en']));
 
-		$this->assertEquals([], $post->errors());
+		$this->assertEquals([], $post->errors()->errors());
 		$this->assertEquals([
 			'titles' => [
-				'fr' => 'Fr is not valid.'
+				'fr' => [
+					0 => [
+						'minlength' => 'Titles is too short.'
+					]
+				]
 			]
-		], $post->errorsI18N(['fr', 'en']));
+		], $post->errorsI18N(['fr', 'en'])->errors());
 	}
 }

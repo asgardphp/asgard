@@ -63,7 +63,7 @@ class Test extends \PHPUnit_Framework_TestCase {
 		try {
 			v::min(5)->assert(3);
 		} catch(\Asgard\Validation\ValidatorException $e) {
-			$this->assertEquals('"3" must be greater than 5.', $e->errors()->first());
+			$this->assertEquals('"3" must be greater than 5.', $e->report()->first());
 		}
 
 		$this->assertFalse(v::callback(function($input) { return $input >= 5; })->valid(3));

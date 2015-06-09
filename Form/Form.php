@@ -189,9 +189,10 @@ class Form extends Group implements FormInterface {
 	 * {@inheritDoc}
 	 */
 	public function save($validationGroups=[]) {
-		if($errors = $this->errors($validationGroups)) {
+		$errors = $this->errors($validationGroups);
+		if(!$errors->valid()) {
 			$e = new FormException;
-			$e->errors = $errors;
+			$e->setReport($errors);
 			throw $e;
 		}
 		if(!$this->sent())
@@ -252,10 +253,10 @@ class Form extends Group implements FormInterface {
 	public function getGeneralErrors() {
 		if(!$this->errors)
 			return;
-		$gen_errors = [];
-		foreach($this->errors as $field_name=>$errors) {
+		$gen_errors = $this->errors->getRulesErrors();
+		foreach($this->errors->attributes() as $field_name=>$errors) {
 			if(!$this->has($field_name) || $this->get($field_name) instanceof Fields\HiddenField)
-				$gen_errors[$field_name] = $errors;
+				$gen_errors[$field_name] = $errors->errors();
 		}
 		return $gen_errors;
 	}
@@ -264,7 +265,7 @@ class Form extends Group implements FormInterface {
 	 * {@inheritDoc}
 	 */
 	public function isValid($validationGroups=[]) {
-		return $this->sent() && !$this->errors($validationGroups);
+		return $this->sent() && $this->errors($validationGroups)->valid();
 	}
 
 	/**

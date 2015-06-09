@@ -278,9 +278,9 @@ abstract class Field {
 
 	/**
 	 * Set the errors.
-	 * @param array $errors
+	 * @param \Asgard\Validation\Report $errors
 	 */
-	public function setErrors(array $errors) {
+	public function setErrors(\Asgard\Validation\Report $errors) {
 		$this->errors = $errors;
 	}
 
@@ -289,8 +289,8 @@ abstract class Field {
 	 * @return string
 	 */
 	public function error() {
-		if(isset(array_values($this->errors)[0]))
-			return array_values($this->errors)[0];
+		if($this->errors)
+			return $this->errors->first();
 	}
 
 	/**

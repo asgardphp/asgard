@@ -417,7 +417,10 @@ class Validator implements ValidatorInterface {
 	 */
 	protected function checkIsNull($input) {
 		$isNull = $this->isNull;
-		return $input === null || $input === '' || ($isNull && $isNull($input));
+		if($isNull)
+			return $isNull($input);
+		else
+			return $input === null || $input === '';
 	}
 
 	/**
@@ -669,7 +672,7 @@ class Validator implements ValidatorInterface {
 	public function get($key) {
 		if(!isset($this->params[$key])) {
 			if(!$this->parent)
-				throw new \Exception('Parameter '.$key.' does not exist.');
+				return;
 			return $this->parent->get($key);
 		}
 		return $this->params[$key];

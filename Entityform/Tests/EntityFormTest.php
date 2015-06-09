@@ -20,6 +20,8 @@ class EntityFormTest extends \PHPUnit_Framework_TestCase {
 			$em->get('Asgard\Entityform\Tests\Entities\Comment')
 		]);
 
+		$a = $em->make('Asgard\Entityform\Tests\Entities\Comment', ['id'=>1, 'content'=>'Foo']);
+
 		$dataMapper->save($em->make('Asgard\Entityform\Tests\Entities\Comment', ['id'=>1, 'content'=>'Foo']));
 		$dataMapper->save($em->make('Asgard\Entityform\Tests\Entities\Comment', ['id'=>2, 'content'=>'Bar']));
 		$dataMapper->save($thirdComment = $em->make('Asgard\Entityform\Tests\Entities\Comment', ['id'=>3, 'content'=>'Zoo']));

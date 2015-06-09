@@ -83,7 +83,7 @@ interface GroupInterface extends \ArrayAccess, \Iterator {
 
 	/**
 	 * Return errors.
-	 * @return array
+	 * @return \Asgard\Validation\Report
 	 */
 	public function errors();
 

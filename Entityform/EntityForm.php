@@ -272,6 +272,9 @@ class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 		else
 			$this->entity->set($data);
 
-		return array_merge(parent::myErrors($validationGroups), $this->entity->errors($validationGroups));
+		$report = parent::myErrors($validationGroups);
+		$report->merge($this->entity->errors($validationGroups));
+
+		return $report;
 	}
 }

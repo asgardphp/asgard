@@ -75,11 +75,13 @@ class FilePropertyTest extends \PHPUnit_Framework_TestCase {
 
 		$this->assertEquals([
 			'files' => [
-				1 => 'The file files must have one of the following extension: pdf, doc, jpg, jpeg, png, docx, gif, rtf, ppt, xls, zip, txt.',
+				1 => [
+					'extension' => 'The file files must have one of the following extension: pdf, doc, jpg, jpeg, png, docx, gif, rtf, ppt, xls, zip, txt.',
+				]
 			],
 			'file' => [
 				'extension' => 'The file file must have one of the following extension: pdf, doc, jpg, jpeg, png, docx, gif, rtf, ppt, xls, zip, txt.',
 			]
-		], $ent->errors());
+		], $ent->errors()->errors());
 	}
 }

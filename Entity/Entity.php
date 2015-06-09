@@ -278,22 +278,16 @@ abstract class Entity {
 	/**
 	 * Return entity errors.
 	 * @param  array|string|null $groups validation groups
-	 * @return array
+	 * @return \Asgard\Validation\Report
 	 */
 	public function errors($groups=[]) {
 		$data = $this->toArrayRaw();
 		$validator = $this->getValidator();
-		$errors = $this->getDefinition()->trigger('validation', [$this, $validator, $groups, &$data], function($chain, $entity, $validator, $groups, &$data) {
+		$report = $this->getDefinition()->trigger('validation', [$this, $validator, $groups, &$data], function($chain, $entity, $validator, $groups, &$data) {
 			return $validator->errors($data, $groups);
 		});
 
-		$e = [];
-		foreach($data as $property=>$value) {
-			if($propertyErrors = $errors->attribute($property)->errors(null, $groups))
-				$e[$property] = $propertyErrors;
-		}
-
-		return $e;
+		return $report;
 	}
 
 	/**
@@ -610,15 +604,8 @@ abstract class Entity {
 			$locales = $this->getLocales();
 		$data = $this->toArrayRawI18N($locales);
 		$validator = $this->getValidator($locales);
-		$errors = $validator->errors($data, $groups);
 
-		$e = [];
-		foreach($data as $property=>$value) {
-			if($propertyErrors = $errors->attribute($property)->errors(null, $groups))
-				$e[$property] = $propertyErrors;
-		}
-
-		return $e;
+		return $validator->errors($data, $groups);
 	}
 
 	public function getchanged() {

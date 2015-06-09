@@ -33,9 +33,9 @@ class Group implements GroupInterface {
 	public $fields = [];
 	/**
 	 * Errors.
-	 * @var array
+	 * @var \Asgard\Validation\Report
 	 */
-	protected $errors = [];
+	protected $errors;
 	/**
 	 * Has file flag.
 	 * @var boolean
@@ -180,21 +180,19 @@ class Group implements GroupInterface {
 		if(!$this->sent())
 			return [];
 
-		$errors = [];
+		$errors = $this->myErrors($validationGroups=[]);
 
 		foreach($this->fields as $name=>$field) {
 			if($field instanceof self) {
-				$errors[$name] = $field->errors($validationGroups=[]);
-				if(count($errors[$name]) === 0)
-					unset($errors[$name]);
+				$fieldErrors = $field->errors($validationGroups);
+				if(count($fieldErrors) > 0)
+					$errors->attribute($name, $fieldErrors);
 			}
 		}
 
-		$this->errors = $errors + $this->myErrors($validationGroups=[]);
+		$this->setErrors($errors);
 
-		$this->setErrors($this->errors);
-
-		return $this->errors;
+		return $this->errors = $errors;
 	}
 
 	/**
@@ -435,12 +433,12 @@ class Group implements GroupInterface {
 
 	/**
 	 * Set errors.
-	 * @param array $errors
+	 * @param \Asgard\Validation\Report $errors
 	 */
-	protected function setErrors(array $errors) {
-		foreach($errors as $name=>$error) {
+	protected function setErrors(\Asgard\Validation\Report $errors) {
+		foreach($errors->attributes() as $name=>$_errors) {
 			if(isset($this->fields[$name]))
-				$this->fields[$name]->setErrors($error);
+				$this->fields[$name]->setErrors($_errors);
 		}
 	}
 
@@ -533,34 +531,33 @@ class Group implements GroupInterface {
 
 		$report = $this->getValidator()->errors($data, $validationGroups);
 
-		$errors = [];
 		foreach($this->fields as $name=>$field) {
 			if($field instanceof Fields\FileField && isset($this->data[$name])) {
 				$f = $this->data[$name];
 				switch($f->error()) {
 					case UPLOAD_ERR_INI_SIZE:
-						$errors[$name][] = $this->getTranslator()->trans('The uploaded file exceeds the max filesize.');
+						$report->attribute($name)['_upload'] = $this->getTranslator()->trans('The uploaded file exceeds the max filesize.');
 						break;
 					case UPLOAD_ERR_FORM_SIZE:
-						$errors[$name][] = $this->getTranslator()->trans('The uploaded file exceeds the max filesize.');
+						$report->attribute($name)['_upload'] = $this->getTranslator()->trans('The uploaded file exceeds the max filesize.');
 						break;
 					case UPLOAD_ERR_PARTIAL:
-						$errors[$name][] = $this->getTranslator()->trans('The uploaded file was only partially uploaded.');
+						$report->attribute($name)['_upload'] = $this->getTranslator()->trans('The uploaded file was only partially uploaded.');
 						break;
 					case UPLOAD_ERR_NO_TMP_DIR:
-						$errors[$name][] = $this->getTranslator()->trans('Missing a temporary folder.');
+						$report->attribute($name)['_upload'] = $this->getTranslator()->trans('Missing a temporary folder.');
 						break;
 					case UPLOAD_ERR_CANT_WRITE:
-						$errors[$name][] = $this->getTranslator()->trans('Failed to write file to disk.');
+						$report->attribute($name)['_upload'] = $this->getTranslator()->trans('Failed to write file to disk.');
 						break;
 					case UPLOAD_ERR_EXTENSION:
-						$errors[$name][] = $this->getTranslator()->trans('A PHP extension stopped the file upload.');
+						$report->attribute($name)['_upload'] = $this->getTranslator()->trans('A PHP extension stopped the file upload.');
 						break;
 				}
 			}
 		}
 
-		return array_merge($errors, $this->getReportErrors($report));
+		return $report;
 	}
 
 	/**

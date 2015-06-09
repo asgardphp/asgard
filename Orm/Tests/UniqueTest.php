@@ -30,14 +30,14 @@ class UniqueTest extends \PHPUnit_Framework_TestCase {
 		$test->name = 'unique name';
 		$this->assertEquals(
 			[],
-			$dataMapper->errors($test)
+			$dataMapper->errors($test)->errors()
 		);
 
 		$test->name = 'not unique name';
 		$this->assertEquals([
 				'name' => ['unique' => 'Name must be unique.']
 			],
-			$dataMapper->errors($test)
+			$dataMapper->errors($test)->errors()
 		);
 	}
 }

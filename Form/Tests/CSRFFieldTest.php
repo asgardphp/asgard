@@ -15,6 +15,6 @@ class CSRFFieldTest extends \PHPUnit_Framework_TestCase {
 		$this->assertRegExp('/<input type="hidden" name="field" value="(.*?)" id="field">/', (string)($form['field']->def()));
 		$this->assertEquals('test', $form['field']->value());
 
-		$this->assertEquals(['field'=>['callback'=>'CSRF token is invalid.']], $form->errors());
+		$this->assertEquals(['field'=>['callback'=>'CSRF token is invalid.']], $form->errors()->errors());
 	}
 }

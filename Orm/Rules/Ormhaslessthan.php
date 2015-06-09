@@ -24,7 +24,12 @@ class Ormhaslessthan extends \Asgard\Validation\Rule {
 	 * {@inheritDoc}
 	 */
 	public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\ValidatorInterface $validator) {
-		return $input->count() < $this->less;
+		$entity = $validator->get('entity');
+		$dataMapper = $validator->get('dataMapper');
+		$attr = $validator->getName();
+		$orm = $dataMapper->related($entity, $attr);
+
+		return $orm->count() < $this->less;
 	}
 
 	/**

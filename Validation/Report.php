@@ -5,7 +5,7 @@ namespace Asgard\Validation;
  * Errors container.
  * @author Michel Hognerud <michel@hognerud.com>
  */
-class Report {
+class Report implements \ArrayAccess, \Countable {
 	/**
 	 * The main error.
 	 * @var string
@@ -42,7 +42,9 @@ class Report {
 	 * @return string
 	 */
 	public function __toString() {
-		return $this->self;
+		if($this->self)
+			return (string)$this->self;
+		return (string)$this->first();
 	}
 
 	/**
@@ -63,10 +65,10 @@ class Report {
 	 * Return an array of rules and attributes errors.
 	 * @return array
 	 */
-	public function errors() {
+	public function errors($nested=true) {
 		$errors = $this->rules;
 		foreach($this->attributes as $attribute=>$report)
-			$errors[$attribute] = $report->error();
+			$errors[$attribute] = $nested ? $report->errors():$report->error();
 		return $errors;
 	}
 
@@ -145,5 +147,49 @@ class Report {
 	 */
 	public function hasError() {
 		return $this->rules || $this->attributes;
+	}
+
+	public function setRulesErrors(array $errors) {
+		$this->rules = $errors;
+	}
+
+	public function getRulesErrors() {
+		return $this->rules;
+	}
+
+	public function setSelf($error) {
+		$this->self = $error;
+	}
+
+	public function offsetSet($offset, $value) {
+		$this->rules[$offset] = $value;
+	}
+
+	public function offsetExists($offset) {
+		return isset($this->rules[$offset]);
+	}
+
+	public function offsetUnset($offset) {
+		unset($this->rules[$offset]);
+	}
+
+	public function offsetGet($offset) {
+		return isset($this->rules[$offset]) ? $this->rules[$offset] : $this->attribute($offset);
+	}
+
+	public function count() {
+		return count($this->rules) + count($this->attributes);
+	}
+
+	public function valid() {
+		return $this->count() === 0;
+	}
+
+	public function merge(Report $report) {
+		$this->rules = array_merge($this->rules, $report->getRulesErrors());
+		foreach($report->attributes() as $name=>$attr)
+			$this->attribute($name)->merge($attr);
+
+		return $this;
 	}
 }
