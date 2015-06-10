@@ -117,20 +117,18 @@ class CoverageCommand extends \Asgard\Console\Command {
 		elseif(is_array($element)) {
 			$class = $element['class'];
 			$reflection = new \ReflectionClass($class);
-			$file = $reflection->getFileName();
 
 			if(isset($element['className'])) {
 				$start = $reflection->getStartLine();
-				$end = $reflection->getEndLine();
+				$end   = $reflection->getEndLine();
 			}
 			elseif(isset($element['methodName'])) {
 				$start = $element['startLine'];
-				$end = $element['endLine'];
+				$end   = $element['endLine'];
 			}
 
-			if(isset($start)) {
+			if(isset($start) && isset($end))
 				$this->showCoverage($element['file'], $start-1, $end);
-			}
 		}
 	}
 

@@ -48,9 +48,9 @@ class GeneratorEngine implements GeneratorEngineInterface {
 
 	/**
 	 * Process a template file.
-	 * @param  string $_src
-	 * @param  string $_dst
-	 * @param  array $vars
+	 * @param string $src
+	 * @param string $dst
+	 * @param array  $vars
 	 */
 	public function processFile($src, $dst, $vars) {
 		if(!$this->overrideFiles && file_exists($dst))
@@ -116,13 +116,13 @@ class GeneratorEngine implements GeneratorEngineInterface {
 				$generator->preGenerate($bundle);
 		}
 
-		foreach($bundles as $bundle) {
+		foreach($bundles as $name=>$bundle) {
 			$dst = $this->appRoot.'/'.ucfirst(strtolower($name)).'/';
 			foreach($this->generators as $generator)
 				$generator->generate($bundle, $root, $dst);
 		}
 
-		foreach($bundles as $bundle) {
+		foreach($bundles as $name=>$bundle) {
 			$dst = $this->appRoot.'/'.ucfirst(strtolower($name)).'/';
 			foreach($this->generators as $generator)
 				$generator->postGenerate($bundle, $root, $dst);

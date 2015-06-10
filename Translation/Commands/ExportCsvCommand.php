@@ -22,7 +22,7 @@ class ExportCsvCommand extends \Asgard\Console\Command {
 	 * Translator dependency.
 	 * @var \Asgard\Translation\Translation
 	 */
-	protected $translator;
+	protected $translation;
 	/**
 	 * Directories to fetch translations from.
 	 * @var array
@@ -45,7 +45,6 @@ class ExportCsvCommand extends \Asgard\Console\Command {
 		$dstLocale = $this->input->getArgument('dstLocale');
 		$file = $this->input->getArgument('file');
 
-		$translations = [];
 		$container = $this->getContainer();
 
 		$this->translation->load($srcLocale);

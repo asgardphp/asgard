@@ -370,7 +370,7 @@ class ORMMigrations {
 			$res .= "\n		'scale' => ".$col->getScale().",";
 		if(in_array($type, ['decimal', 'float', 'double']) && $col->getPrecision())
 			$res .= "\n		'precision' => ".$col->getPrecision().",";
-		if($col->getLength())
+		if($col->getLength() !== null)
 			$res .= "\n		'length' => ".$col->getLength().",";
 		if($col->getFixed())
 			$res .= "\n		'length' => true,";

@@ -69,6 +69,13 @@ interface ValidatorInterface {
 	public function rule($rule, $params=[], $each=false);
 
 	/**
+	 * Set a isNull tester.
+	 * @param  callable $isNull
+	 * @return ValidatorInterface             $this
+	 */
+	public function isNull(callable $isNull);
+
+	/**
 	 * Get the translator.
 	 * @return \Symfony\Component\Translation\TranslatorInterface
 	 */

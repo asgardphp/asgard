@@ -236,9 +236,7 @@ class Resolver implements ResolverInterface {
 	}
 
 	/**
-	 * Get route for a given action.
-	 * @param  string|array $what controller and action
-	 * @return Route
+	 * {@inheritDoc}
 	 */
 	public function getRouteFor($what) {
 		#controller/action

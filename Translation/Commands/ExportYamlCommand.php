@@ -22,7 +22,7 @@ class ExportYamlCommand extends \Asgard\Console\Command {
 	 * Translation dependency.
 	 * @var \Asgard\Translation\Translation
 	 */
-	protected $translator;
+	protected $translation;
 	/**
 	 * Directories to fetch translations from.
 	 * @var array

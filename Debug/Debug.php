@@ -15,7 +15,7 @@ class Debug {
 	protected static $url;
 	/**
 	 * Output format.
-	 * @var boolean
+	 * @var string
 	 */
 	protected static $format;
 

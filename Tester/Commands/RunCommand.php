@@ -41,9 +41,12 @@ class RunCommand extends \Asgard\Console\Command {
 
 	/**
 	 * Constructor.
-	 * @param string $dir
+	 * @param \Asgard\Http\HttpKernelInterface            $httpKernel
+	 * @param \Asgard\Http\ResolverInterface              $resolver
+	 * @param \Asgard\Db\DBInterface                      $db
+	 * @param \Asgard\Migration\MigrationManagerInterface $mm
 	 */
-	public function __construct($httpKernel, $resolver, $db=null, $mm=null) {
+	public function __construct(\Asgard\Http\HttpKernel $httpKernel, \Asgard\Http\ResolverInterface $resolver, \Asgard\Db\DBInterface $db=null, \Asgard\Migration\MigrationManagerInterface $mm=null) {
 		$this->httpKernel = $httpKernel;
 		$this->resolver = $resolver;
 		$this->db = $db;

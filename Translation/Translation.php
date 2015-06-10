@@ -5,7 +5,7 @@ class Translation {
 	protected $translator;
 	protected $dirs = [];
 
-	public function __construct(\Symfony\Component\Translation\TranslatorInterface $translator) {
+	public function __construct(\Symfony\Component\Translation\Translator $translator) {
 		$this->translator = $translator;
 	}
 

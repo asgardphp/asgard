@@ -125,9 +125,9 @@ class Test extends \PHPUnit_Framework_TestCase {
 
 		#IsNull
 		$this->assertFalse(v::min(1)->valid(0));
-		$this->assertTrue(v::isNull(function($i) { return $i==0; })->min(1)->valid(0));
-		$this->assertTrue(v::isNull(function($i) { return $i==0; })->valid(0));
-		$this->assertFalse(v::isNull(function($i) { return $i==0; })->required()->valid(0));
+		$this->assertTrue((new v)->isNull(function($i) { return $i==0; })->min(1)->valid(0));
+		$this->assertTrue((new v)->isNull(function($i) { return $i==0; })->valid(0));
+		$this->assertFalse((new v)->isNull(function($i) { return $i==0; })->required()->valid(0));
 
 		#Rule all
 		$this->assertTrue(v::all(v::min(5), v::equal(6))->valid(6));

@@ -3,15 +3,15 @@ namespace Asgard\Tester;
 
 class CurlConverter {
 	protected function match($pattern, $str) {
-		preg_match($pattern, $str, $this->matches);
-		if(!isset($this->matches[1]))
+		preg_match($pattern, $str, $matches);
+		if(!isset($matches[1]))
 			return;
-		return $this->matches[1];
+		return $matches[1];
 	}
 
 	protected function matchMany($pattern, $str) {
-		preg_match_all($pattern, $str, $this->matches);
-		return $this->matches[1];
+		preg_match_all($pattern, $str, $matches);
+		return $matches[1];
 	}
 
 	protected function outputPHP($v, $tabs=0, $line=false) {
@@ -42,8 +42,8 @@ class CurlConverter {
 
 	protected function parse_raw_http_request($input, $contentType, array &$post, array &$files) {
 		// grab multipart boundary from content type header
-		preg_match('/boundary=(.*)$/', $contentType, $this->matches);
-		$boundary = $this->matches[1];
+		preg_match('/boundary=(.*)$/', $contentType, $matches);
+		$boundary = $matches[1];
 
 		// split content by boundary and get rid of last -- element
 		$a_blocks = preg_split("/-+$boundary/", $input);
@@ -54,15 +54,15 @@ class CurlConverter {
 			if (empty($block))
 				continue;
 
-			preg_match('/name=\"([^\"]*)\".*[\n|\r]+([^\n\r].*)?\r$/s', $block, $this->matches);
-			if(!isset($this->matches[2]))
-				$this->matches[2] = null;
+			preg_match('/name=\"([^\"]*)\".*[\n|\r]+([^\n\r].*)?\r$/s', $block, $matches);
+			if(!isset($matches[2]))
+				$matches[2] = null;
 			if(strpos($block, '; filename=') !== false) {
-				$name = $this->matches[1];
-				preg_match('/filename="(.*?)"/s', $block, $this->matches);
-				$filename = $this->matches[1];
-				preg_match('/Content-Type: (.*?)\n/s', $block, $this->matches);
-				$type = trim($this->matches[1]);
+				$name = $matches[1];
+				preg_match('/filename="(.*?)"/s', $block, $matches);
+				$filename = $matches[1];
+				preg_match('/Content-Type: (.*?)\n/s', $block, $matches);
+				$type = trim($matches[1]);
 				$files[$name] = [
 					'name' => $filename,
 					'type' => $type,
@@ -72,7 +72,7 @@ class CurlConverter {
 				];
 			}
 			else
-				$post[$this->matches[1]] = $this->matches[2];
+				$post[$matches[1]] = $matches[2];
 		}
 	}
 
@@ -116,13 +116,12 @@ class CurlConverter {
 			$body = preg_replace("/\"\^/", '', $body);
 			$body = str_replace('""', '"', $body);
 		}
-		$post = [];
 		$files = [];
 		parse_str($body, $post);
+		if($post === null)
+			$post = [];
 		if(!$post && isset($headers['Content-Type']))
 			$this->parse_raw_http_request($body, $headers['Content-Type'], $post, $files);
-		if($post || $files)
-			$body = '';
 		if($post)
 			$method = 'POST';
 		else

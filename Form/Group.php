@@ -178,7 +178,7 @@ class Group implements GroupInterface {
 	 */
 	public function errors($validationGroups=[]) {
 		if(!$this->sent())
-			return [];
+			return new \Asgard\Validation\Report;
 
 		$errors = $this->myErrors($validationGroups=[]);
 

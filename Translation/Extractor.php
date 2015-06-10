@@ -44,9 +44,10 @@ class Extractor {
 			$parser = new \PhpParser\Parser(new \PhpParser\Lexer);
 			
 			$stmts = $parser->parse($code);
-			foreach($stmts as $stmt) {
+			if($stmts === null)
+				return;
+			foreach($stmts as $stmt)
 				$this->ext($stmt);
-			}
 		} catch(\PhpParser\Error $e) {
 			echo 'Warning - Following file is invalid: '.$file."\n";
 		}

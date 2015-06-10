@@ -92,7 +92,7 @@ class Crawler {
 		return true;
 	}
 
-	public function getBase($root, $current, $doc) {
+	public function getBase($current, $doc) {
 		$base = $doc->item('base')->attr('href');
 		if(!$base) 
 			$base = $current;
@@ -156,8 +156,6 @@ class Crawler {
 	}
 
 	public function start() {
-		$i=0;
-
 		$host = $this->config->host;
 		$root = $this->config->root;
 		$_root = 'http://'.$host.'/'.$root;
@@ -204,7 +202,7 @@ class Crawler {
 			$content = $response->getContent();
 			$doc = new \H0gar\Xpath\Doc($content);
 
-			$base = $this->getBase($root, $request->url->full(), $doc);
+			$base = $this->getBase($request->url->full(), $doc);
 
 			#forms
 			foreach($doc->items('//form') as $f) {
@@ -220,7 +218,8 @@ class Crawler {
 				if(isset($p['query'])) {
 					$query = $p['query'];
 					parse_str($query, $get);
-					$r->get->set($get);
+					if($get !== null)
+						$r->get->set($get);
 				}
 
 				$r = $form->getRequest($r);
@@ -316,7 +315,7 @@ class Crawler {
 		foreach($res as $r)
 			$table->addRow($r);
 
-		$table->render($this->console->getOutput());
+		$table->render();
 	}
 
 	protected function analyseNode($node) {

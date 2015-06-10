@@ -70,7 +70,6 @@ class '.$name.' extends \Asgard\Http\Test {
 					$response = $test['response'];
 
 					$post = $request->post->all();
-					$get = $request->get->all();
 					$file = $request->file->all();
 					$session = $request->sessionAccessed;
 					$cookies = $request->cookiesAccessed;

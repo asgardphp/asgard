@@ -81,6 +81,13 @@ interface ResolverInterface {
 	public function getRoutes();
 
 	/**
+	 * Get route for a given action.
+	 * @param  string|array $what controller and action
+	 * @return Route
+	 */
+	public function getRouteFor($what);
+
+	/**
 	 * Return the url for a route or a controller/action couple.
 	 * @param  array|string  $what
 	 * @param  array         $params

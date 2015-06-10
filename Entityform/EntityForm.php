@@ -166,7 +166,7 @@ class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 	 */
 	public function errors($validationGroups=[], $group=null) {
 		if(!$this->sent())
-			return [];
+			return new \Asgard\Validation\Report;
 
 		if(!$group)
 			$group = $this;

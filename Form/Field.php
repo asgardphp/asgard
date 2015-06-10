@@ -38,7 +38,7 @@ abstract class Field {
 	protected $widget = 'text';
 	/**
 	 * Errors.
-	 * @var array
+	 * @var \Asgard\Validation\Report
 	 */
 	protected $errors = [];
 

@@ -131,7 +131,7 @@ class Validator implements ValidatorInterface {
 		if($rule === 'required')
 			$this->required = isset($params[0]) ? $params[0]:true;
 		elseif($rule === 'isNull')
-			$this->isNull = $params[0];
+			$this->isNull($params[0]);
 		else {
 			if(is_string($rule) && preg_match('/\||:/', $rule)) {
 				foreach(explode('|', $rule) as $r) {
@@ -148,6 +148,14 @@ class Validator implements ValidatorInterface {
 				$rule->handleEach(true);
 			$this->rules[] = $rule;
 		}
+		return $this;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function isNull(callable $isNull) {
+		$this->isNull = $isNull;
 		return $this;
 	}
 

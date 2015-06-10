@@ -75,7 +75,7 @@ interface DataMapperInterface {
 	/**
 	 * Validate an entity.
 	 * @param  \Asgard\Entity\Entity $entity
-	 * @return true for valid, otherwise false
+	 * @return boolean true for valid, otherwise false
 	 */
 	public function valid(\Asgard\Entity\Entity $entity);
 

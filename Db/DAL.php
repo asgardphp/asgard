@@ -187,8 +187,8 @@ class DAL implements \Iterator {
 
 	/**
 	 * Add FROM tables.
-	 * @param string $tables  Separated by ,
-	 * @return DAL  $this
+	 * @param string|array $tables Separated by ,
+	 * @return DAL         $this
 	 * @api
 	 */
 	public function addFrom($tables) {
@@ -632,7 +632,7 @@ class DAL implements \Iterator {
 			$result = '('.$result.')';
 
 		#prepare mulltiple parameters in arrays
-		$result = preg_replace_callback('/\?/', function($a) use($pdoparams) {
+		$result = preg_replace_callback('/\?/', function() use($pdoparams) {
 			static $i=0;
 			if(is_array($pdoparams[$i]))
 				return implode(',', array_fill(0, count($pdoparams[$i++]), '?'));

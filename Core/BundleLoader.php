@@ -122,7 +122,7 @@ class BundleLoader {
 
 	/**
 	 * Load bundle's translations.
-	 * @param  \Asgard\Translation\Translation $translator
+	 * @param  \Asgard\Translation\Translation $translation
 	 */
 	protected function loadTranslations(\Asgard\Translation\Translation $translation) {
 		$translation->addDir($this->getPath().'/translations');
