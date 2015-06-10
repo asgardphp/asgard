@@ -200,7 +200,11 @@ class DAL implements \Iterator {
 		elseif(!is_array($tables))
 			$tables = [$tables];
 		foreach($tables as $k=>$tablestr) {
-			if($tablestr instanceof Raw) {
+			if($tablestr instanceof static) {
+				$table = $tablestr;
+				$alias = $k;
+			}
+			elseif($tablestr instanceof Raw) {
 				$table = $tablestr;
 				$alias = $k;
 			}
@@ -899,17 +903,23 @@ class DAL implements \Iterator {
 	 */
 	protected function buildTables($with_alias=true) {
 		$tables = [];
+		$params = [];
 		if(!$this->tables)
 			throw new \Exception('Must set tables with method from($tables) before running the query.');
 		foreach($this->tables as $alias=>$table) {
-			if($table instanceof Raw)
+			if($table instanceof static) {
+				$tables[] = '('.$table->buildSQL().') `'.$alias.'`';
+				$params = array_merge($params, $table->getParameters());
+			}
+			elseif($table instanceof Raw)
 				$tables[] = '('.$table.') `'.$alias.'`';
 			elseif($alias !== $table && $with_alias)
 				$tables[] = '`'.$table.'` `'.$alias.'`';
 			else
 				$tables[] = '`'.$table.'`';
 		}
-		return implode(', ', $tables);
+		$sql = implode(', ', $tables);
+		return [$sql, $params];
 	}
 
 	/**
@@ -919,7 +929,13 @@ class DAL implements \Iterator {
 	 */
 	protected function replaceRaws(&$sql, &$params) {
 		$i = 0;
-		$sql = preg_replace_callback('/\?/', function() use(&$i, $params) {
+		$sql = preg_replace_callback('/\?/', function() use(&$i, &$params) {
+			if($params[$i] instanceof static) {
+				$r = $params[$i];
+				$sql = $r->buildSQL();
+				$params = array_merge(array_slice($params, 0, $i), $r->getParameters(), array_slice($params, $i+1));
+				return '('.$sql.')';
+			}
 			if($params[$i] instanceof Raw) {
 				$r = $params[$i];
 				unset($params[$i]);
@@ -938,7 +954,9 @@ class DAL implements \Iterator {
 	public function buildSQL() {
 		$params = [];
 
-		$tables = $this->buildTables();
+		list($tables, $tableparams) = $this->buildTables();
+		$params = array_merge($params, $tableparams);
+
 		$columns = $this->buildColumns();
 		$orderBy = $this->buildOrderBy();
 		$limit = $this->buildLimit();
@@ -978,7 +996,12 @@ class DAL implements \Iterator {
 
 			$set = [];
 			foreach($values as $k=>$v) {
-				if($v instanceof Raw)
+				if($v instanceof static) {
+					$sql = $v->buildSQL();
+					$params = array_merge($params, $v->getParameters());
+					$set[] = $this->replace($k).'=('.$sql.')';
+				}
+				elseif($v instanceof Raw)
 					$set[] = $this->replace($k).'='.$v;
 				else {
 					$params[] = $v;
@@ -987,7 +1010,9 @@ class DAL implements \Iterator {
 			}
 			$str = ' SET '.implode(', ', $set);
 
-			$tables = $this->buildTables(true);
+			list($tables, $tableparams) = $this->buildTables(true);
+			$params = array_merge($params, $tableparams);
+
 			#can't mix order by and joins in update
 			if($this->joins)
 				$orderBy = '';
@@ -1004,7 +1029,12 @@ class DAL implements \Iterator {
 		elseif($this->joins || $this->limit || $this->offset) {
 			$set = [];
 			foreach($values as $k=>$v) {
-				if($v instanceof Raw)
+				if($v instanceof staitc) {
+					$sql = $v->buildSQL();
+					$params[] = array_merge($params, $v->getParameters());
+					$set[] = $this->replace($k, false).'=('.$sql.')';
+				}
+				elseif($v instanceof Raw)
 					$set[] = $this->replace($k, false).'='.$v;
 				else {
 					$params[] = $v;
@@ -1025,14 +1055,20 @@ class DAL implements \Iterator {
 
 			$params = array_merge($params, $selectDal->getParameters());
 
-			$tables = $this->buildTables(false);
+			list($tables, $tableparams) = $this->buildTables(false);
+			$params = array_merge($params, $tableparams);
 
 			$sql = 'UPDATE '.$tables.$str.' WHERE EXISTS ('.$selectSql.')';
 		}
 		else {
 			$set = [];
 			foreach($values as $k=>$v) {
-				if($v instanceof Raw)
+				if($v instanceof staitc) {
+					$sql = $v->buildSQL();
+					$params[] = array_merge($params, $v->getParameters());
+					$set[] = $this->replace($k, false).'=('.$sql.')';
+				}
+				elseif($v instanceof Raw)
 					$set[] = $this->replace($k, false).'='.$v;
 				else {
 					$params[] = $v;
@@ -1041,7 +1077,9 @@ class DAL implements \Iterator {
 			}
 			$str = ' SET '.implode(', ', $set);
 
-			$tables = $this->buildTables(false);
+			list($tables, $tableparams) = $this->buildTables(false);
+			$params = array_merge($params, $tableparams);
+
 			list($where, $whereparams) = $this->buildWhere();
 			$params = array_merge($params, $whereparams);
 
@@ -1063,7 +1101,9 @@ class DAL implements \Iterator {
 		$params = [];
 
 		if($this->db->getPDO()->getAttribute(\PDO::ATTR_DRIVER_NAME) === 'mysql') {
-			$tables = $this->buildTables(count($del_tables) > 0);
+			list($tables, $tableparams) = $this->buildTables(count($del_tables) > 0);
+			$params = array_merge($params, $tableparams);
+
 			$orderBy = $this->buildOrderBy();
 			$limit = $this->buildLimit();
 
@@ -1096,12 +1136,15 @@ class DAL implements \Iterator {
 
 			$params = array_merge($params, $selectDal->getParameters());
 
-			$tables = $this->buildTables(false);
+			list($tables, $tableparams) = $this->buildTables(false);
+			$params = array_merge($params, $tableparams);
 
 			$sql = 'DELETE FROM '.$tables.' WHERE EXISTS ('.$selectSql.')';
 		}
 		else {
-			$tables = $this->buildTables(false);
+			list($tables, $tableparams) = $this->buildTables(false);
+			$params = array_merge($params, $tableparams);
+
 			list($where, $whereparams) = $this->buildWhere();
 			$params = array_merge($params, $whereparams);
 
@@ -1174,7 +1217,11 @@ class DAL implements \Iterator {
 		$cols = [];
 		foreach($values as $k=>&$v) {
 			$cols[] = $this->replace($k, false);
-			if($v instanceof Raw)
+			if($v instanceof static) {
+				$v = '('.$v->buildSQL().')';
+				$params = array_merge($params, $v->getParameters());
+			}
+			elseif($v instanceof Raw)
 				$v = (string)$v;
 			else {
 				$params[] = $v;
@@ -1257,21 +1304,19 @@ class DAL implements \Iterator {
 		if($fct === 'COUNT')
 			$clone->limit(null);
 		if($group_by) {
-			$subquery = $clone->dbgSelect(); #todo use parameters
 			$dal = new static($this->db);
 			$dal->select($group_by.' groupby, '.$fct.'('.$what.') '.$fct)
 			    ->groupBy($group_by)
-			    ->from($this->raw($subquery), 's');
+			    ->from($clone, 's');
 			$res = [];
 			foreach($dal->get() as $v)
 				$res[$v['groupby']] = $v[$fct];
 			return $res;
 		}
 		else {
-			$subquery = $clone->dbgSelect(); #todo use parameters
 			$dal = new static($this->db);
 			$dal->select($fct.'('.$what.') '.$fct)
-			    ->from($this->raw($subquery), 's');
+			    ->from($clone, 's');
 			return \Asgard\Common\ArrayUtils::array_get($dal->first(), $fct);
 		}
 	}
@@ -1344,9 +1389,10 @@ class DAL implements \Iterator {
 		$i=0;
 		return preg_replace_callback('/\?/', function() use(&$i, $params) {
 			$rep = $params[$i++];
-			if(is_string($rep))
-				$rep = "'".addslashes($rep)."'";
-			return $rep;
+			if(is_string($rep) || is_numeric($rep))
+				return "'".addslashes($rep)."'";
+			else
+				return '?';
 		}, $sql);
 	}
 

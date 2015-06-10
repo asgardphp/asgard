@@ -77,6 +77,11 @@ class DALTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals('UPDATE `news` SET `date`=NOW()', $this->getDAL()->from('news')->buildUpdateSQL(['date'=>DAL::raw('NOW()')]));
 	}
 
+	public function testSubqueries() {
+		$this->assertEquals('SELECT * FROM `news` WHERE `id`=(SELECT `news_id` FROM `tags` WHERE `id`=\'2\' LIMIT 1)', $this->getDAL()->from('news')->where('id', $this->getDAL()->from('tags')->select('news_id')->where('id', 2)->limit(1))->dbgSelect());
+		$this->assertEquals('SELECT * FROM `news` WHERE `id`=(SELECT `news_id` FROM `tags` WHERE `id`=? LIMIT 1)', $this->getDAL()->from('news')->where('id', $this->getDAL()->from('tags')->select('news_id')->where('id', 2)->limit(1))->buildSQL());
+	}
+
 	public function test1() {
 		/* TABLES */
 		$this->assertEquals('SELECT * FROM `news`', $this->getDAL()->from('news')->buildSQL());
