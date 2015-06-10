@@ -24,6 +24,7 @@ class GeneratorEngine implements GeneratorEngineInterface {
 	/**
 	 * Constructor.
 	 * @param \Asgard\Container\ContainerInterface $container
+	 * @param string                               $appRoot
 	 */
 	public function __construct(\Asgard\Container\ContainerInterface $container, $appRoot) {
 		$this->container = $container;
