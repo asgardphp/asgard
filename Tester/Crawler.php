@@ -243,7 +243,8 @@ class Crawler {
 				if(isset($p['query'])) {
 					$query = $p['query'];
 					parse_str($query, $get);
-					$r->get->set($get);
+					if($get !== null)
+						$r->get->set($get);
 				}
 
 				$this->addRequests($r);

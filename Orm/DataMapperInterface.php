@@ -82,7 +82,7 @@ interface DataMapperInterface {
 	/**
 	 * Return entity errors.
 	 * @param  \Asgard\Entity\Entity $entity
-	 * @return array
+	 * @return \Asgard\Validation\Report
 	 */
 	public function errors(\Asgard\Entity\Entity $entity);
 
