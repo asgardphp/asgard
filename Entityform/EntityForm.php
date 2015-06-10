@@ -171,7 +171,7 @@ class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 		if(!$group)
 			$group = $this;
 
-		$errors = [];
+		$errors = new \Asgard\Validation\Report;
 		if($group instanceof \Asgard\Form\Group) {
 			if($group instanceof static)
 				$errors = $group->myErrors($validationGroups);

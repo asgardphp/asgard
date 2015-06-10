@@ -162,8 +162,8 @@ class DAL implements \Iterator {
 
 	/**
 	 * Set FROM tables.
-	 * @param  string $tables  Separated by ,
-	 * @return DAL    $this
+	 * @param  string|array|dal $tables  Separated by ,
+	 * @return DAL              $this
 	 * @api
 	 */
 	public function from($tables, $alias=null) {
@@ -187,8 +187,8 @@ class DAL implements \Iterator {
 
 	/**
 	 * Add FROM tables.
-	 * @param string|array $tables Separated by ,
-	 * @return DAL         $this
+	 * @param string|array|dal $tables Separated by ,
+	 * @return DAL             $this
 	 * @api
 	 */
 	public function addFrom($tables) {
@@ -1029,7 +1029,7 @@ class DAL implements \Iterator {
 		elseif($this->joins || $this->limit || $this->offset) {
 			$set = [];
 			foreach($values as $k=>$v) {
-				if($v instanceof staitc) {
+				if($v instanceof static) {
 					$sql = $v->buildSQL();
 					$params[] = array_merge($params, $v->getParameters());
 					$set[] = $this->replace($k, false).'=('.$sql.')';
@@ -1063,7 +1063,7 @@ class DAL implements \Iterator {
 		else {
 			$set = [];
 			foreach($values as $k=>$v) {
-				if($v instanceof staitc) {
+				if($v instanceof static) {
 					$sql = $v->buildSQL();
 					$params[] = array_merge($params, $v->getParameters());
 					$set[] = $this->replace($k, false).'=('.$sql.')';
@@ -1218,8 +1218,9 @@ class DAL implements \Iterator {
 		foreach($values as $k=>&$v) {
 			$cols[] = $this->replace($k, false);
 			if($v instanceof static) {
-				$v = '('.$v->buildSQL().')';
+				$sql = $v->buildSQL();
 				$params = array_merge($params, $v->getParameters());
+				$v = '('.$sql.')';
 			}
 			elseif($v instanceof Raw)
 				$v = (string)$v;
