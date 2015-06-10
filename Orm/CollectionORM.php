@@ -207,7 +207,7 @@ class CollectionORM extends ORM implements CollectionORMInterface {
 	 */
 	public function clear() {
 		switch($this->relation->type()) {
-			case 'hasOne':#todo also update parent entity
+			case 'hasOne':
 			case 'hasMany':
 				$relationDefinition = $this->relation->getTargetDefinition();
 				$link = $this->relation->reverse()->getLink();
@@ -218,6 +218,16 @@ class CollectionORM extends ORM implements CollectionORMInterface {
 				}
 				else
 					$dal->where([$link => $this->parent->id])->update([$link => null]);
+
+				if($this->relation->type() === 'hasOne') {
+					$link = $this->relation->getLink();
+					if($this->relation->isPolymorphic()) {
+						$linkType = $this->relation->getLinkType();
+						$this->dataMapper->orm(get_class($this->parent))->where('id', $this->parent->id)->getDAL()->update([$link => null, $linkType => null]);
+					}
+					else
+						$this->dataMapper->orm(get_class($this->parent))->where('id', $this->parent->id)->getDAL()->update([$link => null]);
+				}
 				break;
 			case 'HMABT':
 				$dal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->relation->getAssociationTable());

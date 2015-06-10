@@ -43,7 +43,7 @@ class Results {
 						$as = $a['request']->get->count() + $a['request']->post->count() + $a['request']->file->count() + $a['request']->cookie->count();
 						$bs = $b['request']->get->count() + $b['request']->post->count() + $b['request']->file->count() + $b['request']->cookie->count();
 
-						return $as > $bs;#todo sort by parameters if same simplicity
+						return $as > $bs;
 					}
 					return $a['coverage']->count() < $b['coverage']->count();
 				});

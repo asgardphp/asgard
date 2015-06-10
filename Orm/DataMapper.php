@@ -369,6 +369,7 @@ class DataMapper implements DataMapperInterface {
 
 				if($rel->get('many'))
 					$this->related($entity, $relation)->sync($entity->data['properties'][$relation]->all());
+				#
 				elseif(!$rel->reverse()->get('many'))
 					$this->related($entity, $relation)->sync($entity->data['properties'][$relation]);
 			}

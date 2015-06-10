@@ -16,18 +16,6 @@ class FileTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals(__DIR__.DIRECTORY_SEPARATOR.'fixtures'.DIRECTORY_SEPARATOR.'file.txt', $file->src());
 	}
 
-	#todo for entity file
-	// public function testUrl() {
-	// 	$file = new File(__DIR__.'/fixtures/file.txt');
-	// 	$file->setWebDir(__DIR__.'/fixtures/');
-	// 	$url = new \Asgard\Http\Url(new \Asgard\Http\Request);
-	// 	$url->setHost('localhost');
-	// 	$url->setRoot('folder');
-	// 	$file->setUrl($url);
-	// 	$this->assertEquals('http://localhost/folder/file.txt', $file->url());
-	// 	$this->assertEquals('http://localhost/folder/file.txt', $file->__toString());
-	// }
-
 	public function testCopyRenameAndDelete() {
 		\Asgard\File\FileSystem::delete(__DIR__.'/tests/');
 		\Asgard\File\FileSystem::delete(__DIR__.'/dir/');
