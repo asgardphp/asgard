@@ -10,6 +10,7 @@
         "asgard/config": "0.*",
         "asgard/container": "0.*",
         "asgard/common": "0.*",
+        "asgard/debug": "0.*",
         "classpreloader/classpreloader": "1.*",
         "composer/composer": "1.*"
     },
