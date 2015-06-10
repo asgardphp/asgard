@@ -163,6 +163,7 @@ class DAL implements \Iterator {
 	/**
 	 * Set FROM tables.
 	 * @param  string|array|dal $tables  Separated by ,
+	 * @param string            $alias
 	 * @return DAL              $this
 	 * @api
 	 */

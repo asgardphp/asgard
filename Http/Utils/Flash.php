@@ -155,6 +155,11 @@ class Flash {
 		$this->persist();
 	}
 
+	/**
+	 * Return the CSS class.
+	 * @param  string $type
+	 * @return string
+	 */
 	protected function getClass($type) {
 		$types = [
 			'error' => ' alert-danger',

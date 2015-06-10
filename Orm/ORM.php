@@ -172,6 +172,11 @@ class ORM implements ORMInterface {
 		return $this->relation($relationName);
 	}
 
+	/**
+	 * Return a new ORM for the given relation.
+	 * @param  string $relationName
+	 * @return ORMInterface
+	 */
 	public function relation($relationName) {
 		if(!$this->dataMapper->hasRelation($this->definition, $relationName))
 			throw new \Exception('Relation '.$relationName.' does not exist.');

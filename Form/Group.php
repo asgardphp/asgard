@@ -524,7 +524,7 @@ class Group implements GroupInterface {
 
 	/**
 	 * Return the group own errors.
-	 * @return array
+	 * @return \Asgard\Validation\Report
 	 */
 	protected function myErrors($validationGroups=[]) {
 		$data = $this->data;

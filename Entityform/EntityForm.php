@@ -254,7 +254,7 @@ class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 
 	/**
 	 * Return its own errors.
-	 * @return array
+	 * @return \Asgard\Validation\Report
 	 */
 	protected function myErrors($validationGroups=[]) {
 		$data = $this->data();

@@ -215,9 +215,9 @@ class Serializer {
 
 	/**
 	 * Convert many entities to JSON with translations.
-	 * @param  array  $entities
-	 * @param  array $locales
-	 * @param  integer $depth
+	 * @param  Entity[] $entities
+	 * @param  array    $locales
+	 * @param  integer  $depth
 	 * @return string
 	 */
 	public static function arrayToJSONI18N(array $entities, array $locales=[], $depth=0) {
@@ -228,8 +228,8 @@ class Serializer {
 
 	/**
 	 * Convert an array of entities to json.
-	 * @param  array  $entities
-	 * @param  integer $depth
+	 * @param  Entity[]  $entities
+	 * @param  integer   $depth
 	 * @return string
 	 */
 	public static function arrayToJSON(array $entities, $depth=0) {

@@ -203,7 +203,7 @@ abstract class Controller {
 	/**
 	 * Check if parameter exists.
 	 * @param  string $name
-	 * @return static
+	 * @return boolean
 	 */
 	public function has($name) {
 		return \Asgard\Common\ArrayUtils::has($this->parameters, $name);

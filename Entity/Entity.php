@@ -597,7 +597,7 @@ abstract class Entity {
 	 * Return errors for entity and translations.
 	 * @param  string[] $locales
 	 * @param  array    $groups validation groups
-	 * @return array
+	 * @return \Asgard\Validation\Report
 	 */
 	public function errorsI18N(array $locales=[], $groups=[]) {
 		if(!$locales)
@@ -612,6 +612,11 @@ abstract class Entity {
 		return array_merge(array_keys($this->changed), $this->getchangedI18N($this->getLocale()));
 	}
 
+	/**
+	 * Get the changed i18n properties.
+	 * @param  string $locale
+	 * @return array
+	 */
 	public function getchangedI18N($locale=null) {
 		if(!$locale)
 			return array_keys($this->translationschanged);

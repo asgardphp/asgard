@@ -211,7 +211,7 @@ class DataMapper implements DataMapperInterface {
 	 * Return relations errors.
 	 * @param  \Asgard\Entity\Entity $entity
 	 * @param  array|null            $groups
-	 * @return array
+	 * @return \Asgard\Validation\Report
 	 */
 	public function relationsErrors(\Asgard\Entity\Entity $entity, $groups=[]) {
 		$data = [];
