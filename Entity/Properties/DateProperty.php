@@ -28,7 +28,7 @@ class DateProperty extends \Asgard\Entity\Property {
 	 * {@inheritDoc}
 	 */
 	public function _getDefault() {
-		return \Asgard\Common\Date::now();
+		return;
 	}
 
 	/**
