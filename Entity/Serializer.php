@@ -100,7 +100,7 @@ class Serializer {
 	private function propertyToArray($v, $property) {
 		if(is_null($v))
 			return null;
-		if(is_string($v) || is_array($v))
+		if(is_string($v) || is_numeric($v) || is_array($v))
 			return $v;
 		if(method_exists($property, 'toArray'))
 			return $property->toArray($v);
