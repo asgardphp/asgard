@@ -23,7 +23,7 @@
         "nesbot/carbon": "1.*",
         "swiftmailer/swiftmailer": "5.0.*",
         "classpreloader/classpreloader": "1.*",
-        "composer/composer": "1.*@dev",
+        "composer/composer": "1.0.0-alpha10",
         "nikic/php-parser": "~1.2",
         "h0gar/csv": "0.*",
         "h0gar/xpath": "0.*"
