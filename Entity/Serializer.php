@@ -95,7 +95,7 @@ class Serializer {
 	 * Convert a property to a strig or an array.
 	 * @param  mixed    $v
 	 * @param  Property $property
-	 * @return string|array
+	 * @return string|array|double|integer
 	 */
 	private function propertyToArray($v, $property) {
 		if(is_null($v))
