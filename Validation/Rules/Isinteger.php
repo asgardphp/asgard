@@ -5,7 +5,7 @@ namespace Asgard\Validation\Rules;
  * Check that the input is an integer.
  * @author Michel Hognerud <michel@hognerud.com>
  */
-class Int extends \Asgard\Validation\Rule {
+class Isinteger extends \Asgard\Validation\Rule {
 	/**
 	 * {@inheritDoc}
 	 */

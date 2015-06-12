@@ -81,10 +81,10 @@ class Test extends \PHPUnit_Framework_TestCase {
 			$first[$attribute] = $r->first();
 		$this->assertEquals(['title'=>'Title must be greater than 5.', 'content'=>'Content must be greater than 5.'], $first);
 
-		$this->assertEquals('Array must be an integer.', v::int()->errors([])->error());
-		$this->assertEquals('Object must be an integer.', v::int()->errors(new \stdClass)->error());
-		$this->assertEquals('"a" must be an integer.', v::int()->errors('a')->error());
-		$this->assertEquals('Score must be an integer.', (new v)->attribute('score', v::int())->errors(['score'=>'a'])->error('score'));
+		$this->assertEquals('Array must be an integer.', v::isinteger()->errors([])->error());
+		$this->assertEquals('Object must be an integer.', v::isinteger()->errors(new \stdClass)->error());
+		$this->assertEquals('"a" must be an integer.', v::isinteger()->errors('a')->error());
+		$this->assertEquals('Score must be an integer.', (new v)->attribute('score', v::isinteger())->errors(['score'=>'a'])->error('score'));
 
 		$this->assertTrue(v::min(5)->errors(3)->hasError());
 		$this->assertFalse(v::min(5)->errors(7)->hasError());
