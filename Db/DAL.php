@@ -92,6 +92,11 @@ class DAL implements \Iterator {
 	 * @var array
 	 */
 	protected $current;
+	/**
+	 * UNIONs.
+	 * @var array
+	 */
+	protected $unions = [];
 
 	/**
 	 * Constructor.
@@ -952,16 +957,13 @@ class DAL implements \Iterator {
 	 * @return string
 	 * @api
 	 */
-	public function buildSQL() {
+	public function buildSQL($union=false) {
 		$params = [];
 
 		list($tables, $tableparams) = $this->buildTables();
 		$params = array_merge($params, $tableparams);
 
 		$columns = $this->buildColumns();
-		$orderBy = $this->buildOrderBy();
-		$limit = $this->buildLimit();
-		$groupby = $this->buildGroupby();
 
 		list($jointures, $joinparams) = $this->buildJointures();
 		$params = array_merge($params, $joinparams);
@@ -969,10 +971,22 @@ class DAL implements \Iterator {
 		list($where, $whereparams) = $this->buildWhere();
 		$params = array_merge($params, $whereparams);
 
-		list($having, $havingparams) = $this->buildHaving();
-		$params = array_merge($params, $havingparams);
+		if(!$union) {
+			$orderBy = $this->buildOrderBy();
+			$limit = $this->buildLimit();
+			$groupby = $this->buildGroupby();
 
-		$sql = 'SELECT '.$columns.' FROM '.$tables.$jointures.$where.$groupby.$having.$orderBy.$limit;
+			list($having, $havingparams) = $this->buildHaving();
+			$params = array_merge($params, $havingparams);
+		}
+		else
+			$orderBy = $limit = $groupby = $having = '';
+
+		$unions = '';
+		foreach($this->unions as $union)
+			$unions .= ' UNION '.$union->buildSQL(true);
+
+		$sql = 'SELECT '.$columns.' FROM '.$tables.$jointures.$where.$unions.$groupby.$having.$orderBy.$limit;
 
 		$this->replaceRaws($sql, $params);
 
@@ -1442,5 +1456,18 @@ class DAL implements \Iterator {
 		$params = $this->getParameters();
 
 		return $this->replaceParams($sql, $params);
+	}
+
+	/**
+	 * Add UNIONs.
+	 * @param  array|static $dals
+	 * @return DAL
+	 */
+	public function union($dals) {
+		if(!is_array($dals))
+			$dals = [$dals];
+		$this->unions = array_merge($this->unions, $dals);
+
+		return $this;
 	}
 }

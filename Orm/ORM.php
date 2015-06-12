@@ -101,6 +101,11 @@ class ORM implements ORMInterface {
 	 * @var array
 	 */
 	protected $dalCallbacks = [];
+	/**
+	 * UNIONs.
+	 * @var array
+	 */
+	protected $unions = [];
 
 	/**
 	 * Constructor.
@@ -553,6 +558,9 @@ class ORM implements ORMInterface {
 
 		foreach($this->dalCallbacks as $cb)
 			$cb($dal);
+
+		foreach($this->unions as $union)
+			$dal->union($union->getDAL());
 
 		return $dal;
 	}
@@ -1044,5 +1052,18 @@ class ORM implements ORMInterface {
 	 */
 	public function valid() {
 		return $this->tmp_dal->valid();
+	}
+
+	/**
+	 * Add UNIONs.
+	 * @param  array|static $dals
+	 * @return DAL
+	 */
+	public function union($dals) {
+		if(!is_array($dals))
+			$dals = [$dals];
+		$this->unions = array_merge($this->unions, $dals);
+
+		return $this;
 	}
 }
