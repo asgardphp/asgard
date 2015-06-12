@@ -12,7 +12,7 @@
         "asgard/common": "0.*",
         "asgard/debug": "0.*",
         "classpreloader/classpreloader": "1.*",
-        "composer/composer": "1.*"
+        "composer/composer": "1.*@dev",
     },
     "autoload": {
         "psr-4": {"Asgard\\Core\\": "."}
