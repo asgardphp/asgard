@@ -46,7 +46,7 @@ class PersistenceRelationsBehavior extends \Asgard\Entity\Behavior implements \A
 
 	#Article::relation('parent')
 	public function static_relation($name) {
-		return ['entity'=>'Asgard\Entityform\Tests\Entities\Comment', 'has'=>'many'];
+		return ['entity'=>'Asgard\Entityform\Tests\Entities\Comment', 'many'=>true];
 	}
 
 	#Article::hasRelation('parent')
