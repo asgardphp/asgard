@@ -38,7 +38,7 @@ return array_map('realpath', [
 	$root.'/vendor/asgard/asgard/Db/SchemaInterface.php',
 	$root.'/vendor/asgard/asgard/Db/Schema.php',
 	$root.'/vendor/asgard/asgard/Db/SchemaTable.php',
-	$root.'/vendor/asgard/asgard/Debug/Debug.php',
+	// $root.'/vendor/asgard/asgard/Debug/Debug.php',
 	// $root.'/vendor/asgard/asgard/Debug/ErrorHandler.php',
 	// $root.'/vendor/asgard/asgard/Debug/PSRException.php',
 	// $root.'/vendor/asgard/asgard/Email/DriverInterface.php',

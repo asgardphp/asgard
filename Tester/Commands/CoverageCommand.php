@@ -33,7 +33,9 @@ class CoverageCommand extends \Asgard\Console\Command {
 	 * Constructor.
 	 * @param array $config
 	 */
-	public function __construct(array $config) {
+	public function __construct(array $config=null) {
+		if($config === null)
+			$config = [];
 		if(!isset($config['include']))
 			$config['include'] = [];
 		if(!isset($config['exclude']))
