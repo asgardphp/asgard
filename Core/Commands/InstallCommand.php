@@ -179,7 +179,7 @@ class InstallCommand extends \Asgard\Console\Command {
 	 * @return boolean
 	 */
 	protected function gitCheckout($dir, $tag) {
-		$cmd = 'cd "'.$dir.'" & git checkout tags/'.$tag;
+		$cmd = 'git -C "'.$dir.'" checkout tags/'.$tag;
 		return $this->runCommand($cmd);
 	}
 
