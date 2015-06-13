@@ -9,10 +9,12 @@ Entities are elements that represent your data. Some frameworks call them models
 - [Definition](#definition)
 - [Properties](#properties)
 - [Multiple values per property](#multiple)
-- [Behaviors](#behaviors)
+- [Property hooks](#hooks)
 - [Validation](#validation)	
+- [Behaviors](#behaviors)
 - [I18N](#i18n)
-- [Utils](#utils)
+- [Serialization](#serialization)
+- [Old/New](#oldnew)
 
 <a name="installation"></a>
 ##Installation
@@ -25,7 +27,7 @@ Entities are elements that represent your data. Some frameworks call them models
 
 An entity is instantiated like:
 
-	$article = new Article();
+	$article = new Article;
 
 You can also pass default values:
 
@@ -43,13 +45,13 @@ An entity is defined by a class:
 				'title' => [
 					'required'=>true
 				],
-				'content' => 'longtext',
+				'content' => 'text',
 				'posted_on' => 'date'
 			]
 		}
 	}
 
-Here we have defined the entity Article, with 3 properties: title, content and posted\_on. title has the default type "text" (text with less than 255 characters), content has the type "longtext", while posted\_on is a date.
+Here we have defined the entity Article, with 3 properties: title, content and posted\_on. title has the default type "string" (text with less than 255 characters), content has the type "text", while posted\_on is a date.
 There are actually 4 different ways to define a property:
 
 	$definition->properties = [
@@ -57,41 +59,45 @@ There are actually 4 different ways to define a property:
 	]
 	#or
 	$definition->properties = [
-		'title' => 'text'
+		'title' => 'string'
 	]
 	#or
 	$definition->properties = [
 		'title' => [
-			'type' => 'text',
+			'type' => 'string',
 			...
 		]
 	]
 	#or
 	$definition->properties = [
-		'title' => new \Asgard\Entity\Properties\TextProperty([..])
+		'title' => new \Asgard\Entity\Properties\StringProperty([..])
 	]
 
-The type is optional and defaults to "text". At the moment you can use the types: "boolean", "date", "datetime", "double", "email", "file", "image", "integer", "longtext" and "text".
+The type is optional and defaults to "string". At the moment you can use the types: "boolean", "date", "datetime", "double", "email", "file", "image", "integer", "text" and "string".
 
 Each type affects the property in the way the data are stored in the entity, validated or even persisted in the database.
 
-You can access properties values with:
+You can access an entity definition through:
+
+	$entity->getDefinition()
+
+The entity properties are accessed like this:
 
 	$article->title
 	#or
 	$article->get('title')
 
-and set:
+and editable like this:
 
 	$article->title = 'hello';
 	$article->set('title', 'hello')
 
-or set multiple values at once:
+or set multiple properties at once:
 
 	$article->set(['title'=>'hello', 'content'=>'everyone'])
 
 <a name="properties"></a>
-##Properties
+##Property types
 **boolean**
 
 	'property_name' => 'boolean'
@@ -139,13 +145,13 @@ The web parameter must be set to true if you want to store the file as a web ass
 
 The property returns an integer number.
 
-**longtext**
+**text**
 
-	'property_name' => 'longtext'
+	'property_name' => 'text'
 
 The property returns text with more than 255 characters.
 
-**text**
+**string**
 
 	'property_name'
 
@@ -153,7 +159,7 @@ The property returns text with less than 255 characters.
 
 <a name="multiple"></a>
 ##Multiple values per property
-A property can even have multiple values.
+A property can even have multiple values (array).
 For that, add the multiple parameter like so:
 
 	$definition->properties = [
@@ -167,6 +173,25 @@ Now, $article->title will return a Asgard\Entity\ManyCollection object which can
 	$article->title[] = 'new title';
 	$article->title[0] //new title
 
+<a name="hooks"></a>
+##Property hooks
+
+You can set a hook for every time you update a property value:
+
+	$definition->properties = [
+	    'title' => [
+	        'hooks' => [
+	            'set' => function($value, $entity) {
+					if($value < 10)
+						$value = 10;
+					return $value;
+				}
+	        ]
+	    ]
+	]
+
+The return result will be used as the new property value.
+
 <a name="validation"></a>
 ##Validation
 Properties can have all kinds of parameters, including validation rules. For example:
@@ -174,8 +199,8 @@ Properties can have all kinds of parameters, including validation rules. For exa
 	$definition->properties = [
 		'title' => [
 			'validation' => [
-				'lessThan' => 10,
-				'greaterThan' => 5
+				'maxlength' => 10,
+				'minlength' => 5
 			]
 		]
 	]
@@ -185,7 +210,26 @@ To validate your entity use:
 	$article->valid() #returns true of valid, otherwise false
 	$article->errors() #returns an array of errors
 
-For more information on validation, refer to the validation section.
+**Validation groups**
+
+	$definition->properties = [
+		'title' => [
+			'validation' => [
+				'maxlength' => 10,
+				'minlength' => [
+					5,
+					'groups' => ['registration']
+				]
+			]
+		]
+	]
+
+With a title with less than 5 characters:
+
+	$article->valid(['registration']); #false
+	$article->valid(); #true
+
+For more information on validation, see to the [validation section](docs/validation).
 
 <a name="behaviors"></a>
 ##Behaviors
@@ -240,29 +284,110 @@ And to set values:
 
 To know if an entity has i18n properties, use:
 
+	$entityDefinition->is18N()
+	#or
 	Article::isI18N()
 
 To change an entity instance's default language:
 
-	$entity->setLocale('fr')
+	$entity->setLocale('fr');
 
-<a name="utils"></a>
-##Utils
-Convert an entity to an array with raw values (this may include objects):
+Get all locales of an entity:
 
-	$entity->toArrayRaw()
+	$entity->getLocales();
 
-Convert an entity to an array with only nested arrays and strings:
+Translate an entity into another locale:
 
-	$entity->toArray()
+	$frEntity = $enEntity->translate('fr');
+	#$enEntity->title = 'Hello'
+	#$frEntity->title = 'Bonjour'
 
-Convert an entity to JSON:
+**Validation**
 
-	$entity->toJSON()
+	$entity->validI18N(['fr', 'en'], $validationGroups=[]);
 
-Convert a group of entities to JSON:
+Validates the entity and the translations of the given locales. If no locales are given, all the entity locales are used by default.
 
-	Article::arrayToJSON([$article1, $article2])
+To get the errors:
+
+	$entity->errorsI18N(['fr', 'en'], $validationGroups=[]);
+
+<a name="serialization"></a>
+##Serialization
+
+Entities can be serialized into arrays or json.
+
+To create a serializer:
+
+	$serializer = new \Asgard\Entity\Serializer;
+	#or
+
+If you use the default serializer, calling methods directly from the Entity class has the same effect. For example:
+
+	$entity->toArrayRaw($depth=0);
+
+is the same as:
+
+	$serializer->toArrayRaw($entity, $depth=0);
+
+**toArrayRaw**
+
+	$serializer->toArrayRaw($entity, $depth=0);
+
+$depth defines how many levels of relationships to include in the serialization
+
+toArrayRaw will return an array containing the values of all properties.
+
+**toArray**
+
+	$serializer->toArray($entity, $depth=0);
+
+The difference with toArrayRaw, is that toArray will convert all properties into strings and arrays. Including related entities.
+
+**toJSON**
+
+	$serializer->toJSON($entity, $depth=0);
+
+This will return a JSON version of toArray.
+
+**toArrayRawI18N**
+
+	$serializer->toArrayRawI18N($entity, $locales=[], $depth=0);
+
+Same as toArrayRaw, but includes the translations as well.
+
+**toArrayI18N**
+
+	$serializer->toArrayI18N($entity, $locales=[], $depth=0);
+
+Same as toArrayRaw, but includes the translations as well.
+
+**toJSONI18N**
+
+	$serializer->toArrayI18N($entity, $locales=[], $depth=0);
+
+Same as toJSON, but includes the translations as well.
+
+**arrayToJSONI18N**
+
+	$serializer->arrayToJSONI18N($entities, $locales=[], $depth=0);
+
+Calls toJSONI18N on an array of entities.
+
+**arrayToJSON**
+
+	$serializer->arrayToJSON($entities, $locales=[], $depth=0);
+
+Calls toJSON on an array of entities.
+
+<a name="oldnew"></a>
+##Old/New
+
+To verify is an entity is old (persisted), use:
+
+	$entity->isOld();
+	#or
+	$entity->isNew();
 
 ###Contributing
 

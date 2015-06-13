@@ -11,35 +11,39 @@ The DB package lets you manipulate the database, build SQL queries and manipulat
 
 ##DB
 
-To connect to the database and make SQL queries. [See the documentation.](http://asgardphp.com/docs/db-db)
+To connect to the database and make SQL queries. [See the documentation.](docs/db-db)
 
 	$rows = $db->query('SELECT * FROM news ORDER BY id DESC')->all();
 
 ##DAL
 
-To build SQL queries in a Object-Oriented manner. [See the documentation.](http://asgardphp.com/docs/db-dal)
+To build SQL queries in a Object-Oriented manner. [See the documentation.](docs/db-dal)
 
-	$rows = $dal->from('news')->orderBy('id DESC')->all();
+	$rows = $db-dal->from('news')->orderBy('id DESC')->all();
 
 ##Schema
 
-Build, modify and drop tables. [See the documentation.](http://asgardphp.com/docs/db-schema)
+Build, modify and drop tables. [See the documentation.](docs/db-schema)
 
 	schema->table('news', function($table) {
-		$table->add('id', 'int(11)')
-			->autoincrement()
-			->primary();	
-		$table->add('created_at', 'datetime')
-			->nullable();	
-		$table->add('updated_at', 'datetime')
-			->nullable();	
-		$table->add('title', 'varchar(255)')
-			->nullable();
+		$table->addColumn('id', 'integer', [
+			'length' => 11,
+			'autoincrement' => true,
+		]);
+		$table->addColumn('created_at', 'datetime', [
+		]);
+		$table->addColumn('updated_at', 'datetime', [
+		]);
+		$table->addColumn('title', 'string', [
+			'length' => '255',
+		]);
+
+		$table->setPrimaryKey(['id']);
 	});
 
 ##Commands
 
-[List of commands that come with the DB package.](http://asgardphp.com/docs/db-commands)
+[List of commands that come with the DB package.](docs/db-commands)
 
 ###Contributing
 

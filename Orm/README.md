@@ -11,21 +11,20 @@ The ORM package gives you the possibility to store, fetch, search entities and d
 
 ##Entity Relations
 
-To define relations between entities, please read [ORM Relations](http://asgardphp.com/docs/orm-relations).
+To define relations between entities, please read [ORM Relations](docs/orm-relations).
 
 	<?php
 	namespace Blog\Entities\Post;
 
 	class Post extends \Asgard\Entity\Entity {
-		public static function definition(\Asgard\Entity\EntityDefinition $definition) {
+		public static function definition(\Asgard\Entity\Definition $definition) {
 			$definition->properties = [
-				'title', 'content'
-			];
-
-			$definition->relations = [
+				'title',
+				'content',
 				'tags' => [
+					'type' => 'entity',
 					'entity' => 'Blog\Entities\Tag',
-					'has'    => 'many'
+					'many'    => true
 				],
 			];
 
@@ -39,23 +38,23 @@ To define relations between entities, please read [ORM Relations](http://asgardp
 
 To persist and fetch entities, there are two options:
 
-[Data Mapper](http://asgardphp.com/docs/datamapper)
+[Data Mapper](docs/datamapper)
 
 	$dataMapper->save($entity);
 
-[ORMBehavior (ActiveRecord pattern)](http://asgardphp.com/docs/ormbehavior)
+[ORMBehavior (ActiveRecord pattern)](docs/ormbehavior)
 
 	$entity->save();
 
 ##ORM
 
-The ORM class helps you construct queries to manipulate your stored entities. [See the documentation.](http://asgardphp.com/docs/orm-orm)
+The ORM class helps you construct queries to manipulate your stored entities. [See the documentation.](docs/orm-orm)
 
 	$entities = $orm->where('position > ?', 5)->orderBy('title ASC')->get();
 
 ##Commands
 
-[List of commands that come with the ORM package.](http://asgardphp.com/docs/orm-commands)
+[List of commands that come with the ORM package.](docs/orm-commands)
 
 ###Contributing
 

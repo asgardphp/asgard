@@ -49,7 +49,7 @@ Command:
 <a name="command"></a>
 ##Command methods
 
-Get the services ContainerInterface
+Get the services container
 
 	$this->getContainer();
 

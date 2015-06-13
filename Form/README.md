@@ -84,12 +84,6 @@ Here you will have to provide the dependencies yourself (see the next section):
 
 	$form->setTranslator(new \Symfony\Component\Translation\Translator('en'));
 
-###Services ContainerInterface
-
-	$form->setContainer(new \Asgard\Container\Container);
-
-The services container might be necessary for some fields or widgets.
-
 <a name="options"></a>
 ##Form options
 
@@ -124,7 +118,37 @@ To add specific validation rules to a field, use the 'validation' option:
 		'maxlength' => 5,
 	]]);
 
-The validation rules are detailed in the [validation documentation](http://asgardphp.com/docs/validation).
+To check that the inputs are valid:
+
+	$form->isValid(); #returns true|false
+
+To get the errors:
+
+	$errors = $form->errors();
+
+To get a field or a group errors:
+
+	$errors = $form['title']->errors();
+
+To get only general errors or errors that do not belong to a specific field:
+
+	$errors = $form->getGeneralErrors();
+
+**Validation groups**
+
+	$form['field'] = new \Asgard\Form\Fields\TextField(['validation'=>[
+		'minlength' => [
+			5,
+			'groups' => ['registration']
+		]
+	]]);
+
+With a text with less than 5 characters:
+
+	$form->isValid(['registration']); #false
+	$form->isValid(); #true
+
+Validation is further explained in the [validation documentation](docs/validation).
 
 ###Field default value
 
@@ -356,13 +380,13 @@ You can even prefill a dynamic group:
 	echo $form->submit();
 	echo $form->close();
 
-You can set a lambda function to render a field of the dynamic group:
+You can set an anonymous function to render a field of the dynamic group:
 
 	$form['names']->setDefaultRender(function($field) {
 		return $field->label().': '.$field->def();
 	});
 
-You would then have the following code in the view:
+You would then use the following code in the view:
 
 	echo $form->open();
 	foreach($form['names'] as $field)
@@ -394,31 +418,17 @@ To let the user add fields by himself, use the following snippet:
 The method renderTemplate generates a javascript template for create new HTML fields when the user clicks on the "add" button.
 
 <a name="validation"></a>
-##Save and Validation
+##Save
 
-To check that a form was sent:
+Check that a form was sent:
 
 	$form->sent(); #returns true|false
 
-To check that the inputs are valid:
+save a form:
 
-	$form->isValid(); #returns true|false
+	$form->save($validationGroups=[]);
 
-To get the errors:
-
-	$errors = $form->errors();
-
-To get a field or a group errors:
-
-	$errors = $form['title']->errors();
-
-To get only general errors or errors that do not belong to a specific field:
-
-	$errors = $form->getGeneralErrors();
-
-To save a form:
-
-	$form->save();
+*Validation groups are explained above in "Validation groups".*
 
 In case of an error, an exception will be raised:
 
@@ -428,7 +438,7 @@ In case of an error, an exception will be raised:
 		//...
 	}
 
-If all is valid, it will execute the form's doSave() method, which by default does nothing. It will also try to save each nested-form.
+If the inputs are valid, it will execute the form's doSave() method, which does nothing by default. It will also try to save each nested-form.
 
 However you can create your own classes that extend the Form class and override the "doSave" method or use a callback:
 
@@ -451,7 +461,7 @@ To disable it:
 
 	$form->csrf(false);
 
-If the form will be invalid if sent without the CSRF token. The error will be available through $form->getGeneralErrors() or $form['_csrf_token']->error().
+The form will be invalid if sent without the CSRF token. The error will be available through $form->getGeneralErrors() or $form['_csrf_token']->error().
 
 <a name="data"></a>
 ##Form Data
@@ -485,11 +495,11 @@ Set data manually:
 
 In the Asgard framework, you can use the service:
 
-	$wm = $container['widgetsManager'];
+	$wm = $container['widgetManager'];
 
-Otherwise, you can also access a form widgetsManager through:
+Otherwise, you can also access a form widgetManager through:
 
-	$wm = $form->getWidgetsManager();
+	$wm = $form->getWidgetManager();
 
 ###Register a widget
 
@@ -501,18 +511,25 @@ Otherwise, you can also access a form widgetsManager through:
 
 When using an unknown widget, the widgets manager will try to look for the widget in all registered namespaces. If the class MyClasses\Widgets\TextWidget exists, it will be used to render the field.
 
-###Example in Asgard
+###Register a widget factory
 
-	$container['widgetsManager']->setWidget('text', 'MyClasses\Widgets\TextWidget');
+This can be useful for dependency injection.
+
+	$wf = new WidgetFactory($dep);
+	$wm->setWidgetFactory('text', $wf);
+
+Widget factories must implement the \Asgard\Form\WidgetFactoryInterface which has a single method:
+
+	public function create($name, $value, $options, $form);
+
+This method must build and return a Widget object.
+
+###Example
 
 	$form = $container->make('form');
-	$form['title'] = new \Asgard\Fields\TextField;
-	echo $form['title']->text();
-
-###Example in standalone fORMInterface
-
+	#or
 	$form = new \Asgard\Form\Form;
-	$form->getWidgetsManager()->setWidget('text', 'MyClasses\Widgets\TextWidget');
+	$form->getWidgetManager()->setWidget('text', 'MyClasses\Widgets\TextWidget');
 	$form['title'] = new \Asgard\Fields\TextField;
 	echo $form['title']->text();
 
@@ -531,7 +548,7 @@ Building the form:
 	$form['password'] = new \Asgard\Form\Fields\TextField(['validation'=>'required', 'widget' => 'password']);
 
 	if($form->sent()) {
-		if(!($errors = $form->errors())) {
+		if($form->isValid()) {
 			$username = $form['username']->value();
 			$password = $form['password']->value();
 			// save in database..
@@ -539,7 +556,7 @@ Building the form:
 		}
 		else {
 			echo 'Bad :(';
-			foreach($e->errors() as $error)
+			foreach($form->errors() as $error)
 				echo "\n".$error;
 		}
 	}
@@ -551,6 +568,8 @@ Showing the form:
 	echo $form['password']->password();
 	echo $form->close();
 
+//todo
+widgetfactory
 
 ###Contributing
 

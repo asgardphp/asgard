@@ -6,7 +6,7 @@ The migration packages lets you manage and execute your migrations.
 
 - [Installation](#installation)
 - [Overview](#overview)
-- [MigrationsManager](#migrationsmanager)
+- [MigrationManager](#migrationmanager)
 - [Tracker](#tracker)
 - [Commands](#commands)
 
@@ -30,28 +30,34 @@ For example:
 	<?php
 	class News extends \Asgard\Migration\DBMigration {
 		public function up() {
-			$this->container['schema']->create('news', function($table) {
-				$table->add('id', 'int(11)')
-					->autoincrement()
-					->primary();	
-				$table->add('text', 'varchar(255)');
-				$table->add('content', 'text');
+			$this->schema->create('news', function($table) {
+				$table->addColumn('id', 'integer', [
+					'length' => 11,
+					'autoincrement' => true,
+				]);
+				$table->addColumn('text', 'string', [
+					'length' => '255',
+				]);
+				$table->addColumn('meta_title', 'text', [
+					'length' => '65535',
+				]);
+
+				$table->setPrimaryKey(['id']);
 			});
 		}
 		
 		public function down() {
-			$this->container['schema']->drop('news');
+			$this->schema->drop('news');
 		}
 	}
 
 All the migration files must be located in the same folder. In a Asgard project, the migration folder is at migrations/.
 
-This folder contains two json files:
+This folder contains one json file:
 
  * migrations.json contains all active migrations
- * tracking.json contains all active migration statuses
 
-You should always use the same migrations.json file across multiple environments, although you can use different tracking.json files to track migrations statuses.
+The migration statutes are store in the _migrations table.
 
 Examples:
 
@@ -63,84 +69,83 @@ migrations.json:
 	    }
 	}
 
-tracking.json:
-
-	{
-	    "Data": {
-	        "migrated": 1401983261.4257
-	    }
-	}
-
 The Data migration must be in a file called Data.php at migrations/Data.php.
 
-<a name="lifecycle"></a>
-##MigrationsManager
+<a name="migrationmanager"></a>
+##MigrationManager
 
 ###Usage in the Asgard Framework
 
-	$migrationsManager = $container['migrationsManager'];
+	$migrationManager = $container['migrationManager'];
 	
-The [container](http://asgardphp.com/docs/container) is often accessible as a parameter or through a [ContainerAware](http://asgardphp.com/docs/container#containeraware) object. You can also use the [singleton](http://asgardphp.com/docs/container#usage-outside) but it is not recommended.
+The [container](docs/container) is often accessible as a method parameter or through a [ContainerAware](docs/container#containeraware) object. You can also use the [singleton](docs/container#usage-outside) but it is not recommended.
 
 ###Usage outside the Asgard Framework
 
-	$migrationsManager = new \Asgard\Migration\MigrationsManager('/path/to/migrations/', $container /*optional*/);
+	$migrationManager = new \Asgard\Migration\MigrationManager('/path/to/migrations/', $container /*optional*/);
 
 ###Methods
 
 Add a migration:
 
-	$migrationsManager->add('/path/to/Migration.php');
+	$migrationManager->add('/path/to/Migration.php');
 
 Will copy the file to the migrations directory and add it to migrations.json.
 
 Check if a migration already exists:
 
-	$migrationsManager->has('Migrationname');
+	$migrationManager->has('Migrationname');
 
 Remove a migration:
 
-	$migrationsManager->remove('Migrationname');
+	$migrationManager->remove('Migrationname');
 
 Execute a migration:
 
-	$migrationsManager->migrate('Migrationname', $tracking=false); #set $tracking to true to update tracking.json
+	$migrationManager->migrate('Migrationname');
 
 Migrate a file:
 
-	$migrationsManager->migrateFile('/path/to/Migration.php'); #this will not be tracked in tracking.json. Useful for tests.
+	$migrationManager->migrateFile('/path/to/Migration.php');
 
 Migrate all migrations:
 
-	$migrationsManager->migrateAll($tracking=false); #set $tracking to true to update tracking.json
+	$migrationManager->migrateAll();
 
 Reset migrations (rollback and re-migrate all migrations):
 
-	$migrationsManager->reset();
+	$migrationManager->reset();
 
 Unmigrate a specific migration:
 
-	$migrationsManager->unmigrate('Migrationname');
+	$migrationManager->unmigrate('Migrationname');
 
 Rollback the last migration:
 
-	$migrationsManager->rollback();
+	$migrationManager->rollback();
 
 Rollback up to a specific migration:
 
-	$migrationsManager->rollbackUntil('Migrationname');
+	$migrationManager->rollbackUntil('Migrationname');
 
 Create a new migration:
 
-	$up = "$this->container['schema']->create('news', function($table) {
-				$table->add('id', 'int(11)')
-					->autoincrement()
-					->primary();	
-				$table->add('text', 'varchar(255)');
-				$table->add('content', 'text');
+	$up = "$this->schema->create('news', function($table) {
+				$table->addColumn('id', 'integer', [
+					'length' => 11,
+					'autoincrement' => true,
+				]);
+				$table->addColumn('text', 'string', [
+					'length' => '255',
+				]);
+				$table->addColumn('meta_title', 'text', [
+					'length' => '65535',
+				]);
+
+				$table->setPrimaryKey(['id']);
 			});";
-	$down = "$this->container['schema']->drop('news');";
-	$migrationsManager->create($up, $down, 'Migrationname', $class='\Asgard\Migration\Migration');
+	$down = "$this->schema->drop('news');";
+	$migrationManager->create($up, $down, 'Migrationname', $class='\Asgard\Migration\Migration');
 
 <a name="tracker"></a>
 ##Tracker
@@ -149,13 +154,13 @@ The tracker is helpful to track the statuses of your migrations.
 
 ###Usage in the Asgard Framework
 
-	$tracker = $container['migrationsManager']->getTracker();
+	$tracker = $container['migrationManager']->getTracker();
 
 ###Usage outside the Asgard Framework
 
-	$tracker = $migrationsManager->getTracker();
+	$tracker = $migrationManager->getTracker();
 	
-The [container](http://asgardphp.com/docs/container) is often accessible as a parameter or through a [ContainerAware](http://asgardphp.com/docs/container#containeraware) object. You can also use the [singleton](http://asgardphp.com/docs/container#usage-outside) but it is not recommended.
+The [container](docs/container) is often accessible as a method parameter or through a [ContainerAware](docs/container#containeraware) object. You can also use the [singleton](docs/container#usage-outside) but it is not recommended.
 
 ###Methods
 
@@ -187,6 +192,10 @@ Get all migrations up to a specific migration:
 
 	$tracker->getUntil('migrationName');
 
+Get all migrated migrations up to a specific migration in reverse order:
+
+	$tracker->getRevereMigratedUntil('migrationName');
+
 Add a migration to migrations.json (the migration file must already be in the migrations folder):
 
 	$tracker->add('migrationName');
@@ -195,11 +204,11 @@ Remove a migration from migrations.json (without deleting the file):
 
 	$tracker->remove('migrationName');
 
-Unmigrate a migration in tracking.json (this will only update the status, not execute the migration):
+Mark a migration as unmigrated:
 
 	$tracker->unmigrate('migrationName');
 
-Migrate a migration in tracking.json (this will only update the status, not execute the migration):
+Mark a migration as migrated:
 
 	$tracker->migrate('migrationName');
 
@@ -245,8 +254,6 @@ Usage:
 	php console migrations:migrate [migration]
 
 migration: The migration name
-
-src: The migration file
 
 ###RefreshCommand
 

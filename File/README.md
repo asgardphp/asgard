@@ -29,6 +29,8 @@ When a method takes a parameter $mode, you can use different values:
 	$mode = \Asgard\File\FileSystem::MERGEDIR | \Asgard\File\FileSystem::RENAME; #merge directories but rename new files
 	$mode = \Asgard\File\FileSystem::MERGEDIR | \Asgard\File\FileSystem::IGNORE; #merge directories but ignore existing files
 
+It defaults to OVERRIDE.
+
 ###Methods
 
 Get relative path from a file to another:
@@ -41,13 +43,13 @@ Get a new filename if the existing one is already taken:
 
 Rename a file or directory:
 
-	$path = \Asgard\File\FileSystem::rename($src, $dst, $mode);
+	$path = \Asgard\File\FileSystem::rename($src, $dst, $mode=null);
 
 returns the new path if successful, otherwise false.
 
 Copy a file or directory:
 
-	$path = \Asgard\File\FileSystem::copy($src, $dst, $mode);
+	$path = \Asgard\File\FileSystem::copy($src, $dst, $mode=null);
 
 returns the new path if successful, otherwise false.
 
@@ -65,7 +67,7 @@ returns true is successful, otherwise false.
 
 Write content into a file:
 
-	\Asgard\File\FileSystem::write($path, $content, $mode);
+	\Asgard\File\FileSystem::write($path, $content, $mode=null, $append=false);
 
 returns true is successful, otherwise false.
 
@@ -118,7 +120,7 @@ Get the relative path to another file or directory:
 
 Move the to another directory:
 
-	$file->moveToDir('/a/dir/', $mode);
+	$file->moveToDir('/a/dir/', $mode=null);
 
 Check if the file is in a directory
 
@@ -130,7 +132,7 @@ Check if the file is at a specific path:
 
 Rename the file:
 
-	$file->rename('/anoter/path/to/file.txt', $mode);
+	$file->rename('/anoter/path/to/file.txt', $mode=null);
 
 Delete the file:
 
@@ -138,7 +140,7 @@ Delete the file:
 
 Copy the file:
 
-	$file->copy('/path/to/copy.txt', $mode);
+	$file->copy('/path/to/copy.txt', $mode=null);
 
 ###Contributing
 

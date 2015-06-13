@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/asgardphp/hook.svg?branch=master)](https://travis-ci.org/asgardphp/hook)
 
-If you have ever used an event manager, you will find the Hooks component very similar. With the HooksManager you can create hooks, on which you can hook callbacks to be executed when the hooks are triggered.
+If you have ever used an event manager, you will find the Hooks component very similar. With the HookManager you can create hooks, on which you can hook callbacks to be executed when the hooks are triggered.
 
 - [Installation](#installation)
 - [Usage in the Asgard Framework](#usage-asgard)
@@ -25,12 +25,12 @@ If you have ever used an event manager, you will find the Hooks component very s
 
 	$hm = $container['hooks'];
 	
-The [container](http://asgardphp.com/docs/container) is often accessible as a parameter or through a [ContainerAware](http://asgardphp.com/docs/container#containeraware) object. You can also use the [singleton](http://asgardphp.com/docs/container#usage-outside) but it is not recommended.
+The [container](docs/container) is often accessible as a method parameter or through a [ContainerAware](docs/container#containeraware) object. You can also use the [singleton](docs/container#usage-outside) but it is not recommended.
 
 <a name="usage-outside"></a>
 ##Usage outside the Asgard Framework
 
-	$hm = new \Asgard\Hook\HooksManager;
+	$hm = new \Asgard\Hook\HookManager;
 
 <a name="create"></a>
 ##Create a hook
@@ -56,13 +56,13 @@ If you want to execute your own function when calling trigger, use the last argu
 ##Executing callbacks before and after hooks
 To execute functions before a hook:
 
-	$hm->hookBefore('name_of_hook', function($chain, $param) {
+	$hm->preHook('name_of_hook', function($chain, $param) {
 		// ...
 	});
 
 And after:
 
-	$hm->hookAfter('name_of_hook', function($chain, $param) {
+	$hm->postHook('name_of_hook', function($chain, $param) {
 		// ...
 	});
 
@@ -116,8 +116,9 @@ If you are working with a Asgard project, all HooksContainer in the Hooks/ folde
 
 If not, you can register the hooks with:
 
-	$hooks = \Bundle\Hooks\SomeHooks::fetchHooks();
-	$hooksManager->hooks($hooks);
+	$annotationsReader = new \Asgard\Hook\AnnotationReader;
+	$hooks = $annotationsReader->fetchHooks('Bundle\Hooks\SomeHooks');
+	$hookManager->hooks($hooks);
 
 ###Contributing
 

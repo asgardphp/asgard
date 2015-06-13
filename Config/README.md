@@ -22,7 +22,7 @@ The Config package helps you manage the configuration of your application.
 
 	$config = $container['config'];
 
-container is usually available as a parameter, an object attribute or through Asgard\Container\Container::instance();
+The [container](docs/container) is often accessible as a method parameter or through a [ContainerAware](docs/container#containeraware) object. You can also use the [singleton](docs/container#usage-outside) but it is not recommended.
 
 <a name="usage-outside"></a>
 ##Usage outside the Asgard Framework
@@ -32,7 +32,7 @@ container is usually available as a parameter, an object attribute or through As
 <a name="methods"></a>
 ##Methods
 
-Config inherits [\Asgard\Common\Bag](http://asgardphp.com/docs/bag) to access its data.
+Config inherits [\Asgard\Common\Bag](docs/bag) to access its data.
 
 Besides, you can load a configuration with:
 
@@ -41,6 +41,30 @@ Besides, you can load a configuration with:
 Or a whole directory:
 
 	$config->loadDir('config/');
+
+This will load files that in the directory.
+
+**Local files**
+
+If you want to add configuration specific to your local setup, name the file as such:
+
+	config.local.yml
+
+The file will be loaded after others, and is ignored by default by the Asgard application .gitignore file.
+
+**Environment files**
+
+If you want to make configuration files specific to environments, name them as such:
+
+	config_[env].yml
+
+With [env] being the name of the environment.
+
+Calling:
+
+	$config->loadDir('config/', 'prod');
+
+Will load default configuration files, plus all *_prod.yml files, while ignoring files like *_dev.yml
 
 <a name="structure"></a>
 ##Configuration file structure
@@ -63,6 +87,14 @@ Each key can be acessed like:
 
 <a name="commands"></a>
 ##Commands
+
+###Init
+
+Initialize the configuration files.
+
+Usage:
+
+	php console config:init
 
 ###Contributing
 

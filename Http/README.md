@@ -11,7 +11,7 @@ Library to handle HTTP requests, routing, controllers and responses.
 
 ##Request & Response
 
-Handling HTTP requests and building responses. [See the documentation.](http://asgardphp.com/docs/http-requestresponse)
+Handling HTTP requests and building responses. [See the documentation.](docs/http-requestresponse)
 
 	$request = \Asgard\Http\Request::createFromGlobals();
 	//...
@@ -19,7 +19,7 @@ Handling HTTP requests and building responses. [See the documentation.](http://a
 
 ##Controllers
 
-Structure your code around controllers. [See the documentation.](http://asgardphp.com/docs/http-controllers)
+Structure your code around controllers. [See the documentation.](docs/http-controllers)
 
 	/**
 	 * @Prefix("products")
@@ -42,7 +42,7 @@ Structure your code around controllers. [See the documentation.](http://asgardph
 
 ##Utils
 
-The package comes with tools. [See the documentation.](http://asgardphp.com/docs/http-utils)
+The package comes with tools. [See the documentation.](docs/http-utils)
 
 ###HTML
 
@@ -63,20 +63,19 @@ The package comes with tools. [See the documentation.](http://asgardphp.com/docs
 
 ###Browser
 
-	$container = \Asgard\Container\Container::singleton();
-	$browser = new \Asgard\Http\Browser\Browser($container);
+	$browser = new \Asgard\Http\Browser\Browser($httpKernel, $container);
 	$browser->getSession()->set('admin_id', 123);
 	
-	$response = $browser->post('admin/news/new');
+	$response = $browser->post('admin/news/new', ['title'=>'foo']);
 
-	if($response->getCode() != 200)
+	if($response->getCode() !== 200)
 		echo 'error..';
 	else
 		echo $response->getContent();
 
 ##Commands
 
-[List of commands that come with the HTTP package.](http://asgardphp.com/docs/http-commands)
+[List of commands that come with the HTTP package.](docs/http-commands)
 
 ###Contributing
 

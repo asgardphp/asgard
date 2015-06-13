@@ -25,7 +25,7 @@
 	#validator instance
 	$validator = $container->make('validator');
 	
-The [container](http://asgardphp.com/docs/container) is often accessible as a parameter or through a [ContainerAware](http://asgardphp.com/docs/container#containeraware) object. You can also use the [singleton](http://asgardphp.com/docs/container#usage-outside) but it is not recommended.
+The [container](docs/container) is often accessible as a method parameter or through a [ContainerAware](docs/container#containeraware) object. You can also use the [singleton](docs/container#usage-outside) but it is not recommended.
 
 ###Usage outside the Asgard Framework
 
@@ -38,6 +38,13 @@ The [container](http://asgardphp.com/docs/container) is often accessible as a pa
 Instantiating the rulesRegistry is optional. If not, the validator will automatically use the RulesRegistry singleton.
 
 ###Adding rules
+
+	$validator->rule('min', 5);
+
+Multiple parameters:
+
+	$validator->rule('between', [5, 10]);
+
 Adding multiple rules at once:
 
 	$validator->rules([
@@ -67,7 +74,7 @@ Adding multiple rules at once for an attribute:
 Using a new validator for an attribute:
 
 	$v = Validator::min(5)->max(10);
-	Validator::attribute('attr', $v)
+	$validator->attribute('attr', $v)
 
 For a nested attribute, use dots:
 
@@ -80,9 +87,17 @@ For a nested attribute, use dots:
 
 With attributes:
 
-	$v = Validator::attribute('attr')->min(5);
+	$v = $validator->attribute('attr')->min(5);
 	$v->valid(['attr'=>2]); #returns false
 	$v->valid(['attr'=>7]); #returns true
+
+###Validation groups
+
+	$validator->rule('min', [5, 'groups'=>['default', 'registration']]);
+
+	$validator->valid(6, ['registration']);
+
+By default, if the groups are not specified, rules belong to the "default" group only.
 
 ###Validating an array of inputs
 If you want to validate all elements of an array:
@@ -129,7 +144,7 @@ However you may sometimes consider other types of inputs as empty. For example a
 
 Sometimes the requirement depends on conditions. For example, a payment may be required if the amount is over 400.
 
-	$v = Validator::attribute('payment', ['required' => function($input, $parent, $validator) {
+	$v->attribute('payment', ['required' => function($input, $parent, $validator) {
 		return $parent->attribute('amount') >= 400;
 	}]);
 	$v->valid(['amount'=>300]); #true
@@ -139,14 +154,20 @@ Sometimes the requirement depends on conditions. For example, a payment may be r
 
 	$report = Validator::min(5)->errors(3); #returns a report (Asgard\Validation\ValidatorException)
 
-###Adding parameters to the ValidatorInterface
+You can also get errors specific to some validation groups:
+
+	$validator->rule('min', [5, 'groups'=>['default']]);
+	$validator->rule('min', [10, 'groups'=>['payment']]);
+	$validator->errors(7, ['payment']);
+
+###Adding parameters to the validator
 
 	$v->set('form', $form);
 
 You can access the parameter in the rule function:
 
 	//...
-		public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\ValidatorInterface $validator) {
+		public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\Validator $validator) {
 			$form = $validator->get('form');
 			//...
 		}
@@ -257,7 +278,7 @@ Then comes rules specific parameters. Any rule with member variables, can use th
 All rules receive the raw input and the parent input bag. You can use the input bag object to navigate through the whole input:
 
 	//...
-		public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\ValidatorInterface $validator) {
+		public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\Validator $validator) {
 			return $input == $parentInput->attribute('^.confirm')->input();
 		}
 	//..
@@ -284,7 +305,7 @@ or
 
 If a validator doesn't haven its own rulesregistry, it will ask its parent, like here:
 
-	Validator::attribute('attr', Validator::min(5));
+	$validator->attribute('attr', Validator::min(5));
 
 The attribute validator will ask the main validator for the rulesregistry. If the parent doesn't have one, it will use the default RulesRegistry instance.
 
@@ -307,6 +328,10 @@ If a rule is not found, it will throw an exception.
 **All**: must validate all validators passed as parameters
 
 	Validator::all(v::contains('a'), v::contains('b'));
+
+**Allin**: check that all elements of an array are in another array
+
+	Validator::allin([1,2,3,4,5]);
 
 **Any**: must validate any of the rules passed as parameters
 
@@ -338,6 +363,18 @@ If a rule is not found, it will throw an exception.
 
 	Validator::equal(12345)
 
+**Haslessthan**: the input must be have less elements than specified
+
+	Validator::haslessthan(5)
+
+**Hasmorethan**: the input must have more elements than specified
+
+	Validator::hasmorethan(5)
+
+**In**: the input must be in the given array
+
+	Validator::in([1,2,4,5])
+
 **Int**: the input must be an integer
 
 	Validator::int()
@@ -353,6 +390,14 @@ If a rule is not found, it will throw an exception.
 **Lengthbetween**: the input length must be between min and max
 
 	Validator:lengthbetween(10, 20)
+
+**Minlength**: the input length must be greater than specified or equal
+
+	Validator:minlength(10)
+
+**Maxlength**: the input length must be less than specified or equal
+
+	Validator:maxlength(10)
 
 **Min**: the input must be greater than min
 	

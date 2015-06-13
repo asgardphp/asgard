@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/asgardphp/entityform.svg?branch=master)](https://travis-ci.org/asgardphp/entityform)
 
-Entityform help you generate forms from entities. It creates the form fields corresponding to all the entity properties. Entityform is a sub-class of [Form](http://asgardphp.com/docs/form).
+Entityform help you generate forms from entities. It creates the form fields corresponding to all the entity properties. Entityform is a sub-class of [Form](docs/form).
 
 - [Installation](#installation)
 - [Usage in the Asgard Framework](#usage-asgard)
@@ -36,7 +36,7 @@ The advantage of using the form service is that it will provides the Form with a
 		$request, #optional, Asgard can provide the form with the current request
 	]);
 	
-The [container](http://asgardphp.com/docs/container) is often accessible as a parameter or through a [ContainerAware](http://asgardphp.com/docs/container#containeraware) object. You can also use the [singleton](http://asgardphp.com/docs/container#usage-outside) but it is not recommended.
+The [container](docs/container) is often accessible as a method parameter or through a [ContainerAware](docs/container#containeraware) object. You can also use the [singleton](docs/container#usage-outside) but it is not recommended.
 
 <a name="usage-outside"></a>
 ##Usage outside the Asgard Framework
@@ -74,7 +74,7 @@ To save the entity, simple do:
 
 	$form->save();
 
-If there is a validation error, it will throw the exception \Asgard\Form\FormException. Refer to the [Form documentation](http://asgardphp.com/docs/form) to know how to handle exceptions and errors.
+If there is a validation error, it will throw the exception \Asgard\Form\FormException. Refer to the [Form documentation](docs/form) to know how to handle exceptions and errors.
 
 <a name="get"></a>
 ##Get the entity
@@ -84,7 +84,7 @@ If there is a validation error, it will throw the exception \Asgard\Form\FormExc
 <a name="solver"></a>
 ##EntityFieldSolver
 
-In order to tell the entityform how to create fields from entity properties, you can use the Asgard\Entityform\EntityFieldsSolver class. By default it already handles Text, Longtext, Double, Integer, Email, Boolean, Date, Datetime, File entity properties (all in Asgard\Entity\Properties\\). If the EntityFieldsSolver does not know what type of field to create for a specific property, it will return a \Asgard\Form\Fields\TextField field by default.
+In order to tell the entityform how to create fields from entity properties, you can use the Asgard\Entityform\EntityFieldsSolver class. By default it already handles Text, text, Double, Integer, Email, Boolean, Date, Datetime, File entity properties (all in Asgard\Entity\Properties\\). If the EntityFieldsSolver does not know what type of field to create for a specific property, it will return a \Asgard\Form\Fields\TextField field by default.
 
 To extend the entityFieldsSolver add a callback which will return a form field object:
 
@@ -100,7 +100,7 @@ For entity properties with multiple values, use:
 		if(get_class($property) == 'Asgard\Entity\Properties\DateProperty')
 			return new \Asgard\Form\DynamicGroup;
 	};
-	$fieldsSolver->addMultiple($cb);
+	$fieldsSolver->addMany($cb);
 
 If the callback returns null it will be ignored.
 
@@ -112,7 +112,7 @@ If $anotherFieldsSolver cannot solve the field, it will ask to the nested solver
 
 To solve a field from an entity property:
 
-	$form->solve($entityDefinition->getProperty('title'));
+	$form->solve($Definition->getProperty('title'));
 
 To get the EntityFieldSolver from a form:
 

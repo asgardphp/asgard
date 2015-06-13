@@ -24,7 +24,7 @@ The container provides services to the application. In the Asgard framework, the
 <a name="usage-asgard"></a>
 ##Usage in the Asgard Framework
 
-Inside the framework, the container is often accessible as a parameter or through a [ContainerAware](#containeraware) object. You can also use the singleton (see below) but it is not recommended.
+The container is often accessible as a method parameter or through a [ContainerAware](#containeraware) object. You can also use the [singleton](#usage-outside) but it is not recommended.
 
 <a name="usage-outside"></a>
 ##Usage outside the Asgard Framework
@@ -43,6 +43,14 @@ Inside the framework, the container is often accessible as a parameter or throug
 	$container['cache'] = new \Cache($param);
 	#or
 	$container->set('cache', new \Cache($param));
+
+Register a service without persistency:
+
+	$container->register('cache', function($container, $param) {
+		return new \Cache($param);
+	}, false);
+
+$container['cache'] will create a new instance every time it is called.
 
 <a name="accessing"></a>
 ##Accessing a service
@@ -100,6 +108,7 @@ Usage:
 --defined: to show where a service was defined
 
 --registered: to shown where a service was registered
+
 
 ###Contributing
 

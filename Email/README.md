@@ -8,6 +8,7 @@
 - [Send an email](#send)
 - [Attach files](#files)
 - [Attach images](#images)
+- [Fake mail](#fake)
 
 <a name="installation"></a>
 ##Installation
@@ -23,31 +24,28 @@
 In a configuration file, in config/, add:
 
 	#smtp
-	'email' => [
-		'transport' => [
-			'transport' => 'smtp',
-			'username'  => '...',
-			'password'  => '...',
-			'security'  => 'ssl', #or null
-			'host'      => '...',
-			'port'      => '...',
-		]
-	]
+	email:
+		driver: Asgard\Email\SwiftEmail
+		transport => smtp
+		username  => ...
+		password  => ...
+		security  => ssl #or null
+		host      => ...
+		port      => ...
 	#sendmail
-	'email' => [
-		'transport' => [
-			'transport' => 'sendmail',
-			'command'  => '...',
-		]
-	]
+	email:
+		driver: Asgard\Email\SwiftEmail
+		transport => sendmail
+		command  => ...
 	#mail()
-	'email' => []
+	email:
+		driver: Asgard\Email\SwiftEmail
 
 ###Service
 
 	$email = $container['email'];
 	
-The [container](http://asgardphp.com/docs/container) is often accessible as a parameter or through a [ContainerAware](http://asgardphp.com/docs/container#containeraware) object. You can also use the [singleton](http://asgardphp.com/docs/container#usage-outside) but it is not recommended.
+The [container](docs/container) is often accessible as a method parameter or through a [ContainerAware](docs/container#containeraware) object. You can also use the [singleton](docs/container#usage-outside) but it is not recommended.
 
 <a name="usage-outside"></a>
 ##Usage outside the Asgard Framework
@@ -55,25 +53,25 @@ The [container](http://asgardphp.com/docs/container) is often accessible as a pa
 ###Configuration
 
 	#smtp
-	$config = ['transport' => [
+	$config = [
 		'transport' => 'smtp',
 		'username'  => '...',
 		'password'  => '...',
 		'security'  => 'ssl', #or null
 		'host'      => '...',
 		'port'      => '...',
-	]];
+	];
 	#sendmail
-	$config = ['transport' => [
+	$config = [
 		'transport' => 'sendmail',
 		'command'  => '...',
-	]];
+	];
 	#mail()
 	$config = [];
 
 ###Instance
 
-	$email = new \Asgard\Email\SwiftEmail(); #the only supported driver at the moment
+	$email = new \Asgard\Email\SwiftEmail;
 	$email->transport($config);
 
 <a name="send"></a>
@@ -88,7 +86,7 @@ The [container](http://asgardphp.com/docs/container) is often accessible as a pa
 		$message->html('<h1>hello!</h1>');
 	});
 
-$message inherits \Swift_Message so you can use any of its methods as well. [See its documentation](http://swiftmailer.org/http://asgardphp.com/docs/messages.html).
+$message inherits \Swift_Message so you can use any of its methods as well. [See its documentation](http://swiftmailer.org/docs/messages.html).
 
 <a name="files"></a>
 ##Attaching files
@@ -123,6 +121,19 @@ Or data:
 		//...
 		$message->html('<h1>Hello!</h2> See my house '.$message->embedData($data, 'myhouse.jpg', 'image/jpeg'));
 	});
+
+<a name="fake"></a>
+##Fake mail
+
+For tests and development, you might want to use fake mails, not to send real emails. Fake mails are simply written on a local.
+
+**Configuration**
+
+	email:
+		driver: Asgard\Email\FakeEmail
+		file: storage/email.txt
+
+Besides this, the usage is the same as for other emails.
 
 ###Contributing
 
