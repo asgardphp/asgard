@@ -192,7 +192,7 @@ class InstallCommand extends \Asgard\Console\Command {
 	protected function updateComposer($dir) {
 		$this->getContainer()['errorhandler']->ignoreDir('vendor/composer');
 		putenv('COMPOSER_HOME=' . $this->getContainer()['kernel']['root'] . '/vendor/bin/composer');
-		$input = new ArrayInput(['command' => 'install', '--working-dir' => $dir]);
+		$input = new ArrayInput(['command' => 'update', '--working-dir' => $dir]);
 		$application = new ComposerApplication();
 		$application->setAutoExit(false);
 
