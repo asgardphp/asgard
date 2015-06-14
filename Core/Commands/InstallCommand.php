@@ -190,13 +190,11 @@ class InstallCommand extends \Asgard\Console\Command {
 	 * @return boolean
 	 */
 	protected function updateComposer($dir) {
-		$this->getContainer()['errorhandler']->ignoreDir('vendor/composer');
-		putenv('COMPOSER_HOME=' . $this->getContainer()['kernel']['root'] . '/vendor/bin/composer');
-		$input = new ArrayInput(['command' => 'update', '--working-dir' => $dir]);
-		$application = new ComposerApplication();
-		$application->setAutoExit(false);
-
-		return $application->run($input);
+		if(strtoupper(substr(PHP_OS, 0, 3)) === 'WIN')
+			$cmd = '"vendor/bin/composer.bat" update --working-dir "'.$dir.'"';
+		else
+			$cmd = './vendor/bin/composer update --working-dir "'.$dir.'"';
+		return $this->runCommand($cmd);
 	}
 
 	/**
