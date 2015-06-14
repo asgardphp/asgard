@@ -4,7 +4,6 @@ namespace Asgard\Core\Commands;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\ArrayInput;
-// use Composer\Console\Application;
 
 /**
  * Deploy command.

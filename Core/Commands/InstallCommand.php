@@ -5,6 +5,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\ArrayInput;
 use Asgard\Core\Publisher;
 
 /**
@@ -189,8 +190,13 @@ class InstallCommand extends \Asgard\Console\Command {
 	 * @return boolean
 	 */
 	protected function updateComposer($dir) {
-		$cmd = 'composer update --working-dir "'.$dir.'"';
-		return $this->runCommand($cmd);
+		$this->getContainer()['errorhandler']->ignoreDir('vendor/composer');
+		putenv('COMPOSER_HOME=' . $this->getContainer()['kernel']['root'] . '/vendor/bin/composer');
+		$input = new ArrayInput(['command' => 'install', '--working-dir' => $dir]);
+		$application = new ComposerApplication();
+		$application->setAutoExit(false);
+
+		return $application->run($input);
 	}
 
 	/**
