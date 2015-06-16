@@ -141,7 +141,7 @@ class Resolver implements ResolverInterface {
 		$results = false;
 		
 		if($this->cache)
-			$results = $this->cache->fetch('Router.requests.'.$request_key);
+			$results = $this->cache->fetch('asgard.Router.requests.'.$request_key);
 		if($results === false) {
 			/* PARSE ALL ROUTES */
 			foreach($this->routes as $r) {

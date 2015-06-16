@@ -15,8 +15,8 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		$container->setParentClass('config', 'Asgard\Config\ConfigInterface');
 
 		#Cache
-		$container->setParentClass('cache', 'Asgard\Cache\CacheInterface');
-		$container->register('cache', function($container) {
+		$container->setParentClass('systemcache', 'Asgard\Cache\CacheInterface');
+		$container->register('systemcache', function($container) {
 			if($cache = $container['kernel']->getCache())
 				return new \Asgard\Cache\Cache($cache);
 			else
@@ -45,7 +45,7 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		#Entity
 		$container->setParentClass('entityManager', 'Asgard\Entity\EntityManagerInterface');
 		$container->register('entityManager', function($container) {
-			$entityManager = new \Asgard\Entity\EntityManager($container);
+			$entityManager = new \Asgard\Entity\EntityManager($container, $container['systemcache']);
 			$entityManager->setHookManager($container['hooks']);
 			$entityManager->setDefaultLocale($container['config']['locale']);
 			$entityManager->setValidatorFactory($container['validator_factory']);
@@ -109,7 +109,7 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		});
 		$container->setParentClass('resolver', 'Asgard\Http\ResolverInterface');
 		$container->register('resolver', function($container) {
-			return new \Asgard\Http\Resolver($container['cache']);
+			return new \Asgard\Http\Resolver($container['systemcache']);
 		});
 		$container->setParentClass('browser', 'Asgard\Http\Browser\BrowserInterface');
 		$container->register('browser', function($container) {
@@ -384,7 +384,7 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			$containerServices = new \Asgard\Container\Commands\ListCommand($root);
 			$container['console']->add($containerServices);
 
-			$cacheClear = new \Asgard\Cache\Commands\ClearCommand($container['cache']);
+			$cacheClear = new \Asgard\Cache\Commands\ClearCommand($container['systemcache']);
 			$container['console']->add($cacheClear);
 
 			$configInit = new \Asgard\Config\Commands\InitCommand($container['kernel']['root'].'/config');

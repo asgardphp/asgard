@@ -6,9 +6,17 @@ namespace Asgard\Config;
  * @author Michel Hognerud <michel@hognerud.com>
  */
 class Config extends \Asgard\Common\Bag implements ConfigInterface {
+	/**
+	 * Cache instance.
+	 * @var \Asgard\Cache\CacheInterface
+	 */
 	protected $cache;
 
-	public function __construct($cache=null) {
+	/**
+	 * Constructor.
+	 * @param \Asgard\Cache\CacheInterface $cache
+	 */
+	public function __construct(\Asgard\Cache\CacheInterface $cache=null) {
 		$this->cache = $cache;
 	}
 
@@ -16,13 +24,13 @@ class Config extends \Asgard\Common\Bag implements ConfigInterface {
 	 * {@inheritDoc}
 	 */
 	public function loadDir($dir, $env=null) {
-		if($this->cache && $res = $this->cache->fetch('config.dir.'.$dir.'.'.$env))
+		if($this->cache && $res = $this->cache->fetch('asgard.config.dir.'.$dir.'.'.$env))
 			$this->set($res);
 		else {
 			$res = $this->_loadDir($dir, $env);
 			$this->set($res);
 			if($this->cache)
-				$this->cache->save('config.dir.'.$dir.'.'.$env, $res);
+				$this->cache->save('asgard.config.dir.'.$dir.'.'.$env, $res);
 		}
 		return $this;
 	}

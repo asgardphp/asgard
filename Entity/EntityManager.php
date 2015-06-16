@@ -48,9 +48,10 @@ class EntityManager implements EntityManagerInterface {
 	 * Constructor.
 	 * @param \Asgard\Container\ContainerInterface $container
 	 */
-	public function __construct(\Asgard\Container\ContainerInterface $container=null) {
+	public function __construct(\Asgard\Container\ContainerInterface $container=null, \Asgard\Cache\CacheInterface $cache=null) {
 		#need services container for entity behaviors only
 		$this->setContainer($container);
+		$this->cache = $cache;
 	}
 
 	/**
@@ -185,7 +186,7 @@ class EntityManager implements EntityManagerInterface {
 		$HookManager = $this->getHookManager();
 		$definition = false;
 		if($cache = $this->getCache())
-			$definition = $cache->fetch('entityManager.'.$entityClass.'.definition');
+			$definition = $cache->fetch('asgard.entityManager.'.$entityClass.'.definition');
 		if($definition === false)
 			$definition = new Definition($entityClass, $this, $HookManager);
 		$definition->setEntityManager($this);

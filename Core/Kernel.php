@@ -191,7 +191,7 @@ class Kernel implements \ArrayAccess {
 	protected function buildContainer() {
 		$cache = $this->getCache();
 		if($cache) {
-			if(($container = $cache->fetch('container')) instanceof \Asgard\Container\Container) {
+			if(($container = $cache->fetch('asgard.container')) instanceof \Asgard\Container\Container) {
 				$container['kernel'] = $this;
 				$this->container = $container;
 				#make $this->container the default instance of Container, in case someones uses it
@@ -210,7 +210,7 @@ class Kernel implements \ArrayAccess {
 			$bundle->buildContainer($container);
 
 		if($cache)
-			$cache->save('container', $container);
+			$cache->save('asgard.container', $container);
 
 		return $container;
 	}
@@ -266,7 +266,7 @@ class Kernel implements \ArrayAccess {
 	protected function doGetBundles() {
 		$cache = $this->getCache();
 		if($cache)
-			$bundles = $cache->fetch('bundles');
+			$bundles = $cache->fetch('asgard.bundles');
 
 		if(!isset($bundles) || $bundles === false) {
 			$bundles = array_merge($this->addedBundles, $this->getBundles());
@@ -319,7 +319,7 @@ class Kernel implements \ArrayAccess {
 			}
 
 			if($cache)
-				$cache->save('bundles', $bundles);
+				$cache->save('asgard.bundles', $bundles);
 		}
 
 		return $bundles;
