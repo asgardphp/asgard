@@ -102,14 +102,23 @@ class Datetime extends \DateTime implements DatetimeInterface {
 	 */
 	public function sub($interval) {
 		parent::sub($interval);
-		return static::createFromCarbon($this->carbon->sub($interval));
+		$this->carbon->sub($interval);
+		return $this;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function add($interval) {
+		parent::add($interval);
+		$this->carbon->add($interval);
+		return $this;
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	public function format($format) {
-		parent::format($format);
 		return $this->carbon->format($format);
 	}
 
