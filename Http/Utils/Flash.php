@@ -146,7 +146,7 @@ class Flash {
 			if($cb)
 				echo $cb($msg, $type);
 			else
-				echo '<div class="alert'.$this->getClass($type).'" role="alert">'.$msg.'</div>'."\n";
+				echo '<div class="flash '.$this->getClass($type).'" role="alert">'.$msg.'</div>'."\n";
 		}
 		if($cat)
 			unset($this->messages[$type][$cat]);
@@ -162,10 +162,10 @@ class Flash {
 	 */
 	protected function getClass($type) {
 		$types = [
-			'error' => ' alert-danger',
-			'success' => ' alert-success',
-			'info' => ' alert-info',
-			'warning' => ' alert-warning',
+			'error' => 'error',
+			'success' => 'success',
+			'info' => 'info',
+			'warning' => 'warning',
 		];
 		if(!isset($types[$type]))
 			return '';

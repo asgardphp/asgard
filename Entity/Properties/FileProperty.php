@@ -90,7 +90,7 @@ class FileProperty extends \Asgard\Entity\Property {
 	 */
 	protected function doUnserialize($str) {
 		if(!$str || !file_exists($str))
-			return null;
+			return new \Asgard\Entity\File;
 		$file = new \Asgard\Entity\File($str);
 		$file->setWebDir($this->webDir);
 		$file->setUrl($this->url);

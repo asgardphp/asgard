@@ -8,22 +8,6 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 		\Asgard\Entity\EntityManager::setInstance($entityManager);
 	}
 
-	protected function similar_arrays($a, $b) {
-		if(is_array($a) && is_array($b)) {
-			if(count(array_diff(array_keys($a), array_keys($b))) > 0)
-				return false;
-
-			foreach($a as $k => $v) {
-				if(!$this->similar_arrays($v, $b[$k]))
-					return false;
-			}
-
-			return true;
-		}
-		else
-			return $a === $b;
-	}
-
 	public function testChanged() {
 		#Fixtures
 		$a = new Classes\Comment([
@@ -123,10 +107,10 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 		];
 
 		#toArrayRaw
-		$this->assertTrue($this->similar_arrays($arrRaw, $news->toArrayRaw(1)));
+		$this->assertEquals($arrRaw, $news->toArrayRaw(1));
 
 		#toArray
-		$this->assertTrue($this->similar_arrays($arr, $news->toArray(1)));
+		$this->assertEquals($arr, $news->toArray(1));
 
 		#toJSON
 		$this->assertEquals(

@@ -50,7 +50,7 @@ class Kernel implements \ArrayAccess {
 		$this->setEnv($env);
 	}
 
-	public function setCache($cache) {
+	public function setCache(\Asgard\Cache\CacheInterface $cache) {
 		$this->cache = $cache;
 	}
 

@@ -21,6 +21,8 @@ class GeneratorEngine implements GeneratorEngineInterface {
 
 	protected $appRoot;
 
+	protected $currentBundle;
+
 	/**
 	 * Constructor.
 	 * @param \Asgard\Container\ContainerInterface $container
@@ -112,21 +114,32 @@ class GeneratorEngine implements GeneratorEngineInterface {
 
 	public function generate(array $bundles, $root) {
 		foreach($bundles as $name=>&$bundle) {
+			$this->currentBundle = $bundle;
 			$bundle['name'] = $name;
 			foreach($this->generators as $generator)
 				$generator->preGenerate($bundle);
 		}
 
 		foreach($bundles as $name=>$bundle) {
+			$this->currentBundle = $bundle;
 			$dst = $this->appRoot.'/'.ucfirst(strtolower($name)).'/';
 			foreach($this->generators as $generator)
 				$generator->generate($bundle, $root, $dst);
 		}
 
 		foreach($bundles as $name=>$bundle) {
+			$this->currentBundle = $bundle;
 			$dst = $this->appRoot.'/'.ucfirst(strtolower($name)).'/';
 			foreach($this->generators as $generator)
 				$generator->postGenerate($bundle, $root, $dst);
+		}
+	}
+
+	public function generateFragment($name, $params=[]) {
+		foreach($this->generators as $generator) {
+			$method = 'fragment'.$name;
+			if(method_exists($generator, $method))
+				call_user_func_array([$generator, $method], [$this->currentBundle, $params]);
 		}
 	}
 }

@@ -65,7 +65,6 @@ class GenerateCommand extends \Asgard\Console\Command {
 	 */
 	protected function getOptions() {
 		return [
-			['override-bundles', null, InputOption::VALUE_NONE, 'Override existing bundles', null],
 			['override-files', null, InputOption::VALUE_NONE, 'Override existing files', null],
 			['skip', null, InputOption::VALUE_NONE, 'Skip existing bundles', null],
 		];
