@@ -379,7 +379,9 @@ class DAL implements \Iterator {
 	 * @api
 	 */
 	public function first() {
-		return $this->query()->first();
+		if(!$this->query)
+			$this->query();
+		return $this->query->first();
 	}
 
 	/**
@@ -388,7 +390,9 @@ class DAL implements \Iterator {
 	 * @api
 	 */
 	public function get() {
-		return $this->query()->all();
+		if(!$this->query)
+			$this->query();
+		return $this->query->all();
 	}
 
 	/**

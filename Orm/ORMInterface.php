@@ -123,9 +123,9 @@ interface ORMInterface extends \Iterator {
 	 * @param string $sql SQL query
 	 * @param array  $args SQL parameters
 	 *
-	 * @return array Array of \Asgard\Entity\Entity
+	 * @return \Asgard\Orm\ORMInterface $this
 	*/
-	public function selectQuery($sql, array $args=[]);
+	public function query($sql, array $args=[]);
 
 	/**
 	 * Paginates the search list.

@@ -189,7 +189,7 @@ class PolymorphicCollectionORM implements CollectionORMInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function selectQuery($sql, array $args=[]) { throw new \Exception('Not implemented'); }
+	public function query($sql, array $args=[]) { throw new \Exception('Not implemented'); }
 
 	/**
 	 * {@inheritDoc}

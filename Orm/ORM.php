@@ -709,7 +709,10 @@ class ORM implements ORMInterface {
 		$entities = [];
 		$ids = [];
 
-		$dal = $this->getDAL();
+		if($this->tmp_dal)
+			$dal = $this->tmp_dal;
+		else
+			$dal = $this->getDAL();
 
 		$rows = $dal->get();
 		foreach($rows as $row) {
@@ -802,15 +805,10 @@ class ORM implements ORMInterface {
 	/**
 	 * {@inheritDoc}
 	*/
-	public function selectQuery($sql, array $args=[]) {
-		$entities = [];
-
-		$dal = new \Asgard\Db\DAL($this->dataMapper->getDB());
-		$rows = $dal->query($sql, $args)->all();
-		foreach($rows as $row)
-			$entities[] = static::unserialize($this->definition->make(), $row);
-
-		return $entities;
+	public function query($sql, array $args=[]) {
+		$this->tmp_dal = new \Asgard\Db\DAL($this->dataMapper->getDB());
+		$this->tmp_dal->query($sql, $args);
+		return $this;
 	}
 
 	/**
