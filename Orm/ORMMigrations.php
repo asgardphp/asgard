@@ -131,8 +131,10 @@ class ORMMigrations {
 				if($ormCol = $prop->get('orm'))
 					$col = array_merge($col, $ormCol);
 
-				if($prop->get('many'))
+				if($prop->get('many')) {
 					$type = 'blob';
+					$col['length'] = 65535;
+				}
 				elseif(!isset($col['type']))
 					throw new \Exception('Cannot convert '.get_class($prop).' type to SQL type.');
 				else
