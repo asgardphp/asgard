@@ -131,6 +131,11 @@ class Test extends \PHPUnit_Framework_TestCase {
 		$this->assertFalse(v::not(v::min(5))->valid(7));
 		$this->assertFalse(v::not_min(5)->valid(7));
 
+		#Not - message
+		$v = new v;
+		$v->ruleMessage('not_min', ':attribute must not be greater than 5.');
+		$this->assertEquals('"7" must not be greater than 5.', $v->not_min(5)->errors(7)->first());
+
 		#IsNull
 		$this->assertFalse(v::min(1)->valid(0));
 		$this->assertTrue((new v)->isNull(function($i) { return $i==0; })->min(1)->valid(0));

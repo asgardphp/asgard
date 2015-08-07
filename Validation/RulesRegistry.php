@@ -100,7 +100,9 @@ class RulesRegistry implements RulesRegistryInterface {
 			$validator = new \Asgard\Validation\Validator;
 			$ruleObj = $this->getRule($rule, $params);
 			$validator->rule($ruleObj);
-			return new Rules\Not($validator);
+			$notRule = new Rules\Not($validator);
+			$notRule->setName('not_'.$rule);
+			return $notRule;
 		}
 		elseif(isset($this->rules[$rule]))
 			$rule = $this->rules[$rule];
@@ -129,6 +131,9 @@ class RulesRegistry implements RulesRegistryInterface {
 	 * {@inheritDoc}
 	 */
 	public function getRuleName($rule) {
+		if($name = $rule->getName())
+			return $name;
+
 		foreach($this->rules as $name=>$class) {
 			if($class === get_class($rule))
 				return $name;

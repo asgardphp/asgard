@@ -19,6 +19,12 @@ abstract class Rule {
 	protected $groups;
 
 	/**
+	 * Name.
+	 * @var string|null
+	 */
+	protected $name;
+
+	/**
 	 * Constructor.
 	 */
 	public function __construct() {}
@@ -93,5 +99,21 @@ abstract class Rule {
 			}
 			return false;
 		}
+	}
+
+	/**
+	 * Return the rule name.
+	 * @return string|null
+	 */
+	public function getName() {
+		return $this->name;
+	}
+
+	/**
+	 * Set the rule name.
+	 * @return string|null
+	 */
+	public function setName($name) {
+		return $this->name = $name;
 	}
 }
