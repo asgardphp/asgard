@@ -6,6 +6,5 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		parent::run($container);
 
 		<?php $this->generateFragment('bundle') ?>
-		<?php $container['hooks']->trigger('Asgard.Core.Generate.bundlephp', [$bundle]) ?>
 	}
 }
