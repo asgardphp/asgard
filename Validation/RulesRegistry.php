@@ -95,7 +95,14 @@ class RulesRegistry implements RulesRegistryInterface {
 		if($rule === 'required' || $rule === 'isNull')
 			return;
 
-		if(isset($this->rules[$rule]))
+		if(strpos($rule, 'not_') !== false) {
+			$rule = substr($rule, 4);
+			$validator = new \Asgard\Validation\Validator;
+			$ruleObj = $this->getRule($rule, $params);
+			$validator->rule($ruleObj);
+			return new Rules\Not($validator);
+		}
+		elseif(isset($this->rules[$rule]))
 			$rule = $this->rules[$rule];
 		else {
 			foreach($this->namespaces as $namespace) {

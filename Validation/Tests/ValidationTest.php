@@ -123,6 +123,14 @@ class Test extends \PHPUnit_Framework_TestCase {
 		$this->assertFalse(v::any(v::min(5), v::equal(3))->valid(2));
 		$this->assertEquals('"2" is invalid.', v::any(v::min(5), v::equal(3))->errors(2)->first());
 
+		#Not
+		$this->assertFalse(v::min(5)->valid(3));
+		$this->assertTrue(v::not(v::min(5))->valid(3));
+		$this->assertTrue(v::not_min(5)->valid(3));
+		$this->assertTrue(v::min(5)->valid(7));
+		$this->assertFalse(v::not(v::min(5))->valid(7));
+		$this->assertFalse(v::not_min(5)->valid(7));
+
 		#IsNull
 		$this->assertFalse(v::min(1)->valid(0));
 		$this->assertTrue((new v)->isNull(function($i) { return $i==0; })->min(1)->valid(0));
