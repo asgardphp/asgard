@@ -644,8 +644,13 @@ class DAL implements \Iterator {
 		#prepare mulltiple parameters in arrays
 		$result = preg_replace_callback('/\?/', function() use($pdoparams) {
 			static $i=0;
-			if(is_array($pdoparams[$i]))
-				return implode(',', array_fill(0, count($pdoparams[$i++]), '?'));
+			if(is_array($pdoparams[$i])) {
+				if(count($pdoparams[$i]) === 0)
+					return 'null';
+				else
+					return implode(',', array_fill(0, count($pdoparams[$i]), '?'));
+				$i++;
+			}
 			else {
 				$i++;
 				return '?';
