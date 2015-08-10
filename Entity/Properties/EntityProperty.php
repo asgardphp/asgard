@@ -43,8 +43,8 @@ class EntityProperty extends \Asgard\Entity\Property {
 				return $entity->getDefinition()->getEntityManager()->make($class, ['id'=>$id]);
 			}
 		}
-		elseif(!$val)
-			return null;
+		elseif($val === '')
+			return false;
 		else
 			return $val;
 	}

@@ -24,7 +24,7 @@ class Isinstanceof extends \Asgard\Validation\Rule {
 	 * {@inheritDoc}
 	 */
 	public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\ValidatorInterface $validator) {
-		return $input === null || $input instanceof $this->class;
+		return $input === null || $input === false || $input instanceof $this->class;
 	}
 
 	/**
