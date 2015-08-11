@@ -171,6 +171,10 @@ class Browser implements BrowserInterface {
 			throw new \Exception('No page to submit from.');
 
 		$parser = FormParser::parse($this->last->getContent(), $xpath);
+		if($to === null) {
+			$to = $parser->getAction();
+			$to = str_replace('http://localhost', '', $to);
+		}
 		$res = $parser->values();
 		$this->merge($res, $override);
 
@@ -185,7 +189,9 @@ class Browser implements BrowserInterface {
 	 */
 	protected function merge(array &$arr1, array &$arr2) {
 		foreach($arr2 as $k=>$v) {
-			if(is_array($arr1[$k]) && is_array($arr2[$k]))
+			if(!isset($arr1[$k]))
+				$arr1[$k] = $v;
+			elseif(is_array($arr1[$k]) && is_array($arr2[$k]))
 				$this->merge($arr1[$k], $arr2[$k]);
 			elseif($arr1[$k] !== $arr2[$k])
 				$arr1[$k] = $arr2[$k];

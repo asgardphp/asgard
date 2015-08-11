@@ -150,19 +150,34 @@ class FormParser {
 	 * @var string
 	 */
 	protected $submit = null;
+	/**
+	 * Form xpath.
+	 * @var \DOMXPath
+	 */
+	protected $xpath = null;
 
 	public function __construct(\DOMNode $node) {
 		$document = new \DOMDocument('1.0', 'UTF-8');
 		$node = $document->importNode($node, true);
 		$root = $document->appendchild($document->createElement('_root'));
 		$root->appendchild($node);
-		$xpath = new \DOMXPath($document);
+		$this->xpath = $xpath = new \DOMXPath($document);
 
 		foreach ($xpath->query('descendant::input | descendant::textarea | descendant::select', $root) as $node) {
 			if (!$node->hasAttribute('name'))
 				continue;
 			$this->add($node);
 		}
+	}
+
+	/**
+	 * Return the form action.
+	 * @return string
+	 */
+	public function getAction() {
+		$q = $this->xpath->query('//form')->item(0);
+		if($q)
+			return $q->getAttribute('action');
 	}
 
 	/**
