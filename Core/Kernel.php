@@ -157,10 +157,10 @@ class Kernel implements \ArrayAccess {
 
 		if(isset($this->params['env']))
 			return;
-		if(file_exists($file = $this->params['root'].'/storage/environment'))
-			$this->params['env'] = file_get_contents($file);
-		elseif(defined('_ENV_'))
+		if(defined('_ENV_'))
 			$this->params['env'] = _ENV_;
+		elseif(file_exists($file = $this->params['root'].'/storage/environment'))
+			$this->params['env'] = file_get_contents($file);
 		elseif($this->get('consoleMode')) {
 			foreach($_SERVER['argv'] as $k=>$v) {
 				if($v === '--env' && isset($_SERVER['argv'][$k+1])) {
