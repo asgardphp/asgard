@@ -224,7 +224,9 @@ class Response {
 	public function redirect($url='') {
 		if(!preg_match('/^(?:\/|\\\\|\w:\\\\|\w:\/).*$/', $url) && !preg_match('/^[a-zA-Z0-9]*:\/\//', $url))#relative
 			$url = $this->request->url->to($url);
-		$this->headers['Location'] = $url;
+		$this->setHeader('Location', $url);
+		if($this->code === 200)
+			$this->setCode(302);
 		return $this;
 	}
 
