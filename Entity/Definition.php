@@ -364,6 +364,18 @@ class Definition {
 	}
 
 	/**
+	 * Return a behavior.
+	 * @param  string  $class
+	 * @return Behavior|null
+	 */
+	public function getBehavior($class) {
+		foreach($this->behaviors as $behavior) {
+			if($behavior instanceof $class)
+				return $behavior;
+		}
+	}
+
+	/**
 	 * Set a meta data.
 	 * @param  string $name
 	 * @param  mixed  $value

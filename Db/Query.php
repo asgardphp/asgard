@@ -18,6 +18,9 @@ class Query {
 	 */
 	protected $rsc;
 
+	protected $sql;
+	protected $parameters;
+
 	/**
 	 * Constructor.
 	 * @param \PDO    $pdo
@@ -26,6 +29,8 @@ class Query {
 	 */
 	public function __construct(\PDO $pdo, $sql, array $args=[]) {
 		$this->pdo = $pdo;
+		$this->sql = $sql;
+		$this->parameters = $args;
 		try {
 			if($args) {
 				$this->rsc = $pdo->prepare($sql);
@@ -81,5 +86,13 @@ class Query {
 	 */
 	public function all() {
 		return $this->rsc->fetchAll(\PDO::FETCH_ASSOC);
+	}
+
+	public function getSQL() {
+		return $this->sql;
+	}
+
+	public function getParameters() {
+		return $this->parameters;
 	}
 }

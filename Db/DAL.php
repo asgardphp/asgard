@@ -326,7 +326,10 @@ class DAL implements \Iterator {
 	}
 
 	public function rewind() {
-		$this->query();
+		if($this->query)
+			$this->query($this->query->getSQL(), $this->query->getParameters());
+		else
+			$this->query();
 	}
 
 	public function key() {
@@ -1326,8 +1329,10 @@ class DAL implements \Iterator {
 		$fct = strtoupper($fct);
 
 		$clone = clone $this;
-		if($fct === 'COUNT')
+		if($fct === 'COUNT') {
+			$clone->offset(null);
 			$clone->limit(null);
+		}
 		if($group_by) {
 			$dal = new static($this->db);
 			$dal->select($group_by.' groupby, '.$fct.'('.$what.') '.$fct)
