@@ -135,8 +135,13 @@ class Validator implements ValidatorInterface {
 		else {
 			if(is_string($rule) && preg_match('/\||:/', $rule)) {
 				foreach(explode('|', $rule) as $r) {
-					list($r, $params) = explode(':', $r);
-					$params = explode(',', $params);
+					$e = explode(':', $r);
+					if(count($e) > 1) {
+						list($r, $params) = $e;
+						$params = explode(',', $params);
+					}
+					else
+						$params = [true];
 					$this->rule($r, $params);
 				}
 				return $this;
