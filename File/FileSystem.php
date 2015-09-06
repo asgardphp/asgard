@@ -73,10 +73,10 @@ class FileSystem {
 
 	/**
 	 * Rename a file.
-	 * @param  string $src
-	 * @param  string $dst
+	 * @param  string  $src
+	 * @param  string  $dst
 	 * @param  integer $mode
-	 * @return boolean     true for success, otherwise false
+	 * @return boolean true for success, otherwise false
 	 */
 	public static function rename($src, $dst, $mode=null) {
 		if($mode === null)
@@ -92,10 +92,10 @@ class FileSystem {
 
 	/**
 	 * Copy a file.
-	 * @param  string $src
-	 * @param  string $dst
+	 * @param  string  $src
+	 * @param  string  $dst
 	 * @param  integer $mode
-	 * @return boolean     true for success, otherwise false
+	 * @return boolean true for success, otherwise false
 	 */
 	public static function copy($src, $dst, $mode=null) {
 		if($mode === null)
@@ -122,10 +122,10 @@ class FileSystem {
 
 	/**
 	 * Copy a directory.
-	 * @param  string $src
-	 * @param  string $dst
+	 * @param  string  $src
+	 * @param  string  $dst
 	 * @param  integer $mode
-	 * @return boolean     true for success, otherwise false
+	 * @return boolean true for success, otherwise false
 	 */
 	protected static function copyDir($src, $dst, $mode=null) {
 		if($mode === null)
@@ -155,8 +155,8 @@ class FileSystem {
 
 	/**
 	 * Delete a file.
-	 * @param  string $file
-	 * @return boolean      true for success, false otherwise
+	 * @param  string  $file
+	 * @return boolean true for success, false otherwise
 	 */
 	public static function delete($file) {
 		if(!file_exists($file))
@@ -172,8 +172,8 @@ class FileSystem {
 
 	/**
 	 * Delete a directory.
-	 * @param  string $directory
-	 * @return boolean     true for success, otherwise false
+	 * @param  string  $directory
+	 * @return boolean true for success, otherwise false
 	 */
 	protected static function deleteDir($directory) {
 		if(substr($directory,-1) == '/')
@@ -200,8 +200,8 @@ class FileSystem {
 
 	/**
 	 * Make a directory.
-	 * @param  string $dir
-	 * @return boolean     true for success, otherwise false
+	 * @param  string  $dir
+	 * @return boolean true for success, otherwise false
 	 */
 	public static function mkdir($dir) {
 		if(!file_exists($dir))
@@ -211,11 +211,11 @@ class FileSystem {
 
 	/**
 	 * Write into a file.
-	 * @param  string $dst
-	 * @param  string $content
+	 * @param  string  $dst
+	 * @param  string  $content
 	 * @param  integer $mode
 	 * @param  boolean $append
-	 * @return boolean      true for success, otherwise false
+	 * @return boolean true for success, otherwise false
 	 */
 	public static function write($dst, $content, $mode=null, $append=false) {
 		if($mode === null)
