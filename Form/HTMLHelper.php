@@ -16,8 +16,12 @@ class HTMLHelper {
 	public static function tag($tag, array $attrs, $inner=null) {
 		$str = '';
 
-		foreach($attrs as $k=>$v)
-			$str .= $k.'="'.$v.'" ';
+		foreach($attrs as $k=>$v) {
+			if(is_numeric($k))
+				$str .= $v.' ';
+			else
+				$str .= $k.'="'.$v.'" ';
+		}
 
 		$str = '<'.$tag.' '.trim($str).'>';
 
