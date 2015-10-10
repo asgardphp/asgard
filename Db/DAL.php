@@ -630,9 +630,17 @@ class DAL implements \Iterator {
 					if(is_array($value))
 						$pdoparams = array_merge($pdoparams, $value);
 					else {
-						if(strpos($key, '?') === false)
-							$res .= '=?';
-						$pdoparams[] = $value;
+						if(strpos($key, '?') === false) {
+							#if we are checking that the identifier is equal to null
+							if($value === null)
+								$res = $key.' IS NULL';
+							else {
+								$res .= '=?';
+								$pdoparams[] = $value;
+							}
+						}
+						else
+							$pdoparams[] = $value;
 					}
 					$string_conditions[] = $res;
 				}
@@ -995,8 +1003,10 @@ class DAL implements \Iterator {
 			$orderBy = $limit = $groupby = $having = '';
 
 		$unions = '';
-		foreach($this->unions as $union)
+		foreach($this->unions as $union) {
 			$unions .= ' UNION '.$union->buildSQL(true);
+			$params = array_merge($params, $union->getParameters());
+		}
 
 		$sql = 'SELECT '.$columns.' FROM '.$tables.$jointures.$where.$unions.$groupby.$having.$orderBy.$limit;
 
@@ -1417,9 +1427,9 @@ class DAL implements \Iterator {
 	 */
 	protected function replaceParams($sql, array $params) {
 		$i=0;
-		return preg_replace_callback('/\?/', function() use(&$i, $params) {
+		return preg_replace_callback('/\?/', function() use(&$i, $params, $sql) {
 			$rep = $params[$i++];
-			if(is_string($rep) || is_numeric($rep))
+			if(!$rep instanceof Raw && !$rep instanceof static)
 				return "'".addslashes($rep)."'";
 			else
 				return '?';
