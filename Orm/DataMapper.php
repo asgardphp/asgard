@@ -279,7 +279,7 @@ class DataMapper implements DataMapperInterface {
 			}
 
 			$orm = $this->orm(get_class($entity));
-			$isNew = !isset($entity->id) || !$entity->id || $orm->reset()->where(['id'=>$entity->id])->getDAL()->count() === 0;
+			$isNew = !isset($entity->id) || !$entity->id || $orm->reset()->resetScopes()->where(['id'=>$entity->id])->getDAL()->count() === 0;
 
 			$vars = $i18n = [];
 			#process data
@@ -338,7 +338,7 @@ class DataMapper implements DataMapperInterface {
 				if($isNew)
 					$entity->id = $orm->getDAL()->insert($vars);
 				else
-					$orm->reset()->where(['id'=>$entity->id])->getDAL()->update($vars);
+					$orm->reset()->resetScopes()->where(['id'=>$entity->id])->getDAL()->update($vars);
 			}
 
 			#Persist i18n

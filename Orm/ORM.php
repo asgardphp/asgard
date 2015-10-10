@@ -567,6 +567,7 @@ class ORM implements ORMInterface {
 
 	public function dalCallback(callable $cb) {
 		$this->dalCallbacks[] = $cb;
+		return $this;
 	}
 
 	/**
@@ -737,17 +738,13 @@ class ORM implements ORMInterface {
 						$orm = $this->dataMapper->orm($relation_entity)->where(['id IN ('.implode(', ', $ids).')']);
 						if(is_callable($closure))
 							$closure($orm);
-						$res = $orm->get();
+						$res = [];
+						foreach($orm->get() as $e)
+							$res[$e->id] = $e;
 						foreach($entities as $entity) {
-							$id = $entity->$link;
-							$filter = array_filter($res, function($result) use($id) {
-								return ($id == $result->id);
-							});
-							$filter = array_values($filter);
-							if(isset($filter[0]))
-								$entity->$relationName = $filter[0];
-							else
-								$entity->$relationName = null;
+							$relation_id = $entity->get($link);
+							$e = isset($res[$relation_id]) ? $res[$relation_id]:null;
+							$entity->set($relationName, $e);
 						}
 						break;
 					case 'hasMany':
@@ -760,10 +757,10 @@ class ORM implements ORMInterface {
 						foreach($entities as $entity) {
 							$id = $entity->id;
 							$filter = array_filter($res, function($result) use($id, $link) {
-								return ($id == $result->$link);
+								return ($id == $result->get($link));
 							});
 							$filter = array_values($filter);
-							$entity->$relationName = $filter;
+							$entity->set($relationName, $filter);
 						}
 						break;
 					case 'HMABT':
@@ -790,7 +787,7 @@ class ORM implements ORMInterface {
 							$mres = [];
 							foreach($filter as $m)
 								$mres[] = $this->hydrate($m, $relationDefinition);
-							$entity->$relationName = $mres;
+							$entity->set($relationName, $mres);
 						}
 						break;
 					default:
@@ -1063,5 +1060,61 @@ class ORM implements ORMInterface {
 		$this->unions = array_merge($this->unions, $dals);
 
 		return $this;
+	}
+
+	public function getHaving() {
+		return $this->having;
+	}
+
+	public function getWith() {
+		return $this->with;
+	}
+
+	public function getOrderBy() {
+		return $this->orderBy;
+	}
+
+	public function getLimit() {
+		return $this->limit;
+	}
+
+	public function getOffset() {
+		return $this->offset;
+	}
+
+	public function getJoin() {
+		return $this->join;
+	}
+
+	public function getPage() {
+		return $this->page;
+	}
+
+	public function getPerPage() {
+		return $this->per_page;
+	}
+
+	public function getLocale() {
+		return $this->locale;
+	}
+
+	public function getPrefix() {
+		return $this->prefix;
+	}
+
+	public function getScopes() {
+		return $this->scopes;
+	}
+
+	public function getReversed() {
+		return $this->reversed;
+	}
+
+	public function getSelects() {
+		return $this->selects;
+	}
+
+	public function getUnions() {
+		return $this->unions;
 	}
 }
