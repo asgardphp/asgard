@@ -1117,4 +1117,9 @@ class ORM implements ORMInterface {
 	public function getUnions() {
 		return $this->unions;
 	}
+
+	public function setDataMapper(DataMapperInterface $dataMapper) {
+		$this->dataMapper = $dataMapper;
+		return $this;
+	}
 }

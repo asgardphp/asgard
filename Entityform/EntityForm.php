@@ -26,6 +26,11 @@ class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 	 * @var \Asgard\Orm\DataMapperInterface
 	 */
 	protected $dataMapper;
+	/**
+	 * Pre entity set callback.
+	 * @var callable
+	 */
+	protected $preEntitySetCallback;
 
 
 	/**
@@ -263,6 +268,11 @@ class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 				return false;
 			return $v !== null;
 		});
+
+		#callback to edit data before passing them to entity
+		if($cb = $this->preEntitySetCallback)
+			$cb($this, $data);
+
 		if($this->locales) {
 			foreach($data as $name=>$value) {
 				foreach($this->locales as $locale)
@@ -276,5 +286,10 @@ class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 		$report->merge($this->entity->errors($validationGroups));
 
 		return $report;
+	}
+
+	public function setPreEntitySetCallback($preEntitySetCallback) {
+		$this->preEntitySetCallback = $preEntitySetCallback;
+		return $this;
 	}
 }

@@ -1238,9 +1238,7 @@ class DAL implements \Iterator {
 	 * @return string
 	 * @api
 	 */
-	public function buildInsertSQL(array $values) {
-		if(count($values) == 0)
-			throw new \Exception('Insert values should not be empty.');
+	public function buildInsertSQL(array $rows) {
 		if($this->into === null && count($this->tables) !== 1)
 			throw new \Exception('The into table is not defined.');
 		if($this->into !== null)
@@ -1252,23 +1250,34 @@ class DAL implements \Iterator {
 		$into = $this->identifierQuotes($into);
 
 		$cols = [];
-		foreach($values as $k=>&$v) {
+		foreach($rows[0] as $k=>$v)
 			$cols[] = $this->replace($k, false);
-			if($v instanceof static) {
-				$sql = $v->buildSQL();
-				$params = array_merge($params, $v->getParameters());
-				$v = '('.$sql.')';
-			}
-			elseif($v instanceof Raw)
-				$v = (string)$v;
-			else {
-				$params[] = $v;
-				$v = '?';
-			}
-		}
-		$str = ' ('.implode(', ', $cols).') VALUES ('.implode(', ', $values).')';
 
-		$sql = 'INSERT INTO '.$into.$str;
+		$strs = [];
+		foreach($rows as $values) {
+			if(count($values) == 0)
+				throw new \Exception('Insert values should not be empty.');
+
+			foreach($values as $k=>&$v) {
+				if($v instanceof static) {
+					$sql = $v->buildSQL();
+					$params = array_merge($params, $v->getParameters());
+					$v = '('.$sql.')';
+				}
+				elseif($v instanceof Raw)
+					$v = (string)$v;
+				else {
+					$params[] = $v;
+					$v = '?';
+				}
+			}
+
+			$colsstr = ' ('.implode(', ', $cols).') VALUES ';
+			$strs[] = '('.implode(', ', $values).')';
+		}
+		$str = implode(', ', $strs);
+
+		$sql = 'INSERT INTO '.$into.$colsstr.$str;
 
 		$this->replaceRaws($sql, $params);
 		$this->params = $params;
@@ -1308,7 +1317,7 @@ class DAL implements \Iterator {
 	 * @api
 	 */
 	public function insert(array $values) {
-		$sql = $this->buildInsertSQL($values);
+		$sql = $this->buildInsertSQL([$values]);
 		$params = $this->getParameters();
 		$this->db->query($sql, $params);
 		return $this->db->id();
@@ -1465,7 +1474,7 @@ class DAL implements \Iterator {
 	 * @return string
 	 */
 	public function dbgInsert(array $values) {
-		$sql = $this->buildInsertSQL($values);
+		$sql = $this->buildInsertSQL([$values]);
 		$params = $this->getParameters();
 
 		return $this->replaceParams($sql, $params);
@@ -1475,8 +1484,8 @@ class DAL implements \Iterator {
 	 * Compute the delete sql query for debugging.
 	 * @return string
 	 */
-	public function dbgDelete() {
-		$sql = $this->buildDeleteSQL();
+	public function dbgDelete(array $tables=[]) {
+		$sql = $this->buildDeleteSQL($tables);
 		$params = $this->getParameters();
 
 		return $this->replaceParams($sql, $params);
@@ -1493,5 +1502,12 @@ class DAL implements \Iterator {
 		$this->unions = array_merge($this->unions, $dals);
 
 		return $this;
+	}
+
+	public function insertMany(array $rows) {
+		$sql = $this->buildInsertSQL($rows);
+		$params = $this->getParameters();
+		$this->db->query($sql, $params);
+		return $this->db->id();
 	}
 }

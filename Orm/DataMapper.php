@@ -529,4 +529,9 @@ class DataMapper implements DataMapperInterface {
 	public function getDB() {
 		return $this->db;
 	}
+
+	public function setDB(\Asgard\Db\DBInterface $db) {
+		$this->db = $db;
+		return $this;
+	}
 }

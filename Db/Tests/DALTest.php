@@ -73,7 +73,7 @@ class DALTest extends \PHPUnit_Framework_TestCase {
 
 	public function testRawSQL() {
 		$this->assertEquals('SELECT * FROM `news` WHERE `date`=NOW()', $this->getDAL()->from('news')->where('date', DAL::raw('NOW()'))->buildSQL());
-		$this->assertEquals('INSERT INTO `news` (`date`) VALUES (NOW())', $this->getDAL()->into('news')->buildInsertSQL(['date'=>DAL::raw('NOW()')]));
+		$this->assertEquals('INSERT INTO `news` (`date`) VALUES (NOW())', $this->getDAL()->into('news')->buildInsertSQL([['date'=>DAL::raw('NOW()')]]));
 		$this->assertEquals('UPDATE `news` SET `date`=NOW()', $this->getDAL()->from('news')->buildUpdateSQL(['date'=>DAL::raw('NOW()')]));
 	}
 
@@ -287,7 +287,7 @@ class DALTest extends \PHPUnit_Framework_TestCase {
 
 		/* INSERT */
 		$dal = $this->getDAL()->into('news');
-		$this->assertEquals('INSERT INTO `news` (`id`) VALUES (?)', $dal->buildInsertSQL(['id'=>5]));
+		$this->assertEquals('INSERT INTO `news` (`id`) VALUES (?)', $dal->buildInsertSQL([['id'=>5]]));
 		$this->assertEquals([5], $dal->getParameters());
 		$this->assertEquals(5, $dal->insert(['id'=>5]));
 

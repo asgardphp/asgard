@@ -364,7 +364,13 @@ class Form extends Group implements FormInterface {
 		$name = $field->name();
 		if($field instanceof Field) {
 			$options['field'] = $field;
-			$options = $field->options+$options;
+			$attrs = [];
+			if(isset($field->options['attrs']))
+				$attrs = $field->options['attrs'];
+			if(isset($options['attrs']))
+			 	$attrs = array_merge($attrs, $options['attrs']);
+			$options = $field->options + $options;
+			$options['attrs'] = $attrs;
 			$options['id'] = $field->getID();
 			$value = $field->value();
 		}
