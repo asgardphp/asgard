@@ -107,6 +107,8 @@ class ORM implements ORMInterface {
 	 */
 	protected $unions = [];
 
+	protected $groupBy = null;
+
 	/**
 	 * Constructor.
 	 * @param \Asgard\Entity\Definition $definition
@@ -527,7 +529,10 @@ class ORM implements ORMInterface {
 			$dal->reverse();
 		$dal->limit($this->limit);
 		$dal->offset($this->offset);
-		$dal->groupBy($table.'.id');
+		if($this->groupBy === null)
+			$dal->groupBy($table.'.id');
+		elseif($this->groupBy !== false)
+			$dal->groupBy($this->groupBy);
 		$dal->select($this->selects);
 
 		$dal->having($this->processConditions($this->having));
@@ -1120,6 +1125,11 @@ class ORM implements ORMInterface {
 
 	public function setDataMapper(DataMapperInterface $dataMapper) {
 		$this->dataMapper = $dataMapper;
+		return $this;
+	}
+
+	public function groupBy($groupBy) {
+		$this->groupBy = $groupBy;
 		return $this;
 	}
 }

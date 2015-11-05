@@ -97,6 +97,11 @@ class DAL implements \Iterator {
 	 * @var array
 	 */
 	protected $unions = [];
+	/**
+	 * Insert ignore flag.
+	 * @var boolean
+	 */
+	protected $ignore = false;
 
 	/**
 	 * Constructor.
@@ -1277,7 +1282,7 @@ class DAL implements \Iterator {
 		}
 		$str = implode(', ', $strs);
 
-		$sql = 'INSERT INTO '.$into.$colsstr.$str;
+		$sql = 'INSERT'.($this->ignore ? ' IGNORE':'').' INTO '.$into.$colsstr.$str;
 
 		$this->replaceRaws($sql, $params);
 		$this->params = $params;
@@ -1509,5 +1514,10 @@ class DAL implements \Iterator {
 		$params = $this->getParameters();
 		$this->db->query($sql, $params);
 		return $this->db->id();
+	}
+
+	public function setIgnore($ignore) {
+		$this->ignore = $ignore;
+		return $this;
 	}
 }
