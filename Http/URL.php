@@ -26,6 +26,11 @@ class URL implements URLInterface {
 	 * @var string
 	 */
 	protected $url;
+	/**
+	 * Protocol.
+	 * @var string
+	 */
+	protected $protocol;
 
 	/**
 	 * Constructor.
@@ -34,11 +39,12 @@ class URL implements URLInterface {
 	 * @param string  $root
 	 * @param string  $url
 	 */
-	public function __construct(Request $request, $host=null, $root=null, $url=null) {
+	public function __construct(Request $request, $host=null, $root=null, $url=null, $protocol=null) {
 		$this->request = $request;
 		$this->host = $host;
 		$this->root = $root;
 		$this->url = $url;
+		$this->protocol = $protocol;
 	}
 
 	/**
@@ -148,8 +154,10 @@ class URL implements URLInterface {
 	 * {@inheritDoc}
 	 */
 	public function protocol() {
-		#only http supported as for now.
-		return 'http://';
+		if(!$this->protocol)
+			return 'http://';
+		else
+			return $this->protocol;
 	}
 
 	/**

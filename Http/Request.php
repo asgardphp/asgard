@@ -144,7 +144,9 @@ class Request implements \ArrayAccess {
 		$url = ltrim($url, '/');
 		$root = trim($root, '/');
 
-		$request->setURL($server, $root, $url);
+		$protocol = $request->server['REQUEST_SCHEME'].'://';
+
+		$request->setURL($server, $root, $url, $protocol);
 
 		return $request;
 	}
@@ -183,8 +185,8 @@ class Request implements \ArrayAccess {
 	 * @param string $root
 	 * @param string $url
 	 */
-	public function setURL($server, $root, $url) {
-		$this->url = new \Asgard\Http\URL($this, $server, $root, $url);
+	public function setURL($server, $root, $url, $protocol=null) {
+		$this->url = new \Asgard\Http\URL($this, $server, $root, $url, $protocol);
 
 		preg_match('/\.([a-zA-Z0-9]{1,5})$/', $this->url->get(), $matches);
 		if(isset($matches[1]))
