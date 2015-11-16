@@ -11,7 +11,7 @@ return array_map('realpath', [
 	// $root.'/vendor/asgard/behaviors/SortableBehavior.php',
 	// $root.'/vendor/asgard/behaviors/TimestampsBehavior.php',
 	// $root.'/vendor/asgard/asgard/Cache/NullCache.php',
-	$root.'/vendor/asgard/asgard/Common/ArrayUtils.php',
+	// $root.'/vendor/asgard/asgard/Common/ArrayUtils.php',
 	$root.'/vendor/asgard/asgard/Common/BagInterface.php',
 	$root.'/vendor/asgard/asgard/Common/Bag.php',
 	// $root.'/vendor/asgard/asgard/Common/DatetimeInterface.php',
