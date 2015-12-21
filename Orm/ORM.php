@@ -875,7 +875,7 @@ class ORM implements ORMInterface {
 	*/
 	protected function processConditions(array $conditions) {
 		foreach($cp=$conditions as $k=>$v) {
-			if(is_numeric($k) || in_array(strtolower($k), ['and', 'or'])) {
+			if(is_numeric($k) || in_array(strtolower($k), ['and', 'or', 'not'])) {
 				$newK = $k;
 				if(is_array($v))
 					$v = $this->processConditions($v);

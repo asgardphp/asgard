@@ -613,7 +613,7 @@ class DAL implements \Iterator {
 
 		foreach($params as $key=>$value) {
 			#multiple conditions
-			if(is_array($value) && (is_int($key) || $key == 'and' || $key == 'or')) {
+			if(is_array($value) && (is_int($key) || $key === 'and' || $key === 'or')) {
 				if(is_int($key))
 					$key = 'and';
 				$r = $this->processConditions($value, $key, $brackets || count($params) > 1, $table);
@@ -629,6 +629,14 @@ class DAL implements \Iterator {
 						$string_conditions[] = $this->replace($value).' IS NULL';
 					else
 						$string_conditions[] = $this->replace($value);
+				}
+				elseif($key === 'not') {
+					$r = $this->processConditions($value, 'and', true, $table);
+					$string_conditions[] = 'NOT '.$r[0];
+					if(is_array($r[1]))
+						$pdoparams = array_merge($pdoparams, $r[1]);
+					else
+						$pdoparams[] = $r[1];
 				}
 				else {
 					$res = $this->replace($key);
@@ -996,24 +1004,25 @@ class DAL implements \Iterator {
 		list($where, $whereparams) = $this->buildWhere();
 		$params = array_merge($params, $whereparams);
 
-		if(!$union) {
-			$orderBy = $this->buildOrderBy();
-			$limit = $this->buildLimit();
-			$groupby = $this->buildGroupby();
+		$groupby = $this->buildGroupby();
 
-			list($having, $havingparams) = $this->buildHaving();
-			$params = array_merge($params, $havingparams);
+		list($having, $havingparams) = $this->buildHaving();
+		$params = array_merge($params, $havingparams);
+
+		if(!$union) {
+			$limit = $this->buildLimit();
+			$orderBy = $this->buildOrderBy();
 		}
 		else
-			$orderBy = $limit = $groupby = $having = '';
+			$orderBy = $limit = '';
 
 		$unions = '';
 		foreach($this->unions as $union) {
-			$unions .= ' UNION '.$union->buildSQL(true);
+			$unions .= ' UNION ('.$union->buildSQL(true).')';
 			$params = array_merge($params, $union->getParameters());
 		}
 
-		$sql = 'SELECT '.$columns.' FROM '.$tables.$jointures.$where.$unions.$groupby.$having.$orderBy.$limit;
+		$sql = 'SELECT '.$columns.' FROM '.$tables.$jointures.$where.$groupby.$having.$unions.$orderBy.$limit;
 
 		$this->replaceRaws($sql, $params);
 
@@ -1240,10 +1249,11 @@ class DAL implements \Iterator {
 	/**
 	 * Build an INSERT SQL query.
 	 * @param  array  $values
+	 * @param  array  $update
 	 * @return string
 	 * @api
 	 */
-	public function buildInsertSQL(array $rows) {
+	public function buildInsertSQL(array $rows, array $update=[]) {
 		if($this->into === null && count($this->tables) !== 1)
 			throw new \Exception('The into table is not defined.');
 		if($this->into !== null)
@@ -1283,6 +1293,25 @@ class DAL implements \Iterator {
 		$str = implode(', ', $strs);
 
 		$sql = 'INSERT'.($this->ignore ? ' IGNORE':'').' INTO '.$into.$colsstr.$str;
+		if(count($update) > 0) {
+			$set = [];
+			foreach($update as $k=>$v) {
+				if($v instanceof static) {
+					$sql = $v->buildSQL();
+					$params = array_merge($params, $v->getParameters());
+					$set[] = $this->replace($k).'=('.$sql.')';
+				}
+				elseif($v instanceof Raw)
+					$set[] = $this->replace($k).'='.$v;
+				else {
+					$params[] = $v;
+					$set[] = $this->replace($k).'=?';
+				}
+			}
+			$str = implode(', ', $set);
+
+			$sql .= ' ON DUPLICATE KEY UPDATE '.$str;
+		}
 
 		$this->replaceRaws($sql, $params);
 		$this->params = $params;
@@ -1297,7 +1326,7 @@ class DAL implements \Iterator {
 	*/
 	public function values($column) {
 		$res = [];
-		$this->select($this->replace($column));
+		// $this->select($column);
 		while($row = $this->next())
 			$res[] = $row[$column];
 		return $res;
@@ -1318,11 +1347,12 @@ class DAL implements \Iterator {
 	/**
 	 * Insert rows.
 	 * @param  array  $values
+	 * @param  array  $update
 	 * @return integer
 	 * @api
 	 */
-	public function insert(array $values) {
-		$sql = $this->buildInsertSQL([$values]);
+	public function insert(array $values, array $update=[]) {
+		$sql = $this->buildInsertSQL([$values], $update);
 		$params = $this->getParameters();
 		$this->db->query($sql, $params);
 		return $this->db->id();
@@ -1476,10 +1506,11 @@ class DAL implements \Iterator {
 	/**
 	 * Conpute the insert sql query for debugging.
 	 * @param  array  $values
+	 * @param  array  $update
 	 * @return string
 	 */
-	public function dbgInsert(array $values) {
-		$sql = $this->buildInsertSQL([$values]);
+	public function dbgInsert(array $values, array $update=[]) {
+		$sql = $this->buildInsertSQL([$values], $update);
 		$params = $this->getParameters();
 
 		return $this->replaceParams($sql, $params);
@@ -1509,8 +1540,8 @@ class DAL implements \Iterator {
 		return $this;
 	}
 
-	public function insertMany(array $rows) {
-		$sql = $this->buildInsertSQL($rows);
+	public function insertMany(array $rows, array $update=[]) {
+		$sql = $this->buildInsertSQL($rows, $update);
 		$params = $this->getParameters();
 		$this->db->query($sql, $params);
 		return $this->db->id();
