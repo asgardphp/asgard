@@ -393,8 +393,12 @@ class ORMMigrations {
 			$res = "\n\t\$table->setPrimaryKey(\n\t\t".$this->outputPHP($index->getColumns(), 2)."\n\t);";
 		elseif($index->isUnique())
 			$res = "\n\t\$table->addUniqueIndex(\n\t\t".$this->outputPHP($index->getColumns(), 2)."\n\t);";
-		else
-			$res = "\n\t\$table->addIndex(\n\t\t".$this->outputPHP($index->getColumns(), 2)."\n\t);";
+		else {
+			if(count($index->getFlags()) > 0)
+				$res = "\n\t\$table->addIndex(\n\t\t".$this->outputPHP($index->getColumns(), 2).",\n\t\tnull,\n\t\t".$this->outputPHP($index->getFlags(), 2)."\n\t);";
+			else
+				$res = "\n\t\$table->addIndex(\n\t\t".$this->outputPHP($index->getColumns(), 2)."\n\t);";
+		}
 		
 		return $res;
 	}
