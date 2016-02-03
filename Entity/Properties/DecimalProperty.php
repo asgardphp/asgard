@@ -16,4 +16,13 @@ class DecimalProperty extends \Asgard\Entity\Property {
 			'scale' => 6,
 		];
 	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function doSet($val, \Asgard\Entity\Entity $entity, $name) {
+		if($val === null || $val === false || $val === '')
+			return null;
+		return (double)$val;
+	}
 }
