@@ -39,7 +39,10 @@ class Query {
 			else
 				$this->rsc = $pdo->query($sql);
 		} catch(\PDOException $e) {
-			throw new DBException($e->getMessage().'<br/>'."\n".'SQL: '.$sql.' ('.implode(', ', $args).')');
+			$exception = new DBException;
+			$exception->feedPDOException($e);
+			$exception->setSQL($sql, $args);
+			throw $exception;
 		}
 	}
 
