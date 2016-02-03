@@ -1170,6 +1170,11 @@ class DAL implements \Iterator {
 				$del_tables = implode(', ', $del_tables);
 				$sql = 'DELETE '.$del_tables.' FROM '.$tables.$jointures.$where.$orderBy.$limit;
 			}
+			#jointures require to say from which table to delete. if no table given, use the default table.
+			elseif($this->joins && !$del_tables) {
+				$del_table = '`'.$this->getDefaultTable().'`';
+				$sql = 'DELETE '.$del_table.' FROM '.$tables.$jointures.$where.$orderBy.$limit;
+			}
 			else
 				$sql = 'DELETE FROM '.$tables.$jointures.$where.$orderBy.$limit;
 
