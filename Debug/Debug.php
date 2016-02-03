@@ -37,7 +37,7 @@ class Debug {
 			ob_end_clean();
 
 		if(!headers_sent())
-			http_response_code(500);
+			http_response_code(520);
 
 		if(static::$format === 'html')
 			echo '<pre>';
