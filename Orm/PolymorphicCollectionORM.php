@@ -273,4 +273,79 @@ class PolymorphicCollectionORM implements CollectionORMInterface {
 	public function key() { throw new \Exception('Not implemented'); }
 
 	public function valid() { throw new \Exception('Not implemented'); }
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getHaving() { throw new \Exception('Not implemented'); }
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getWith() { throw new \Exception('Not implemented'); }
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getOrderBy() { throw new \Exception('Not implemented'); }
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getLimit() { throw new \Exception('Not implemented'); }
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getOffset() { throw new \Exception('Not implemented'); }
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getJoin() { throw new \Exception('Not implemented'); }
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getPage() { throw new \Exception('Not implemented'); }
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getPerPage() { throw new \Exception('Not implemented'); }
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getLocale() { throw new \Exception('Not implemented'); }
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getPrefix() { throw new \Exception('Not implemented'); }
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getScopes() { throw new \Exception('Not implemented'); }
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getReversed() { throw new \Exception('Not implemented'); }
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getSelects() { throw new \Exception('Not implemented'); }
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getUnions() { throw new \Exception('Not implemented'); }
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function groupBy($groupBy) { throw new \Exception('Not implemented'); }
 }

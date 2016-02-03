@@ -1067,67 +1067,116 @@ class ORM implements ORMInterface, \Countable {
 		return $this;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function getHaving() {
 		return $this->having;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function getWith() {
 		return $this->with;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function getOrderBy() {
 		return $this->orderBy;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function getLimit() {
 		return $this->limit;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function getOffset() {
 		return $this->offset;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function getJoin() {
 		return $this->join;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function getPage() {
 		return $this->page;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function getPerPage() {
 		return $this->per_page;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function getLocale() {
 		return $this->locale;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function getPrefix() {
 		return $this->prefix;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function getScopes() {
 		return $this->scopes;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function getReversed() {
 		return $this->reversed;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function getSelects() {
 		return $this->selects;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function getUnions() {
 		return $this->unions;
 	}
 
+	/**
+	 * Return the dataMapper dependency.
+	 * @param DataMapperInterface $dataMapper
+	 */
 	public function setDataMapper(DataMapperInterface $dataMapper) {
 		$this->dataMapper = $dataMapper;
 		return $this;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function groupBy($groupBy) {
 		$this->groupBy = $groupBy;
 		return $this;

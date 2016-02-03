@@ -262,4 +262,94 @@ interface ORMInterface extends \Iterator {
 	 * @return \Asgard\Orm\ORMInterface $this
 	*/
 	public function reset();
+
+	/**
+	 * Return the having property.
+	 * @return array
+	 */
+	public function getHaving();
+
+	/**
+	 * Return the with property.
+	 * @return array
+	 */
+	public function getWith();
+
+	/**
+	 * Return the orderBy property.
+	 * @return string
+	 */
+	public function getOrderBy();
+
+	/**
+	 * Return the limit property.
+	 * @return integer
+	 */
+	public function getLimit();
+
+	/**
+	 * Return the offset property.
+	 * @return integer
+	 */
+	public function getOffset();
+
+	/**
+	 * Return the join property.
+	 * @return array
+	 */
+	public function getJoin();
+
+	/**
+	 * Return the page property.
+	 * @return integer
+	 */
+	public function getPage();
+
+	/**
+	 * Return the per_page property.
+	 * @return integer
+	 */
+	public function getPerPage();
+
+	/**
+	 * Return the locale property.
+	 * @return string
+	 */
+	public function getLocale();
+
+	/**
+	 * Return the prefix property.
+	 * @return string
+	 */
+	public function getPrefix();
+
+	/**
+	 * Return the scopes property.
+	 * @return array
+	 */
+	public function getScopes();
+
+	/**
+	 * Return the reversed property.
+	 * @return boolean
+	 */
+	public function getReversed();
+
+	/**
+	 * Return the selects property.
+	 * @return array
+	 */
+	public function getSelects();
+
+	/**
+	 * Return the unions property.
+	 * @return array
+	 */
+	public function getUnions();
+
+	/**
+	 * Set the groupBy property.
+	 * @param string $groupBy
+	 */
+	public function groupBy($groupBy);
 }
