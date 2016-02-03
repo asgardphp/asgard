@@ -24,6 +24,7 @@ class ConsoleCommand extends \Asgard\Console\Command {
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$this->output->writeln('Type "quit" to quit.');
+		$container = $this->getContainer();
 
 		$dialog = $this->getHelperSet()->get('question');
 		$question = new Question('>', false);
@@ -37,9 +38,9 @@ class ConsoleCommand extends \Asgard\Console\Command {
 					$cmd .= ';';
 				ob_start();
 				eval($cmd);
-				$res = ob_get_clean();
-				if($res)
-					echo $res."\n";
+				$_res = ob_get_clean();
+				if($_res)
+					echo $_res."\n";
 			} catch(\Exception $e) {
 				$this->error($e->getMessage());
 			}
