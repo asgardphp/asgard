@@ -39,6 +39,16 @@ abstract class Controller {
 	 * @var array
 	 */
 	protected $parameters = [];
+	/**
+	 * Flash dependency.
+	 * @var Utils\FlashInterface
+	 */
+	protected $flash;
+	/**
+	 * Resolver dependency.
+	 * @var ResolverInterface
+	 */
+	protected $resolver;
 
 	/**
 	 * Add a filter.
@@ -147,7 +157,7 @@ abstract class Controller {
 	 * @return Utils\Flash
 	 */
 	public function getFlash() {
-		return $this->container['flash'];
+		return $this->flash;
 	}
 
 	/**
@@ -175,9 +185,9 @@ abstract class Controller {
 	 */
 	public function url($action, $params=[]) {
 		if(is_array($action))
-			return $this->container['resolver']->url($action, $params);
+			return $this->resolver->url($action, $params);
 		else
-			return $this->container['resolver']->url([get_called_class(), $action], $params);
+			return $this->resolver->url([get_called_class(), $action], $params);
 	}
 
 	/**
@@ -207,5 +217,25 @@ abstract class Controller {
 	 */
 	public function has($name) {
 		return \Asgard\Common\ArrayUtils::has($this->parameters, $name);
+	}
+
+	/**
+	 * Set the flash dependency.
+	 * @param  Utils\FlashInterface $flash
+	 * @return static
+	 */
+	public function setFlash(Utils\FlashInterface $flash=null) {
+		$this->flash = $flash;
+		return $this;
+	}
+
+	/**
+	 * Set the resolver dependency.
+	 * @param  ResolverInterface $resolver
+	 * @return static
+	 */
+	public function setResolver(ResolverInterface $resolver=null) {
+		$this->resolver = $resolver;
+		return $this;
 	}
 }

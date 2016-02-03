@@ -5,7 +5,7 @@ namespace Asgard\Http\Utils;
  * Store messages in the container and display them on the next page.
  * @author Michel Hognerud <michel@hognerud.com>
  */
-class Flash {
+class Flash implements FlashInterface {
 	/**
 	 * Messages.
 	 * @var array
@@ -62,41 +62,35 @@ class Flash {
 	}
 
 	/**
-	 * Add a success message.
-	 * @param string $message
+	 * {@inheritDoc}
 	 */
 	public function addSuccess($message) {
 		return $this->add('success', $message);
 	}
 
 	/**
-	 * Add an error message.
-	 * @param string $message
+	 * {@inheritDoc}
 	 */
 	public function addError($message) {
 		return $this->add('error', $message);
 	}
 
 	/**
-	 * Add an info message.
-	 * @param string $message
+	 * {@inheritDoc}
 	 */
 	public function addInfo($message) {
 		return $this->add('info', $message);
 	}
 
 	/**
-	 * Add a warning message.
-	 * @param string $message
+	 * {@inheritDoc}
 	 */
 	public function addWarning($message) {
 		return $this->add('warning', $message);
 	}
 
 	/**
-	 * Add a custom type message.
-	 * @param string $type
-	 * @param string $message
+	 * {@inheritDoc}
 	 */
 	public function add($type, $message) {
 		$this->fetch();
@@ -111,9 +105,7 @@ class Flash {
 	}
 
 	/**
-	 * Show all messages.
-	 * @param string  $cat
-	 * @param boolean $cb  Use the global callback.
+	 * {@inheritDoc}
 	 */
 	public function showAll($cat=null, $cb=true) {
 		$this->fetch();
@@ -128,10 +120,7 @@ class Flash {
 	}
 
 	/**
-	 * Show a custom type messages.
-	 * @param  string $type
-	 * @param  string $cat
-	 * @param  callable $cb
+	 * {@inheritDoc}
 	 */
 	public function show($type, $cat=null, $cb=null) {
 		$this->fetch();
@@ -173,21 +162,26 @@ class Flash {
 	}
 
 	/**
-	 * Set the display callback.
-	 * @param  callable $cb
-	 * @return Flash $this
+	 * {@inheritDoc}
 	 */
 	public function setCallback(callable $cb) {
 		$this->cb = $cb;
 		return $this;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function has($type=null) {
 		if($type === null)
 			return count($this->messages) > 0;
 		else
 			return isset($this->messages['type']) && count($this->messages['type']) > 0;
 	}
+
+	/**
+	 * {@inheritDoc}
+	 */
 	public function setGlobalCallback(callable $globalCb) {
 		$this->globalCb = $globalCb;
 		return $this;

@@ -79,6 +79,11 @@ class HttpKernel implements HttpKernelInterface {
 	 */
 	protected $resolver;
 	/**
+	 * Flash dependency.
+	 * @var Utils\FlashInterface
+	 */
+	protected $flash;
+	/**
 	 * Ob level before processing request.
 	 * @var integer
 	 */
@@ -312,6 +317,8 @@ class HttpKernel implements HttpKernelInterface {
 	 */
 	public function runController($controllerClass, $action, Request $request, Route $route=null) {
 		$controller = new $controllerClass();
+		$controller->setFlash($this->flash);
+		$controller->setResolver($this->resolver);
 		$controller->setContainer($this->container);
 
 		$this->prepareController($controller, $action, $request, $route);
@@ -493,5 +500,15 @@ class HttpKernel implements HttpKernelInterface {
 
 			$controller->addAfterFilter($filter);
 		}
+	}
+
+	/**
+	 * Set the flash dependency.
+	 * @param  Utils\FlashInterface $flash
+	 * @return static
+	 */
+	public function setFlash(Utils\FlashInterface $flash) {
+		$this->flash = $flash;
+		return $this;
 	}
 }
