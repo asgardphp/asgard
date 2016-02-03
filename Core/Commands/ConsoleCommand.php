@@ -3,6 +3,7 @@ namespace Asgard\Core\Commands;
 
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\Question;
 
 /**
  * Console command.
@@ -24,21 +25,26 @@ class ConsoleCommand extends \Asgard\Console\Command {
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$this->output->writeln('Type "quit" to quit.');
 
-		$dialog = $this->getHelperSet()->get('dialog');
+		$dialog = $this->getHelperSet()->get('question');
+		$question = new Question('>', false);
 
-		$cmd = $dialog->ask($this->output, '>');
+		$cmd = $dialog->ask($this->input, $this->output, $question);
 		while($cmd != "quit") {
 			try {
 				if(preg_match('/^dump /', $cmd))
 					$cmd = 'var_dump('.substr($cmd, 5).')';
 				if(!preg_match('/;$/', $cmd))
 					$cmd .= ';';
+				ob_start();
 				eval($cmd);
+				$res = ob_get_clean();
+				if($res)
+					echo $res."\n";
 			} catch(\Exception $e) {
 				$this->error($e->getMessage());
 			}
 
-			$cmd = $dialog->ask($this->output, '>');
+			$cmd = $dialog->ask($this->input, $this->output, $question);
 		}
 		$this->output->writeln('Quiting..');
 	}
