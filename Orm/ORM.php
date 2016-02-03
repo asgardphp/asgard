@@ -777,7 +777,7 @@ class ORM implements ORMInterface {
 							->orm($relation_entity)
 							->join('innerjoin '.$reverseRelationName)
 							->where([
-								$this->getTable().'.id IN ('.implode(', ', $ids).')',
+								$reverseRelationName.'.id IN ('.implode(', ', $ids).')',
 							]);
 
 						if(is_callable($closure))
