@@ -67,6 +67,7 @@ class DataMapper implements DataMapperInterface {
 		if($res)
 			$entity->_set(static::unserialize($entity, $res));
 		$entity->resetChanged();
+		$entity->setParameter('persisted', true);
 
 		if($entity->isNew())
 			return null;
@@ -239,7 +240,6 @@ class DataMapper implements DataMapperInterface {
 		return $validator->errors($data, $groups);
 	}
 
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -279,7 +279,7 @@ class DataMapper implements DataMapperInterface {
 			}
 
 			$orm = $this->orm(get_class($entity));
-			$isNew = !isset($entity->id) || !$entity->id || $orm->reset()->resetScopes()->where(['id'=>$entity->id])->getDAL()->count() === 0;
+			$persisted = $entity->getParameter('persisted');
 
 			$vars = $i18n = [];
 			#process data
@@ -288,12 +288,12 @@ class DataMapper implements DataMapperInterface {
 				if($prop->get('i18n')) {
 					$values = $entity->get($name, $entity->getLocales());
 					foreach($values as $locale=>$v) {
-						if($isNew || in_array($name, $entity->getChangedI18N($locale)))
+						if(!$persisted || in_array($name, $entity->getChangedI18N($locale)))
 							$i18n[$locale][$name] = $entity->getDefinition()->property($name)->serialize($v);
 					}
 				}
 				#other properties
-				elseif($isNew || in_array($name, $entity->getChanged())) {
+				elseif(!$persisted || in_array($name, $entity->getChanged())) {
 					#relations with a single entity
 					if($prop->get('type') == 'entity') {
 						$rel = $this->relation($entity->getDefinition(), $name);
@@ -335,10 +335,10 @@ class DataMapper implements DataMapperInterface {
 
 			#Persist
 			if(count($vars) > 0) {
-				if($isNew)
-					$entity->id = $orm->getDAL()->insert($vars);
-				else
+				if($persisted)
 					$orm->reset()->resetScopes()->where(['id'=>$entity->id])->getDAL()->update($vars);
+				else
+					$entity->id = $orm->getDAL()->insert($vars);
 			}
 
 			#Persist i18n
@@ -363,7 +363,7 @@ class DataMapper implements DataMapperInterface {
 			foreach($this->relations($entity->getDefinition()) as $relation => $params) {
 				if(!isset($entity->data['properties'][$relation]))
 					continue;
-				if(!$isNew && !in_array($relation, $entity->getChanged()))
+				if(!$persisted && !in_array($relation, $entity->getChanged()))
 					continue;
 				$rel = $this->relation($entity->getDefinition(), $relation);
 
@@ -374,6 +374,7 @@ class DataMapper implements DataMapperInterface {
 			}
 
 			$entity->resetChanged();
+			$entity->setParameter('persisted', true);
 		});
 
 		return $entity;
