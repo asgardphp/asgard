@@ -21,6 +21,11 @@ abstract class Entity {
 	 */
 	protected $changed = [];
 	/**
+	 * Parameters.
+	 * @var array
+	 */
+	protected $parameters = [];
+	/**
 	 * changed i18n attributes.
 	 * @var array
 	 */
@@ -629,5 +634,27 @@ abstract class Entity {
 	public function resetchanged() {
 		$this->changed             = [];
 		$this->translationschanged = [];
+	}
+
+	/**
+	 * Return a parameter.
+	 * @param  string $key
+	 * @return mixed
+	 */
+	public function getParameter($key) {
+		if(!isset($this->parameters[$key]))
+			return;
+		return $this->parameters[$key];
+	}
+
+	/**
+	 * Set a parameter.
+	 * @param  string $key
+	 * @param  parameter $value
+	 * @return static
+	 */
+	public function setParameter($key, $value) {
+		$this->parameters[$key] = $value;
+		return $this;
 	}
 }
