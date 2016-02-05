@@ -291,6 +291,12 @@ class DALTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals([5], $dal->getParameters());
 		$this->assertEquals(5, $dal->insert(['id'=>5]));
 
+		/* INSERT MANY */
+		$dal = $this->getDAL()->into('news');
+		$this->assertEquals('INSERT INTO `news` (`id`) VALUES (?), (?)', $dal->buildInsertSQL([['id'=>6], ['id'=>7]]));
+		$this->assertEquals([6, 7], $dal->getParameters());
+		$this->assertEquals(7, $dal->insertMany([['id'=>6], ['id'=>7]]));
+
 		/* EXCEPTION */
 		$this->setExpectedException('Exception');
 		$this->getDAL()->get();

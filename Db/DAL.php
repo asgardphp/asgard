@@ -1522,6 +1522,19 @@ class DAL implements \Iterator {
 	}
 
 	/**
+	 * Conpute the insert many sql query for debugging.
+	 * @param  array  $rows
+	 * @param  array  $update
+	 * @return string
+	 */
+	public function dbgInsertMany(array $rows, array $update=[]) {
+		$sql = $this->buildInsertSQL($rows, $update);
+		$params = $this->getParameters();
+
+		return $this->replaceParams($sql, $params);
+	}
+
+	/**
 	 * Compute the delete sql query for debugging.
 	 * @return string
 	 */
@@ -1536,6 +1549,7 @@ class DAL implements \Iterator {
 	 * Add UNIONs.
 	 * @param  array|static $dals
 	 * @return DAL
+	 * @api
 	 */
 	public function union($dals) {
 		if(!is_array($dals))
@@ -1545,6 +1559,13 @@ class DAL implements \Iterator {
 		return $this;
 	}
 
+	/**
+	 * Insert rows.
+	 * @param  array  $rows
+	 * @param  array  $update
+	 * @return integer
+	 * @api
+	 */
 	public function insertMany(array $rows, array $update=[]) {
 		$sql = $this->buildInsertSQL($rows, $update);
 		$params = $this->getParameters();
@@ -1552,6 +1573,12 @@ class DAL implements \Iterator {
 		return $this->db->id();
 	}
 
+	/**
+	 * Ignore duplicate errors on insertion.
+	 * @param  boolean $ignore
+	 * @return static
+	 * @api
+	 */
 	public function setIgnore($ignore) {
 		$this->ignore = $ignore;
 		return $this;
