@@ -51,7 +51,6 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 			$table->addColumn('id', 'integer', [
 				'length' => 4,
 				'notnull' => true,
-				'autoincrement' => true,
 			]);
 			$table->addColumn('locale', 'string', [
 				'length' => 10,
