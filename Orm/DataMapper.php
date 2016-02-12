@@ -36,6 +36,11 @@ class DataMapper implements DataMapperInterface {
 	 * @var CollectionORMFactoryInterface
 	 */
 	protected $collectionOrmFactory;
+	/**
+	 * Transformers to prepare SQL inputs.
+	 * @var array
+	 */
+	protected $sqlInputTransformers;
 
 	/**
 	 * Constructor.
@@ -241,6 +246,48 @@ class DataMapper implements DataMapperInterface {
 	}
 
 	/**
+	 * Prepare input before inserting/updatig database.
+	 * @param  \Asgard\Entity\Property $prop
+	 * @param  mixed                   $value
+	 * @return mixed
+	 */
+	protected function prepareInput(\Asgard\Entity\Property $prop, $value) {
+		$class = get_class($prop);
+
+		if(is_null($value))
+			return null;
+		elseif($prop->get('many'))
+			return $prop->serialize($value);
+		elseif(isset($this->sqlInputTransformers[$class]))
+			return $this->sqlInputTransformers[$class]->toSQL($value);
+		elseif(method_exists($prop, 'toSQL'))
+			return $prop->toSQL($value);
+		else
+			return $prop->serialize($value);
+	}
+
+	/**
+	 * Add a transformer to prepare SQL input.
+	 * @param  string                          $class Entity property class.
+	 * @param  SQLPropertyTransformerInterface $spi
+	 * @return static
+	 */
+	public function addSqlInput($class, SQLPropertyTransformerInterface $spi) {
+		$this->sqlInputTransformers[$class] = $spi;
+		return $this;
+	}
+
+	/**
+	 * Return a transformer to prepare SQL input.
+	 * @param  string                          $class Entity property class.
+	 * @return SQLPropertyTransformerInterface $spi
+	 */
+	public function getSqlInput($class, SQLPropertyTransformerInterface $spi) {
+		if(isset($this->sqlInputTransformers[$class]))
+			return $this->sqlInputTransformers[$class];
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public function save(\Asgard\Entity\Entity $entity, array $values=[], $groups=[]) {
@@ -289,7 +336,7 @@ class DataMapper implements DataMapperInterface {
 					$values = $entity->get($name, $entity->getLocales());
 					foreach($values as $locale=>$v) {
 						if(!$persisted || in_array($name, $entity->getChangedI18N($locale)))
-							$i18n[$locale][$name] = $entity->getDefinition()->property($name)->serialize($v);
+							$i18n[$locale][$name] = $this->prepareInput($prop, $v);
 					}
 				}
 				#other properties
@@ -328,7 +375,7 @@ class DataMapper implements DataMapperInterface {
 					}
 					else {
 						$value = $entity->get($name);
-						$vars[$name] = $prop->serialize($value);
+						$vars[$name] = $this->prepareInput($prop, $value);
 					}
 				}
 			}

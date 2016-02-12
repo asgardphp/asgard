@@ -9,15 +9,6 @@ class PasswordProperty extends \Asgard\Entity\Property {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getORMParameters() {
-		return [
-			'type' => 'string',
-		];
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public function getFormParameters() {
 		$params = $this->get('form');
 		if(!isset($params['hidden']))
@@ -37,5 +28,33 @@ class PasswordProperty extends \Asgard\Entity\Property {
 			$key = '';
 		}
 		return sha1($key.$val);
+	}
+
+	/**
+	 * Return parameters for ORM.
+	 * @return array
+	 */
+	public function getORMParameters() {
+		return [
+			'type' => 'string',
+		];
+	}
+
+	/**
+	 * Return prepared input for SQL.
+	 * @param  mixed $val
+	 * @return string
+	 */
+	public function toSQL($val) {
+		return (string)$val;
+	}
+
+	/**
+	 * Transform SQL output.
+	 * @param  mixed $val
+	 * @return boolean
+	 */
+	public function fromSQL($val) {
+		return (string)$val;
 	}
 }

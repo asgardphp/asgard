@@ -452,8 +452,20 @@ class ORM implements ORMInterface, \Countable {
 	*/
 	protected static function unserialize(\Asgard\Entity\Entity $entity, array $data, $locale=null) {
 		foreach($data as $k=>$v) {
-			if($entity->getDefinition()->hasProperty($k))
-				$data[$k] = $entity->getDefinition()->property($k)->unserialize($v, $entity, $k);
+			if($entity->getDefinition()->hasProperty($k)) {
+				$prop = $entity->getDefinition()->property($k);
+				$class = get_class($prop);
+				if($v === null)
+					$data[$k] = null;
+				elseif($prop->get('many'))
+					$data[$k] = $entity->getDefinition()->property($k)->unserialize($v, $entity, $k);
+				elseif(method_exists($prop, 'fromSQL'))
+					$data[$k] = $prop->fromSQL($v);
+				elseif($transformer = $this->dataMapper->getSqlInput($class))
+					return $transformer->fromSQL($v);
+				else
+					$data[$k] = $entity->getDefinition()->property($k)->unserialize($v, $entity, $k);
+			}
 		}
 
 		return $entity->_set($data, $locale, null, false);

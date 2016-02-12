@@ -17,16 +17,6 @@ class BooleanProperty extends \Asgard\Entity\Property {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getORMParameters() {
-		return [
-			'type' => 'integer',
-			'length' => 1,
-		];
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public function _getDefault() {
 		return null;
 	}
@@ -43,5 +33,34 @@ class BooleanProperty extends \Asgard\Entity\Property {
 	 */
 	public function toString($val) {
 		return $val ? '1':'0';
+	}
+
+	/**
+	 * Return parameters for ORM.
+	 * @return array
+	 */
+	public function getORMParameters() {
+		return [
+			'type' => 'integer',
+			'length' => 1,
+		];
+	}
+
+	/**
+	 * Return prepared input for SQL.
+	 * @param  mixed $val
+	 * @return integer
+	 */
+	public function toSQL($val) {
+		return $val ? 1:0;
+	}
+
+	/**
+	 * Transform SQL output.
+	 * @param  mixed $val
+	 * @return boolean
+	 */
+	public function fromSQL($val) {
+		return (bool)$val;
 	}
 }

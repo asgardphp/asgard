@@ -34,10 +34,10 @@ class DatetimeProperty extends \Asgard\Entity\Property {
 	/**
 	 * {@inheritDoc}
 	 */
-	protected function doSerialize($val) {
-		if($val == null)
-			return '';
-		return $val->format('Y-m-d H:i:s');
+	protected function doSerialize($obj) {
+		if(!$obj)
+			return null;
+		return $obj->format('Y-m-d H:i:s');
 	}
 
 	/**
@@ -67,6 +67,14 @@ class DatetimeProperty extends \Asgard\Entity\Property {
 	/**
 	 * {@inheritDoc}
 	 */
+	public function getFormField() {
+		return 'Asgard\Form\Fields\DatetimeField';
+	}
+
+	/**
+	 * Return parameters for ORM.
+	 * @return array
+	 */
 	public function getORMParameters() {
 		return [
 			'type' => 'datetime',
@@ -74,9 +82,20 @@ class DatetimeProperty extends \Asgard\Entity\Property {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Return prepared input for SQL.
+	 * @param  mixed $val
+	 * @return string
 	 */
-	public function getFormField() {
-		return 'Asgard\Form\Fields\DatetimeField';
+	public function toSQL($val) {
+		return $val->format('Y-m-d H:i:s');
+	}
+
+	/**
+	 * Transform SQL output.
+	 * @param  mixed $val
+	 * @return boolean
+	 */
+	public function fromSQL($val) {
+		return $this->doUnserialize($val);
 	}
 }

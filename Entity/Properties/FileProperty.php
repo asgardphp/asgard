@@ -64,15 +64,6 @@ class FileProperty extends \Asgard\Entity\Property {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getORMParameters() {
-		return [
-			'type' => 'string',
-		];
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	protected function _getDefault() {
 		return null;
 	}
@@ -121,5 +112,33 @@ class FileProperty extends \Asgard\Entity\Property {
 	 */
 	public function getFormField() {
 		return 'Asgard\Form\Fields\FileField';
+	}
+
+	/**
+	 * Return parameters for ORM.
+	 * @return array
+	 */
+	public function getORMParameters() {
+		return [
+			'type' => 'string',
+		];
+	}
+
+	/**
+	 * Return prepared input for SQL.
+	 * @param  mixed $val
+	 * @return integer
+	 */
+	public function toSQL($val) {
+		return $val->src();
+	}
+
+	/**
+	 * Transform SQL output.
+	 * @param  mixed $val
+	 * @return boolean
+	 */
+	public function fromSQL($val) {
+		return $this->doUnserialize($val);
 	}
 }

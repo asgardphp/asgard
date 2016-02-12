@@ -9,6 +9,15 @@ class EmailProperty extends TextProperty {
 	/**
 	 * {@inheritDoc}
 	 */
+	public function prepareValidator(\Asgard\Validation\ValidatorInterface $validator) {
+		parent::prepareValidator($validator);
+		$validator->rule('email');
+	}
+
+	/**
+	 * Return parameters for ORM.
+	 * @return array
+	 */
 	public function getORMParameters() {
 		return [
 			'type' => 'string',
@@ -16,10 +25,20 @@ class EmailProperty extends TextProperty {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Return prepared input for SQL.
+	 * @param  mixed $val
+	 * @return string
 	 */
-	public function prepareValidator(\Asgard\Validation\ValidatorInterface $validator) {
-		parent::prepareValidator($validator);
-		$validator->rule('email');
+	public function toSQL($val) {
+		return (string)$val;
+	}
+
+	/**
+	 * Transform SQL output.
+	 * @param  mixed $val
+	 * @return boolean
+	 */
+	public function fromSQL($val) {
+		return (string)$val;
 	}
 }

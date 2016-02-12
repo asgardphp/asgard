@@ -9,6 +9,16 @@ class DecimalProperty extends \Asgard\Entity\Property {
 	/**
 	 * {@inheritDoc}
 	 */
+	public function doSet($val, \Asgard\Entity\Entity $entity, $name) {
+		if($val === null || $val === false || $val === '')
+			return null;
+		return (double)$val;
+	}
+
+	/**
+	 * Return parameters for ORM.
+	 * @return array
+	 */
 	public function getORMParameters() {
 		return [
 			'type' => 'decimal',
@@ -18,11 +28,20 @@ class DecimalProperty extends \Asgard\Entity\Property {
 	}
 
 	/**
-	 * {@inheritDoc}
+	 * Return prepared input for SQL.
+	 * @param  mixed $val
+	 * @return double
 	 */
-	public function doSet($val, \Asgard\Entity\Entity $entity, $name) {
-		if($val === null || $val === false || $val === '')
-			return null;
+	public function toSQL($val) {
+		return (double)$val;
+	}
+
+	/**
+	 * Transform SQL output.
+	 * @param  mixed $val
+	 * @return boolean
+	 */
+	public function fromSQL($val) {
 		return (double)$val;
 	}
 }

@@ -71,15 +71,6 @@ class DateProperty extends \Asgard\Entity\Property {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getORMParameters() {
-		return [
-			'type' => 'date',
-		];
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public function toString($obj) {
 		return $obj->format('Y-m-d');
 	}
@@ -89,5 +80,33 @@ class DateProperty extends \Asgard\Entity\Property {
 	 */
 	public function getFormField() {
 		return 'Asgard\Form\Fields\DateField';
+	}
+
+	/**
+	 * Return parameters for ORM.
+	 * @return array
+	 */
+	public function getORMParameters() {
+		return [
+			'type' => 'date',
+		];
+	}
+
+	/**
+	 * Return prepared input for SQL.
+	 * @param  mixed $val
+	 * @return string
+	 */
+	public function toSQL($val) {
+		return $val->format('Y-m-d');
+	}
+
+	/**
+	 * Transform SQL output.
+	 * @param  mixed $val
+	 * @return boolean
+	 */
+	public function fromSQL($val) {
+		return $this->doUnserialize($val);
 	}
 }
