@@ -39,6 +39,11 @@ class Kernel implements \ArrayAccess {
 	 * @var boolean
 	 */
 	protected $loaded = false;
+	/**
+	 * Shutdown callbacks.
+	 * @var array
+	 */
+	protected $onShutdown;
 
 	/**
 	 * Constructor.
@@ -123,9 +128,12 @@ class Kernel implements \ArrayAccess {
 		if($this->loaded)
 			return;
 
-		$errorHandler = \Asgard\Debug\ErrorHandler::register();
+		$errorHandler = \Asgard\Debug\ErrorHandler::register(false);
 		if(php_sapi_name() !== 'cli')
 			\Asgard\Debug\Debug::setFormat('html');
+
+		register_shutdown_function([$this, 'shutdownFunction']);
+		$this->addShutdownCallback([$errorHandler, 'shutdownFunction']);
 
 		if($this->getEnv() === 'prod' && file_exists($this->params['root'].'/storage/compiled.php'))
 			include_once $this->params['root'].'/storage/compiled.php';
@@ -146,6 +154,22 @@ class Kernel implements \ArrayAccess {
 		$this->loaded = true;
 
 		return $this;
+	}
+
+	/**
+	 * Called on shutdown.
+	 */
+	public function shutdownFunction() {
+		foreach($this->onShutdown as $cb)
+			call_user_func($cb);
+	}
+
+	/**
+	 * Add a callback on shutdown.
+	 * @param callable $cb
+	 */
+	public function addShutdownCallback($cb) {
+		$this->onShutdown[] = $cb;
 	}
 
 	/**

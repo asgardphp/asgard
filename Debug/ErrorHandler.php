@@ -55,7 +55,7 @@ class ErrorHandler {
 	 * Register the PHP error handler.
 	 * @return ErrorHandler
 	 */
-	public static function register() {
+	public static function register($registerShutdown=true) {
 		ini_set('display_errors', 0);
 		ini_set('display_startup_errors', 0);
 		error_reporting(-1);
@@ -66,8 +66,13 @@ class ErrorHandler {
 		$errorHandler = new static();
 		set_error_handler([$errorHandler, 'phpErrorHandler']);
 		set_exception_handler([$errorHandler, 'exceptionHandler']);
-		register_shutdown_function([$errorHandler, 'shutdownFunction']);
+		$errorHandler->registerShutdown();
+
 		return $errorHandler;
+	}
+
+	public function registerShutdown() {
+		register_shutdown_function([$this, 'shutdownFunction']);
 	}
 
 	/**
@@ -84,7 +89,7 @@ class ErrorHandler {
 			$exceptionHandler = set_exception_handler(function() {});
 			restore_exception_handler();
 			$exception = new FatalErrorException($e['message'], $e['type'], 0, $e['file'], $e['line']);
-			call_user_func_array($exceptionHandler, [$exception]);
+			call_user_func_array($exceptionHandler, [$exception, false]);
 		}
 	}
 
@@ -171,37 +176,37 @@ class ErrorHandler {
 	/**
 	 * Exception handler.
 	 * @param  \Exception $e
-	 * @param  boolean   $kill kill the process
+	 * @param  boolean   $display display the error message
 	 */
-	public function exceptionHandler(\Exception $e, $kill=true) {
+	public function exceptionHandler(\Exception $e, $display=true) {
 		static::$reservedMemory = null;
 
 		$this->logException($e);
 
-		if($kill) {
-			if(!headers_sent())
-				http_response_code(500);
+		if(!headers_sent())
+			http_response_code(500);
 
-			if(php_sapi_name() === 'cli' || $this->debug) {
-				$trace = $this->getBacktraceFromException($e);
+		if(!$display)
+			return;
 
-				if($e instanceof PSRException)
-					$msg = $e->getMessage();
-				elseif($e instanceof \ErrorException)
-					$msg = 'PHP ('.static::getPHPError($e->getCode()).'): '.$e->getMessage();
-				else
-					$msg = get_class($e).': '.$e->getMessage();
+		if(php_sapi_name() === 'cli' || $this->debug) {
+			$trace = $this->getBacktraceFromException($e);
 
-				$result = '';
-				if($msg)
-					$result .= $msg."\n\n";
-				$result .= Debug::getReport($trace);
-				echo $result;
-			}
+			if($e instanceof PSRException)
+				$msg = $e->getMessage();
+			elseif($e instanceof \ErrorException)
+				$msg = 'PHP ('.static::getPHPError($e->getCode()).'): '.$e->getMessage();
 			else
-				echo 'Something went wrong.';
-			exit(1);
+				$msg = get_class($e).': '.$e->getMessage();
+
+			$result = '';
+			if($msg)
+				$result .= $msg."\n\n";
+			$result .= Debug::getReport($trace);
+			echo $result;
 		}
+		else
+			echo 'Something went wrong.';
 	}
 
 	/**
