@@ -8,7 +8,6 @@ class MigrationsTest extends \PHPUnit_Framework_TestCase {
 	protected static $db;
 
 	public static function setUpBeforeClass() {
-		\Asgard\File\FileSystem::delete(__DIR__.'/migrations/');
 		static::$db = $db = new \Asgard\Db\DB([
 			'driver' => 'sqlite',
 			'database' => ':memory:',
@@ -17,6 +16,10 @@ class MigrationsTest extends \PHPUnit_Framework_TestCase {
 		$dataMapper = new \Asgard\Orm\DataMapper($db, $entityManager);
 		static::$schema = new \Asgard\Db\Schema($db);
 		static::$ormm = new \Asgard\Orm\ORMMigrations($dataMapper, new \Asgard\Migration\MigrationManager(__DIR__.'/migrations/', $db, $db->getSchema()));
+	}
+
+	public static function tearDownAfterClass() {
+		\Asgard\File\FileSystem::delete(__DIR__.'/migrations/');
 	}
 
 	public function testAutoMigrate() {
