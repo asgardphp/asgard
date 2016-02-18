@@ -66,7 +66,6 @@ class ErrorHandler {
 		$errorHandler = new static();
 		set_error_handler([$errorHandler, 'phpErrorHandler']);
 		set_exception_handler([$errorHandler, 'exceptionHandler']);
-		$errorHandler->registerShutdown();
 
 		return $errorHandler;
 	}
