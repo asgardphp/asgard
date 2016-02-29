@@ -390,14 +390,14 @@ class ORMMigrations {
 	 */
 	protected function createIndex($index) {
 		if($index->isPrimary())
-			$res = "\n\t\$table->setPrimaryKey(\n\t\t".$this->outputPHP($index->getColumns(), 2)."\n\t);";
+			$res = "\n\t\$table->setPrimaryKey(\n\t\t".$this->outputPHP($index->getColumns(), 2).",\n\t\t'".$index->getName()."'\n\t);";
 		elseif($index->isUnique())
-			$res = "\n\t\$table->addUniqueIndex(\n\t\t".$this->outputPHP($index->getColumns(), 2)."\n\t);";
+			$res = "\n\t\$table->addUniqueIndex(\n\t\t".$this->outputPHP($index->getColumns(), 2).",\n\t\t'".$index->getName()."'\n\t);";
 		else {
 			if(count($index->getFlags()) > 0)
-				$res = "\n\t\$table->addIndex(\n\t\t".$this->outputPHP($index->getColumns(), 2).",\n\t\tnull,\n\t\t".$this->outputPHP($index->getFlags(), 2)."\n\t);";
+				$res = "\n\t\$table->addIndex(\n\t\t".$this->outputPHP($index->getColumns(), 2).",\n\t\t'".$index->getName()."',\n\t\t".$this->outputPHP($index->getFlags(), 2)."\n\t);";
 			else
-				$res = "\n\t\$table->addIndex(\n\t\t".$this->outputPHP($index->getColumns(), 2)."\n\t);";
+				$res = "\n\t\$table->addIndex(\n\t\t".$this->outputPHP($index->getColumns(), 2).",\n\t\t'".$index->getName()."'\n\t);";
 		}
 		
 		return $res;
