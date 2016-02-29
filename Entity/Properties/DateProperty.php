@@ -59,13 +59,8 @@ class DateProperty extends \Asgard\Entity\Property {
 			#attempt to create date object
 			try {
 				return \Asgard\Common\Date::createFromFormat('Y-m-d', $val);
-			} catch(\Exception $e) {
-				try {
-					return \Asgard\Common\Date::createFromFormat('d/m/Y', $val);
-				} catch(\Exception $e) {}
-			}
+			} catch(\Exception $e) {}
 		}
-		return $val;
 	}
 
 	/**

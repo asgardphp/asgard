@@ -57,11 +57,8 @@ class DatetimeProperty extends \Asgard\Entity\Property {
 		elseif(is_string($val)) {
 			try {
 				return \Asgard\Common\Datetime::createFromFormat('Y-m-d H:i:s', $val);
-			} catch(\Exception $e) {
-				return $val;
-			}
+			} catch(\Exception $e) {}
 		}
-		return $val;
 	}
 
 	/**
