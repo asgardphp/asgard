@@ -256,6 +256,7 @@ class ORM implements ORMInterface, \Countable {
 	*/
 	public function reverse() {
 		$this->reversed = !$this->reversed;
+		$this->resetDAL();
 		return $this;
 	}
 
@@ -406,6 +407,7 @@ class ORM implements ORMInterface, \Countable {
 			$this->join[] = $relations;
 		}
 
+		$this->resetDAL();
 		return $this;
 	}
 
@@ -527,6 +529,7 @@ class ORM implements ORMInterface, \Countable {
 
 	public function addSelect($select) {
 		$this->selects[] = $select;
+		$this->resetDAL();
 		return $this;
 	}
 
@@ -585,6 +588,7 @@ class ORM implements ORMInterface, \Countable {
 
 	public function dalCallback(callable $cb) {
 		$this->dalCallbacks[] = $cb;
+		$this->resetDAL();
 		return $this;
 	}
 
@@ -920,6 +924,7 @@ class ORM implements ORMInterface, \Countable {
 		else
 			$this->where[] = $this->processConditions([$conditions=>$val]);
 
+		$this->resetDAL();
 		return $this;
 	}
 
@@ -934,6 +939,7 @@ class ORM implements ORMInterface, \Countable {
 		else
 			$this->having[] = $this->processConditions([$conditions=>$val]);
 
+		$this->resetDAL();
 		return $this;
 	}
 
@@ -942,6 +948,7 @@ class ORM implements ORMInterface, \Countable {
 	*/
 	public function offset($offset) {
 		$this->offset = $offset;
+		$this->resetDAL();
 		return $this;
 	}
 
@@ -950,6 +957,7 @@ class ORM implements ORMInterface, \Countable {
 	*/
 	public function limit($limit) {
 		$this->limit = $limit;
+		$this->resetDAL();
 		return $this;
 	}
 
@@ -958,6 +966,7 @@ class ORM implements ORMInterface, \Countable {
 	*/
 	public function orderBy($orderBy) {
 		$this->orderBy = $orderBy;
+		$this->resetDAL();
 		return $this;
 	}
 
@@ -1027,6 +1036,7 @@ class ORM implements ORMInterface, \Countable {
 		$this->limit   = null;
 		$this->offset  = null;
 		$this->join    = [];
+		$this->resetDAL();
 
 		return $this;
 	}
@@ -1192,6 +1202,14 @@ class ORM implements ORMInterface, \Countable {
 	 */
 	public function groupBy($groupBy) {
 		$this->groupBy = $groupBy;
+		$this->resetDAL();
 		return $this;
+	}
+
+	/**
+	 * {@inheritDoc}
+	*/
+	public function resetDAL() {
+		$this->tmp_dal = null;
 	}
 }

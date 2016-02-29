@@ -352,4 +352,9 @@ interface ORMInterface extends \Iterator {
 	 * @param string $groupBy
 	 */
 	public function groupBy($groupBy);
+
+	/**
+	 * Reset the temporary DAL.
+	 */
+	public function resetDAL();
 }
