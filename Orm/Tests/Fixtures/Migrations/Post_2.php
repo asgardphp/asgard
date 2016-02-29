@@ -12,7 +12,8 @@ class Post_123 extends \Asgard\Migration\DBMigration {
 			$table->setPrimaryKey(
 				[
 					'id',
-				]
+				],
+				'primary'
 			);
 		});
 		
@@ -27,7 +28,8 @@ class Post_123 extends \Asgard\Migration\DBMigration {
 			$table->setPrimaryKey(
 				[
 					'id',
-				]
+				],
+				'primary'
 			);
 		});
 		
@@ -43,7 +45,8 @@ class Post_123 extends \Asgard\Migration\DBMigration {
 			$table->addIndex(
 				[
 					'content2',
-				]
+				],
+				'content2'
 			);
 			$table->dropIndex('title');
 		});
@@ -65,7 +68,8 @@ class Post_123 extends \Asgard\Migration\DBMigration {
 			$table->addUniqueIndex(
 				[
 					'title',
-				]
+				],
+				'title'
 			);
 			$table->dropIndex('content2');
 		});

@@ -348,4 +348,9 @@ class PolymorphicCollectionORM implements CollectionORMInterface {
 	 * {@inheritDoc}
 	 */
 	public function groupBy($groupBy) { throw new \Exception('Not implemented'); }
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function resetDAL() { throw new \Exception('Not implemented'); }
 }
