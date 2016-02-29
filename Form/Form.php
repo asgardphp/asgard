@@ -372,7 +372,7 @@ class Form extends Group implements FormInterface {
 			$options = $field->options + $options;
 			$options['attrs'] = $attrs;
 			$options['id'] = $field->getID();
-			$value = $field->value();
+			$value = $field->rawValue();
 		}
 		elseif($field instanceof GroupInterface) {
 			$options['group'] = $field;

@@ -180,10 +180,18 @@ abstract class Field {
 	}
 
 	/**
-	 * Get the value.
+	 * Get the value. Can be overwritten to transform the value.
 	 * @return mixed
 	 */
 	public function value() {
+		return $this->value;
+	}
+
+	/**
+	 * Get the raw value. Should not be overwritten.
+	 * @return mixed
+	 */
+	public function rawValue() {
 		return $this->value;
 	}
 
