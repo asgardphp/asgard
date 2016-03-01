@@ -4,6 +4,7 @@ namespace Asgard\Debug\Tests;
 class ErrorHandlerTest extends \PHPUnit_Framework_TestCase {
 	public function testGetBacktraceFromException() {
 		$errorHandler = new \Asgard\Debug\ErrorHandler;
+		$errorHandler->setDisplay(false);
 		try {
 			throw new \Exception;
 		} catch(\Exception $e) {
@@ -21,7 +22,8 @@ class ErrorHandlerTest extends \PHPUnit_Framework_TestCase {
 	}
 
 	public function testLogging() {
-		$errorHandler = new \Asgard\Debug\ErrorHandler();
+		$errorHandler = new \Asgard\Debug\ErrorHandler;
+		$errorHandler->setDisplay(false);
 		$logger = $this->getMock('Psr\Log\LoggerInterface', ['log','emergency','alert','critical','error','warning','notice','info','debug']);
 		$logger->expects($this->once())->method('log')->with('error', 'Exception: ', $this->callback(function($a) {
 			return isset($a['file']) && isset($a['line']) && isset($a['trace']);
@@ -48,6 +50,7 @@ class ErrorHandlerTest extends \PHPUnit_Framework_TestCase {
 
 	public function testExceptionHandler() {
 		$errorHandler = new \Asgard\Debug\ErrorHandler;
+		$errorHandler->setDisplay(false);
 
 		set_error_handler([$errorHandler, 'phpErrorHandler']);
 		try {
@@ -61,6 +64,7 @@ class ErrorHandlerTest extends \PHPUnit_Framework_TestCase {
 
 	public function testIgnoreDir() {
 		$errorHandler = new \Asgard\Debug\ErrorHandler;
+		$errorHandler->setDisplay(false);
 		$errorHandler->ignoreDir(__DIR__.'/fixtures');
 		set_error_handler([$errorHandler, 'phpErrorHandler']);
 		include __DIR__.'/fixtures/error.php';

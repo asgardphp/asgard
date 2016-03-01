@@ -200,24 +200,26 @@ class ErrorHandler {
 		if(!headers_sent())
 			http_response_code(500);
 
-		if($this->debug) {
-			$trace = $this->getBacktraceFromException($e);
+		if($this->display) {
+			if($this->debug) {
+				$trace = $this->getBacktraceFromException($e);
 
-			if($e instanceof PSRException)
-				$msg = $e->getMessage();
-			elseif($e instanceof \ErrorException)
-				$msg = 'PHP ('.static::getPHPError($e->getCode()).'): '.$e->getMessage();
+				if($e instanceof PSRException)
+					$msg = $e->getMessage();
+				elseif($e instanceof \ErrorException)
+					$msg = 'PHP ('.static::getPHPError($e->getCode()).'): '.$e->getMessage();
+				else
+					$msg = get_class($e).': '.$e->getMessage();
+
+				$result = '';
+				if($msg)
+					$result .= $msg."\n\n";
+				$result .= Debug::getReport($trace);
+				echo $result;
+			}
 			else
-				$msg = get_class($e).': '.$e->getMessage();
-
-			$result = '';
-			if($msg)
-				$result .= $msg."\n\n";
-			$result .= Debug::getReport($trace);
-			echo $result;
+				echo 'Something went wrong.';
 		}
-		elseif($this->display)
-			echo 'Something went wrong.';
 	}
 
 	/**
