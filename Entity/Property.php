@@ -273,20 +273,41 @@ class Property {
 	 * @param mixed  $val
 	 * @param Entity $entity
 	 * @param string $name
+	 * @param boolean  $silentException
 	 * @return mixed
 	 */
-	public function setDecorator($val, Entity $entity, $name) {
+	public function setDecorator($val, Entity $entity, $name, $silentException=false) {
 		if($this->get('many')) {
 			if($val instanceof ManyCollection)
 				return $val;
 			if(is_array($val)) {
 				$res = new ManyCollection($entity, $name);
 				foreach($val as $v)
-					$res[] = $this->doSet($v, $entity, $name);
+					$res[] = $this->_doSet($v, $entity, $name, $silentException);
 				return $res;
 			}
 			else
 				return $val;
+		}
+		else
+			return $this->_doSet($val, $entity, $name, $silentException);
+	}
+
+	/**
+	 * Catch exceptions of doSet if required.
+	 * @param  mixed  $val
+	 * @param  Entity $entity
+	 * @param  string $name
+	 * @param boolean  $silentException
+	 * @return mixed
+	 */
+	public function _doSet($val, Entity $entity, $name, $silentException=false) {
+		if($silentException) {
+			try {
+				return $this->doSet($val, $entity, $name);
+			} catch(\Exception $e) {
+				return null;
+			}
 		}
 		else
 			return $this->doSet($val, $entity, $name);

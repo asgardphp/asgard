@@ -367,8 +367,9 @@ abstract class Entity {
 	 * @param string       $locale
 	 * @param boolean      $hook
 	 * @param boolean      $change
+	 * @param boolean      $silentException
 	 */
-	public function set($name, $value=null, $locale=null, $hook=true, $change=true) {
+	public function set($name, $value=null, $locale=null, $hook=true, $change=true, $silentException=false) {
 		if(is_string($name))
 			$name = strtolower($name);
 
@@ -388,7 +389,7 @@ abstract class Entity {
 			return $this;
 		}
 
-		$this->getDefinition()->processPreSet($this, $name, $value, $locale, $hook);
+		$this->getDefinition()->processPreSet($this, $name, $value, $locale, $hook, $silentException);
 
 		if($this->getDefinition()->hasProperty($name)) {
 			if(!$locale)

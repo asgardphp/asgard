@@ -55,12 +55,8 @@ class DateProperty extends \Asgard\Entity\Property {
 	public function doSet($val, \Asgard\Entity\Entity $entity, $name) {
 		if($val instanceof \Asgard\Common\DatetimeInterface)
 			return $val;
-		elseif(is_string($val)) {
-			#attempt to create date object
-			try {
-				return \Asgard\Common\Date::createFromFormat('Y-m-d', $val);
-			} catch(\Exception $e) {}
-		}
+		elseif(is_string($val))
+			return \Asgard\Common\Date::createFromFormat('Y-m-d', $val);
 	}
 
 	/**

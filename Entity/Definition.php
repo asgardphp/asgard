@@ -430,9 +430,10 @@ class Definition {
 	 * @param  string  $name
 	 * @param  mixed   $value
 	 * @param  string  $locale
-	 * @param  boolean $hook   True to enable hooks.
+	 * @param  boolean $hook             True to enable hooks.
+	 * @param boolean  $silentException
 	 */
-	public function processPreSet($entity, $name, &$value, $locale=null, $hook=true) {
+	public function processPreSet($entity, $name, &$value, $locale=null, $hook=true, $silentException=false) {
 		if($hook)
 			$this->trigger('set', [$entity, $name, &$value, $locale]);
 
@@ -446,14 +447,14 @@ class Definition {
 				if($locale == 'all') {
 					$val = [];
 					foreach($value as $one => $v)
-						$val[$one] = $this->property($name)->setDecorator($v, $entity, $name);
+						$val[$one] = $this->property($name)->setDecorator($v, $entity, $name, $silentException);
 					$value = $val;
 				}
 				else
-					$value = $this->property($name)->setDecorator($value, $entity, $name);
+					$value = $this->property($name)->setDecorator($value, $entity, $name, $silentException);
 			}
 			else
-				$value = $this->property($name)->setDecorator($value, $entity, $name);
+				$value = $this->property($name)->setDecorator($value, $entity, $name, $silentException);
 		}
 	}
 
@@ -463,9 +464,10 @@ class Definition {
 	 * @param  string  $name
 	 * @param  mixed   $value
 	 * @param  string  $locale
-	 * @param  boolean $hook   True to enable hooks.
+	 * @param  boolean $hook             True to enable hooks.
+	 * @param boolean  $silentException
 	 */
-	public function processPreAdd($entity, $name, &$value, $locale=null, $hook=true) {
+	public function processPreAdd($entity, $name, &$value, $locale=null, $hook=true, $silentException=false) {
 		if($hook)
 			$this->trigger('set', [$entity, $name, &$value, $locale]);
 
@@ -477,7 +479,7 @@ class Definition {
 			$value = call_user_func_array($hook, [$value]);
 		}
 
-		$value = $this->property($name)->doSet($value, $entity, $name);
+		$value = $this->property($name)->_doSet($value, $entity, $name, $silentException);
 	}
 
 	/**
