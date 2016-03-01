@@ -36,6 +36,11 @@ class ErrorHandler {
 	 * @var boolean
 	 */
 	protected $debug;
+	/**
+	 * Display error flag.
+	 * @var boolean
+	 */
+	protected $display;
 
 	public function __construct() {
 		$this->debug = true;
@@ -48,6 +53,16 @@ class ErrorHandler {
 	 */
 	public function setDebug($debug) {
 		$this->debug = $debug;
+		return $this;
+	}
+
+	/**
+	 * Set display flag.
+	 * @param  boolean $display
+	 * @return ErrorHandler $this
+	 */
+	public function setDisplay($display) {
+		$this->display = $display;
 		return $this;
 	}
 
@@ -88,7 +103,7 @@ class ErrorHandler {
 			$exceptionHandler = set_exception_handler(function() {});
 			restore_exception_handler();
 			$exception = new FatalErrorException($e['message'], $e['type'], 0, $e['file'], $e['line']);
-			call_user_func_array($exceptionHandler, [$exception, false]);
+			call_user_func_array($exceptionHandler, [$exception]);
 		}
 	}
 
@@ -177,7 +192,7 @@ class ErrorHandler {
 	 * @param  \Exception $e
 	 * @param  boolean   $display display the error message
 	 */
-	public function exceptionHandler(\Exception $e, $display=true) {
+	public function exceptionHandler(\Exception $e) {
 		static::$reservedMemory = null;
 
 		$this->logException($e);
@@ -185,10 +200,7 @@ class ErrorHandler {
 		if(!headers_sent())
 			http_response_code(500);
 
-		if(!$display)
-			return;
-
-		if(php_sapi_name() === 'cli' || $this->debug) {
+		if($this->debug) {
 			$trace = $this->getBacktraceFromException($e);
 
 			if($e instanceof PSRException)
@@ -204,7 +216,7 @@ class ErrorHandler {
 			$result .= Debug::getReport($trace);
 			echo $result;
 		}
-		else
+		elseif($this->display)
 			echo 'Something went wrong.';
 	}
 
