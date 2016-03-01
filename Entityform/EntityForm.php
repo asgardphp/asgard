@@ -272,11 +272,11 @@ class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 		if($this->locales) {
 			foreach($data as $name=>$value) {
 				foreach($this->locales as $locale)
-					$this->entity->set($name, $value, $locale);
+					$this->entity->set($name, $value, $locale, true, true, true);
 			}
 		}
 		else
-			$this->entity->set($data);
+			$this->entity->set($data, null, null, true, true, true);
 
 		$report = parent::myErrors($validationGroups);
 		$report->merge($this->entity->errors($validationGroups));
