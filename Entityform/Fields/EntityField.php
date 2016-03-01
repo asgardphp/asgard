@@ -46,4 +46,15 @@ class EntityField extends \Asgard\Form\Field {
 
 		return $this->entity;
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getValidationRules() {
+		$validation = parent::getValidationRules();
+		if(isset($this->options['choices']))
+			$validation['entityexists'] = [$this->orm];
+
+		return $validation;
+	}
 }

@@ -44,11 +44,11 @@ class EntityFormTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals($user, $form->getEntity());
 
 		$form->addRelation('comments');
-		$this->assertInstanceOf('Asgard\Form\Fields\MultipleSelectField', $form['comments']);
+		$this->assertInstanceOf('Asgard\Entityform\Fields\MultipleEntityField', $form['comments']);
 		$this->assertEquals($form['comments']->options['choices'][1], 'Foo');
 		$this->assertEquals($form['comments']->options['choices'][2], 'Bar');
 		$this->assertEquals($form['comments']->options['choices'][3], 'Zoo');
-		$this->assertTrue(in_array(3, $form['comments']->options['default']));
+		$this->assertTrue(in_array(3, array_map(function($e) { return $e->id; }, $form['comments']->options['default']->all())));
 		return;
 /*
 		$this->assertEquals([], $form->errors());

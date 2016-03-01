@@ -137,21 +137,17 @@ class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 		$orm = $dataMapper->orm($relation->get('entity'));
 		if($cb)
 			$cb($orm);
-		while($v = $orm->next())
-			$ids[$v->id] = (string)$v;
 
 		if($relation->get('many')) {
-			$this->add(new \Asgard\Form\Fields\MultipleSelectField([
-				'type'    => 'integer',
-				'choices' => $ids,
-				'default' => ($entity->isOld() ? $dataMapper->related($entity, $name)->ids():[]),
+			$this->add(new \Asgard\Entityform\Fields\MultipleEntityField([
+				'orm'    => $orm,
+				'default' => ($entity->isOld() ? $entity->get($name):null),
 			]), $name);
 		}
 		else {
-			$this->add(new \Asgard\Form\Fields\SelectField([
-				'type'    => 'integer',
-				'choices' => $ids,
-				'default' => ($entity->isOld() && $entity->get($name) ? $entity->get($name)->id:null),
+			$this->add(new \Asgard\Entityform\Fields\EntityField([
+				'orm'    => $orm,
+				'default' => ($entity->isOld() ? $entity->get($name):null),
 			]), $name);
 		}
 	}

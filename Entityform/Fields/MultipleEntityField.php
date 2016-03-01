@@ -49,4 +49,15 @@ class MultipleEntityField extends \Asgard\Form\Field {
 
 		return $this->entities;
 	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getValidationRules() {
+		$validation = parent::getValidationRules();
+		if(isset($this->options['choices']))
+			$validation['entitiesexist'] = [$this->orm];
+
+		return $validation;
+	}
 }
