@@ -128,6 +128,14 @@ class Kernel implements \ArrayAccess {
 		if($this->loaded)
 			return;
 
+		$this->setup();
+		$this->loadBundles();
+	}
+
+	/**
+	 * Setup errorhandler, shutdown and load compiled classes.
+	 */
+	public function setup() {
 		$errorHandler = \Asgard\Debug\ErrorHandler::register(false);
 		if(php_sapi_name() !== 'cli')
 			\Asgard\Debug\Debug::setFormat('html');
@@ -138,6 +146,17 @@ class Kernel implements \ArrayAccess {
 		if($this->getEnv() === 'prod' && file_exists($this->params['root'].'/storage/compiled.php'))
 			include_once $this->params['root'].'/storage/compiled.php';
 
+		return $this;
+	}
+
+	/**
+	 * Load the bundles.
+	 */
+	public function loadBundles() {
+		if($this->loaded)
+			return;
+
+		$errorHandler = \Asgard\Debug\ErrorHandler::register(false);
 		$this->bundles = $this->doGetBundles();
 		$container = $this->getContainer();
 		$container['errorHandler'] = $errorHandler;
