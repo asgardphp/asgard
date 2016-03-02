@@ -374,6 +374,9 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			$migrationCreate = new \Asgard\Migration\Commands\CreateCommand($container['kernel']['root'].'/migrations');
 			$container['console']->add($migrationCreate);
 
+			$compile = new \Asgard\Core\Commands\CompileCommand($container['config']['compile'], $container['kernel']->getCompiledFile());
+			$container['console']->add($compile);
+
 			$showEnv = new \Asgard\Core\Commands\ShowEnvironmentCommand($container['kernel']);
 			$container['console']->add($showEnv);
 

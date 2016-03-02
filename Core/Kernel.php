@@ -44,6 +44,11 @@ class Kernel implements \ArrayAccess {
 	 * @var array
 	 */
 	protected $onShutdown;
+	/**
+	 * Compiled classes file path.
+	 * @var string
+	 */
+	protected $compiledFile;
 
 	/**
 	 * Constructor.
@@ -143,14 +148,16 @@ class Kernel implements \ArrayAccess {
 		register_shutdown_function([$this, 'shutdownFunction']);
 		$this->addShutdownCallback([$errorHandler, 'shutdownFunction']);
 
-		if($this->getEnv() === 'prod' && file_exists($this->params['root'].'/storage/compiled.php'))
-			include_once $this->params['root'].'/storage/compiled.php';
+		$compiledFile = $this->getCompiledFile();
+		if($compiledFile && file_exists($compiledFile))
+			include_once $compiledFile;
 
 		return $this;
 	}
 
 	/**
 	 * Load the bundles.
+	 * @return Kernel $this
 	 */
 	public function loadBundles() {
 		if($this->loaded)
@@ -453,5 +460,24 @@ class Kernel implements \ArrayAccess {
 		if(!isset($this->params[$offset]))
 			return;
 		return $this->params[$offset];
+	}
+
+	/**
+	 * Set the compiled classes file.
+	 * @return Kernel $this
+	 */
+	public function setCompiledFile($compiledFile) {
+		$this->compiledFile = $compiledFile;
+		return $this;
+	}
+
+	/**
+	 * Get the compiled classes file.
+	 * @return string
+	 */
+	public function getCompiledFile() {
+		if($this->compiledFile === null)
+			$this->compiledFile = $this->params['root'].'/storage/compiled.php';#default path
+		return $this->compiledFile;
 	}
 }
