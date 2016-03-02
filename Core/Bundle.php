@@ -179,7 +179,7 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		});
 		$container->setParentClass('validator_factory', 'Asgard\Validation\ValidatorFactoryInterface');
 		$container->register('validator_factory', function($container) {
-			return new \Asgard\Validation\ValidatorFactory($container['rulesRegistry'], $container['translator']);
+			return new \Asgard\Validation\ValidatorFactory($container['rulesregistry'], $container['translator']);
 		});
 		$container->setParentClass('rulesregistry', 'Asgard\Validation\RulesRegistryInterface');
 		$container->register('rulesregistry', function() { return new \Asgard\Validation\RulesRegistry; } );
