@@ -71,10 +71,6 @@ class MigrationManager implements MigrationManagerInterface {
 		$down = implode("\n\t\t", explode("\n", $down));
 		$name = ucfirst(strtolower($name));
 
-		$dst = $this->directory.'/'.$name.'_'.time().'.php';
-		$dst = \Asgard\File\FileSystem::getNewFilename($dst);
-		$name = str_replace('.php', '', basename($dst));
-
 		$migration = '<?php
 class '.$name.' extends '.$class.' {
 	public function up() {
