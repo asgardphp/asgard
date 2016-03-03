@@ -67,16 +67,7 @@ class DataMapper implements DataMapperInterface {
 		if(!ctype_digit($id) && !is_int($id))
 			return;
 
-		$entity = $this->getEntityManager()->make($entityClass);
-		$res = $this->orm($entityClass)->where(['id' => $id])->getDAL()->first();
-		if($res)
-			$entity->_set(static::unserialize($entity, $res));
-		$entity->resetChanged();
-		$entity->setParameter('persisted', true);
-
-		if($entity->isNew())
-			return null;
-		return $entity;
+		return $this->orm($entityClass)->where(['id' => $id])->first();
 	}
 
 	/**
