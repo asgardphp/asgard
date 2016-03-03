@@ -613,7 +613,7 @@ class DAL implements \Iterator {
 
 		foreach($params as $key=>$value) {
 			#multiple conditions
-			if(is_array($value) && (is_int($key) || $key === 'and' || $key === 'or')) {
+			if(is_array($value) && (is_int($key) || $key === 'and' || $key === 'or' || $key === 'xor')) {
 				if(is_int($key))
 					$key = 'and';
 				$r = $this->processConditions($value, $key, $brackets || count($params) > 1, $table);

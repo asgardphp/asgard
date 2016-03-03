@@ -892,7 +892,7 @@ class ORM implements ORMInterface, \Countable {
 	*/
 	protected function processConditions(array $conditions) {
 		foreach($cp=$conditions as $k=>$v) {
-			if(is_numeric($k) || in_array(strtolower($k), ['and', 'or', 'not'])) {
+			if(is_numeric($k) || in_array(strtolower($k), ['and', 'or', 'xor', 'not'])) {
 				$newK = $k;
 				if(is_array($v))
 					$v = $this->processConditions($v);
