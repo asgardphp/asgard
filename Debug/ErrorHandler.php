@@ -42,8 +42,12 @@ class ErrorHandler {
 	 */
 	protected $display;
 
+	public static $_debug = true;
+	public static $_display = true;
+
 	public function __construct() {
-		$this->debug = true;
+		$this->debug = static::$_debug;
+		$this->display = static::$_display;
 	}
 
 	/**
