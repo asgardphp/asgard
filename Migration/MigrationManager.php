@@ -66,7 +66,7 @@ class MigrationManager implements MigrationManagerInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function create($up, $down, $name, $class='\Asgard\Migration\Migration') {
+	public function createCode($up, $down, $name, $class='\Asgard\Migration\Migration') {
 		$up = implode("\n\t\t", explode("\n", $up));
 		$down = implode("\n\t\t", explode("\n", $down));
 		$name = ucfirst(strtolower($name));
@@ -85,6 +85,19 @@ class '.$name.' extends '.$class.' {
 		'.$down."
 	}
 }";
+
+		return $migration;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function create($up, $down, $name, $class='\Asgard\Migration\Migration') {
+		$dst = $this->directory.'/'.$name.'_'.time().'.php';
+		$dst = \Asgard\File\FileSystem::getNewFilename($dst);
+		$name = str_replace('.php', '', basename($dst));
+
+		$migration = $this->createCode($up, $down, $name, $class);
 		$dst = \Asgard\File\FileSystem::write($dst, $migration, \Asgard\File\FileSystem::RENAME);
 		if($dst === false)
 			throw new \Exception($dst.' can not be created.');

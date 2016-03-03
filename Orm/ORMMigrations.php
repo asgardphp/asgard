@@ -60,6 +60,26 @@ class ORMMigrations {
 	}
 
 	/**
+	 * Generate a migration preview from given entity definitions.
+	 * @param  array|\Asgard\Entity\Definition $definitions
+	 * @param  string                          $migrationName
+	 * @return string                          name of migration
+	 */
+	public function previewMigration($definitions, $migrationName) {
+		if(!is_array($definitions))
+			$definitions = [$definitions];
+		$entitiesSchema = $this->getEntitiesSchemas($definitions);
+		$sqlSchema = $this->getSQLSchemas();
+		$up = $this->buildMigration($entitiesSchema, $sqlSchema, false);
+		$down = $this->buildMigration($sqlSchema, $entitiesSchema, true);
+
+		if($up == '' && $down == '')
+			return;
+
+		return $this->MigrationManager->createCode($up, $down, $migrationName, '\Asgard\Migration\DBMigration');
+	}
+
+	/**
 	 * Generate schemas of entities.
 	 * @param  array $definitions
 	 * @return \Doctrine\DBAL\Schema\Schema

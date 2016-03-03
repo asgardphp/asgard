@@ -19,6 +19,16 @@ interface MigrationManagerInterface {
 	public function add($file);
 
 	/**
+	 * Create code for a new migration.
+	 * @param  string $up
+	 * @param  string $down
+	 * @param  string $name  migration name
+	 * @param  string $class entity class
+	 * @return string        migration code
+	 */
+	public function createCode($up, $down, $name, $class='\Asgard\Migration\Migration');
+
+	/**
 	 * Create a new migration from given code.
 	 * @param  string $up
 	 * @param  string $down

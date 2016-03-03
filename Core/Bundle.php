@@ -307,6 +307,9 @@ class Bundle extends \Asgard\Core\BundleLoader {
 				$ormGenerateMigration = new \Asgard\Orm\Commands\GenerateMigrationCommand($em, $mm, $dataMapper);
 				$container['console']->add($ormGenerateMigration);
 
+				$ormPreviewMigration = new \Asgard\Orm\Commands\PreviewMigrationCommand($em, $mm, $dataMapper);
+				$container['console']->add($ormPreviewMigration);
+
 				$dbEmpty = new \Asgard\Db\Commands\EmptyCommand($db);
 				$container['console']->add($dbEmpty);
 
