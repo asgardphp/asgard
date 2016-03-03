@@ -42,6 +42,7 @@ class ConsoleCommand extends \Asgard\Console\Command {
 				if($_res)
 					echo $_res."\n";
 			} catch(\Exception $e) {
+				ob_get_clean();
 				$this->error($e->getMessage());
 			}
 
