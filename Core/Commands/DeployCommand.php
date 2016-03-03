@@ -23,6 +23,9 @@ class DeployCommand extends \Asgard\Console\Command {
 	 * {@inheritDoc}
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
+		$this->callSilent('down');
+		$this->comment('Going into maintenance mode..');
+
 		#composer
 		$this->getContainer()['errorhandler']->ignoreDir('vendor/composer');
 		putenv('COMPOSER_HOME=' . $this->getContainer()['kernel']['root'] . '/vendor/bin/composer');
@@ -45,5 +48,8 @@ class DeployCommand extends \Asgard\Console\Command {
 		#migrate
 		$this->callSilent('migrate');
 		$this->info('Migrated with success.');
+
+		$this->callSilent('up');
+		$this->info('Going back into production mode.');
 	}
 }
