@@ -751,12 +751,8 @@ class DAL implements \Iterator {
 			return '*';
 		else {
 			foreach($this->columns as $alias=>$column) {
-				if((string)$alias !== (string)$column) {
-					if($this->isIdentifier($column))
-						$select[] = $this->identifierQuotes($column).' AS '.$this->identifierQuotes($alias);
-					else
-						$select[] = $column.' AS '.$this->identifierQuotes($alias);
-				}
+				if((string)$alias !== (string)$column)
+					$select[] = $this->identifierQuotes($column).' AS '.$this->identifierQuotes($alias);
 				else
 					$select[] = $this->identifierQuotes($column);
 			}
