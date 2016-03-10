@@ -1327,7 +1327,6 @@ class DAL implements \Iterator {
 	*/
 	public function values($column) {
 		$res = [];
-		// $this->select($column);
 		while($row = $this->next())
 			$res[] = $row[$column];
 		return $res;
