@@ -729,7 +729,7 @@ class DAL implements \Iterator {
 	 */
 	protected function identifierQuotes($str) {
 		#for every word
-		return preg_replace_callback('/(?<=\s|^)[a-z_][a-zA-Z0-9._]*/', function($matches) {
+		return preg_replace_callback('/[a-z_][a-zA-Z0-9._]*/', function($matches) {
 			$res = [];
 			foreach(explode('.', $matches[0]) as $substr) {
 				if(preg_match('/^[a-z_][a-zA-Z0-9_]*$/', $substr))
@@ -750,15 +750,15 @@ class DAL implements \Iterator {
 		if(!$this->columns)
 			return '*';
 		else {
-			foreach($this->columns as $alias=>$table) {
-				if((string)$alias !== (string)$table) {
-					if($this->isIdentifier($table))
-						$select[] = $this->identifierQuotes($table).' AS '.$this->identifierQuotes($alias);
+			foreach($this->columns as $alias=>$column) {
+				if((string)$alias !== (string)$column) {
+					if($this->isIdentifier($column))
+						$select[] = $this->identifierQuotes($column).' AS '.$this->identifierQuotes($alias);
 					else
-						$select[] = $table.' AS '.$this->identifierQuotes($alias);
+						$select[] = $column.' AS '.$this->identifierQuotes($alias);
 				}
 				else
-					$select[] = $this->identifierQuotes($table);
+					$select[] = $this->identifierQuotes($column);
 			}
 		}
 		return implode(', ', $select);
