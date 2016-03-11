@@ -172,7 +172,7 @@ abstract class Entity {
 	 */
 	public function loadDefault() {
 		foreach($this->getDefinition()->properties() as $name=>$property)
-			$this->set($name, $property->getDefault($this, $name), null, true, false);
+			$this->_set($name, $property->getDefault($this, $name), null, false);
 		return $this;
 	}
 

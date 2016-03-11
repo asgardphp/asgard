@@ -438,7 +438,6 @@ class ORM implements ORMInterface, \Countable {
 			$definition = $this->definition;
 		$new = $definition->make([], $this->locale);
 		static::unserialize($new, $raw);
-		$new->resetChanged();
 		$new->setParameter('persisted', true);
 		return $new;
 	}
