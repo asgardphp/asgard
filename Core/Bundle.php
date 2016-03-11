@@ -254,6 +254,10 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		#ORMInterface
 		$container['rulesregistry']->registerNamespace('Asgard\Orm\Rules');
 
+		$container->register('Asgard.Entity.PropertyType.entity', function($container, $params) {
+			return new \Asgard\Orm\Properties\EntityProperty($params, $container['dataMapper']);
+		});
+
 		#Controllers Templates
 		$container['httpKernel']->addTemplatePathSolver(function($viewable, $template) {
 			if(!$viewable instanceof \Asgard\Http\LambdaController) {

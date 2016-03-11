@@ -186,12 +186,6 @@ class DataMapper implements DataMapperInterface {
 
 		$validator->set('datamapper_prepared', true);
 		$validator->set('dataMapper', $this);
-		foreach($entity->getDefinition()->properties() as $name=>$property) {
-			if($rules = $property->get('ormValidation'))
-				$validator->attribute($name, $rules);
-			if($this->hasRelation($entity->getDefinition(), $name))
-				$validator->attribute($name)->isNull(function(){return false;});
-		}
 	}
 
 	/**
