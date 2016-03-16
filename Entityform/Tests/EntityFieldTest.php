@@ -29,7 +29,7 @@ class EntityFieldTest extends \PHPUnit_Framework_TestCase {
 		$request->post['field'] = '1';
 		$form->setRequest($request);
 
-		$form['field'] = new \Asgard\Entityform\Fields\EntityField([
+		$form['field'] = new \Asgard\Entityform\Field\EntityField([
 			'orm' => $dataMapper->orm('Asgard\Entityform\Tests\Entities\User'),
 		]);
 
@@ -68,7 +68,7 @@ class EntityFieldTest extends \PHPUnit_Framework_TestCase {
 		$request->post['field'] = ['1', '2'];
 		$form->setRequest($request);
 
-		$form['field'] = new \Asgard\Entityform\Fields\MultipleEntityField([
+		$form['field'] = new \Asgard\Entityform\Field\MultipleEntityField([
 			'orm' => $dataMapper->orm('Asgard\Entityform\Tests\Entities\User'),
 		]);
 

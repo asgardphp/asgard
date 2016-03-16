@@ -35,7 +35,9 @@ class HttpKernelTest extends \PHPUnit_Framework_TestCase {
 		$kernel->setHookManager(new \Asgard\Hook\HookManager);
 		$kernel->setDebug(true);
 		$kernel->setResolver($resolver);
-		$kernel->setErrorHandler(new \Asgard\Debug\ErrorHandler);
+		$errorHandler = new \Asgard\Debug\ErrorHandler;
+		$errorHandler->setDisplay(false);
+		$kernel->setErrorHandler($errorHandler);
 		$response = $kernel->process(new Request, true);
 		$this->assertEquals(500, $response->getCode());
 		$this->assertContains('Undefined variable: a', $response->getContent());
@@ -49,7 +51,9 @@ class HttpKernelTest extends \PHPUnit_Framework_TestCase {
 		$kernel->setHookManager(new \Asgard\Hook\HookManager);
 		$kernel->setDebug(false);
 		$kernel->setResolver($resolver);
-		$kernel->setErrorHandler(new \Asgard\Debug\ErrorHandler);
+		$errorHandler = new \Asgard\Debug\ErrorHandler;
+		$errorHandler->setDisplay(false);
+		$kernel->setErrorHandler($errorHandler);
 		$response = $kernel->process(new Request, true);
 		$this->assertEquals(500, $response->getCode());
 		$this->assertEquals('<h1>Error</h1>Oops, something went wrong.', $response->getContent());
@@ -66,8 +70,9 @@ class HttpKernelTest extends \PHPUnit_Framework_TestCase {
 		$kernel = new HttpKernel;
 		$kernel->setHookManager($hooks);
 		$kernel->setResolver($resolver);
-		$kernel->setDebug(false);
-		$kernel->setErrorHandler(new \Asgard\Debug\ErrorHandler);
+		$errorHandler = new \Asgard\Debug\ErrorHandler;
+		$errorHandler->setDisplay(false);
+		$kernel->setErrorHandler($errorHandler);
 		$response = $kernel->process(new Request, true);
 		$this->assertEquals('plplpl', $response);
 

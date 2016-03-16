@@ -8,7 +8,7 @@ class MonthFieldTest extends \PHPUnit_Framework_TestCase {
 		$request->setMethod('post');
 		$request->post['field'] = '5';
 		$form->setRequest($request);
-		$form['field'] = new \Asgard\Form\Fields\MonthField;
+		$form['field'] = new \Asgard\Form\Field\MonthField;
 
 		$this->assertTrue(strpos((string)($form['field']->def()), '<option value="4">4</option>') !== false);
 		$this->assertTrue(strpos((string)($form['field']->def()), '<option value="5" selected="selected">5</option>') !== false);

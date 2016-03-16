@@ -26,7 +26,7 @@ class RulesRegistry implements RulesRegistryInterface {
 	 * @var array
 	 */
 	protected $namespaces = [
-		'\\Asgard\\Validation\\Rules\\'
+		'\\Asgard\\Validation\\Rule\\'
 	];
 
 	/**
@@ -71,7 +71,7 @@ class RulesRegistry implements RulesRegistryInterface {
 	 */
 	public function register($rule, $object) {
 		if($object instanceof \Closure) {
-			$reflection = new \ReflectionClass('Asgard\Validation\Rules\Callback');
+			$reflection = new \ReflectionClass('Asgard\Validation\Rule\Callback');
 			$object = $reflection->newInstance($object);
 		}
 		$this->rules[$rule] = $object;
@@ -100,7 +100,7 @@ class RulesRegistry implements RulesRegistryInterface {
 			$validator = new \Asgard\Validation\Validator;
 			$ruleObj = $this->getRule($rule, $params);
 			$validator->rule($ruleObj);
-			$notRule = new Rules\Not($validator);
+			$notRule = new Rule\Not($validator);
 			$notRule->setName('not_'.$rule);
 			return $notRule;
 		}

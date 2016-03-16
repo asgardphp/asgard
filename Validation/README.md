@@ -271,7 +271,7 @@ As you have seen, messages have parameters like :attribute, :input, etc.
 * The parameter :attribute is either the name of the attribute or the input itself.
 * The parameter :input is available when the input is a string or numeric.
 
-Then comes rules specific parameters. Any rule with member variables, can use them as parameters in the error message. For example the rule Asgard\Validation\Rules\Min has a variable "min". Hence, you can use the parameter :min in its message: ":attribute must be greater than :min."
+Then comes rules specific parameters. Any rule with member variables, can use them as parameters in the error message. For example the rule Asgard\Validation\Rule\Min has a variable "min". Hence, you can use the parameter :min in its message: ":attribute must be greater than :min."
 
 <a name="input"></a>
 ##Input Bag
@@ -312,15 +312,15 @@ The attribute validator will ask the main validator for the rulesregistry. If th
 ###Registering new rules
 
 	$rr->register('customrule', function($input) { /*...*/ });
-	$rr->register('customrule', 'Namespace\Rules\Customrule');
-	$rr->register('customrule', new \Namespace\Rules\Customrule(/* params */));
+	$rr->register('customrule', 'Namespace\Rule\Customrule');
+	$rr->register('customrule', new \Namespace\Rule\Customrule(/* params */));
 
 ###Registering namespaces
 Let's say you want to add multiple rules, all in the same namespace. You can do:
 
 	$rr->registerNamespace('Namespace\Rules');
 
-When looking for a rule (like "customrule"), the rulesregistry will check if the class Namespace\Rules\Customrule exists.
+When looking for a rule (like "customrule"), the rulesregistry will check if the class Namespace\Rule\Customrule exists.
 
 If a rule is not found, it will throw an exception.
 

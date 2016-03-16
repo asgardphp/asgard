@@ -1,0 +1,93 @@
+<?php
+namespace Asgard\Form\Field;
+
+/**
+ * Multiple select field.
+ * @author Michel Hognerud <michel@hognerud.com>
+ */
+class MultipleSelectField extends \Asgard\Form\Field {
+	/**
+	 * {@inheritDoc}
+	 */
+	protected $widget = 'checkboxes';
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function value() {
+		if(!$this->value)
+			return [];
+		return $this->value;
+	}
+
+	/**
+	 * Return choices.
+	 * @return array
+	 */
+	public function getChoices() {
+		if(isset($this->options['choices']))
+			return $this->options['choices'];
+		return [];
+	}
+
+	/**
+	 * Return checkboxes.
+	 * @param  array $options
+	 * @return array
+	 */
+	public function getCheckboxes(array $options=[]) {
+		if(isset($options['choices']))
+			$choices = $options['choices'];
+		else
+			$choices = $this->getChoices();
+
+		$checkboxes = [];
+		foreach($choices as $k=>$v) {
+			$checkbox_options = $options;
+			$checkbox_options['value'] = $k;
+			$checkbox_options['widget_name'] = $v;
+			$checkboxes[$k] = $this->getCheckbox($v, $checkbox_options);
+		}
+		return $checkboxes;
+	}
+
+	/**
+	 * Return a checkbox widget.
+	 * @param  string $name
+	 * @param  array  $options
+	 * @return Widget
+	 */
+	public function getCheckbox($name, array $options=[]) {
+		$choices = $this->getChoices();
+		$default = $this->value;
+
+		$value = isset($options['value']) ? $options['value']:null;
+		if($value===null) {
+			foreach($choices as $k=>$v) {
+				if($v == $name) {
+					$value = $k;
+					break;
+				}
+			}
+		}
+		if($value === null)
+			throw new \Exception('No value for checkbox '.$name);
+
+		if(in_array($value, $default))
+			$options['attrs']['checked'] = 'checked';
+		$options['label'] = $name;
+
+		return $this->getTopForm()->getWidget('checkbox', $this->name.'[]', $value, $options);
+	}
+
+	/**
+	 * {@inheritdoc}
+	 */
+	public function getValidationRules() {
+		$validation = parent::getValidationRules();
+		if(isset($this->options['choices']))
+			$validation['allin'] = [array_keys($this->options['choices'])];
+
+		return $validation;
+	}
+}

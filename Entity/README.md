@@ -70,7 +70,7 @@ There are actually 4 different ways to define a property:
 	]
 	#or
 	$definition->properties = [
-		'title' => new \Asgard\Entity\Properties\StringProperty([..])
+		'title' => new \Asgard\Entity\Property\StringProperty([..])
 	]
 
 The type is optional and defaults to "string". At the moment you can use the types: "boolean", "date", "datetime", "double", "email", "file", "image", "integer", "text" and "string".

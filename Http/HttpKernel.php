@@ -286,7 +286,7 @@ class HttpKernel implements HttpKernelInterface {
 	 * Return a raw response.
 	 * @param  Request $request
 	 * @param  boolean $catch   true to catch exceptions.
-	 * @throws Exceptions\NotFoundException If route not found.
+	 * @throws Exception\NotFoundException If route not found.
 	 * @return mixed
 	 */
 	protected function processRaw(Request $request, $catch=true) {
@@ -303,7 +303,7 @@ class HttpKernel implements HttpKernelInterface {
 
 		$route = $resolver->getRoute($request);
 		if($route === null)
-			throw new Exceptions\NotFoundException;
+			throw new Exception\NotFoundException;
 
 		$request->setRoute($route);
 		$controllerClass = $route->getController();

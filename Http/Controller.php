@@ -171,10 +171,10 @@ abstract class Controller {
 	/**
 	 * Throw a "not found" exception.
 	 * @param  string $msg
-	 * @throws Exceptions\NotFoundException
+	 * @throws Exception\NotFoundException
 	 */
 	public function notFound($msg=null) {
-		throw new Exceptions\NotFoundException($msg);
+		throw new Exception\NotFoundException($msg);
 	}
 
 	/**

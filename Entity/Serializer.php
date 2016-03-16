@@ -20,7 +20,7 @@ class Serializer {
 		$res = [];
 
 		foreach($entity->getDefinition()->properties() as $name=>$property) {
-			if($entity->getDefinition()->property($name) instanceof Properties\EntityProperty) {
+			if($entity->getDefinition()->property($name) instanceof Property\EntityProperty) {
 				if($depth < 1)
 					$res[$name] = $entity->get($name, null, false);
 				else {
@@ -55,7 +55,7 @@ class Serializer {
 		$res = [];
 
 		foreach($entity->getDefinition()->properties() as $name=>$property) {
-			if($entity->getDefinition()->property($name) instanceof Properties\EntityProperty) {
+			if($entity->getDefinition()->property($name) instanceof Property\EntityProperty) {
 				if($depth < 1)
 					continue;
 				if($entity->getDefinition()->property($name)->get('many')) {

@@ -2,8 +2,8 @@
 namespace Asgard\Http;
 
 #For doctrine, which does not autoload classes...
-require_once __DIR__.'/Annotations/Prefix.php';
-require_once __DIR__.'/Annotations/Route.php';
+require_once __DIR__.'/Annotation/Prefix.php';
+require_once __DIR__.'/Annotation/Route.php';
 
 /**
  * Annotations reader.
@@ -30,7 +30,7 @@ class AnnotationReader {
 		$routes = [];
 
 		$reader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
-		$reader->addNamespace('Asgard\Http\Annotations');
+		$reader->addNamespace('Asgard\Http\Annotation');
 		if($this->cache) {
 			$reader = new \Doctrine\Common\Annotations\CachedReader(
 				$reader,
@@ -40,13 +40,13 @@ class AnnotationReader {
 		}
 
 		$reflection = new \ReflectionClass($class);
-		$prefix = $reader->getClassAnnotation($reflection, 'Asgard\Http\Annotations\Prefix');
+		$prefix = $reader->getClassAnnotation($reflection, 'Asgard\Http\Annotation\Prefix');
 		$prefix = $prefix !== null ? $prefix->value:'';
 
 		foreach($reflection->getMethods() as $method) {
 			if(!preg_match('/Action$/i', $method->getName()))
 				continue;
-			$routeAnnot = $reader->getMethodAnnotation($method, 'Asgard\Http\Annotations\Route');
+			$routeAnnot = $reader->getMethodAnnotation($method, 'Asgard\Http\Annotation\Route');
 			if($routeAnnot !== null) {
 				$route = trim($prefix.'/'.$routeAnnot->value, '/');
 				$routes[] = new Route(

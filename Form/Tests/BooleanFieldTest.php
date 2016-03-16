@@ -7,7 +7,7 @@ class BooleanFieldTest extends \PHPUnit_Framework_TestCase {
 		$request = new \Asgard\Http\Request;
 		$request->setMethod('post');
 		$form->setRequest($request);
-		$form['field'] = new \Asgard\Form\Fields\BooleanField(['default' => true]);
+		$form['field'] = new \Asgard\Form\Field\BooleanField(['default' => true]);
 		$request->post['field'] = true;
 		$this->assertEquals('<input type="checkbox" name="field" value="1" checked="checked">', (string)($form['field']->def()));
 		$request->post['field'] = null;

@@ -157,7 +157,7 @@ class ORMTest extends \PHPUnit_Framework_TestCase {
 		#Dependencies
 		$em = new \Asgard\Entity\EntityManager;
 		$rulesRegistry = new \Asgard\Validation\RulesRegistry;
-		$rulesRegistry->registerNamespace('Asgard\Orm\Rules');
+		$rulesRegistry->registerNamespace('Asgard\Orm\Rule');
 		$em->setValidatorFactory(new \Asgard\Validation\ValidatorFactory($rulesRegistry));
 
 		$db = new \Asgard\Db\DB([
@@ -171,7 +171,7 @@ class ORMTest extends \PHPUnit_Framework_TestCase {
 		#Dependencies
 		$em = new \Asgard\Entity\EntityManager;
 		$rulesRegistry = new \Asgard\Validation\RulesRegistry;
-		$rulesRegistry->registerNamespace('Asgard\Orm\Rules');
+		$rulesRegistry->registerNamespace('Asgard\Orm\Rule');
 		$em->setValidatorFactory(new \Asgard\Validation\ValidatorFactory($rulesRegistry));
 
 		$db = new \Asgard\Db\DB([

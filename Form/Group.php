@@ -122,7 +122,7 @@ class Group implements GroupInterface {
 				if($field->hasFile())
 					return true;
 			}
-			elseif($field instanceof Fields\FileField)
+			elseif($field instanceof Field\FileField)
 				return true;
 		}
 
@@ -532,7 +532,7 @@ class Group implements GroupInterface {
 		$report = $this->getValidator()->errors($data, $validationGroups);
 
 		foreach($this->fields as $name=>$field) {
-			if($field instanceof Fields\FileField && isset($this->data[$name])) {
+			if($field instanceof Field\FileField && isset($this->data[$name])) {
 				$f = $this->data[$name];
 				switch($f->error()) {
 					case UPLOAD_ERR_INI_SIZE:

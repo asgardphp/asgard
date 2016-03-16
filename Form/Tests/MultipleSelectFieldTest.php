@@ -8,7 +8,7 @@ class MultipleSelectFieldTest extends \PHPUnit_Framework_TestCase {
 		$request->setMethod('post');
 		$request->post['field'] = [0, 1];
 		$form->setRequest($request);
-		$form['field'] = new \Asgard\Form\Fields\MultipleSelectField(['choices' => ['test', 'default', '1', '2', '3']]);
+		$form['field'] = new \Asgard\Form\Field\MultipleSelectField(['choices' => ['test', 'default', '1', '2', '3']]);
 
 		$this->assertEquals([0, 1], $form['field']->value());
 

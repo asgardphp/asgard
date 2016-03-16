@@ -297,7 +297,7 @@ class Definition {
 
 			$type = $property['type'];
 			$property = $this->getContainer()->make('Asgard.Entity.PropertyType.'.$type, [$property], function($params) use($type) {
-				$class = '\Asgard\Entity\Properties\\'.ucfirst(strtolower($type)).'Property';
+				$class = '\Asgard\Entity\Property\\'.ucfirst(strtolower($type)).'Property';
 				return new $class($params);
 			});
 		}

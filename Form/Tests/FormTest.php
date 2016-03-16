@@ -13,7 +13,7 @@ class FormTest extends \PHPUnit_Framework_TestCase {
 
 		#__construct: passe une fonction pour générer le "field" ou "form" correspondant a chaque entrée
 		$group = new \Asgard\Form\DynamicGroup(function($data) {
-			return new \Asgard\Form\Fields\TextField;
+			return new \Asgard\Form\Field\TextField;
 		});
 		$form = new \Asgard\Form\Form;
 		$form->setRequest($request);
@@ -26,7 +26,7 @@ class FormTest extends \PHPUnit_Framework_TestCase {
 			'c'
 		];
 		foreach($data as $v)
-			$group[] = new \Asgard\Form\Fields\TextField(['default' => $v]);
+			$group[] = new \Asgard\Form\Field\TextField(['default' => $v]);
 
 		#setDefaultRender definit la fonction par defaut pour generer le code HTML d'une entree du formulaire
 		#optionnelle vu qu'on utilise $field->def()
@@ -46,9 +46,9 @@ class FormTest extends \PHPUnit_Framework_TestCase {
 
 		#FORMInterface
 		$form = new \Asgard\Form\Form('test', [], $request);
-		$form['title'] = new \Asgard\Form\Fields\TextField;
+		$form['title'] = new \Asgard\Form\Field\TextField;
 		$childForm = new \Asgard\Form\Form('test', []);
-		$childForm['content'] = new \Asgard\Form\Fields\TextField(['validation' => 'required']);
+		$childForm['content'] = new \Asgard\Form\Field\TextField(['validation' => 'required']);
 		$form['childForm'] = $childForm;
 
 		$request->server->set('CONTENT_LENGTH', (int)ini_get('post_max_size')*1024*1024+1);
@@ -153,7 +153,7 @@ class FormTest extends \PHPUnit_Framework_TestCase {
 		], $form->data());
 
 		$this->assertFalse($form->hasFile());
-		$form['childForm']['file'] = new \Asgard\Form\Fields\FileField;
+		$form['childForm']['file'] = new \Asgard\Form\Field\FileField;
 		$this->assertTrue($form->hasFile());
 
 		foreach($form as $field)
@@ -168,7 +168,7 @@ class FormTest extends \PHPUnit_Framework_TestCase {
 		$request->setMethod('post')->post->set('password', '');
 
 		$form = new \Asgard\Form\Form('test', [], $request);
-		$form['password'] = new \Asgard\Form\Fields\TextField(['hidden'=>true]);
+		$form['password'] = new \Asgard\Form\Field\TextField(['hidden'=>true]);
 
 		$this->assertEquals([], $form->data());
 	}

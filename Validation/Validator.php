@@ -320,7 +320,7 @@ class Validator implements ValidatorInterface {
 
 		#callback
 		if($rule instanceof \Closure) {
-			$reflection = new \ReflectionClass('Asgard\Validation\Rules\Callback');
+			$reflection = new \ReflectionClass('Asgard\Validation\Rule\Callback');
 			$rule = $reflection->newInstance($rule);
 		}
 		#string

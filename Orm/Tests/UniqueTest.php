@@ -6,7 +6,7 @@ class UniqueTest extends \PHPUnit_Framework_TestCase {
 		#Dependencies
 		$em = new \Asgard\Entity\EntityManager;
 		$rulesRegistry = new \Asgard\Validation\RulesRegistry;
-		$rulesRegistry->register('unique', 'Asgard\Orm\Rules\Unique');
+		$rulesRegistry->register('unique', 'Asgard\Orm\Rule\Unique');
 		$em->setValidatorFactory(new \Asgard\Validation\ValidatorFactory($rulesRegistry));
 		$db = new \Asgard\Db\DB([
 			'driver' => 'sqlite',

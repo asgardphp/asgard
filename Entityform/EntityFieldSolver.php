@@ -30,22 +30,22 @@ class EntityFieldSolver implements EntityFieldSolverInterface {
 		$this->add(function($property) {
 			$class = get_class($property);
 			switch($class) {
-				case 'Asgard\Entity\Properties\StringProperty':
-				case 'Asgard\Entity\Properties\TextProperty':
-				case 'Asgard\Entity\Properties\DecimalProperty':
-				case 'Asgard\Entity\Properties\IntegerProperty':
-				case 'Asgard\Entity\Properties\EmailProperty':
+				case 'Asgard\Entity\Property\StringProperty':
+				case 'Asgard\Entity\Property\TextProperty':
+				case 'Asgard\Entity\Property\DecimalProperty':
+				case 'Asgard\Entity\Property\IntegerProperty':
+				case 'Asgard\Entity\Property\EmailProperty':
 					if($property->has('in'))
-						return new \Asgard\Form\Fields\SelectField;
+						return new \Asgard\Form\Field\SelectField;
 					else
-						return new \Asgard\Form\Fields\TextField;
-				case 'Asgard\Entity\Properties\BooleanProperty':
-					return new \Asgard\Form\Fields\BooleanField;
-				case 'Asgard\Entity\Properties\DateProperty':
-				case 'Asgard\Entity\Properties\DatetimeProperty':
-					return new \Asgard\Form\Fields\DateField;
-				case 'Asgard\Entity\Properties\FileProperty':
-					return new \Asgard\Form\Fields\FileField;
+						return new \Asgard\Form\Field\TextField;
+				case 'Asgard\Entity\Property\BooleanProperty':
+					return new \Asgard\Form\Field\BooleanField;
+				case 'Asgard\Entity\Property\DateProperty':
+				case 'Asgard\Entity\Property\DatetimeProperty':
+					return new \Asgard\Form\Field\DateField;
+				case 'Asgard\Entity\Property\FileProperty':
+					return new \Asgard\Form\Field\FileField;
 			}
 		});
 		foreach($solvers as $solver)
@@ -99,7 +99,7 @@ class EntityFieldSolver implements EntityFieldSolverInterface {
 				return $res;
 		}
 
-		return new \Asgard\Form\Fields\TextField;
+		return new \Asgard\Form\Field\TextField;
 	}
 
 	/**

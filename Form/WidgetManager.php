@@ -26,7 +26,7 @@ class WidgetManager implements WidgetManagerInterface {
 	 * @var array
 	 */
 	protected $namespaces = [
-		'Asgard\Form\Widgets'
+		'Asgard\Form\Widget'
 	];
 
 	/**
@@ -82,7 +82,7 @@ class WidgetManager implements WidgetManagerInterface {
 			return $reflector->newInstanceArgs([$name, $value, $options, $form]);
 		}
 		elseif(is_callable($widget))
-			return new Widgets\CallbackWidget($widget, $name, $value, $options, $form);
+			return new Widget\CallbackWidget($widget, $name, $value, $options, $form);
 	}
 
 	/**

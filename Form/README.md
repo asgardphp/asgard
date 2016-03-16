@@ -113,7 +113,7 @@ A field is a single input of the form. All fields extend the \Asgard\Form\Field 
 
 To add specific validation rules to a field, use the 'validation' option:
 
-	$form['field'] = new \Asgard\Form\Fields\TextField(['validation'=>[
+	$form['field'] = new \Asgard\Form\Field\TextField(['validation'=>[
 		'minlength' => 5,
 		'maxlength' => 5,
 	]]);
@@ -136,7 +136,7 @@ To get only general errors or errors that do not belong to a specific field:
 
 **Validation groups**
 
-	$form['field'] = new \Asgard\Form\Fields\TextField(['validation'=>[
+	$form['field'] = new \Asgard\Form\Field\TextField(['validation'=>[
 		'minlength' => [
 			5,
 			'groups' => ['registration']
@@ -154,7 +154,7 @@ Validation is further explained in the [validation documentation](docs/validatio
 
 To set a default value for a field, use the 'default' option:
 
-	$form['field'] = new \Asgard\Form\Fields\TextField(['default'=>'placeholder']);
+	$form['field'] = new \Asgard\Form\Field\TextField(['default'=>'placeholder']);
 
 ###Render a field
 
@@ -172,7 +172,7 @@ Widgets are identified by a short name such as "text", "password", "select", etc
 
 "text" being the name of the widget we want to use to render the field.
 
-By default, the Form will look for the corresponding widget in \Asgard\Form\Widgets. [But it is possible to manage what widgets are available](#managing-widgets).
+By default, the Form will look for the corresponding widget in \Asgard\Form\Widget. [But it is possible to manage what widgets are available](#managing-widgets).
 
 ###Field label
 
@@ -189,25 +189,25 @@ Or the whole label tag:
 
 **boolean**
 
-	$form['field'] = new \Asgard\Form\Fields\BooleanField;
+	$form['field'] = new \Asgard\Form\Field\BooleanField;
 
 displays a checkbox.
 
 **country**
 
-	$form['field'] = new \Asgard\Form\Fields\BooleanField;
+	$form['field'] = new \Asgard\Form\Field\BooleanField;
 
 displays a select field with a list of all countries.
 
 **csrf**
 
-	$form['field'] = new \Asgard\Form\Fields\CSRFField;
+	$form['field'] = new \Asgard\Form\Field\CSRFField;
 
 adds a hidden field to the form to prevent CSRF attack.
 
 **date**
 
-	$form['field'] = new \Asgard\Form\Fields\DateField;
+	$form['field'] = new \Asgard\Form\Field\DateField;
 
 Render three select fields (day/month/year):
 
@@ -221,7 +221,7 @@ Render text field:
 
 **datetime**
 
-	$form['field'] = new \Asgard\Form\Fields\DatetimeField;
+	$form['field'] = new \Asgard\Form\Field\DatetimeField;
 
 Render six select fields (second/minute/hour/day/month/year):
 
@@ -235,7 +235,7 @@ Render text field:
 
 **time**
 
-	$form['field'] = new \Asgard\Form\Fields\TimeField;
+	$form['field'] = new \Asgard\Form\Field\TimeField;
 
 Render three select fields (second/minute/hour):
 
@@ -249,31 +249,31 @@ Render text field:
 
 **day**
 
-	$form['field'] = new \Asgard\Form\Fields\DayField;
+	$form['field'] = new \Asgard\Form\Field\DayField;
 
 adds a single select field with days from 1 to 31.
 
 **file**
 
-	$form['field'] = new \Asgard\Form\Fields\FileField;
+	$form['field'] = new \Asgard\Form\Field\FileField;
 
 adds a file field.
 
 **hidden**
 
-	$form['field'] = new \Asgard\Form\Fields\HiddenField;
+	$form['field'] = new \Asgard\Form\Field\HiddenField;
 
 adds an hidden field to the form.
 
 **month**
 
-	$form['field'] = new \Asgard\Form\Fields\MonthField;
+	$form['field'] = new \Asgard\Form\Field\MonthField;
 
 adds a single select field with months from 1 to 12.
 
 **multipleselect**
 
-	$form['field'] = new \Asgard\Form\Fields\SelectField(['choices'=>['bob', 'joe', 'david']);
+	$form['field'] = new \Asgard\Form\Field\SelectField(['choices'=>['bob', 'joe', 'david']);
 
 Render multiple select:
 
@@ -290,17 +290,17 @@ Render checkboxes:
 
 **select**
 
-	$form['field'] = new \Asgard\Form\Fields\SelectField(['choices'=>['bob', 'joe', 'david']);
+	$form['field'] = new \Asgard\Form\Field\SelectField(['choices'=>['bob', 'joe', 'david']);
 
 adds a single select field.
 
 **text**
 
-	$form['field'] = new \Asgard\Form\Fields\TextField;
+	$form['field'] = new \Asgard\Form\Field\TextField;
 
 **year**
 
-	$form['field'] = new \Asgard\Form\Fields\YearField;
+	$form['field'] = new \Asgard\Form\Field\YearField;
 
 adds a single select field with the last 50 years.
 
@@ -314,7 +314,7 @@ To know how many fields or sub-groups a Group or a Form has:
 
 Forms and groups are built like arrays. To add a field:
 
-	$form['title'] = new \Asgard\Form\Fields\TextField;
+	$form['title'] = new \Asgard\Form\Field\TextField;
 
 To get its value after the form was submitted:
 
@@ -323,10 +323,10 @@ To get its value after the form was submitted:
 You can add a whole group to a form:
 
 	$form['address'] = [
-		'number' => new Fields\TextField,
-		'street' => new Fields\TextField,
-		'city' => new Fields\TextField,
-		'zipcode' => new Fields\TextField
+		'number' => new Field\TextField,
+		'street' => new Field\TextField,
+		'city' => new Field\TextField,
+		'zipcode' => new Field\TextField
 	];
 
 In the form, the array will be converted to a \Asgard\Form\Group object. You can access a group's fields like a form:
@@ -336,8 +336,8 @@ In the form, the array will be converted to a \Asgard\Form\Group object. You can
 As a form is also a Group, you can also embed forms:
 
 	$personForm = new \Asgard\Form\Form;
-	$personForm['firstname'] = new Fields\TextField;
-	$personForm['lastname'] = new Fields\TextField;
+	$personForm['firstname'] = new Field\TextField;
+	$personForm['lastname'] = new Field\TextField;
 
 	$form['person'] = $personForm;
 
@@ -360,7 +360,7 @@ Dynamic groups are very useful when you have an indefinite number of fields in a
 To add a dynamic group, use:
 
 	$callback = function($data) {
-		return new \Asgard\Http\Fields\TextField;
+		return new \Asgard\Http\Field\TextField;
 	};
 	$form['names'] = \Asgard\Form\DynamicGroup($callback);
 
@@ -369,8 +369,8 @@ This will create a TextField automatically for each input in the group "names". 
 ###Prefill
 You can even prefill a dynamic group:
 
-	$form['names'][] =  new \Asgard\Http\Fields\TextField(['default'=>'name1']);
-	$form['names'][] =  new \Asgard\Http\Fields\TextField(['default'=>'name2']);
+	$form['names'][] =  new \Asgard\Http\Field\TextField(['default'=>'name1']);
+	$form['names'][] =  new \Asgard\Http\Field\TextField(['default'=>'name2']);
 
 ###Rendering
 
@@ -503,13 +503,13 @@ Otherwise, you can also access a form widgetManager through:
 
 ###Register a widget
 
-	$wm->setWidget('text', 'MyClasses\Widgets\TextWidget');
+	$wm->setWidget('text', 'MyClasses\Widget\TextWidget');
 
 ###Register a namespace
 
 	$wm->addNamespace('MyClasses\Widgets');
 
-When using an unknown widget, the widgets manager will try to look for the widget in all registered namespaces. If the class MyClasses\Widgets\TextWidget exists, it will be used to render the field.
+When using an unknown widget, the widgets manager will try to look for the widget in all registered namespaces. If the class MyClasses\Widget\TextWidget exists, it will be used to render the field.
 
 ###Register a widget factory
 
@@ -529,8 +529,8 @@ This method must build and return a Widget object.
 	$form = $container->make('form');
 	#or
 	$form = new \Asgard\Form\Form;
-	$form->getWidgetManager()->setWidget('text', 'MyClasses\Widgets\TextWidget');
-	$form['title'] = new \Asgard\Fields\TextField;
+	$form->getWidgetManager()->setWidget('text', 'MyClasses\Widget\TextWidget');
+	$form['title'] = new \Asgard\Field\TextField;
 	echo $form['title']->text();
 
 <a name="examples"></a>
@@ -544,8 +544,8 @@ Building the form:
 	#or
 	$form = new \Asgard\Form\Form('user');
 
-	$form['username'] = new \Asgard\Form\Fields\TextField(['validation'=>'required']);
-	$form['password'] = new \Asgard\Form\Fields\TextField(['validation'=>'required', 'widget' => 'password']);
+	$form['username'] = new \Asgard\Form\Field\TextField(['validation'=>'required']);
+	$form['password'] = new \Asgard\Form\Field\TextField(['validation'=>'required', 'widget' => 'password']);
 
 	if($form->sent()) {
 		if($form->isValid()) {

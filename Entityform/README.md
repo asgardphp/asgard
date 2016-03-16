@@ -84,12 +84,12 @@ If there is a validation error, it will throw the exception \Asgard\Form\FormExc
 <a name="solver"></a>
 ##EntityFieldSolver
 
-In order to tell the entityform how to create fields from entity properties, you can use the Asgard\Entityform\EntityFieldsSolver class. By default it already handles Text, text, Double, Integer, Email, Boolean, Date, Datetime, File entity properties (all in Asgard\Entity\Properties\\). If the EntityFieldsSolver does not know what type of field to create for a specific property, it will return a \Asgard\Form\Fields\TextField field by default.
+In order to tell the entityform how to create fields from entity properties, you can use the Asgard\Entityform\EntityFieldsSolver class. By default it already handles Text, text, Double, Integer, Email, Boolean, Date, Datetime, File entity properties (all in Asgard\Entity\Property\\). If the EntityFieldsSolver does not know what type of field to create for a specific property, it will return a \Asgard\Form\Field\TextField field by default.
 
 To extend the entityFieldsSolver add a callback which will return a form field object:
 
 	$cb = function(\Asgard\Entity\Property $property) {
-		if(get_class($property) == 'Asgard\Entity\Properties\DateProperty')
+		if(get_class($property) == 'Asgard\Entity\Property\DateProperty')
 			return new MyOwnDateField;
 	};
 	$fieldsSolver->add($cb);
@@ -97,7 +97,7 @@ To extend the entityFieldsSolver add a callback which will return a form field o
 For entity properties with multiple values, use:
 
 	$cb = function(\Asgard\Entity\Property $property) {
-		if(get_class($property) == 'Asgard\Entity\Properties\DateProperty')
+		if(get_class($property) == 'Asgard\Entity\Property\DateProperty')
 			return new \Asgard\Form\DynamicGroup;
 	};
 	$fieldsSolver->addMany($cb);

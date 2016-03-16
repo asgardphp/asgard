@@ -125,7 +125,7 @@ class DataMapper implements DataMapperInterface {
 
 			#Files
 			foreach($entity->getDefinition()->properties() as $name=>$prop) {
-				if($prop instanceof \Asgard\Entity\Properties\FileProperty) {
+				if($prop instanceof \Asgard\Entity\Property\FileProperty) {
 					if($prop->get('many')) {
 						foreach($entity->get($name) as $file)
 							$file->delete();
@@ -289,7 +289,7 @@ class DataMapper implements DataMapperInterface {
 		$entity->getDefinition()->trigger('save', [$entity], function(\Asgard\Hook\Chain $chain, $entity) use($groups) {
 			#Files
 			foreach($entity->getDefinition()->properties() as $name=>$prop) {
-				if($prop instanceof \Asgard\Entity\Properties\FileProperty) {
+				if($prop instanceof \Asgard\Entity\Property\FileProperty) {
 					if($prop->get('many')) {
 						$files = $entity->$name = array_values($entity->$name->all());
 						foreach($files as $k=>$file) {

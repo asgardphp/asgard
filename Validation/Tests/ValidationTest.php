@@ -223,7 +223,7 @@ class Test extends \PHPUnit_Framework_TestCase {
 		])->getRuleMessage('min'));
 
 		#a supprimer? l.151/152 de ValidatorInterface
-		$this->assertFalse((new v)->rule(new \Asgard\Validation\Rules\Min(5))->valid(4));
+		$this->assertFalse((new v)->rule(new \Asgard\Validation\Rule\Min(5))->valid(4));
 
 		#custom registry
 		$registry = new RulesRegistry;

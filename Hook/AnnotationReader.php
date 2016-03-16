@@ -2,7 +2,7 @@
 namespace Asgard\Hook;
 
 #For doctrine, which does not autoload classes...
-require_once __DIR__.'/Annotations/Hook.php';
+require_once __DIR__.'/Annotation/Hook.php';
 
 /**
  * Annotations reader.
@@ -29,7 +29,7 @@ class AnnotationReader {
 		$hooks = [];
 
 		$reader = new \Doctrine\Common\Annotations\SimpleAnnotationReader();
-		$reader->addNamespace('Asgard\Hook\Annotations');
+		$reader->addNamespace('Asgard\Hook\Annotation');
 		if($this->cache) {
 			$reader = new \Doctrine\Common\Annotations\CachedReader(
 				$reader,
@@ -40,7 +40,7 @@ class AnnotationReader {
 
 		$reflection = new \ReflectionClass($class);
 		foreach($reflection->getMethods() as $method) {
-			$hookAnnot = $reader->getMethodAnnotation($method, 'Asgard\Hook\Annotations\Hook');
+			$hookAnnot = $reader->getMethodAnnotation($method, 'Asgard\Hook\Annotation\Hook');
 			if($hookAnnot !== null) {
 				$hook = $hookAnnot->value;
 				$hooks[$hook][] = [$class, $method->getName()];

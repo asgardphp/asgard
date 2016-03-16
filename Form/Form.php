@@ -163,7 +163,7 @@ class Form extends Group implements FormInterface {
 	 */
 	public function csrf($active=true) {
 		if($active)
-			$this->add(new Fields\CSRFField, '_csrf_token');
+			$this->add(new Field\CSRFField, '_csrf_token');
 		else
 			$this->remove('_csrf_token');
 		return $this;
@@ -255,7 +255,7 @@ class Form extends Group implements FormInterface {
 			return;
 		$gen_errors = $this->errors->getRulesErrors();
 		foreach($this->errors->attributes() as $field_name=>$errors) {
-			if(!$this->has($field_name) || $this->get($field_name) instanceof Fields\HiddenField)
+			if(!$this->has($field_name) || $this->get($field_name) instanceof Field\HiddenField)
 				$gen_errors[$field_name] = $errors->errors();
 		}
 		return $gen_errors;
