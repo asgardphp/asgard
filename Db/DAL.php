@@ -59,12 +59,12 @@ class DAL implements \Iterator {
 	protected $limit;
 	/**
 	 * Order by.
-	 * @var string
+	 * @var array
 	 */
 	protected $orderBy;
 	/**
 	 * Group by.
-	 * @var string
+	 * @var array
 	 */
 	protected $groupBy;
 	/**
@@ -262,21 +262,39 @@ class DAL implements \Iterator {
 	 * @param  string       $type
 	 * @param  string|array $table
 	 * @param  string|array $conditions
+	 * @param  boolean      $recursive  can $table contain multiple jointures
 	 * @return DAL          $this
 	 */
-	public function join($type, $table, $conditions=null) {
-		if(is_array($table)) {
-			foreach($table as $_table=>$_conditions)
-				$this->join($type, $_table, $_conditions);
+	public function join($type, $table, $conditions=null, $recursive=true) {
+		if($recursive && is_array($table)) {
+			foreach($table as $_table=>$_conditions) {
+				if($_conditions instanceof static)
+					$this->join($type, $table, $conditions, false);
+				elseif($_conditions instanceof Raw)
+					$this->join($type, $table, $conditions, false);
+				else
+					$this->join($type, $_table, $_conditions);
+			}
+
 			return $this;
 		}
-		$table_alias = explode(' ', $table);
-		$table = $table_alias[0];
-		if(isset($table_alias[1]))
-			$alias = $table_alias[1];
-		else
-			$alias = $table;
+
+		#for tables that are static or Raw
+		if(is_array($table)) {
+			$alias = array_keys($table)[0];
+			$table = array_values($table)[0];
+		}
+		else {
+			$table_alias = explode(' ', $table);
+			$table = $table_alias[0];
+			if(isset($table_alias[1]))
+				$alias = $table_alias[1];
+			else
+				$alias = $table;
+		}
+
 		$this->joins[$alias] = [$type, $table, $conditions];
+
 		return $this;
 	}
 
@@ -540,22 +558,24 @@ class DAL implements \Iterator {
 	/**
 	 * Set order by.
 	 * @param  string $orderBy
+	 * @param  array  $parameters
 	 * @return DAL    $this
 	 * @api
 	 */
-	public function orderBy($orderBy) {
-		$this->orderBy = $orderBy;
+	public function orderBy($orderBy, $parameters=[]) {
+		$this->orderBy = [$orderBy, $parameters];
 		return $this;
 	}
 
 	/**
 	 * Set group by.
 	 * @param  string $groupBy
+	 * @param  array  $parameters
 	 * @return DAL    $this
 	 * @api
 	 */
-	public function groupBy($groupBy) {
-		$this->groupBy = $groupBy;
+	public function groupBy($groupBy, $parameters=[]) {
+		$this->groupBy = [$groupBy, $parameters];
 		return $this;
 	}
 
@@ -747,17 +767,25 @@ class DAL implements \Iterator {
 	 */
 	protected function buildColumns() {
 		$select = [];
+		$params = [];
 		if(!$this->columns)
-			return '*';
+			return ['*', []];
 		else {
 			foreach($this->columns as $alias=>$column) {
-				if((string)$alias !== (string)$column)
+				if($column instanceof static) {
+					$sql = $column->buildSQL();
+					$params = array_merge($params, $column->getParameters());
+					$select[] = '('.$sql.') AS '.$this->identifierQuotes($alias);
+				}
+				elseif($column instanceof Raw)
+					$select[] = $v.' AS '.$this->identifierQuotes($alias);
+				elseif((string)$alias !== (string)$column)
 					$select[] = $this->identifierQuotes($column).' AS '.$this->identifierQuotes($alias);
 				else
 					$select[] = $this->identifierQuotes($column);
 			}
 		}
-		return implode(', ', $select);
+		return [implode(', ', $select), $params];
 	}
 
 	/**
@@ -798,35 +826,45 @@ class DAL implements \Iterator {
 
 	/**
 	 * Build GROUP BY.
-	 * @return string
+	 * @return array
 	 */
-	protected function buildGroupby() {
-		if(!$this->groupBy)
-			return;
+	protected function buildGroupBy() {
+		if(!$this->groupBy || !$this->groupBy[0])
+			return ['', []];
+
+		$groupBy = $this->groupBy;
+		$groupBySql = $groupBy[0];
+		$groupByParameters = $groupBy[1];
 
 		$res = [];
 
-		foreach(explode(',', $this->groupBy) as $column) {
+		foreach(explode(',', $groupBySql) as $column) {
 			if($this->isIdentifier(trim($column)))
 				$res[] = $this->replace(trim($column));
 			else
 				$res[] = trim($column);
 		}
 
-		return ' GROUP BY '.implode(', ', $res);
+		$sql = ' GROUP BY '.implode(', ', $res);
+
+		return [$sql, $groupByParameters];
 	}
 
 	/**
 	 * Build ORDER By.
-	 * @return string
+	 * @return array
 	 */
 	protected function buildOrderby() {
-		if(!$this->orderBy)
-			return;
+		if(!$this->orderBy || !$this->orderBy[0])
+			return ['', []];
 
 		$res = [];
 
-		foreach(explode(',', $this->orderBy) as $orderbystr) {
+		$orderBy = $this->orderBy;
+		$orderBySql = $orderBy[0];
+		$orderByParameters = $orderBy[1];
+
+		foreach(explode(',', $orderBySql) as $orderbystr) {
 			$orderbystr = trim($orderbystr);
 
 			preg_match('/(.*?) (ASC|DESC)?$/i', $orderbystr, $matches);
@@ -850,7 +888,9 @@ class DAL implements \Iterator {
 			}
 		}
 
-		return ' ORDER BY '.implode(', ', $res);
+		$sql = ' ORDER BY '.implode(', ', $res);
+
+		return [$sql, $orderByParameters];
 	}
 
 	/**
@@ -869,6 +909,7 @@ class DAL implements \Iterator {
 			$jointures .= $res[0];
 			$params = array_merge($params, $res[1]);
 		}
+
 		return [$jointures, $params];
 	}
 
@@ -895,11 +936,20 @@ class DAL implements \Iterator {
 				break;
 		}
 
-		if($alias !== null)
-			$table = $table.' '.$alias;
-		$table = preg_replace_callback('/(^[a-z_][a-zA-Z0-9._]*)| ([a-z_][a-zA-Z0-9._]*$)/', function($matches) {
-				return $this->identifierQuotes($matches[0]);
-		}, $table);
+		if($table instanceof static) {
+			$_table = '('.$table->buildSQL().') `'.$alias.'`';
+			$params = array_merge($params, $table->getParameters());
+			$table = $_table;
+		}
+		elseif($table instanceof Raw)
+			$table = '('.$table.') `'.$alias.'`';
+		else {
+			if($alias !== null)
+				$table = $table.' '.$alias;
+			$table = preg_replace_callback('/(^[a-z_][a-zA-Z0-9._]*)| ([a-z_][a-zA-Z0-9._]*$)/', function($matches) {
+					return $this->identifierQuotes($matches[0]);
+			}, $table);
+		}
 
 		$jointure .= $table;
 		if($conditions) {
@@ -992,7 +1042,8 @@ class DAL implements \Iterator {
 		list($tables, $tableparams) = $this->buildTables();
 		$params = array_merge($params, $tableparams);
 
-		$columns = $this->buildColumns();
+		list($columns, $columnsparams) = $this->buildColumns();
+		$params = array_merge($params, $columnsparams);
 
 		list($jointures, $joinparams) = $this->buildJointures();
 		$params = array_merge($params, $joinparams);
@@ -1000,14 +1051,17 @@ class DAL implements \Iterator {
 		list($where, $whereparams) = $this->buildWhere();
 		$params = array_merge($params, $whereparams);
 
-		$groupby = $this->buildGroupby();
+		list($groupBy, $groupByParams) = $this->buildGroupBy();
+		$params = array_merge($params, $groupByParams);
 
 		list($having, $havingparams) = $this->buildHaving();
 		$params = array_merge($params, $havingparams);
 
 		if(!$union) {
 			$limit = $this->buildLimit();
-			$orderBy = $this->buildOrderBy();
+
+			list($orderBy, $orderByParams) = $this->buildOrderBy();
+			$params = array_merge($params, $orderByParams);
 		}
 		else
 			$orderBy = $limit = '';
@@ -1018,7 +1072,7 @@ class DAL implements \Iterator {
 			$params = array_merge($params, $union->getParameters());
 		}
 
-		$sql = 'SELECT '.$columns.' FROM '.$tables.$jointures.$where.$groupby.$having.$unions.$orderBy.$limit;
+		$sql = 'SELECT '.$columns.' FROM '.$tables.$jointures.$where.$groupBy.$having.$unions.$orderBy.$limit;
 
 		$this->replaceRaws($sql, $params);
 
@@ -1063,8 +1117,10 @@ class DAL implements \Iterator {
 			#can't mix order by and joins in update
 			if($this->joins)
 				$orderBy = '';
-			else
-				$orderBy = $this->buildOrderBy();
+			else {
+				list($orderBy, $orderByParams) = $this->buildOrderBy();
+				$params = array_merge($params, $orderByParams);
+			}
 			$limit = $this->buildLimit();
 
 			list($where, $whereparams) = $this->buildWhere();
@@ -1151,7 +1207,9 @@ class DAL implements \Iterator {
 			list($tables, $tableparams) = $this->buildTables(count($del_tables) > 0);
 			$params = array_merge($params, $tableparams);
 
-			$orderBy = $this->buildOrderBy();
+			list($orderBy, $orderByParams) = $this->buildOrderBy();
+			$params = array_merge($params, $orderByParams);
+
 			$limit = $this->buildLimit();
 
 			list($jointures, $joinparams) = $this->buildJointures();
@@ -1244,7 +1302,8 @@ class DAL implements \Iterator {
 		$this->where = $this->replaceTableInConditions($this->where, $oldTable, $newTable);
 		$this->joins = $this->replaceTableInConditions($this->joins, $oldTable, $newTable);
 		#using regex to replace table names not preceded by one of the following character
-		$this->groupBy = preg_replace('/(?<![a-zA-Z0-9_])'.$oldTable.'\./', $newTable.'.', $this->groupBy);
+		if($this->groupBy !== null)
+			$this->groupBy[0] = preg_replace('/(?<![a-zA-Z0-9_])'.$oldTable.'\./', $newTable.'.', $this->groupBy[0]);
 	}
 
 	/**
