@@ -811,7 +811,7 @@ class DAL implements \Iterator {
 	protected function buildWhere($default=null) {
 		$r = $this->processConditions($this->where, 'and', false, $default!==null ? $default:$this->getDefaultTable());
 		if($r[0])
-			return [' WHERE '.$r[0], $r[1]];
+			return ["\n".'WHERE '.$r[0], $r[1]];
 		else
 			return ['', []];
 	}
@@ -819,7 +819,7 @@ class DAL implements \Iterator {
 	protected function buildHaving($default=null) {
 		$r = $this->processConditions($this->having, 'and', false, $default!==null ? $default:$this->getDefaultTable());
 		if($r[0])
-			return [' HAVING '.$r[0], $r[1]];
+			return ["\n".'HAVING '.$r[0], $r[1]];
 		else
 			return ['', []];
 	}
@@ -845,7 +845,7 @@ class DAL implements \Iterator {
 				$res[] = trim($column);
 		}
 
-		$sql = ' GROUP BY '.implode(', ', $res);
+		$sql = "\n".'GROUP BY '.implode(', ', $res);
 
 		return [$sql, $groupByParameters];
 	}
@@ -888,7 +888,7 @@ class DAL implements \Iterator {
 			}
 		}
 
-		$sql = ' ORDER BY '.implode(', ', $res);
+		$sql = "\n".'ORDER BY '.implode(', ', $res);
 
 		return [$sql, $orderByParameters];
 	}
@@ -926,13 +926,13 @@ class DAL implements \Iterator {
 		$jointure = '';
 		switch($type) {
 			case 'leftjoin':
-				$jointure = ' LEFT JOIN ';
+				$jointure = "\n".'LEFT JOIN ';
 				break;
 			case 'rightjoin':
-				$jointure = ' RIGHT JOIN ';
+				$jointure = "\n".'RIGHT JOIN ';
 				break;
 			case 'innerjoin':
-				$jointure = ' INNER JOIN ';
+				$jointure = "\n".'INNER JOIN ';
 				break;
 		}
 
@@ -968,7 +968,7 @@ class DAL implements \Iterator {
 		if(!$this->limit && !$this->offset)
 			return '';
 
-		$limit = ' LIMIT ';
+		$limit = "\n".'LIMIT ';
 		if($this->offset) {
 			$limit .= $this->offset;
 			if($this->limit)
@@ -1068,7 +1068,7 @@ class DAL implements \Iterator {
 
 		$unions = '';
 		foreach($this->unions as $union) {
-			$unions .= ' UNION ('.$union->buildSQL(true).')';
+			$unions .= "\n".'UNION ('.$union->buildSQL(true).')';
 			$params = array_merge($params, $union->getParameters());
 		}
 
@@ -1161,7 +1161,7 @@ class DAL implements \Iterator {
 			list($tables, $tableparams) = $this->buildTables(false);
 			$params = array_merge($params, $tableparams);
 
-			$sql = 'UPDATE '.$tables.$str.' WHERE EXISTS ('.$selectSql.')';
+			$sql = 'UPDATE '.$tables.$str."\n".'WHERE EXISTS ('.$selectSql.')';
 		}
 		else {
 			$set = [];
@@ -1249,7 +1249,7 @@ class DAL implements \Iterator {
 			list($tables, $tableparams) = $this->buildTables(false);
 			$params = array_merge($params, $tableparams);
 
-			$sql = 'DELETE FROM '.$tables.' WHERE EXISTS ('.$selectSql.')';
+			$sql = 'DELETE FROM '.$tables."\n".'WHERE EXISTS ('.$selectSql.')';
 		}
 		else {
 			list($tables, $tableparams) = $this->buildTables(false);

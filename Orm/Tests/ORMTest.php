@@ -44,7 +44,7 @@ class ORMTest extends \PHPUnit_Framework_TestCase {
 		$orm = $dataMapper->orm('Asgard\Orm\Tests\Fixtures\NamesConflict\A');
 
 		$this->assertEquals(
-			'SELECT `a`.* FROM `a` LEFT JOIN `b` `parent` ON `parent`.`id` = `a`.`parent_id` LEFT JOIN `c` `parent1` ON `parent1`.`id` = `parent`.`parent_id` LEFT JOIN `b` `childs` ON `childs`.`parent_id` = `parent1`.`id` LEFT JOIN `a` `childs1` ON `childs1`.`parent_id` = `childs`.`id` GROUP BY `a`.`id` ORDER BY `a`.`id` DESC',
+			'SELECT `a`.* FROM `a`'."\n".'LEFT JOIN `b` `parent` ON `parent`.`id` = `a`.`parent_id`'."\n".'LEFT JOIN `c` `parent1` ON `parent1`.`id` = `parent`.`parent_id`'."\n".'LEFT JOIN `b` `childs` ON `childs`.`parent_id` = `parent1`.`id`'."\n".'LEFT JOIN `a` `childs1` ON `childs1`.`parent_id` = `childs`.`id`'."\n".'GROUP BY `a`.`id`'."\n".'ORDER BY `a`.`id` DESC',
 			$orm->join([
 				'parent' => [
 					'parent' => [
@@ -56,14 +56,14 @@ class ORMTest extends \PHPUnit_Framework_TestCase {
 
 		$orm = $dataMapper->orm('Asgard\Orm\Tests\Fixtures\NamesConflict\A');
 		$this->assertEquals(
-			'SELECT `a`.* FROM `a` INNER JOIN `b` `parent` ON `parent`.`id` = `a`.`parent_id` INNER JOIN `c` `parent1` ON `parent1`.`id` = `parent`.`parent_id` INNER JOIN `b` `childs` ON `childs`.`parent_id` = `parent1`.`id` INNER JOIN `a` `childs1` ON `childs1`.`parent_id` = `childs`.`id` GROUP BY `a`.`id` ORDER BY `a`.`id` DESC',
+			'SELECT `a`.* FROM `a`'."\n".'INNER JOIN `b` `parent` ON `parent`.`id` = `a`.`parent_id`'."\n".'INNER JOIN `c` `parent1` ON `parent1`.`id` = `parent`.`parent_id`'."\n".'INNER JOIN `b` `childs` ON `childs`.`parent_id` = `parent1`.`id`'."\n".'INNER JOIN `a` `childs1` ON `childs1`.`parent_id` = `childs`.`id`'."\n".'GROUP BY `a`.`id`'."\n".'ORDER BY `a`.`id` DESC',
 			$orm->parent()->parent()->childs()->childs()->getDAL()->dbgSelect()
 		);
 
 		#with conditions
 		$orm = $dataMapper->orm('Asgard\Orm\Tests\Fixtures\NamesConflict\A');
 		$this->assertEquals(
-			'SELECT `a`.* FROM `a` INNER JOIN `b` `parent` ON `parent`.`id` = `a`.`parent_id` INNER JOIN `c` `parent1` ON `parent1`.`id` = `parent`.`parent_id` INNER JOIN `b` `childs` ON `childs`.`parent_id` = `parent1`.`id` INNER JOIN `a` `childs1` ON `childs1`.`parent_id` = `childs`.`id` WHERE `parent1`.`a`=\'b\' GROUP BY `a`.`id` ORDER BY `a`.`id` DESC',
+			'SELECT `a`.* FROM `a`'."\n".'INNER JOIN `b` `parent` ON `parent`.`id` = `a`.`parent_id`'."\n".'INNER JOIN `c` `parent1` ON `parent1`.`id` = `parent`.`parent_id`'."\n".'INNER JOIN `b` `childs` ON `childs`.`parent_id` = `parent1`.`id`'."\n".'INNER JOIN `a` `childs1` ON `childs1`.`parent_id` = `childs`.`id`'."\n".'WHERE `parent1`.`a`=\'b\''."\n".'GROUP BY `a`.`id`'."\n".'ORDER BY `a`.`id` DESC',
 			$orm->parent()->parent()->where('a','b')->childs()->childs()->getDAL()->dbgSelect()
 		);
 	}
@@ -247,14 +247,14 @@ class ORMTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals(2, $dataMapper->related($cat, 'news')->count());
 
 		#orderBy
-		$this->assertEquals(2, $dataMapper->orm('Asgard\Orm\Tests\Fixtures\ORM\Category')->first()->id); #default order is id DESC
+		$this->assertEquals(2, $dataMapper->orm('Asgard\Orm\Tests\Fixtures\ORM\Category')->first()->id); #default'."\n".'ORDER is id DESC
 		$this->assertEquals(2, $dataMapper->orm('Asgard\Orm\Tests\Fixtures\ORM\Category')->orderBy('id DESC')->first()->id);
 		$this->assertEquals(1, $dataMapper->orm('Asgard\Orm\Tests\Fixtures\ORM\Category')->orderBy('id ASC')->first()->id);
 
 		#relation shortcut
 		$this->assertEquals(2, count($dataMapper->related($cat, 'news')->get()));
 
-		#relation + where
+		#relation +'."\n".'WHERE
 		$this->assertEquals(1, $dataMapper->related($cat, 'news')->where('title', 'Welcome!')->first()->id);
 
 		#joinToEntity
@@ -322,7 +322,7 @@ class ORMTest extends \PHPUnit_Framework_TestCase {
 		$this->assertEquals(1, $cats[0]->data['properties']['news'][0]->data['properties']['author']->id);
 
 		#selectQuery
-		$cats = $dataMapper->orm('Asgard\Orm\Tests\Fixtures\ORM\Category')->query('SELECT * FROM category WHERE title=?', ['General'])->get();
+		$cats = $dataMapper->orm('Asgard\Orm\Tests\Fixtures\ORM\Category')->query('SELECT * FROM category'."\n".'WHERE title=?', ['General'])->get();
 		$this->assertEquals(1, $cats[0]->id);
 
 		#paginate
@@ -368,7 +368,7 @@ class ORMTest extends \PHPUnit_Framework_TestCase {
 		#test polymorphic
 			// hmabt/hasmany?
 		#test i18n
-		#probleme quand on set limit, offset, etc. dans l'orm pour enchainer?
+		#probleme quand on set'."\n".'LIMIT, offset, etc. dans l'orm pour enchainer?
 		/*
 		#all()
 		delete()
