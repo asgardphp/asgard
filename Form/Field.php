@@ -184,6 +184,8 @@ abstract class Field {
 	 * @return mixed
 	 */
 	public function value() {
+		if($this->getOption('disabled'))
+			return isset($this->options['default']) ? $this->options['default']:null;
 		return $this->value;
 	}
 
