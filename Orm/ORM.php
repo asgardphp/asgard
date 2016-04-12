@@ -456,10 +456,10 @@ class ORM implements ORMInterface, \Countable {
 			if($entity->getDefinition()->hasProperty($k)) {
 				$prop = $entity->getDefinition()->property($k);
 				$class = get_class($prop);
-				if($v === null)
-					$data[$k] = null;
-				elseif($prop->get('many'))
+				if($prop->get('many'))
 					$data[$k] = $entity->getDefinition()->property($k)->unserialize($v, $entity, $k);
+				elseif($v === null)
+					$data[$k] = null;
 				elseif(method_exists($prop, 'fromSQL'))
 					$data[$k] = $prop->fromSQL($v);
 				elseif($transformer = $this->dataMapper->getSqlInput($class))
