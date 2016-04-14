@@ -329,7 +329,7 @@ class EntityTest extends \PHPUnit_Framework_TestCase {
 				'content' => 'Test Content',
 				#'published' => \Asgard\Common\Datetime::create(2009, 9, 9),
 				'another_property' => null,
-				'comments' => null
+				'comments' => new \Asgard\Entity\ManyCollection($news, 'comments')
 			],
 			$newsArray
 		);

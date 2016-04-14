@@ -474,9 +474,9 @@ class Definition {
 		if(!$this->hasProperty($name))
 			return;
 
-		if($this->property($name)->get('setHook')) {
-			$hook  = $this->property($name)->get('setHook');
-			$value = call_user_func_array($hook, [$value]);
+		if($this->property($name)->get('hooks.set')) {
+			$hook  = $this->property($name)->get('hooks.set');
+			$value = call_user_func_array($hook, [$value, $entity]);
 		}
 
 		$value = $this->property($name)->_doSet($value, $entity, $name, $silentException);
@@ -490,8 +490,7 @@ class Definition {
 	 */
 	public function make(array $attrs=null, $locale=null) {
 		$entityClass = $this->entityClass;
-		$entity      = new $entityClass($attrs, $locale);
-		$entity->setEntityManager($this->entityManager);
+		$entity      = new $entityClass($attrs, $locale, $this->entityManager);
 		return $entity;
 	}
 }

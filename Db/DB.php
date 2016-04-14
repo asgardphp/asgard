@@ -111,6 +111,13 @@ class DB implements DBInterface {
 	/**
 	 * {@inheritDoc}
 	*/
+	public function inTransaction() {
+		return $this->getPDO()->inTransaction();
+	}
+
+	/**
+	 * {@inheritDoc}
+	*/
 	public function beginTransaction() {
 		$this->getPDO()->beginTransaction();
 	}

@@ -10,18 +10,12 @@ class Ormrequired extends \Asgard\Validation\Rule {
 	 * {@inheritDoc}
 	 */
 	public function validate($input, \Asgard\Validation\InputBag $parentInput, \Asgard\Validation\ValidatorInterface $validator) {
-		if($input instanceof \Asgard\Entity\ManyCollection && $input->count() > 0)
-			return true;
-		elseif($input)
-			return true;
-		else {
-			$entity = $validator->get('entity');
-			$dataMapper = $validator->get('dataMapper');
-			$attr = $validator->getName();
-			$orm = $dataMapper->related($entity, $attr);
+		$entity = $validator->get('entity');
+		$dataMapper = $validator->get('dataMapper');
+		$attr = $validator->getName();
+		$orm = $dataMapper->related($entity, $attr);
 
-			return $orm->count() > 0;
-		}
+		return $orm->count() > 0;
 	}
 
 	/**

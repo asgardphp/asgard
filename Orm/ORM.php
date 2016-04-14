@@ -437,7 +437,7 @@ class ORM implements ORMInterface, \Countable {
 		if(!$definition)
 			$definition = $this->definition;
 		$new = $definition->make([], $this->locale);
-		static::unserialize($new, $raw);
+		$this->unserialize($new, $raw);
 		$new->setParameter('persisted', true);
 		return $new;
 	}
@@ -451,21 +451,28 @@ class ORM implements ORMInterface, \Countable {
 	 *
 	 * @return \Asgard\Entity\Entity
 	*/
-	protected static function unserialize(\Asgard\Entity\Entity $entity, array $data, $locale=null) {
-		foreach($data as $k=>$v) {
-			if($entity->getDefinition()->hasProperty($k)) {
-				$prop = $entity->getDefinition()->property($k);
-				$class = get_class($prop);
-				if($v === null)
+	protected function unserialize(\Asgard\Entity\Entity $entity, array $data, $locale=null) {
+		foreach($this->dataMapper->getEntityDefinition($entity)->properties() as $k=>$prop) {
+			$v = isset($data[$k]) ? $data[$k]:null;
+
+			if($prop->get('type') === 'entity') {
+				if($prop->get('many'))
+					$data[$k] = new PersistentCollection($entity, $k, $this->dataMapper);
+				else
 					$data[$k] = null;
-				elseif($prop->get('many'))
-					$data[$k] = $entity->getDefinition()->property($k)->unserialize($v, $entity, $k);
+			}
+			else {
+				$class = get_class($prop);
+				if($prop->get('many'))
+					$data[$k] = $this->dataMapper->getEntityDefinition($entity)->property($k)->unserialize($v, $entity, $k);
+				elseif($v === null)
+					$data[$k] = null;
 				elseif(method_exists($prop, 'fromSQL'))
 					$data[$k] = $prop->fromSQL($v);
 				elseif($transformer = $this->dataMapper->getSqlInput($class))
 					return $transformer->fromSQL($v);
 				else
-					$data[$k] = $entity->getDefinition()->property($k)->unserialize($v, $entity, $k);
+					$data[$k] = $this->dataMapper->getEntityDefinition($entity)->property($k)->unserialize($v, $entity, $k);
 			}
 		}
 
@@ -781,7 +788,11 @@ class ORM implements ORMInterface, \Countable {
 								return ($id == $result->get($link));
 							});
 							$filter = array_values($filter);
-							$entity->set($relationName, $filter);
+							$collection = $entity->get($relationName);
+							$collection->reset();
+							foreach($filter as $e)
+								$collection->_add($e);
+							$collection->setInitialized(true);
 						}
 						break;
 					case 'HMABT':
@@ -805,10 +816,11 @@ class ORM implements ORMInterface, \Countable {
 								return $id == $result['__ormrelid'];
 							});
 							$filter = array_values($filter);
-							$mres = [];
+							$collection = $entity->get($relationName);
+							$collection->reset();
 							foreach($filter as $m)
-								$mres[] = $this->hydrate($m, $relationDefinition);
-							$entity->set($relationName, $mres);
+								$collection->_add($this->hydrate($m, $relationDefinition));
+							$collection->setInitialized(true);
 						}
 						break;
 					default:
@@ -1210,5 +1222,9 @@ class ORM implements ORMInterface, \Countable {
 	*/
 	public function resetDAL() {
 		$this->tmp_dal = null;
+	}
+
+	public function getDataMapper() {
+		return $this->dataMapper;
 	}
 }

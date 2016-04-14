@@ -45,6 +45,13 @@ interface DBInterface {
 	public function id();
 
 	/**
+	 * Check if we are in a transaction.
+	 * @api
+	 * @return boolean
+	*/
+	public function inTransaction();
+
+	/**
 	 * Start a new SQL transaction.
 	 * @api
 	*/

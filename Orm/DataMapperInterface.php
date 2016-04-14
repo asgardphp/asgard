@@ -173,4 +173,18 @@ interface DataMapperInterface {
 	 * @return \Asgard\Db\DBInterface
 	 */
 	public function getDB();
+
+	/**
+	 * Return the database instance.
+	 * @param  \Asgard\Db\DBInterface $db
+	 * @return static
+	 */
+	public function setDB(\Asgard\Db\DBInterface $db);
+
+	/**
+	 * Return the definition of an entity.
+	 * @param  \Asgard\Entity\Entity $entity
+	 * @return \Asgard\Entity\Definition
+	 */
+	public function getEntityDefinition(\Asgard\Entity\Entity $entity);
 }

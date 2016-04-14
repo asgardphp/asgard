@@ -12,7 +12,7 @@ class Category extends \Asgard\Entity\Entity {
 				'many' => true,
 				'validation' => [
 					'required',
-					'hasmorethan' => 3
+					'ormhasmorethan' => 3
 				]
 			],
 		];

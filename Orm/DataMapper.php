@@ -105,10 +105,10 @@ class DataMapper implements DataMapperInterface {
 	 * {@inheritDoc}
 	 */
 	public function destroy(\Asgard\Entity\Entity $entity) {
-		return $entity->getDefinition()->trigger('destroy', [$entity], function($chain, $entity) {
+		return $this->getEntityDefinition($entity)->trigger('destroy', [$entity], function($chain, $entity) {
 			$orms = [];
 
-			foreach($entity->getDefinition()->relations() as $name=>$relation) {
+			foreach($this->getEntityDefinition($entity)->relations() as $name=>$relation) {
 				if(isset($relation->get('cascade')['delete']) && $relation->get('cascade')['delete']) {
 					$orm = $this->related($entity, $name);
 					if(!is_object($orm))
@@ -118,13 +118,13 @@ class DataMapper implements DataMapperInterface {
 				}
 			}
 
-			if($entity->getDefinition()->isI18N())
+			if($this->getEntityDefinition($entity)->isI18N())
 				$r = $this->entityORM($entity)->getDAL()->delete([$this->getTable($entity), $this->getTranslationTable($entity)]);
 			else
 				$r = $this->entityORM($entity)->getDAL()->delete();
 
 			#Files
-			foreach($entity->getDefinition()->properties() as $name=>$prop) {
+			foreach($this->getEntityDefinition($entity)->properties() as $name=>$prop) {
 				if($prop instanceof \Asgard\Entity\Property\FileProperty) {
 					if($prop->get('many')) {
 						foreach($entity->get($name) as $file)
@@ -163,7 +163,7 @@ class DataMapper implements DataMapperInterface {
 	}
 
 	public function createValidator(\Asgard\Entity\Entity $entity) {
-		$validator = $entity->getDefinition()->getEntityManager()->createValidator();
+		$validator = $this->getEntityDefinition($entity)->getEntityManager()->createValidator();
 		return $validator;
 	}
 
@@ -209,10 +209,10 @@ class DataMapper implements DataMapperInterface {
 		$validator = $this->createValidator($entity);
 		$validator->set('entity', $entity);
 		$validator->set('dataMapper', $this);
-		foreach($this->relations($entity->getDefinition()) as $name=>$relation) {
+		foreach($this->relations($this->getEntityDefinition($entity)) as $name=>$relation) {
 			$data[$name] = $entity->get($name, null, false);
 			$relation->prepareValidator($validator->attribute($name));
-			$property = $entity->getDefinition()->property($name);
+			$property = $this->getEntityDefinition($entity)->property($name);
 			$validator->attribute($name)->ruleMessages($property->getMessages());
 			$validator->attribute($name)->isNull(function(){return false;});
 		}
@@ -286,9 +286,9 @@ class DataMapper implements DataMapperInterface {
 				throw new \Asgard\Entity\EntityException((string)$errors, $errors);
 		}
 
-		$entity->getDefinition()->trigger('save', [$entity], function(\Asgard\Hook\Chain $chain, $entity) use($groups) {
+		$this->getEntityDefinition($entity)->trigger('save', [$entity], function(\Asgard\Hook\Chain $chain, $entity) use($groups) {
 			#Files
-			foreach($entity->getDefinition()->properties() as $name=>$prop) {
+			foreach($this->getEntityDefinition($entity)->properties() as $name=>$prop) {
 				if($prop instanceof \Asgard\Entity\Property\FileProperty) {
 					if($prop->get('many')) {
 						$files = $entity->$name = array_values($entity->$name->all());
@@ -315,7 +315,7 @@ class DataMapper implements DataMapperInterface {
 
 			$vars = $i18n = [];
 			#process data
-			foreach($entity->getDefinition()->properties() as $name=>$prop) {
+			foreach($this->getEntityDefinition($entity)->properties() as $name=>$prop) {
 				#i18n properties
 				if($prop->get('i18n')) {
 					$values = $entity->get($name, $entity->getLocales());
@@ -328,7 +328,7 @@ class DataMapper implements DataMapperInterface {
 				elseif(!$persisted || in_array($name, $entity->getChanged())) {
 					#relations with a single entity
 					if($prop->get('type') == 'entity') {
-						$rel = $this->relation($entity->getDefinition(), $name);
+						$rel = $this->relation($this->getEntityDefinition($entity), $name);
 						if(!$rel->get('many')) {
 							$link = $rel->getLink();
 							$relatedEntity = $entity->data['properties'][$name];
@@ -365,45 +365,73 @@ class DataMapper implements DataMapperInterface {
 				}
 			}
 
-			#Persist
-			if(count($vars) > 0) {
-				if($persisted)
-					$orm->reset()->resetScopes()->where(['id'=>$entity->id])->getDAL()->update($vars);
-				else
-					$entity->id = $orm->getDAL()->insert($vars);
+			if(!$this->getDB()->inTransaction()) {
+				$inTransaction = false;
+				$this->getDB()->beginTransaction();
 			}
+			else
+				$inTransaction = true;
 
-			#Persist i18n
-			foreach($i18n as $locale=>$values) {
-				$dal = new \Asgard\Db\DAL($this->db, $this->getTranslationTable($entity->getDefinition()));
-				if($dal->where(['id'=>$entity->id, 'locale'=>$locale])->count())
-					$dal->where(['id'=>$entity->id, 'locale'=>$locale])->update($values);
-				else {
-					$dal->insert(
-						array_merge(
-							$values,
-							[
-								'locale'=>$locale,
-								'id'=>$entity->id,
-							]
-						)
-					);
+			try {
+				#Persist
+				if(count($vars) > 0) {
+					if($persisted)
+						$orm->reset()->resetScopes()->where(['id'=>$entity->id])->getDAL()->update($vars);
+					else
+						$entity->id = $orm->getDAL()->insert($vars);
 				}
+
+				#Persist i18n
+				foreach($i18n as $locale=>$values) {
+					$dal = new \Asgard\Db\DAL($this->db, $this->getTranslationTable($this->getEntityDefinition($entity)));
+					if($dal->where(['id'=>$entity->id, 'locale'=>$locale])->count())
+						$dal->where(['id'=>$entity->id, 'locale'=>$locale])->update($values);
+					else {
+						$dal->insert(
+							array_merge(
+								$values,
+								[
+									'locale'=>$locale,
+									'id'=>$entity->id,
+								]
+							)
+						);
+					}
+				}
+
+				#Persist relations
+				foreach($this->relations($this->getEntityDefinition($entity)) as $relation => $params) {
+					if(!isset($entity->data['properties'][$relation]))
+						continue;
+					if(!$persisted && !in_array($relation, $entity->getChanged()))
+						continue;
+					$rel = $this->relation($this->getEntityDefinition($entity), $relation);
+
+					#collection with many entities
+					if($rel->get('many')) {
+						$collection = $entity->data['properties'][$relation];
+						if($collection instanceof \Asgard\Entity\ManyCollection) {
+							$persistentCollection = new PersistentCollection($entity, $relation, $this);
+							foreach($collection as $element)
+								$persistentCollection->add($element);
+							$entity->data['properties'][$relation] = $persistentCollection;
+						}
+						$entity->data['properties'][$relation]->sync();
+					}
+					#one-to-one relation
+					elseif(!$rel->reverse()->get('many'))
+						$this->related($entity, $relation)->sync($entity->data['properties'][$relation]);
+						#todo unique
+					#todo many-to-one relation
+				}
+			} catch(\Exception $e) {
+				if(!$inTransaction)
+					$this->getDB()->rollback();
+				throw $e;
 			}
 
-			#Persist relations
-			foreach($this->relations($entity->getDefinition()) as $relation => $params) {
-				if(!isset($entity->data['properties'][$relation]))
-					continue;
-				if(!$persisted && !in_array($relation, $entity->getChanged()))
-					continue;
-				$rel = $this->relation($entity->getDefinition(), $relation);
-
-				if($rel->get('many'))
-					$this->related($entity, $relation)->sync($entity->data['properties'][$relation]->all());
-				elseif(!$rel->reverse()->get('many'))
-					$this->related($entity, $relation)->sync($entity->data['properties'][$relation]);
-			}
+			if(!$inTransaction)
+				$this->getDB()->commit();
 
 			$entity->resetChanged();
 			$entity->setParameter('persisted', true);
@@ -442,7 +470,7 @@ class DataMapper implements DataMapperInterface {
 	 */
 	public function getRelated(\Asgard\Entity\Entity $entity, $name) {
 		$orm = $this->related($entity, $name);
-		$rel = $this->relation($entity->getDefinition(), $name);
+		$rel = $this->relation($this->getEntityDefinition($entity), $name);
 
 		if($rel->get('many'))
 			return $orm->get();
@@ -483,7 +511,7 @@ class DataMapper implements DataMapperInterface {
 	 * {@inheritDoc}
 	 */
 	public function getTranslations(\Asgard\Entity\Entity $entity, $locale=null) {
-		$dal = new \Asgard\Db\DAL($this->db, $this->getTranslationTable($entity->getDefinition()));
+		$dal = new \Asgard\Db\DAL($this->db, $this->getTranslationTable($this->getEntityDefinition($entity)));
 		$res = $dal->where(['id' => $entity->id, 'locale'=>$locale])->first();
 		if(!$res)
 			return $entity;
@@ -549,8 +577,8 @@ class DataMapper implements DataMapperInterface {
 	 */
 	protected static function unserialize(\Asgard\Entity\Entity $entity, array $data) {
 		foreach($data as $k=>$v) {
-			if($entity->getDefinition()->hasProperty($k))
-				$data[$k] = $entity->getDefinition()->property($k)->unserialize($v, $entity, $k);
+			if($this->getEntityDefinition($entity)->hasProperty($k))
+				$data[$k] = $this->getEntityDefinition($entity)->property($k)->unserialize($v, $entity, $k);
 		}
 
 		return $data;
@@ -563,8 +591,18 @@ class DataMapper implements DataMapperInterface {
 		return $this->db;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function setDB(\Asgard\Db\DBInterface $db) {
 		$this->db = $db;
 		return $this;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getEntityDefinition(\Asgard\Entity\Entity $entity) {
+		return $this->entityManager->get(get_class($entity));
 	}
 }

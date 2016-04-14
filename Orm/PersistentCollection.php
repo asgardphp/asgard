@@ -1,11 +1,7 @@
 <?php
-namespace Asgard\Entity;
+namespace Asgard\Orm;
 
-/**
- * Collection of many elements.
- * @author Michel Hognerud <michel@hognerud.com>
- */
-class ManyCollection implements CollectionInterface {
+class PersistentCollection implements \Asgard\Entity\CollectionInterface {
 	/**
 	 * Elements.
 	 * @var array
@@ -22,14 +18,62 @@ class ManyCollection implements CollectionInterface {
 	 */
 	protected $name;
 
+	protected $isDirty;
+	protected $toAdd = [];
+	protected $toRemove = [];
+	protected $dataMapper;
+	protected $initialized = false;
+	protected $cursor = 0;
+
 	/**
 	 * Constructor.
 	 * @param Entity           $entity
 	 * @param string           $name
 	 */
-	public function __construct(Entity $entity, $name) {
+	public function __construct(\Asgard\Entity\Entity $entity, $name, $dataMapper) {
 		$this->entity     = $entity;
 		$this->name       = $name;
+		$this->dataMapper        = $dataMapper;
+	}
+
+	public function getORM() {
+		return $this->dataMapper->related($this->entity, $this->name);
+	}
+
+	protected function initialize() {
+		$this->elements = $this->getORM()->get();
+		$this->initialized = true;
+	}
+
+	public function setInitialized($initialized) {
+		$this->initialized = $initialized;
+	}
+
+	public function reset() {
+		$this->elements = [];
+		$this->toAdd = [];
+		$this->toRemove = [];
+		$this->initialized = false;
+		$this->isDirty = false;
+	}
+
+	public function sync() {
+		if(!$this->isDirty)
+			return;
+
+		#add
+		if($entities = $this->toAdd)
+			$this->getORM()->add($entities);
+
+		#remove
+		if($entities = $this->toRemove)
+			$this->getORM()->remove($entities);
+
+		$this->initialized = false;
+		$this->initialized = false;
+		$this->toAdd = [];
+		$this->toRemove = [];
+		$this->isDirty = false;
 	}
 
 	/**
@@ -37,7 +81,10 @@ class ManyCollection implements CollectionInterface {
 	 * @return integer
 	 */
 	public function count() {
-		return count($this->elements);
+		if(!$this->initialized)
+			$this->initialize();
+
+		return count($this->elements) - count($this->toRemove) + count($this->toAdd);
 	}
 
 	/**
@@ -45,6 +92,9 @@ class ManyCollection implements CollectionInterface {
 	 * @return array
 	 */
 	public function all() {
+		if(!$this->initialized)
+			$this->initialize();
+
 		return $this->elements;
 	}
 
@@ -56,8 +106,16 @@ class ManyCollection implements CollectionInterface {
 		if($element === null)
 			return;
 		$this->entity->getDefinition()->processPreAdd($this->entity, $this->name, $element);
+		$this->toAdd[] = $element;
+		$this->isDirty = true;
+
+		return $this;
+	}
+
+	public function _add($element) {
+		if($element === null)
+			return;
 		$this->elements[] = $element;
-		return $element;
 	}
 
 	/**
@@ -65,6 +123,7 @@ class ManyCollection implements CollectionInterface {
 	 * @param array $elements
 	 */
 	public function setAll(array $elements) {
+		$this->toRemove = $this->elements;
 		$this->elements = [];
 		foreach($elements as $e)
 			$this->add($e);
@@ -73,11 +132,13 @@ class ManyCollection implements CollectionInterface {
 
 	/**
 	 * Remove an element.
-	 * @param  integer $offset
+	 * @param mixed $entity integer id or \Asgard\Entity\Entity object
 	 */
-	public function remove($offset) {
-		unset($this->elements[$offset]);
-		$this->elements = array_values($this->elements);
+	public function remove($entity) {
+		$this->toRemove[] = $entity;
+		$this->isDirty = true;
+
+		return $this;
 	}
 
 	/**
@@ -86,6 +147,9 @@ class ManyCollection implements CollectionInterface {
 	 * @return mixed
 	 */
 	public function get($offset) {
+		if(!$this->initialized)
+			$this->initialize();
+
 		if(!isset($this->elements[$offset]))
 			return null;
 		return $this->elements[$offset];
@@ -131,19 +195,22 @@ class ManyCollection implements CollectionInterface {
 	}
 
 	/**
+	 * Iterator rewind implementation.
+	 */
+	public function rewind() {
+		if(!$this->initialized)
+			$this->initialize();
+
+		reset($this->elements);
+	}
+
+	/**
 	 * Iterator valid implementation.
 	 * @return boolean
 	 */
 	public function valid() {
 		$key = key($this->elements);
 		return $key !== NULL && $key !== FALSE;
-	}
-
-	/**
-	 * Iterator rewind implementation.
-	 */
-	public function rewind() {
-		reset($this->elements);
 	}
 
 	/**

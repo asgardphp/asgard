@@ -78,8 +78,19 @@ class PolymorphicCollectionORM implements CollectionORMInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function add($ids) {
-		throw new \Exception('Not implemented'); 
+	public function add($entities) {
+		if(!is_array($entities))
+			$entities = [$entities];
+		$perclass = [];
+
+		foreach($entities as $entity)
+			$perclass[get_class($entity)][] = $entity;
+
+		foreach($perclass as $class=>$entities) {
+			$targetDefinition = $this->parent->getDefinition()->getEntityManager()->get($class);
+			$cORM = new CollectionORM($this->parent, $this->relation->getName(), $this->dataMapper, $this->locale, $this->prefix, $this->paginatorFactory, $targetDefinition);
+			$cORM->add($entities);
+		}
 	}
 
 	/**

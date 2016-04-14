@@ -260,16 +260,16 @@ class EntityRelation {
 	 * @return array
 	 */
 	public function prepareValidator(\Asgard\Validation\ValidatorInterface $validator) {
-		$validator->rules(isset($this->params['ormValidation']) ? $this->params['ormValidation']:[]);
-		if(isset($this->params['required']))
-			$validator->rule('ormrequired', $this->params['required']);
 		if(isset($this->params['validation'])) {
-			foreach($this->params['validation'] as $name=>$params) {
+			$validation = $this->params['validation'];
+			foreach($validation as $name=>$params) {
 				if(is_integer($name)) {
 					$name = $params;
 					$params = [];
 				}
-				$validator->rule('orm'.$name, $params); #prefix each rule with suffix "orm"
+				if($name === 'required')
+					$name = 'ormrequired';
+				$validator->rule($name, $params);
 			}
 		}
 	}

@@ -46,7 +46,8 @@ abstract class Entity {
 	 * @param array  $attrs
 	 * @param string $locale
 	 */
-	public function __construct(array $attrs=null, $locale=null) {
+	public function __construct(array $attrs=null, $locale=null, EntityManager $entityManager=null) {
+		$this->entityManager = $entityManager;
 		$this->setLocale($locale);
 		$this->loadDefault();
 		if(is_array($attrs))

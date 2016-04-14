@@ -52,8 +52,7 @@ class EntityField extends \Asgard\Form\Field {
 	 */
 	public function getValidationRules() {
 		$validation = parent::getValidationRules();
-		if(isset($this->options['choices']))
-			$validation['entityexists'] = [$this->orm];
+		$validation['entityexists'] = [$this->orm];
 
 		return $validation;
 	}

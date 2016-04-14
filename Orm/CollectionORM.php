@@ -118,8 +118,12 @@ class CollectionORM extends ORM implements CollectionORMInterface {
 		if(!is_array($ids))
 			$ids = [$ids];
 		foreach($ids as $k=>$id) {
-			if($id instanceof \Asgard\Entity\Entity)
+			if($id instanceof \Asgard\Entity\Entity) {
+				#if the entity was not persisted yet, persist it before adding the relation
+				if(!$id->getParameter('persisted'))
+					$this->dataMapper->save($id);
 				$ids[$k] = (int)$id->id;
+			}
 		}
 
 		$dal = $this->dataMapper->getDB()->dal();
@@ -127,18 +131,25 @@ class CollectionORM extends ORM implements CollectionORMInterface {
 			case 'hasMany':
 				$relationDefinition = $this->relation->getTargetDefinition();
 				$table = $this->dataMapper->getTable($relationDefinition);
+				$params = [$this->relation->getLink() => $this->parent->id];
+				if($this->relation->reverse()->isPolymorphic()) {
+					$linkType = $this->relation->reverse()->getLinkType();
+					$params[$linkType] = get_class($this->parent);
+				}
 				foreach($ids as $id)
-					$res += $dal->reset()->from($table)->where(['id' => $id])->update([$this->relation->getLink() => $this->parent->id]);
+					$res += $dal->reset()->from($table)->where(['id' => $id])->update($params);#todo update all at once
 				break;
 			case 'HMABT':
 				$table = $this->relation->getAssociationTable();
 				$i = 1;
 				foreach($ids as $id) {
 					$res -= $dal->reset()->from($table)->where([$this->relation->getLinkA() => $this->parent->id, $this->relation->getLinkB() => $id])->delete();
+					$params = [$this->relation->getLinkA() => $this->parent->id, $this->relation->getLinkB() => $id];
 					if($this->relation->get('sortable'))
-						$dal->insert([$this->relation->getLinkA() => $this->parent->id, $this->relation->getLinkB() => $id, $this->relation->getPositionField() => $i++]);
-					else
-						$dal->insert([$this->relation->getLinkA() => $this->parent->id, $this->relation->getLinkB() => $id]);
+						$params[$this->relation->getPositionField()] = $i++;
+					if($this->relation->reverse()->isPolymorphic())
+						$params[$this->relation->reverse()->getLinkType()] = get_class($this->parent);
+					$dal->insert($params);
 					$res += 1;
 				}
 				break;

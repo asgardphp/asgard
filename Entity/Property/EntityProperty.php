@@ -9,13 +9,6 @@ class EntityProperty extends \Asgard\Entity\Property {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getDefault($entity, $name) {
-		return null;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public function prepareValidator(\Asgard\Validation\ValidatorInterface $validator) {
 		parent::prepareValidator($validator);
 		if($this->get('entity'))
