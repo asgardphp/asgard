@@ -1207,30 +1207,37 @@ class DAL implements \Iterator {
 			list($tables, $tableparams) = $this->buildTables(count($del_tables) > 0);
 			$params = array_merge($params, $tableparams);
 
-			list($orderBy, $orderByParams) = $this->buildOrderBy();
-			$params = array_merge($params, $orderByParams);
-
-			$limit = $this->buildLimit();
-
 			list($jointures, $joinparams) = $this->buildJointures();
 			$params = array_merge($params, $joinparams);
 
 			list($where, $whereparams) = $this->buildWhere();
 			$params = array_merge($params, $whereparams);
 
-			if($this->db->getPDO()->getAttribute(\PDO::ATTR_DRIVER_NAME) === 'mysql' && $del_tables) {
+			#if multiple tables to delete from
+			if($del_tables) {
 				foreach($del_tables as $k=>$v)
 					$del_tables[$k] = '`'.$v.'`';
 				$del_tables = implode(', ', $del_tables);
-				$sql = 'DELETE '.$del_tables.' FROM '.$tables.$jointures.$where.$orderBy.$limit;
+				$sql = 'DELETE '.$del_tables.' FROM '.$tables.$jointures.$where;
 			}
+			#jointures and given table to delete from
 			#jointures require to say from which table to delete. if no table given, use the default table.
 			elseif($this->joins && !$del_tables) {
 				$del_table = '`'.$this->getDefaultTable().'`';
-				$sql = 'DELETE '.$del_table.' FROM '.$tables.$jointures.$where.$orderBy.$limit;
+				$sql = 'DELETE '.$del_table.' FROM '.$tables.$jointures.$where;
 			}
 			else
-				$sql = 'DELETE FROM '.$tables.$jointures.$where.$orderBy.$limit;
+				$sql = 'DELETE FROM '.$tables.$jointures.$where;
+
+			#can use orderBy and limit only if there is no jointure
+			if(!$jointures) {
+				list($orderBy, $orderByParams) = $this->buildOrderBy();
+				$params = array_merge($params, $orderByParams);
+
+				$limit = $this->buildLimit();
+
+				$sql .= $orderBy.$limit;
+			}
 
 			$this->replaceRaws($sql, $params);
 		}
