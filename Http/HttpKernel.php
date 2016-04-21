@@ -520,7 +520,7 @@ class HttpKernel implements HttpKernelInterface {
 	 * @param  Controller $controller
 	 * @return Response
 	 */
-	protected function executeStart(Request $request, Controller $controller) {
+	protected function executeStart(Request $request, Controller $controller=null) {
 		if($this->start === null)
 			return;
 
