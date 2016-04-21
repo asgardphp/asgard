@@ -295,15 +295,14 @@ class HttpKernel implements HttpKernelInterface {
 
 		if($response = $this->hookManager->trigger('Asgard.Http.Start', [$request]))
 			return $response;
-		if($this->start !== null) {
-			$container = $this->container;
-			if(($response = include $this->start) !== 1)
-				return $response;
-		}
 
 		$route = $resolver->getRoute($request);
-		if($route === null)
+		if($route === null) {
+			if($response = $this->executeStart($request, null))
+				return $response;
+
 			throw new Exception\NotFoundException;
+		}
 
 		$request->setRoute($route);
 		$controllerClass = $route->getController();
@@ -322,6 +321,9 @@ class HttpKernel implements HttpKernelInterface {
 		$controller->setContainer($this->container);
 
 		$this->prepareController($controller, $action, $request, $route);
+
+		if($response = $this->executeStart($request, $controller))
+			return $response;
 
 		return $controller->run($action, $request);
 	}
@@ -510,5 +512,20 @@ class HttpKernel implements HttpKernelInterface {
 	public function setFlash(Utils\FlashInterface $flash) {
 		$this->flash = $flash;
 		return $this;
+	}
+
+	/**
+	 * Execute start file before controller.
+	 * @param  Request    $request
+	 * @param  Controller $controller
+	 * @return Response
+	 */
+	protected function executeStart(Request $request, Controller $controller) {
+		if($this->start === null)
+			return;
+
+		$container = $this->container;
+		if(($response = include $this->start) !== 1)
+			return $response;
 	}
 }
