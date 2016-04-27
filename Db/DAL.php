@@ -486,7 +486,7 @@ class DAL implements \Iterator {
 		foreach($columns as $columnstr) {
 			$columnstr = trim($columnstr);
 
-			preg_match('/(.*?)\s*as\s*([a-z_][a-zA-Z0-9_]*)?$/i', $columnstr, $matches);
+			preg_match('/(.*?)\s+as\s+([a-z_][a-zA-Z0-9_]*)?$/i', $columnstr, $matches);
 			if(isset($matches[2])) {
 				$alias = $matches[2];
 				$column = $matches[1];
