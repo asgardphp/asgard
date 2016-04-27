@@ -749,7 +749,7 @@ class DAL implements \Iterator {
 	 */
 	protected function identifierQuotes($str) {
 		#for every word
-		return preg_replace_callback('/[a-z_][a-zA-Z0-9._]*/', function($matches) {
+		return preg_replace_callback('/(?<![\.a-zA-Z0-9_`\(\)])[a-z_][a-zA-Z0-9._]*/', function($matches) {
 			$res = [];
 			foreach(explode('.', $matches[0]) as $substr) {
 				if(preg_match('/^[a-z_][a-zA-Z0-9_]*$/', $substr))
@@ -778,7 +778,7 @@ class DAL implements \Iterator {
 					$select[] = '('.$sql.') AS '.$this->identifierQuotes($alias);
 				}
 				elseif($column instanceof Raw)
-					$select[] = $v.' AS '.$this->identifierQuotes($alias);
+					$select[] = $column.' AS '.$this->identifierQuotes($alias);
 				elseif((string)$alias !== (string)$column)
 					$select[] = $this->identifierQuotes($column).' AS '.$this->identifierQuotes($alias);
 				else
