@@ -283,7 +283,8 @@ class DataMapper implements DataMapperInterface {
 		if($groups !== null) {
 			$errors = $this->errors($entity, $groups);
 			if(!$errors->valid())
-				throw new \Asgard\Entity\EntityException((string)$errors, $errors);
+				d($errors);
+				// throw new \Asgard\Entity\EntityException((string)$errors, $errors);
 		}
 
 		$this->getEntityDefinition($entity)->trigger('save', [$entity], function(\Asgard\Hook\Chain $chain, $entity) use($groups) {
@@ -403,16 +404,22 @@ class DataMapper implements DataMapperInterface {
 				foreach($this->relations($this->getEntityDefinition($entity)) as $relation => $params) {
 					if(!isset($entity->data['properties'][$relation]))
 						continue;
-					if(!$persisted && !in_array($relation, $entity->getChanged()))
-						continue;
+					$value = $entity->data['properties'][$relation];
+					if(!in_array($relation, $entity->getChanged())) {
+						if($value instanceof PersistentCollection || $value instanceof \Asgard\Entity\ManyCollection) {
+							if(!$value->isDirty())
+								continue;
+						}
+						else
+							continue;
+					}
 					$rel = $this->relation($this->getEntityDefinition($entity), $relation);
 
 					#collection with many entities
 					if($rel->get('many')) {
-						$collection = $entity->data['properties'][$relation];
-						if($collection instanceof \Asgard\Entity\ManyCollection) {
+						if($value instanceof \Asgard\Entity\ManyCollection) {
 							$persistentCollection = new PersistentCollection($entity, $relation, $this);
-							foreach($collection as $element)
+							foreach($value as $element)
 								$persistentCollection->add($element);
 							$entity->data['properties'][$relation] = $persistentCollection;
 						}
@@ -420,7 +427,7 @@ class DataMapper implements DataMapperInterface {
 					}
 					#one-to-one relation
 					elseif(!$rel->reverse()->get('many'))
-						$this->related($entity, $relation)->sync($entity->data['properties'][$relation]);
+						$this->related($entity, $relation)->sync($value);
 						#todo unique
 					#todo many-to-one relation
 				}
