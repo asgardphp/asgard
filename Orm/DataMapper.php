@@ -283,8 +283,7 @@ class DataMapper implements DataMapperInterface {
 		if($groups !== null) {
 			$errors = $this->errors($entity, $groups);
 			if(!$errors->valid())
-				d($errors);
-				// throw new \Asgard\Entity\EntityException((string)$errors, $errors);
+				throw new \Asgard\Entity\EntityException((string)$errors, $errors);
 		}
 
 		$this->getEntityDefinition($entity)->trigger('save', [$entity], function(\Asgard\Hook\Chain $chain, $entity) use($groups) {
