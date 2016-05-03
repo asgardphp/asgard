@@ -1,5 +1,5 @@
 <%
-namespace <?=$bundle['namespace'] ?>\Controllers;
+namespace <?=$bundle['namespace'] ?>\Controller;
 
 <?php if(($prefix=$controller['prefix']) !== null): ?>
 /**

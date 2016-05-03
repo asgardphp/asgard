@@ -113,7 +113,7 @@ class BundleLoader {
 	 * @param  \Asgard\Entity\EntityManagerInterface $entityManager
 	 */
 	protected function loadEntities($entityManager) {
-		foreach(glob($this->getPath().'/Entities/*.php') as $file) {
+		foreach(glob($this->getPath().'/Entity/*.php') as $file) {
 			$class = \Asgard\Common\Tools::loadClassFile($file);
 			if(is_subclass_of($class, 'Asgard\Entity\Entity'))
 				$entityManager->get($class);
@@ -151,8 +151,8 @@ class BundleLoader {
 	 */
 	protected function loadHooks() {
 		$hooks = [];
-		if(file_exists($this->getPath().'/Hooks/')) {
-			foreach(glob($this->getPath().'/Hooks/*.php') as $filename) {
+		if(file_exists($this->getPath().'/Hook/')) {
+			foreach(glob($this->getPath().'/Hook/*.php') as $filename) {
 				$class = \Asgard\Common\Tools::loadClassFile($filename);
 				if(is_subclass_of($class, 'Asgard\Hook\HookContainer'))
 					$hooks = array_merge_recursive($hooks, $this->hooksAnnotationReader->fetchHooks($class));
@@ -167,8 +167,8 @@ class BundleLoader {
 	 */
 	protected function loadControllers() {
 		$routes = [];
-		if(file_exists($this->getPath().'/Controllers/')) {
-			foreach(glob($this->getPath().'/Controllers/*.php') as $filename) {
+		if(file_exists($this->getPath().'/Controller/')) {
+			foreach(glob($this->getPath().'/Controller/*.php') as $filename) {
 				$class = \Asgard\Common\Tools::loadClassFile($filename);
 				if(is_subclass_of($class, 'Asgard\Http\Controller'))
 					$routes = array_merge($routes, $this->controllersAnnotationReader->fetchRoutes($class));

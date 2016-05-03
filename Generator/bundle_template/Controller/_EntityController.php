@@ -1,10 +1,10 @@
 <%
-namespace <?=$bundle['namespace'] ?>\Controllers;
+namespace <?=$bundle['namespace'] ?>\Controller;
 
 /**
  * @Prefix("<?=$entity['meta']['plural'] ?>")
  */
-class <?=ucfirst($entity['meta']['name']) ?>Controller extends \Asgard\Http\Controller {
+class <?=ucfirst($entity['meta']['name']) ?> extends \Asgard\Http\Controller {
 <?php if(in_array('index', $entity['front']) || isset($entity['front']['index'])): ?>
 	/**
 	 * @Route("")

@@ -18,7 +18,7 @@ class DefaultGenerator extends AbstractGenerator {
 			else
 				$bundle['entities'][$entityName]['meta']['name'] = strtolower($entityName);
 
-			$bundle['entities'][$entityName]['meta']['entityClass'] = $bundle['namespace'].'\Entities\\'.ucfirst($entityName);
+			$bundle['entities'][$entityName]['meta']['entityClass'] = $bundle['namespace'].'\Entity\\'.ucfirst($entityName);
 
 			if(isset($bundle['entities'][$entityName]['meta']['plural']))
 				$bundle['entities'][$entityName]['meta']['plural'] = strtolower($bundle['entities'][$entityName]['meta']['plural']);
@@ -84,11 +84,11 @@ class DefaultGenerator extends AbstractGenerator {
 		#entities
 		foreach($bundle['entities'] as $entityName=>$entity) {
 			#entity
-			$this->engine->processFile(__DIR__.'/bundle_template/Entities/_Entity.php', $bundlePath.'Entities/'.ucfirst($bundle['entities'][$entityName]['meta']['name']).'.php', ['bundle'=>$bundle, 'entity'=>$entity]);
+			$this->engine->processFile(__DIR__.'/bundle_template/Entity/_Entity.php', $bundlePath.'Entity/'.ucfirst($bundle['entities'][$entityName]['meta']['name']).'.php', ['bundle'=>$bundle, 'entity'=>$entity]);
 
 			#entity front controller
 			if($entity['front']) {
-				$this->engine->processFile(__DIR__.'/bundle_template/Controllers/_EntityController.php', $bundlePath.'Controllers/'.ucfirst($bundle['entities'][$entityName]['meta']['name']).'Controller.php', ['bundle'=>$bundle, 'entity'=>$entity]);
+				$this->engine->processFile(__DIR__.'/bundle_template/Controller/_EntityController.php', $bundlePath.'Controller/'.ucfirst($bundle['entities'][$entityName]['meta']['name']).'.php', ['bundle'=>$bundle, 'entity'=>$entity]);
 
 				#entity index action
 				if(in_array('index', $entity['front']) || isset($entity['front']['index'])) {
@@ -109,7 +109,7 @@ class DefaultGenerator extends AbstractGenerator {
 
 		#controllers
 		foreach($bundle['controllers'] as $controllerName=>$controller) {
-			$this->engine->processFile(__DIR__.'/bundle_template/Controllers/_Controller.php', $bundlePath.'Controllers/'.$controller['name'].'.php', ['bundle'=>$bundle, 'controller'=>$controller]);
+			$this->engine->processFile(__DIR__.'/bundle_template/Controller/_Controller.php', $bundlePath.'Controller/'.$controller['name'].'.php', ['bundle'=>$bundle, 'controller'=>$controller]);
 
 			#actions
 			foreach($controller['actions'] as $action=>$params) {
