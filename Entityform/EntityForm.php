@@ -141,13 +141,13 @@ class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 		if($relation->get('many')) {
 			$this->add(new \Asgard\Entityform\Field\MultipleEntityField([
 				'orm'    => $orm,
-				'default' => ($entity->isOld() ? $entity->get($name):null),
+				'default' => $entity->get($name),
 			]), $name);
 		}
 		else {
 			$this->add(new \Asgard\Entityform\Field\EntityField([
 				'orm'    => $orm,
-				'default' => ($entity->isOld() ? $entity->get($name):null),
+				'default' => $entity->get($name) ? $entity->get($name)->id:null,
 			]), $name);
 		}
 	}

@@ -310,7 +310,7 @@ class DataMapper implements DataMapperInterface {
 				}
 			}
 
-			$orm = $this->orm(get_class($entity));
+			$orm = $this->orm($entity->getClass());
 			$persisted = $entity->getParameter('persisted');
 
 			$vars = $i18n = [];
@@ -327,7 +327,7 @@ class DataMapper implements DataMapperInterface {
 				#other properties
 				elseif(!$persisted || in_array($name, $entity->getChanged())) {
 					#relations with a single entity
-					if($prop->get('type') == 'entity') {
+					if($prop->get('type') === 'entity') {
 						$rel = $this->relation($this->getEntityDefinition($entity), $name);
 						if(!$rel->get('many')) {
 							$link = $rel->getLink();
@@ -338,7 +338,7 @@ class DataMapper implements DataMapperInterface {
 									$this->save($relatedEntity, [], $groups===null ? null:[]);
 								$vars[$link] = $relatedEntity->id;
 								if($rel->isPolymorphic())
-									$vars[$rel->getLinkType()] = get_class($relatedEntity);
+									$vars[$rel->getLinkType()] = $relatedEntity->getClass();
 							}
 							elseif($relatedEntity !== null) {
 								if($rel->isPolymorphic()) {
@@ -485,9 +485,9 @@ class DataMapper implements DataMapperInterface {
 	 */
 	protected function entityORM(\Asgard\Entity\Entity $entity) {
 		if($entity->isNew())
-			return $this->orm(get_class($entity));
+			return $this->orm($entity->getClass());
 		else
-			return $this->orm(get_class($entity))->where(['id' => $entity->id]);
+			return $this->orm($entity->getClass())->where(['id' => $entity->id]);
 	}
 
 	/**
@@ -603,6 +603,19 @@ class DataMapper implements DataMapperInterface {
 	 * {@inheritDoc}
 	 */
 	public function getEntityDefinition(\Asgard\Entity\Entity $entity) {
-		return $this->entityManager->get(get_class($entity));
+		return $this->entityManager->get($entity->getClass());
+	}
+
+	public function createEntityProxy($class, $id) {
+		$proxyGenerator = new Proxy\ProxyGenerator($this);#todo
+		$entityProxy = $proxyGenerator->createProxy($this, $class, $id);
+		$entityProxy->setParameter('persisted', true);
+
+		return $entityProxy;
+	}
+
+	public function initializeEntityProxy($entityProxy) {
+		$orm = $this->orm($entityProxy->getClass());
+		$orm->initializeEntityProxy($entityProxy);
 	}
 }

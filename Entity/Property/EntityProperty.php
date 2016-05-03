@@ -25,13 +25,8 @@ class EntityProperty extends \Asgard\Entity\Property {
 	 * {@inheritDoc}
 	 */
 	public function doSet($val, \Asgard\Entity\Entity $entity, $name) {
-		if(is_array($val)) {
-			if($entity->getDefinition()->property($name)->get('entities')) {
-				$class = $val[0];
-				$id = $val[1];
-				return $entity->getDefinition()->getEntityManager()->make($class, ['id'=>$id]);
-			}
-		}
+		if($val !== null && !$val instanceof \Asgard\Entity\Entity)
+			throw new \Exception($name.' must be an entity.');
 		else
 			return $val;
 	}

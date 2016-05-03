@@ -71,7 +71,7 @@ abstract class Widget {
 		try {
 			return $this->render();
 		}catch(\Exception $e) {
-			d($e);
+			d($e);#todo
 		}
 	}
 

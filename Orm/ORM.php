@@ -428,18 +428,16 @@ class ORM implements ORMInterface, \Countable {
 	/**
 	 * Converts a raw array to an entity.
 	 *
+	 * @param \Asgard\Entity\Entity     $entity
 	 * @param array                     $raw
-	 * @param \Asgard\Entity\Definition $definition The definition of the entity to be instantiated.
-	 *
+	 * 
 	 * @return \Asgard\Entity\Entity
 	*/
-	protected function hydrate(array $raw, \Asgard\Entity\Definition $definition=null) {
-		if(!$definition)
-			$definition = $this->definition;
-		$new = $definition->make([], $this->locale);
-		$this->unserialize($new, $raw);
-		$new->setParameter('persisted', true);
-		return $new;
+	protected function hydrate(\Asgard\Entity\Entity $entity, array $raw) {
+		$this->unserialize($entity, $raw);
+		$entity->setParameter('persisted', true);
+
+		return $entity;
 	}
 
 	/**
@@ -458,8 +456,21 @@ class ORM implements ORMInterface, \Countable {
 			if($prop->get('type') === 'entity') {
 				if($prop->get('many'))
 					$data[$k] = new PersistentCollection($entity, $k, $this->dataMapper);
-				else
-					$data[$k] = null;
+				else {
+					$entity_id = $k.'_id';
+					$id = $data[$entity_id];
+					if($id) {
+						if($prop->get('entity'))
+							$class = $prop->get('entity');
+						else {
+							$entity_class = $k.'_type';
+							$class = $data[$entity_class];
+						}
+						$data[$k] = $this->dataMapper->createEntityProxy($class, $id);
+					}
+					else
+						$data[$k] = null;
+				}
 			}
 			else {
 				$class = get_class($prop);
@@ -487,8 +498,10 @@ class ORM implements ORMInterface, \Countable {
 			$this->tmp_dal = $this->getDAL();
 		if(!($r = $this->tmp_dal->next()))
 			return null;
-		else
-			return $this->hydrate($r);
+		else {
+			$entity = $this->definition->make([], $this->locale);
+			return $this->hydrate($entity, $r);
+		}
 	}
 
 	/**
@@ -747,7 +760,8 @@ class ORM implements ORMInterface, \Countable {
 		foreach($rows as $row) {
 			if(!$row['id'])
 				continue;
-			$entities[] = $this->hydrate($row);
+			$entity = $this->definition->make([], $this->locale);
+			$entities[] = $this->hydrate($entity, $row);
 			$ids[] = $row['id'];
 		}
 
@@ -818,8 +832,10 @@ class ORM implements ORMInterface, \Countable {
 							$filter = array_values($filter);
 							$collection = $entity->get($relationName);
 							$collection->reset();
-							foreach($filter as $m)
-								$collection->_add($this->hydrate($m, $relationDefinition));
+							foreach($filter as $m) {
+								$mEntity = $relationDefinition->make([], $this->locale);
+								$collection->_add($this->hydrate($mEntity, $m));
+							}
 							$collection->setInitialized(true);
 						}
 						break;
@@ -1068,8 +1084,10 @@ class ORM implements ORMInterface, \Countable {
 	public function current() {
 		if(!($r = $this->tmp_dal->current()))
 			return null;
-		else
-			return $this->hydrate($r);
+		else {
+			$entity = $this->definition->make([], $this->locale);
+			return $this->hydrate($entity, $r);
+		}
 	}
 
 	/**
@@ -1226,5 +1244,13 @@ class ORM implements ORMInterface, \Countable {
 
 	public function getDataMapper() {
 		return $this->dataMapper;
+	}
+
+	public function initializeEntityProxy($entityProxy) {
+		$clone = clone $this;
+		$data = $clone->where(['id' => $entityProxy->id])->getDAL()->first();
+		if(!$data)
+			return;
+		$this->hydrate($entityProxy, $data);
 	}
 }

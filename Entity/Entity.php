@@ -659,4 +659,8 @@ abstract class Entity {
 		$this->parameters[$key] = $value;
 		return $this;
 	}
+
+	public function getClass() {
+		return get_class($this);
+	}
 }

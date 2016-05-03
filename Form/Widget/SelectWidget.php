@@ -37,7 +37,7 @@ class SelectWidget extends \Asgard\Form\Widget {
 		}
 
 		$str = '';
-		foreach($choices as $k=>$v) {
+		foreach($choices as $k => $v) {
 			if($value == $k) {
 				$str .= \Asgard\Form\HTMLHelper::tag('option', [
 					'value'	=>	$k,

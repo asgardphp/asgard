@@ -60,10 +60,10 @@ class CollectionORM extends ORM implements CollectionORMInterface {
 			if($v instanceof \Asgard\Entity\Entity) {
 				if($v->isNew())
 					$this->dataMapper->save($v, [], $groups);
-				$ids[$k] = ['id'=>(int)$v->id, 'class'=>get_class($v)];
+				$ids[$k] = ['id' => (int)$v->id, 'class' => $v->getClass()];
 			}
 			else
-				$ids[$k] = ['id'=>(int)$v, 'class'=>$this->relation->getTargetDefinition()->getClass()];
+				$ids[$k] = ['id' => (int)$v, 'class' => $this->relation->getTargetDefinition()->getClass()];
 		}
 
 		$this->clear();
@@ -80,7 +80,7 @@ class CollectionORM extends ORM implements CollectionORMInterface {
 				foreach($ids as $k=>$v)
 					$ids[$k] = $v['id'];
 				$newDal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->dataMapper->getTable($relationDefinition));
-				$newDal->where('id IN ('.implode(', ', $ids).')');
+				$newDal->where('id IN (?)', [$ids]);
 				if($this->relation->reverse()->isPolymorphic()) {
 					$linkType = $this->relation->reverse()->getLinkType();
 					$newDal->update([$link => $this->parent->id, $linkType => get_class($this->parent)]);
@@ -168,7 +168,7 @@ class CollectionORM extends ORM implements CollectionORMInterface {
 		$reverse = $this->relation->reverse();
 		$revName = $reverse->getName();
 		if($reverse->get('many'))
-			$new->{$revName}->add($this->parent);
+			$new->get($revName)->add($this->parent);
 		else
 			$new->set($revName, $this->parent);
 		return $new;
@@ -217,7 +217,8 @@ class CollectionORM extends ORM implements CollectionORMInterface {
 	 * {@inheritDoc}
 	 */
 	public function clear() {
-		switch($this->relation->type()) {
+		$type = $this->relation->type();
+		switch($type) {
 			case 'hasOne':
 			case 'hasMany':
 				$relationDefinition = $this->relation->getTargetDefinition();
@@ -229,16 +230,6 @@ class CollectionORM extends ORM implements CollectionORMInterface {
 				}
 				else
 					$dal->where([$link => $this->parent->id])->update([$link => null]);
-
-				if($this->relation->type() === 'hasOne') {
-					$link = $this->relation->getLink();
-					if($this->relation->isPolymorphic()) {
-						$linkType = $this->relation->getLinkType();
-						$this->dataMapper->orm(get_class($this->parent))->where('id', $this->parent->id)->getDAL()->update([$link => null, $linkType => null]);
-					}
-					else
-						$this->dataMapper->orm(get_class($this->parent))->where('id', $this->parent->id)->getDAL()->update([$link => null]);
-				}
 				break;
 			case 'HMABT':
 				$dal = new \Asgard\Db\DAL($this->dataMapper->getDB(), $this->relation->getAssociationTable());

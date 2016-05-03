@@ -30,7 +30,7 @@ class ConsoleCommand extends \Asgard\Console\Command {
 		$question = new Question('>', false);
 
 		$cmd = $dialog->ask($this->input, $this->output, $question);
-		while($cmd != "quit") {
+		while($cmd !== "quit") {
 			try {
 				if(preg_match('/^dump /', $cmd))
 					$cmd = 'var_dump('.substr($cmd, 5).')';
