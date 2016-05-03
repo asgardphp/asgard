@@ -690,15 +690,16 @@ class DAL implements \Iterator {
 			static $i=0;
 			if(is_array($pdoparams[$i])) {
 				if(count($pdoparams[$i]) === 0)
-					return 'null';
+					$r = 'null';
 				else
-					return implode(',', array_fill(0, count($pdoparams[$i]), '?'));
+					$r = implode(',', array_fill(0, count($pdoparams[$i]), '?'));
 				$i++;
 			}
 			else {
 				$i++;
-				return '?';
+				$r = '?';
 			}
+			return $r;
 		}, $result);
 
 		$pdoparams = \Asgard\Common\ArrayUtils::flatten($pdoparams);
