@@ -393,8 +393,9 @@ class DAL implements \Iterator {
 		if($sql === null) {
 			$sql = $this->buildSQL();
 			$params = $this->getParameters();
-			return $this->query($sql, $params);
 		}
+
+		$this->replaceArrayParams($sql, $params);
 
 		return $this->query = $this->db->query($sql, $params);
 	}
@@ -684,25 +685,6 @@ class DAL implements \Iterator {
 
 		if($brackets && count($params) > 1)
 			$result = '('.$result.')';
-
-		#prepare mulltiple parameters in arrays
-		$result = preg_replace_callback('/\?/', function() use($pdoparams) {
-			static $i=0;
-			if(is_array($pdoparams[$i])) {
-				if(count($pdoparams[$i]) === 0)
-					$r = 'null';
-				else
-					$r = implode(',', array_fill(0, count($pdoparams[$i]), '?'));
-				$i++;
-			}
-			else {
-				$i++;
-				$r = '?';
-			}
-			return $r;
-		}, $result);
-
-		$pdoparams = \Asgard\Common\ArrayUtils::flatten($pdoparams);
 
 		return [$result, $pdoparams];
 	}
@@ -1075,9 +1057,11 @@ class DAL implements \Iterator {
 
 		$sql = 'SELECT '.$columns.' FROM '.$tables.$jointures.$where.$groupBy.$having.$unions.$orderBy.$limit;
 
+		$this->replaceArrayParams($sql, $params);
 		$this->replaceRaws($sql, $params);
 
 		$this->params = $params;
+
 		return $sql;
 	}
 
@@ -1127,8 +1111,6 @@ class DAL implements \Iterator {
 			list($where, $whereparams) = $this->buildWhere();
 			$params = array_merge($params, $whereparams);
 			$sql = 'UPDATE '.$tables.$jointures.$str.$where.$orderBy.$limit;
-
-			$this->replaceRaws($sql, $params);
 		}
 		elseif($this->joins || $this->limit || $this->offset) {
 			$set = [];
@@ -1190,6 +1172,9 @@ class DAL implements \Iterator {
 			$sql = 'UPDATE '.$tables.$str.$where;
 		}
 
+		$this->replaceArrayParams($sql, $params);
+		$this->replaceRaws($sql, $params);
+
 		$this->params = $params;
 
 		return $sql;
@@ -1240,6 +1225,7 @@ class DAL implements \Iterator {
 				$sql .= $orderBy.$limit;
 			}
 
+			$this->replaceArrayParams($sql, $params);
 			$this->replaceRaws($sql, $params);
 		}
 		elseif($this->joins || $this->limit || $this->offset) {
@@ -1381,6 +1367,7 @@ class DAL implements \Iterator {
 			$sql .= ' ON DUPLICATE KEY UPDATE '.$str;
 		}
 
+		$this->replaceArrayParams($sql, $params);
 		$this->replaceRaws($sql, $params);
 		$this->params = $params;
 
@@ -1644,5 +1631,26 @@ class DAL implements \Iterator {
 	public function setIgnore($ignore) {
 		$this->ignore = $ignore;
 		return $this;
+	}
+
+	protected function replaceArrayParams(&$sql, &$params) {
+		#prepare mulltiple parameters in arrays
+		$sql = preg_replace_callback('/\?/', function() use($params) {
+			static $i=0;
+			if(is_array($params[$i])) {
+				if(count($params[$i]) === 0)
+					$r = 'null';
+				else
+					$r = implode(',', array_fill(0, count($params[$i]), '?'));
+				$i++;
+			}
+			else {
+				$i++;
+				$r = '?';
+			}
+			return $r;
+		}, $sql);
+
+		$params = \Asgard\Common\ArrayUtils::flatten($params);
 	}
 }
