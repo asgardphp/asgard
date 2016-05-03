@@ -21,6 +21,11 @@ class ManyCollection implements CollectionInterface {
 	 * @var string
 	 */
 	protected $name;
+	/**
+	 * Dirty collection.
+	 * @var boolean
+	 */
+	protected $isDirty;
 
 	/**
 	 * Constructor.
@@ -41,28 +46,26 @@ class ManyCollection implements CollectionInterface {
 	}
 
 	/**
-	 * Return all elements.
-	 * @return array
+	 * {@inheritDoc}
 	 */
 	public function all() {
 		return $this->elements;
 	}
 
 	/**
-	 * Add an element.
-	 * @param mixed $element
+	 * {@inheritDoc}
 	 */
 	public function add($element) {
 		if($element === null)
 			return;
 		$this->entity->getDefinition()->processPreAdd($this->entity, $this->name, $element);
 		$this->elements[] = $element;
+		$this->setDirty(true);
 		return $element;
 	}
 
 	/**
-	 * Set all elements/
-	 * @param array $elements
+	 * {@inheritDoc}
 	 */
 	public function setAll(array $elements) {
 		$this->elements = [];
@@ -72,18 +75,17 @@ class ManyCollection implements CollectionInterface {
 	}
 
 	/**
-	 * Remove an element.
-	 * @param  integer $offset
+	 * {@inheritDoc}
 	 */
 	public function remove($offset) {
 		unset($this->elements[$offset]);
 		$this->elements = array_values($this->elements);
+		$this->setDirty(true);
+		return $this;
 	}
 
 	/**
-	 * Return an element.
-	 * @param  integer $offset
-	 * @return mixed
+	 * {@inheritDoc}
 	 */
 	public function get($offset) {
 		if(!isset($this->elements[$offset]))
@@ -168,5 +170,19 @@ class ManyCollection implements CollectionInterface {
 	 */
 	public function next() {
 		return next($this->elements);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function setDirty($dirty=true) {
+		$this->isDirty = $dirty;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function isDirty() {
+		return $this->isDirty;
 	}
 }

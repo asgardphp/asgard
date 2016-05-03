@@ -29,6 +29,7 @@ class PersistentCollection implements \Asgard\Entity\CollectionInterface {
 	 * Constructor.
 	 * @param Entity           $entity
 	 * @param string           $name
+	 * @param DataMapper       $dataMapper
 	 */
 	public function __construct(\Asgard\Entity\Entity $entity, $name, $dataMapper) {
 		$this->entity     = $entity;
@@ -54,7 +55,7 @@ class PersistentCollection implements \Asgard\Entity\CollectionInterface {
 		$this->toAdd = [];
 		$this->toRemove = [];
 		$this->initialized = false;
-		$this->isDirty = false;
+		$this->setDirty(false);
 	}
 
 	public function sync() {
@@ -73,7 +74,7 @@ class PersistentCollection implements \Asgard\Entity\CollectionInterface {
 		$this->initialized = false;
 		$this->toAdd = [];
 		$this->toRemove = [];
-		$this->isDirty = false;
+		$this->setDirty(false);
 	}
 
 	/**
@@ -88,8 +89,7 @@ class PersistentCollection implements \Asgard\Entity\CollectionInterface {
 	}
 
 	/**
-	 * Return all elements.
-	 * @return array
+	 * {@inheritDoc}
 	 */
 	public function all() {
 		if(!$this->initialized)
@@ -99,15 +99,14 @@ class PersistentCollection implements \Asgard\Entity\CollectionInterface {
 	}
 
 	/**
-	 * Add an element.
-	 * @param mixed $element
+	 * {@inheritDoc}
 	 */
 	public function add($element) {
 		if($element === null)
 			return;
 		$this->entity->getDefinition()->processPreAdd($this->entity, $this->name, $element);
 		$this->toAdd[] = $element;
-		$this->isDirty = true;
+		$this->setDirty(true);
 
 		return $this;
 	}
@@ -119,8 +118,7 @@ class PersistentCollection implements \Asgard\Entity\CollectionInterface {
 	}
 
 	/**
-	 * Set all elements/
-	 * @param array $elements
+	 * {@inheritDoc}
 	 */
 	public function setAll(array $elements) {
 		$this->toRemove = $this->elements;
@@ -131,20 +129,17 @@ class PersistentCollection implements \Asgard\Entity\CollectionInterface {
 	}
 
 	/**
-	 * Remove an element.
-	 * @param mixed $entity integer id or \Asgard\Entity\Entity object
+	 * {@inheritDoc}
 	 */
 	public function remove($entity) {
 		$this->toRemove[] = $entity;
-		$this->isDirty = true;
+		$this->setDirty(true);
 
 		return $this;
 	}
 
 	/**
-	 * Return an element.
-	 * @param  integer $offset
-	 * @return mixed
+	 * {@inheritDoc}
 	 */
 	public function get($offset) {
 		if(!$this->initialized)
@@ -235,5 +230,19 @@ class PersistentCollection implements \Asgard\Entity\CollectionInterface {
 	 */
 	public function next() {
 		return next($this->elements);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function setDirty($dirty=true) {
+		$this->isDirty = $dirty;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function isDirty() {
+		return $this->isDirty;
 	}
 }

@@ -633,9 +633,25 @@ abstract class Entity {
 			return [];
 	}
 
+	/**
+	 * Reset changed properties.
+	 * @return static
+	 */
 	public function resetchanged() {
 		$this->changed             = [];
 		$this->translationschanged = [];
+		return $this;
+	}
+
+	/**
+	 * Set a property as changed.
+	 * @param string  $name
+	 * @param boolean $changed
+	 * @return static
+	 */
+	public function setChanged($name, $changed=true) {
+		$this->changed[$name] = true;
+		return $this;
 	}
 
 	/**
