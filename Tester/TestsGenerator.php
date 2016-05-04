@@ -27,7 +27,7 @@ class TestsGenerator extends \Asgard\Generator\AbstractGenerator {
 
 		foreach($bundle['entities'] as $name=>$entity) {
 			if($entity['front']) {
-				$class = $bundle['namespace'].'\\Controllers\\'.ucfirst($entity['meta']['name']).'Controller';
+				$class = $bundle['namespace'].'\\Controller\\'.ucfirst($entity['meta']['name']);
 				$routes = $this->controllersAnnotationReader->fetchRoutes($class);
 				$this->resolver->addRoutes($routes);
 
@@ -63,7 +63,7 @@ public function test'.$testName.'() {
 		}
 
 		foreach($bundle['controllers'] as $name=>$controller) {
-			$class = $bundle['namespace'].'\\Controllers\\'.ucfirst($controller['name']);
+			$class = $bundle['namespace'].'\\Controller\\'.ucfirst($controller['name']);
 			$routes = $this->controllersAnnotationReader->fetchRoutes($class);
 			$this->resolver->addRoutes($routes);
 

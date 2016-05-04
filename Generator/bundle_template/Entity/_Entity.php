@@ -1,5 +1,5 @@
 <%
-namespace <?=$bundle['namespace'] ?>\Entities;
+namespace <?=$bundle['namespace'] ?>\Entity;
 
 class <?=ucfirst($entity['meta']['name'])?> extends \Asgard\Entity\Entity {
 	public static function definition(\Asgard\Entity\Definition $definition) {
@@ -21,6 +21,6 @@ class <?=ucfirst($entity['meta']['name'])?> extends \Asgard\Entity\Entity {
 	}
 <?php if($entity['front'] && in_array('show', $entity['front'])): ?>
 	public function url() {
-		return $this->getDefinition()->getContainer()['resolver']->url(['<?=$bundle['namespace'].'\Controllers\\'.ucfirst($entity['meta']['name']).'Controller' ?>', 'show'], array('id'=>$this->id));
+		return $this->getDefinition()->getContainer()['resolver']->url(['<?=$bundle['namespace'].'\Controller\\'.ucfirst($entity['meta']['name']) ?>', 'show'], array('id'=>$this->id));
 	}
 	<?php endif ?>}
