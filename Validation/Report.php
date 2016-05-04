@@ -48,6 +48,25 @@ class Report implements \ArrayAccess, \Countable {
 	}
 
 	/**
+	 * Show the full error message.
+	 * @return string
+	 */
+	public function fullMessage() {
+		if($this->self)
+			$str = (string)$this->self.':';
+		else
+			$str = (string)$this->first().':';
+
+		foreach($this->rules as $rule)
+			$str .= "\n\t".$rule;
+
+		foreach($this->attributes as $attribute)
+			$str .= "\n\t".$attribute->first();
+
+		return $str;
+	}
+
+	/**
 	 * Return the error of a rule if provided, otherwise the main error.
 	 * @param  string $rule rule name
 	 * @return string

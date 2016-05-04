@@ -290,7 +290,9 @@ abstract class Entity {
 		$data = $this->toArrayRaw();
 		$validator = $this->getValidator();
 		$report = $this->getDefinition()->trigger('validation', [$this, $validator, $groups, &$data], function($chain, $entity, $validator, $groups, &$data) {
-			return $validator->errors($data, $groups);
+			$report = $validator->errors($data, $groups);
+			$report->setSelf('Entity is not valid');
+			return $report;
 		});
 
 		return $report;
