@@ -102,6 +102,8 @@ trait ViewableTrait {
 					$result->setEngine($this->templateEngine);
 				return $result->render();
 			}
+			elseif(is_numeric($result))
+				return (string)$result;
 			else
 				return $result;
 		}
