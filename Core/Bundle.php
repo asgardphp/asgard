@@ -201,7 +201,7 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		});
 		$container->setParentClass('proxygenerator', 'Asgard\Orm\Proxy\ProxyGenerator');
 		$container->register('proxygenerator', function() {
-			return new Proxy\ProxyGenerator;
+			return new \Asgard\Orm\Proxy\ProxyGenerator;
 		});
 		$container->setParentClass('datamapper', 'Asgard\Orm\DataMapperInterface');
 		$container->register('datamapper', function($container) {
