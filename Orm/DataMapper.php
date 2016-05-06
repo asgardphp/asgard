@@ -43,7 +43,7 @@ class DataMapper implements DataMapperInterface {
 	protected $sqlInputTransformers;
 	/**
 	 * Proxy generator.
-	 * @var array
+	 * @var Proxy\ProxyGenerator
 	 */
 	protected $proxyGenerator;
 

@@ -200,7 +200,7 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			return new \Asgard\Orm\CollectionORMFactory($container['paginator_factory']);
 		});
 		$container->setParentClass('proxygenerator', 'Asgard\Orm\Proxy\ProxyGenerator');
-		$container->register('proxygenerator', function($container) {
+		$container->register('proxygenerator', function() {
 			return new Proxy\ProxyGenerator;
 		});
 		$container->setParentClass('datamapper', 'Asgard\Orm\DataMapperInterface');
