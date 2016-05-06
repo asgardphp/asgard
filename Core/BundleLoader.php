@@ -133,8 +133,8 @@ class BundleLoader {
 	 * @param  \Asgard\Console\Application $console
 	 */
 	protected function loadCommands($console) {
-		if(file_exists($this->getPath().'/Commands/')) {
-			foreach(glob($this->getPath().'/Commands/*.php') as $filename) {
+		if(file_exists($this->getPath().'/Command/')) {
+			foreach(glob($this->getPath().'/Command/*.php') as $filename) {
 				$class = \Asgard\Common\Tools::loadClassFile($filename);
 				if(is_subclass_of($class, 'Symfony\Component\Console\Command\Command')) {
 					try {
