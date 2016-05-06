@@ -364,4 +364,14 @@ class PolymorphicCollectionORM implements CollectionORMInterface {
 	 * {@inheritDoc}
 	 */
 	public function resetDAL() { throw new \Exception('Not implemented'); }
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function load($id) { throw new \Exception('Not implemented'); }
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function initializeEntityProxy(\Asgard\Entity\Entity $entityProxy) { throw new \Exception('Not implemented'); }
 }

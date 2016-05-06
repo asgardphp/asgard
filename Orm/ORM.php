@@ -242,10 +242,8 @@ class ORM implements ORMInterface, \Countable {
 	}
 
 	/**
-	 * Load an entity.
-	 * @param  integer $id
-	 * @return \Asgard\Entity\Entity
-	 */
+	 * {@inheritDoc}
+	*/
 	public function load($id) {
 		$clone = clone $this;
 		return $clone->where(['id' => $id])->first();
@@ -1242,15 +1240,18 @@ class ORM implements ORMInterface, \Countable {
 		$this->tmp_dal = null;
 	}
 
-	public function getDataMapper() {
-		return $this->dataMapper;
-	}
-
-	public function initializeEntityProxy($entityProxy) {
+	/**
+	 * {@inheritDoc}
+	*/
+	public function initializeEntityProxy(\Asgard\Entity\Entity $entityProxy) {
 		$clone = clone $this;
 		$data = $clone->where(['id' => $entityProxy->id])->getDAL()->first();
 		if(!$data)
 			return;
 		$this->hydrate($entityProxy, $data);
+	}
+
+	public function getDataMapper() {
+		return $this->dataMapper;
 	}
 }

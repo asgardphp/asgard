@@ -57,7 +57,7 @@ class ErrorHandlerTest extends \PHPUnit_Framework_TestCase {
 			echo $a;
 			$this->assertTrue(false, 'Should not reach this line.');
 		} catch(\ErrorException $e) {
-			$errorHandler->exceptionHandler($e, false);
+			$errorHandler->exceptionHandler($e);
 		}
 		$this->hasOutput();
 	}

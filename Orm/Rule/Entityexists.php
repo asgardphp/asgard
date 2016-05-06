@@ -8,7 +8,7 @@ namespace Asgard\Orm\Rule;
 class Entityexists extends \Asgard\Validation\Rule {
 	/**
 	 * Maximum number of entities
-	 * @var integer
+	 * @var \Asgard\Orm\ORMInterface
 	 */
 	public $orm;
 

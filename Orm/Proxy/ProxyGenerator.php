@@ -34,7 +34,9 @@ class <shortName> extends <class> implements \Asgard\Orm\Proxy\ProxyInterface {
 	public function createProxy($dataMapper, $class, $id) {
 		$class = trim($class, '\\');
 
-		if(!in_array($class, $this->initializedClasses)) {
+		if(isset($this->initializedClasses[$class]))
+			$proxyClass = $this->initializedClasses[$class];
+		else {
 			$reflection = new \ReflectionClass($class);
 
 			$template = $this->proxyTemplate;
@@ -50,7 +52,7 @@ class <shortName> extends <class> implements \Asgard\Orm\Proxy\ProxyInterface {
 				eval($template);
 			}
 
-			$this->initializedClasses[] = $class;
+			$this->initializedClasses[$class] = $proxyClass;
 		}
 
 		$entityProxy = new $proxyClass(['id' => $id]);

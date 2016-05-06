@@ -285,11 +285,10 @@ class HttpKernel implements HttpKernelInterface {
 	/**
 	 * Return a raw response.
 	 * @param  Request $request
-	 * @param  boolean $catch   true to catch exceptions.
 	 * @throws Exception\NotFoundException If route not found.
 	 * @return mixed
 	 */
-	protected function processRaw(Request $request, $catch=true) {
+	protected function processRaw(Request $request) {
 		$resolver = $this->getResolver();
 		$resolver->sortRoutes();
 
@@ -355,7 +354,7 @@ class HttpKernel implements HttpKernelInterface {
 		while(ob_get_level() > $this->startObLevel)
 			ob_end_clean();
 
-		$this->errorHandler->exceptionHandler($e, false);
+		$this->errorHandler->exceptionHandler($e);
 
 		$trace = $this->errorHandler->getBacktraceFromException($e);
 

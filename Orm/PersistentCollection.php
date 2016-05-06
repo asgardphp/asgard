@@ -9,7 +9,7 @@ class PersistentCollection implements \Asgard\Entity\CollectionInterface {
 	protected $elements = [];
 	/**
 	 * Entity.
-	 * @var Entity
+	 * @var \Asgard\Entity\Entity
 	 */
 	protected $entity;
 	/**
@@ -17,11 +17,15 @@ class PersistentCollection implements \Asgard\Entity\CollectionInterface {
 	 * @var string
 	 */
 	protected $name;
+	/**
+	 * Datamapper dependency.
+	 * @var DataMapperInterface
+	 */
+	protected $dataMapper;
 
 	protected $isDirty;
 	protected $toAdd = [];
 	protected $toRemove = [];
-	protected $dataMapper;
 	protected $initialized = false;
 	protected $cursor = 0;
 
@@ -29,9 +33,9 @@ class PersistentCollection implements \Asgard\Entity\CollectionInterface {
 	 * Constructor.
 	 * @param Entity           $entity
 	 * @param string           $name
-	 * @param DataMapper       $dataMapper
+	 * @param DataMapperInterface       $dataMapper
 	 */
-	public function __construct(\Asgard\Entity\Entity $entity, $name, $dataMapper) {
+	public function __construct(\Asgard\Entity\Entity $entity, $name, DataMapperInterface $dataMapper) {
 		$this->entity     = $entity;
 		$this->name       = $name;
 		$this->dataMapper        = $dataMapper;

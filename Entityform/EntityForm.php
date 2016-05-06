@@ -133,7 +133,6 @@ class EntityForm extends \Asgard\Form\Form implements EntityFormInterface {
 
 		$relation = $dataMapper->relation($entity->getDefinition(), $name);
 
-		$ids = [];
 		$orm = $dataMapper->orm($relation->get('entity'));
 		if($cb)
 			$cb($orm);

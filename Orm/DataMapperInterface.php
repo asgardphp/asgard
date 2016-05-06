@@ -187,4 +187,24 @@ interface DataMapperInterface {
 	 * @return \Asgard\Entity\Definition
 	 */
 	public function getEntityDefinition(\Asgard\Entity\Entity $entity);
+
+	/**
+	 * Create an entity proxy.
+	 * @param  string  $class
+	 * @param  integer $id
+	 * @return \Asgard\Entity\Entity
+	 */
+	public function createEntityProxy($class, $id);
+
+	/**
+	 * [initializeEntityProxy description]
+	 * @param  \Asgard\Entity\Entity $entityProxy
+	 */
+	public function initializeEntityProxy($entityProxy);
+
+	/**
+	 * Set the proxy generator dependency.
+	 * @param Proxy\ProxyGenerator $proxyGenerator
+	 */
+	public function setProxyGenerator(Proxy\ProxyGenerator $proxyGenerator);
 }

@@ -95,7 +95,7 @@ class RulesRegistry implements RulesRegistryInterface {
 		if($rule === 'required' || $rule === 'isNull')
 			return;
 
-		if(strpos($rule, 'not_') !== false) {
+		if(strpos($rule, 'not_') === 0) {
 			$rule = substr($rule, 4);
 			$validator = new \Asgard\Validation\Validator;
 			$ruleObj = $this->getRule($rule, $params);

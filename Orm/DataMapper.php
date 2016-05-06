@@ -41,6 +41,11 @@ class DataMapper implements DataMapperInterface {
 	 * @var array
 	 */
 	protected $sqlInputTransformers;
+	/**
+	 * Proxy generator.
+	 * @var array
+	 */
+	protected $proxyGenerator;
 
 	/**
 	 * Constructor.
@@ -108,7 +113,7 @@ class DataMapper implements DataMapperInterface {
 		return $this->getEntityDefinition($entity)->trigger('destroy', [$entity], function($chain, $entity) {
 			$orms = [];
 
-			foreach($this->getEntityDefinition($entity)->relations() as $name=>$relation) {
+			foreach($this->relations($this->getEntityDefinition($entity)) as $name=>$relation) {
 				if(isset($relation->get('cascade')['delete']) && $relation->get('cascade')['delete']) {
 					$orm = $this->related($entity, $name);
 					if(!is_object($orm))
@@ -265,9 +270,8 @@ class DataMapper implements DataMapperInterface {
 	/**
 	 * Return a transformer to prepare SQL input.
 	 * @param  string                          $class Entity property class.
-	 * @return SQLPropertyTransformerInterface $spi
 	 */
-	public function getSqlInput($class, SQLPropertyTransformerInterface $spi) {
+	public function getSqlInput($class) {
 		if(isset($this->sqlInputTransformers[$class]))
 			return $this->sqlInputTransformers[$class];
 	}
@@ -576,21 +580,6 @@ class DataMapper implements DataMapperInterface {
 	}
 
 	/**
-	 * Unserialize data of an entity.
-	 * @param  \Asgard\Entity\Entity $entity
-	 * @param  array                 $data
-	 * @return array                 unserialized data
-	 */
-	protected static function unserialize(\Asgard\Entity\Entity $entity, array $data) {
-		foreach($data as $k=>$v) {
-			if($this->getEntityDefinition($entity)->hasProperty($k))
-				$data[$k] = $this->getEntityDefinition($entity)->property($k)->unserialize($v, $entity, $k);
-		}
-
-		return $data;
-	}
-
-	/**
 	 * {@inheritDoc}
 	 */
 	public function getDB() {
@@ -613,15 +602,27 @@ class DataMapper implements DataMapperInterface {
 	}
 
 	public function createEntityProxy($class, $id) {
-		$proxyGenerator = new Proxy\ProxyGenerator($this);#todo
+		$proxyGenerator = $this->proxyGenerator;
+		if(!$proxyGenerator)
+			$proxyGenerator =  new Proxy\ProxyGenerator;
 		$entityProxy = $proxyGenerator->createProxy($this, $class, $id);
 		$entityProxy->setParameter('persisted', true);
 
 		return $entityProxy;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public function initializeEntityProxy($entityProxy) {
 		$orm = $this->orm($entityProxy->getClass());
 		$orm->initializeEntityProxy($entityProxy);
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function setProxyGenerator(Proxy\ProxyGenerator $proxyGenerator) {
+		$this->proxyGenerator = $proxyGenerator;
 	}
 }

@@ -95,7 +95,6 @@ class I18NTest extends \PHPUnit_Framework_TestCase {
 	#get default
 	public function test1() {
 		$com = static::$dm->load('Asgard\Orm\Tests\Fixtures\I18n\Comment', 2);
-		// d(static::$dm->related($com, 'news')->getDAL()->dbgSelect());
 		$news = static::$dm->getRelated($com, 'news');
 		$this->assertEquals('Hello', $news->test); #default language is english
 	}

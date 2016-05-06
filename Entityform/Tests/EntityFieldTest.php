@@ -18,7 +18,7 @@ class EntityFieldTest extends \PHPUnit_Framework_TestCase {
 			$em->get('Asgard\Entityform\Tests\Entities\User'),
 		]);
 
-		$user = $dataMapper->create('Asgard\Entityform\Tests\Entities\User', [
+		$dataMapper->create('Asgard\Entityform\Tests\Entities\User', [
 			'id'  => 1,
 			'name'=>'bob',
 		]);
@@ -53,11 +53,11 @@ class EntityFieldTest extends \PHPUnit_Framework_TestCase {
 			$em->get('Asgard\Entityform\Tests\Entities\User'),
 		]);
 
-		$user = $dataMapper->create('Asgard\Entityform\Tests\Entities\User', [
+		$dataMapper->create('Asgard\Entityform\Tests\Entities\User', [
 			'id'  => 1,
 			'name'=>'bob',
 		]);
-		$user = $dataMapper->create('Asgard\Entityform\Tests\Entities\User', [
+		$dataMapper->create('Asgard\Entityform\Tests\Entities\User', [
 			'id'  => 2,
 			'name'=>'bob',
 		]);

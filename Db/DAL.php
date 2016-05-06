@@ -61,12 +61,12 @@ class DAL implements \Iterator {
 	 * Order by.
 	 * @var array
 	 */
-	protected $orderBy;
+	protected $orderBy = [];
 	/**
 	 * Group by.
 	 * @var array
 	 */
-	protected $groupBy;
+	protected $groupBy = [];
 	/**
 	 * Into table.
 	 * @var string
@@ -374,8 +374,8 @@ class DAL implements \Iterator {
 		$this->where   = [];
 		$this->offset  = null;
 		$this->limit   = null;
-		$this->orderBy = null;
-		$this->groupBy = null;
+		$this->orderBy = [];
+		$this->groupBy = [];
 		$this->joins   = [];
 		$this->params  = [];
 
@@ -1296,7 +1296,7 @@ class DAL implements \Iterator {
 		$this->where = $this->replaceTableInConditions($this->where, $oldTable, $newTable);
 		$this->joins = $this->replaceTableInConditions($this->joins, $oldTable, $newTable);
 		#using regex to replace table names not preceded by one of the following character
-		if($this->groupBy !== null)
+		if($this->groupBy)
 			$this->groupBy[0] = preg_replace('/(?<![a-zA-Z0-9_])'.$oldTable.'\./', $newTable.'.', $this->groupBy[0]);
 	}
 

@@ -199,9 +199,13 @@ class Bundle extends \Asgard\Core\BundleLoader {
 		$container->register('collectionOrm_factory', function($container) {
 			return new \Asgard\Orm\CollectionORMFactory($container['paginator_factory']);
 		});
+		$container->setParentClass('proxygenerator', 'Asgard\Orm\Proxy\ProxyGenerator');
+		$container->register('proxygenerator', function($container) {
+			return new Proxy\ProxyGenerator;
+		});
 		$container->setParentClass('datamapper', 'Asgard\Orm\DataMapperInterface');
 		$container->register('datamapper', function($container) {
-			return new \Asgard\Orm\DataMapper(
+			$dm = new \Asgard\Orm\DataMapper(
 				$container['db'],
 				$container['entityManager'],
 				$container['config']['locale'],
@@ -209,6 +213,8 @@ class Bundle extends \Asgard\Core\BundleLoader {
 				$container['orm_factory'],
 				$container['collectionOrm_factory']
 			);
+			$dm->setProxyGenerator($container['proxygenerator']);
+			return $dm;
 		});
 
 		$container->register('translator', function($container) {

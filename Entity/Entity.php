@@ -652,7 +652,7 @@ abstract class Entity {
 	 * @return static
 	 */
 	public function setChanged($name, $changed=true) {
-		$this->changed[$name] = true;
+		$this->changed[$name] = $changed;
 		return $this;
 	}
 
@@ -670,7 +670,7 @@ abstract class Entity {
 	/**
 	 * Set a parameter.
 	 * @param  string $key
-	 * @param  parameter $value
+	 * @param  mixed  $value
 	 * @return static
 	 */
 	public function setParameter($key, $value) {

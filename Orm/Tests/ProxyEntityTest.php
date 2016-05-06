@@ -14,7 +14,6 @@ class ProxyEntityTest extends \PHPUnit_Framework_TestCase {
 		$dataMapper = new \Asgard\Orm\DataMapper($db, $em);
 
 		#Create table for entity
-		$schema = new \Asgard\Db\Schema($db);
 		(new \Asgard\Orm\ORMMigrations($dataMapper))->autoMigrate([
 			$em->get('Asgard\Orm\Tests\Fixtures\ProxyEntity\A'),
 			$em->get('Asgard\Orm\Tests\Fixtures\ProxyEntity\B'),

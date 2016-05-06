@@ -38,6 +38,13 @@ interface ORMInterface extends \Iterator {
 	public function __get($name);
 
 	/**
+	 * Load an entity.
+	 * @param  mixed $id
+	 * @return \Asgard\Entity\Entity
+	 */
+	public function load($id);
+
+	/**
 	 * Limits the search to the entities related to the given entity.
 	 *
 	 * @param EntityRelation|string $relation The name of the relation.
@@ -357,4 +364,10 @@ interface ORMInterface extends \Iterator {
 	 * Reset the temporary DAL.
 	 */
 	public function resetDAL();
+
+	/**
+	 * Initialize (fill) an entity proxy.
+	 * @param  \Asgard\Entity\Entity  $entityProxy
+	 */
+	public function initializeEntityProxy(\Asgard\Entity\Entity $entityProxy);
 }
