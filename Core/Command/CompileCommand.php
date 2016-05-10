@@ -1,6 +1,8 @@
 <?php
 namespace Asgard\Core\Command;
 
+use ClassPreloader\Factory;
+use ClassPreloader\Exceptions\VisitorExceptionInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -43,23 +45,29 @@ class CompileCommand extends \Asgard\Console\Command {
 	 * {@inheritDoc}
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
-		$this->getApplication()->add(new \ClassPreloader\Console\PreCompileCommand);
-
 		$container = $this->getContainer();
+
 		if(!$this->compile) {
 			$this->comment('Do no compile classes because of configuration (compile).');
 			return;
 		}
 
-		$outputPath = $this->compiledClassesFile;
+		$preloader = (new Factory)->create();
 
-		$classes = require __DIR__.'/compile/classes.php';
+		$handle = $preloader->prepareOutput($this->compiledClassesFile);
 
-		$this->callSilent('compile', [
-			'--config' => implode(',', $classes),
-			'--output' => $outputPath,
-			'--strip_comments' => 1,
-		]);
-		$this->info('Classes have been compiled into: '.$outputPath.'.');
+		$files = require __DIR__.'/compile/classes.php';
+
+		foreach ($classes as $file) {
+			try {
+				fwrite($handle, $preloader->getCode($file, true)."\n");
+			} catch (VisitorExceptionInterface $e) {
+				//
+			}
+		}
+
+		fclose($this->compiledClassesFile);
+
+		$this->info('Classes have been compiled into: '.$this->compiledClassesFile.'.');
 	}
 }
