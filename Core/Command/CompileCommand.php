@@ -43,7 +43,7 @@ class CompileCommand extends \Asgard\Console\Command {
 	 * {@inheritDoc}
 	 */
 	protected function execute(InputInterface $input, OutputInterface $output) {
-		$this->getApplication()->add(new \ClassPreloader\Command\PreCompileCommand);
+		$this->getApplication()->add(new \ClassPreloader\Console\PreCompileCommand);
 
 		$container = $this->getContainer();
 		if(!$this->compile) {

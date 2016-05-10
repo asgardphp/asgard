@@ -11,7 +11,8 @@
         "asgard/container": "0.*",
         "asgard/common": "0.*",
         "asgard/debug": "0.*",
-        "classpreloader/classpreloader": "1.*",
+        "classpreloader/classpreloader": "^3.0",
+        "classpreloader/console": "^2.0",
         "composer/composer": "1.0.0-alpha10"
     },
     "autoload": {
