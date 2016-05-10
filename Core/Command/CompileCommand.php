@@ -2,7 +2,6 @@
 namespace Asgard\Core\Command;
 
 use ClassPreloader\Factory;
-use ClassPreloader\Exceptions\VisitorExceptionInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -59,11 +58,7 @@ class CompileCommand extends \Asgard\Console\Command {
 		$files = require __DIR__.'/compile/classes.php';
 
 		foreach ($classes as $file) {
-			try {
-				fwrite($handle, $preloader->getCode($file, true)."\n");
-			} catch (VisitorExceptionInterface $e) {
-				//
-			}
+			fwrite($handle, $preloader->getCode($file, true)."\n");
 		}
 
 		fclose($handle);
