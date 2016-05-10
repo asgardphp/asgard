@@ -24,7 +24,7 @@
         "swiftmailer/swiftmailer": "5.0.*",
         "classpreloader/classpreloader": "^3.0",
         "composer/composer": "1.0.0-alpha10",
-        "nikic/php-parser": "^1.2",
+        "nikic/php-parser": "^2.0",
         "h0gar/csv": "0.*",
         "h0gar/xpath": "0.*"
     },

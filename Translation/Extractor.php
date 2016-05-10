@@ -1,6 +1,8 @@
 <?php
 namespace Asgard\Translation;
 
+use PhpParser\ParserFactory;
+
 class Extractor {
 	public $strings = [];
 
@@ -41,8 +43,8 @@ class Extractor {
 	public function parse($file) {
 		try {
 			$code = file_get_contents($file);
-			$parser = new \PhpParser\Parser(new \PhpParser\Lexer);
-			
+			$parser = (new ParserFactory)->create(ParserFactory::PREFER_PHP7);
+
 			$stmts = $parser->parse($code);
 			if($stmts === null)
 				return;
