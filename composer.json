@@ -11,26 +11,25 @@
     },
     "require": {
         "php": ">=5.5.0",
-        "doctrine/dbal": "2.*",
-        "doctrine/annotations": "1.*",
-        "doctrine/cache": "1.*",
-        "symfony/yaml": "2.*",
-        "symfony/translation": "2.*",
-        "symfony/console": "2.*",
-        "symfony/config": "2.*",
-        "jeremeamia/SuperClosure": "2.*",
-        "psr/log": "1.*",
-        "nesbot/carbon": "1.*",
+        "doctrine/dbal": "^2.0",
+        "doctrine/annotations": "^1.0",
+        "doctrine/cache": "^1.0",
+        "symfony/yaml": "^2.0",
+        "symfony/translation": "^2.0",
+        "symfony/console": "^2.0",
+        "symfony/config": "^2.0",
+        "jeremeamia/SuperClosure": "^2.0",
+        "psr/log": "^1.0",
+        "nesbot/carbon": "^1.0",
         "swiftmailer/swiftmailer": "5.0.*",
         "classpreloader/classpreloader": "^3.0",
-        "classpreloader/console": "^2.0",
         "composer/composer": "1.0.0-alpha10",
-        "nikic/php-parser": "~1.2",
+        "nikic/php-parser": "^1.2",
         "h0gar/csv": "0.*",
         "h0gar/xpath": "0.*"
     },
     "require-dev": {
-        "phpunit/phpunit": "4.*"
+        "phpunit/phpunit": "^4.0"
     },
     "replace": {
         "asgard/cache": "self.version",
