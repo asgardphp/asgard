@@ -10,7 +10,7 @@
         "psr-4": {"Asgard\\": "."}
     },
     "require": {
-        "php": ">=5.5.0",
+        "php": ">=5.5.9",
         "doctrine/dbal": "2.*",
         "doctrine/annotations": "1.*",
         "doctrine/cache": "1.*",

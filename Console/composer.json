@@ -9,7 +9,7 @@
         "psr-4": {"Asgard\\Console\\": "."}
     },
     "require": {
-        "php": ">=5.5.0",
+        "php": ">=5.4.0",
         "asgard/container": "0.*",
         "symfony/console": "2.*"
     },

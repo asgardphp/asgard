@@ -6,7 +6,7 @@
         "email": "michel@hognerud.net"
     }],
     "require": {
-        "php": ">=5.5.0",
+        "php": ">=5.4.0",
         "h0gar/xpath": "0.*"
     },
     "autoload": {

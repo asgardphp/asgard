@@ -9,7 +9,7 @@
         "psr-4": {"Asgard\\Orm\\": "."}
     },
     "require": {
-        "php": ">=5.5.0",
+        "php": ">=5.4.0",
         "asgard/db": "0.*",
         "doctrine/dbal": "2.*",
         "asgard/common": "0.*",
