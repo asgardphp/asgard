@@ -66,7 +66,7 @@ class CompileCommand extends \Asgard\Console\Command {
 			}
 		}
 
-		fclose($this->compiledClassesFile);
+		fclose($handle);
 
 		$this->info('Classes have been compiled into: '.$this->compiledClassesFile.'.');
 	}
