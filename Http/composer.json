@@ -9,7 +9,7 @@
         "psr-4": {"Asgard\\Http\\": "."}
     },
     "require": {
-        "php": ">=5.4.0",
+        "php": ">=5.5.0",
         "doctrine/annotations": "1.*",
         "asgard/common": "0.*",
         "asgard/file": "0.*",

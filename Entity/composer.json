@@ -9,7 +9,7 @@
         "psr-4": {"Asgard\\Entity\\": "."}
     },
     "require": {
-        "php": ">=5.4.0",
+        "php": ">=5.5.0",
         "asgard/common": "0.*",
         "asgard/container": "0.*",
         "asgard/hook": "0.*",

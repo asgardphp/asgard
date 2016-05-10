@@ -9,7 +9,7 @@
         "psr-4": {"Asgard\\Debug\\": "."}
     },
     "require": {
-        "php": ">=5.4.0",
+        "php": ">=5.5.0",
         "psr/log": "1.*"
     },
     "require-dev": {
