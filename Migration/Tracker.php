@@ -175,7 +175,7 @@ class Tracker {
 		$list = $this->getList(false);
 		if(isset($list[$migrationName]))
 			return;
-		$list[$migrationName] = ['added'=>time()+microtime()];
+		$list[$migrationName] = ['added'=>time()+microtime(true)];
 		$this->writeMigrations($list);
 	}
 
