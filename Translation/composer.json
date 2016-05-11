@@ -7,8 +7,8 @@
     }],
     "require": {
         "nikic/php-parser": "^2.0",
-        "symfony/yaml": "2.*",
-        "symfony/translation": "2.*",
+        "symfony/yaml": "^3.0",
+        "symfony/translation": "^3.0",
         "h0gar/csv": "0.*"
     },
     "autoload": {

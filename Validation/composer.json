@@ -10,10 +10,10 @@
         "asgard/common": "0.*"
     },
     "suggest": {
-        "symfony/translation": "2.*"
+        "symfony/translation": "^3.0"
     },
     "require-dev": {
-        "symfony/translation": "2.*"
+        "symfony/translation": "^3.0"
     },
     "autoload": {
         "psr-4": {"Asgard\\Validation\\": "."}

@@ -11,7 +11,7 @@
     "require": {
         "php": ">=5.5.9",
         "asgard/container": "0.*",
-        "symfony/console": "2.*"
+        "symfony/console": "^3.0"
     },
     "minimum-stability": "dev",
     "extra": {

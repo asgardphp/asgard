@@ -15,7 +15,7 @@
         "asgard/validation": "0.*",
         "asgard/container": "0.*",
         "nesbot/carbon": "1.*",
-        "symfony/translation": "2.*"
+        "symfony/translation": "^3.0"
     },
     "minimum-stability": "dev",
     "extra": {
