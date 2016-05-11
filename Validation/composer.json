@@ -6,7 +6,7 @@
         "email": "michel@hognerud.net"
     }],
     "require": {
-        "php": ">=5.4.0",
+        "php": ">=5.5.9",
         "asgard/common": "0.*"
     },
     "suggest": {

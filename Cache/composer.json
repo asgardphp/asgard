@@ -9,7 +9,7 @@
         "psr-4": {"Asgard\\Cache\\": "."}
     },
     "require": {
-        "php": ">=5.4.0",
+        "php": ">=5.5.9",
         "doctrine/cache": "1.*"
     },
     "minimum-stability": "dev",
