@@ -10,20 +10,19 @@
     },
     "require": {
         "php": ">=5.5.9",
-        "asgard/db": "0.*",
-        "doctrine/dbal": "2.*",
-        "asgard/common": "0.*",
-        "asgard/entity": "0.*",
-        "asgard/migration": "0.*",
-        "asgard/validation": "0.*"
+        "asgard/db": "~0.3.0",
+        "doctrine/dbal": "^2.0",
+        "asgard/common": "~0.3.0",
+        "asgard/entity": "~0.3.0",
+        "asgard/migration": "~0.3.0",
+        "asgard/validation": "~0.3.0"
     },
     "require-dev": {
-        "asgard/file": "0.*"
+        "asgard/file": "~0.3.0"
     },
-    "minimum-stability": "dev",
     "extra": {
         "branch-alias": {
-            "dev-master": "0.2-dev"
+            "dev-master": "0.3-dev"
         }
     }
 }

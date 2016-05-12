@@ -10,12 +10,11 @@
     },
     "require": {
         "php": ">=5.5.9",
-        "doctrine/cache": "1.*"
+        "doctrine/cache": "^1.0"
     },
-    "minimum-stability": "dev",
     "extra": {
         "branch-alias": {
-            "dev-master": "0.2-dev"
+            "dev-master": "0.3-dev"
         }
     }
 }

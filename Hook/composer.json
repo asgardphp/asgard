@@ -7,20 +7,19 @@
     }],
     "require": {
         "php": ">=5.5.9",
-        "jeremeamia/SuperClosure": "2.*",
-        "doctrine/annotations": "1.*",
-        "asgard/container": "0.*"
+        "jeremeamia/SuperClosure": "^2.0",
+        "doctrine/annotations": "^1.0",
+        "asgard/container": "~0.3.0"
     },
     "suggest": {
-        "asgard/cache": "0.*"
+        "asgard/cache": "~0.3.0"
     },
     "autoload": {
         "psr-4": {"Asgard\\Hook\\": "."}
     },
-    "minimum-stability": "dev",
     "extra": {
         "branch-alias": {
-            "dev-master": "0.2-dev"
+            "dev-master": "0.3-dev"
         }
     }
 }

@@ -10,13 +10,12 @@
     },
     "require": {
         "php": ">=5.5.9",
-        "asgard/form": "0.*",
-        "asgard/entity": "0.*"
+        "asgard/form": "~0.3.0",
+        "asgard/entity": "~0.3.0"
     },
-    "minimum-stability": "dev",
     "extra": {
         "branch-alias": {
-            "dev-master": "0.2-dev"
+            "dev-master": "0.3-dev"
         }
     }
 }

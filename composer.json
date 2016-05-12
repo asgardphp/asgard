@@ -21,12 +21,12 @@
         "jeremeamia/SuperClosure": "^2.0",
         "psr/log": "^1.0",
         "nesbot/carbon": "^1.0",
-        "swiftmailer/swiftmailer": "5.0.*",
+        "swiftmailer/swiftmailer": "^5.0",
         "classpreloader/classpreloader": "^3.0",
         "composer/composer": "^1.0",
         "nikic/php-parser": "^2.0",
-        "h0gar/csv": "0.*",
-        "h0gar/xpath": "0.*"
+        "h0gar/csv": "~0.1.0",
+        "h0gar/xpath": "~0.1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^4.0"
@@ -52,10 +52,9 @@
         "asgard/templating": "self.version",
         "asgard/validation": "self.version"
     },
-    "minimum-stability": "dev",
     "extra": {
         "branch-alias": {
-            "dev-master": "0.2-dev"
+            "dev-master": "0.3-dev"
         }
     }
 }

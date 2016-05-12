@@ -12,10 +12,9 @@
         "php": ">=5.5.9",
         "swiftmailer/swiftmailer": "~5.1"
     },
-    "minimum-stability": "dev",
     "extra": {
         "branch-alias": {
-            "dev-master": "0.2-dev"
+            "dev-master": "0.3-dev"
         }
     }
 }

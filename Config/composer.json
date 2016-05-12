@@ -11,12 +11,11 @@
     "require": {
         "php": ">=5.5.9",
         "symfony/yaml": "^3.0",
-        "asgard/common": "0.*"
+        "asgard/common": "~0.3.0"
     },
-    "minimum-stability": "dev",
     "extra": {
         "branch-alias": {
-            "dev-master": "0.2-dev"
+            "dev-master": "0.3-dev"
         }
     }
 }

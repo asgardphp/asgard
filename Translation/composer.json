@@ -6,18 +6,18 @@
         "email": "michel@hognerud.net"
     }],
     "require": {
+        "php": ">=5.5.9",
         "nikic/php-parser": "^2.0",
         "symfony/yaml": "^3.0",
         "symfony/translation": "^3.0",
-        "h0gar/csv": "0.*"
+        "h0gar/csv": "~0.1.0"
     },
     "autoload": {
         "psr-4": {"Asgard\\Tester\\": "."}
     },
-    "minimum-stability": "dev",
     "extra": {
         "branch-alias": {
-            "dev-master": "0.2-dev"
+            "dev-master": "0.3-dev"
         }
     }
 }

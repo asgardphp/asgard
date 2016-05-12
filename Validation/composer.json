@@ -7,7 +7,7 @@
     }],
     "require": {
         "php": ">=5.5.9",
-        "asgard/common": "0.*"
+        "asgard/common": "~0.3.0"
     },
     "suggest": {
         "symfony/translation": "^3.0"
@@ -18,10 +18,9 @@
     "autoload": {
         "psr-4": {"Asgard\\Validation\\": "."}
     },
-    "minimum-stability": "dev",
     "extra": {
         "branch-alias": {
-            "dev-master": "0.2-dev"
+            "dev-master": "0.3-dev"
         }
     }
 }

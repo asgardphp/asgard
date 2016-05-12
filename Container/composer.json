@@ -7,15 +7,14 @@
     }],
     "require": {
         "php": ">=5.5.9",
-        "jeremeamia/SuperClosure": "2.*"
+        "jeremeamia/SuperClosure": "^2.0"
     },
     "autoload": {
         "psr-4": {"Asgard\\Container\\": "."}
     },
-    "minimum-stability": "dev",
     "extra": {
         "branch-alias": {
-            "dev-master": "0.2-dev"
+            "dev-master": "0.3-dev"
         }
     }
 }

@@ -10,21 +10,20 @@
     },
     "require": {
         "php": ">=5.5.9",
-        "doctrine/annotations": "1.*",
-        "asgard/common": "0.*",
-        "asgard/file": "0.*",
-        "asgard/hook": "0.*",
-        "asgard/container": "0.*",
-        "asgard/debug": "0.*",
-        "asgard/templating": "0.*"
+        "doctrine/annotations": "^1.0",
+        "asgard/common": "~0.3.0",
+        "asgard/file": "~0.3.0",
+        "asgard/hook": "~0.3.0",
+        "asgard/container": "~0.3.0",
+        "asgard/debug": "~0.3.0",
+        "asgard/templating": "~0.3.0"
     },
     "suggest": {
-        "asgard/cache": "0.*"
+        "asgard/cache": "~0.3.0"
     },
-    "minimum-stability": "dev",
     "extra": {
         "branch-alias": {
-            "dev-master": "0.2-dev"
+            "dev-master": "0.3-dev"
         }
     }
 }
