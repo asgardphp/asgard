@@ -14,7 +14,8 @@ matrix:
 
 before_script:
   - curl -s http://getcomposer.org/installer | php
-  - travis_wait php composer.phar install --prefer-source --no-interaction --dev
+  - php composer.phar config minimum-stability dev
+  - travis_wait php composer.phar install --prefer-source --no-interaction
 
 after_script:
   - wget https://scrutinizer-ci.com/ocular.phar
