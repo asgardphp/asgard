@@ -197,7 +197,7 @@ class ORMMigrations {
 					$index['type'] = strtoupper($index['type']);
 
 					foreach($index['columns'] as $col) {
-						if(in_array($table->getColumn($col)->getType()->getName(), ['text', 'blob']))
+						if($index['type'] !== 'FULLTEXT' && in_array($table->getColumn($col)->getType()->getName(), ['text', 'blob']))
 							throw new \Exception('Table '.$table->getName().' cannot have indexes with text/blog columns.');
 					}
 

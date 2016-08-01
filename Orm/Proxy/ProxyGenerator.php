@@ -55,7 +55,8 @@ class <shortName> extends <class> implements \Asgard\Orm\Proxy\ProxyInterface {
 			$this->initializedClasses[$class] = $proxyClass;
 		}
 
-		$entityProxy = new $proxyClass(['id' => $id]);
+		$definition = $dataMapper->getEntityManager()->get($class);
+		$entityProxy = new $proxyClass(['id' => $id], null, $definition, false);
 		$entityProxy->__class__ = $class;
 		$entityProxy->__dataMapper__ = $dataMapper;
 

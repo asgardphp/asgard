@@ -36,20 +36,23 @@ abstract class Entity {
 	 */
 	protected $locale;
 	/**
-	 * Entity manager.
-	 * @var EntityManager
+	 * Entity definition.
+	 * @var Definition
 	 */
-	protected $entityManager;
+	protected $definition;
 
 	/**
 	 * Constructor.
 	 * @param array  $attrs
 	 * @param string $locale
+	 * @param EntityManager $entityManager
+	 * @param boolean $loadDefault
 	 */
-	public function __construct(array $attrs=null, $locale=null, EntityManager $entityManager=null) {
-		$this->entityManager = $entityManager;
+	public function __construct(array $attrs=null, $locale=null, Definition $definition=null, $loadDefault=true) {
+		$this->definition = $definition;
 		$this->setLocale($locale);
-		$this->loadDefault();
+		if($loadDefault)
+			$this->loadDefault();
 		if(is_array($attrs))
 			$this->set($attrs);
 	}
@@ -65,11 +68,11 @@ abstract class Entity {
 	}
 
 	/**
-	 * Set the entity manager.
-	 * @param EntityManager $em
+	 * Set the entity definition.
+	 * @param Definition $definition
 	 */
-	public function setEntityManager($em) {
-		$this->entityManager = $em;
+	public function setDefinition($definition) {
+		$this->definition = $definition;
 		return $this;
 	}
 
@@ -153,9 +156,9 @@ abstract class Entity {
 	 * @return Definition
 	 */
 	public function getDefinition() {
-		if(!$this->entityManager)
-			return $this->getStaticDefinition();
-		return $this->entityManager->get(get_called_class());
+		if(!$this->definition)
+			$this->definition = static::getStaticDefinition();
+		return $this->definition;
 	}
 
 	/**

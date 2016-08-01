@@ -490,7 +490,7 @@ class Definition {
 	 */
 	public function make(array $attrs=null, $locale=null) {
 		$entityClass = $this->entityClass;
-		$entity      = new $entityClass($attrs, $locale, $this->entityManager);
+		$entity      = new $entityClass($attrs, $locale, $this);
 		return $entity;
 	}
 }
