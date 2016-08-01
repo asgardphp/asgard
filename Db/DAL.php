@@ -102,6 +102,21 @@ class DAL implements \Iterator {
 	 * @var boolean
 	 */
 	protected $ignore = false;
+	/**
+	 * Batch size.
+	 * @var integer
+	 */
+	protected $batch_size;
+	/**
+	 * Batch replace.
+	 * @var array
+	 */
+	protected $batch_replace;
+	/**
+	 * Batch.
+	 * @var array
+	 */
+	protected $batch;
 
 	/**
 	 * Constructor.
@@ -112,6 +127,18 @@ class DAL implements \Iterator {
 	public function __construct(DBInterface $db, $tables=null) {
 		$this->db = $db;
 		$this->addFrom($tables);
+	}
+
+	/**
+	 * Set insert batch size and replace parameters.
+	 * @param  integer    $size
+	 * @param  array|null $replace
+	 * @return static
+	 */
+	public function setBatch($size, array $replace=null) {
+		$this->batch_size = $size;
+		$this->batch_replace = $replace;
+		return $this;
 	}
 
 	/**
@@ -1396,6 +1423,33 @@ class DAL implements \Iterator {
 		$sql = $this->buildUpdateSQL($values);
 		$params = $this->getParameters();
 		return $this->db->query($sql, $params)->affected();
+	}
+
+	/**
+	 * Insert a row into batch.
+	 * @param  array $row
+	 * @return boolean    return true when a batch is inserted
+	 */
+	public function insertBatch(array $row) {
+		$this->batch[] = $row;
+		if(count($this->batch) >= $this->batch_size) {
+			$this->flushBatch();
+			return true;
+		}
+		return false;
+	}
+
+	/**
+	 * Flush the batch.
+	 * @return boolean    return true when a batch is inserted
+	 */
+	public function flushBatch() {
+		if(count($this->batch) > 0) {
+			$this->insertMany($this->batch, $this->batch_replace);
+			$this->batch = [];
+			return true;
+		}
+		return false;
 	}
 
 	/**
