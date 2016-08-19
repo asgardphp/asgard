@@ -114,10 +114,10 @@ trait ViewableTrait {
 		elseif($this->view) {
 			#given template engine?
 			if($this->templateEngine)
-				return $this->templateEngine->createTemplate()->setParams((array)$this)->render($this->view, $params);
+				return $this->templateEngine->createTemplate()->render($this->view, (array)$this);
 			#use the default render technique
 			else
-				return $this->renderDefaultTemplate($this->view);
+				return $this->renderDefaultTemplate($this->view, (array)$this);
 		}
 		#default view
 		elseif($this->defaultView) {
@@ -125,11 +125,11 @@ trait ViewableTrait {
 			if($this->templateEngine) {
 				$engine = $this->templateEngine;
 				if($engine->templateExists($this->defaultView))
-					return $engine->createTemplate()->setParams((array)$this)->render($this->defaultView, $params);
+					return $engine->createTemplate()->render($this->defaultView, (array)$this);
 			}
 			#use the default render technique
 			elseif($this->templateExists($this->defaultView))
-				return $this->renderDefaultTemplate($this->defaultView);
+				return $this->renderDefaultTemplate($this->defaultView, (array)$this);
 		}
 		#nothing to return
 		return null;
@@ -159,17 +159,16 @@ trait ViewableTrait {
 	/**
 	 * Render the default template file.
 	 * @param  string $template template file
+	 * @param  array  $params   parameters
 	 * @return string
 	 */
-	protected function renderDefaultTemplate($template, array $params=null) {
+	protected function renderDefaultTemplate($template, $params=[]) {
 		if(!file_exists($template)) {
 			$template = $this->solveTemplatePath($orig = $template);
 			if(!file_exists($template))
 				throw new \Exception('The template file "'.$orig.'" could not be found.');
 		}
 
-		if($params === null)
-			$params = (array)$this;
 		extract($params);
 
 		ob_start();
