@@ -216,6 +216,13 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			$dm->setProxyGenerator($container['proxygenerator']);
 			return $dm;
 		});
+		$container->setParentClass('ormMigrations', 'Asgard\Orm\ORMMigrations');
+		$container->register('ormMigrations', function($container) {
+			return new \Asgard\Orm\ORMMigrations(
+				$container['dataMapper'],
+				$container['MigrationManager']
+			);
+		});
 
 		$container->register('translator', function($container) {
 			$locale = $container['config']['locale'];
@@ -291,6 +298,7 @@ class Bundle extends \Asgard\Core\BundleLoader {
 			#if database is available
 			if($container['config']['database']) {
 				$mm = $container['MigrationManager'];
+				$om = $container['ormMigrations'];
 				$db = $container['db'];
 				$schema = $container['schema'];
 				$dataMapper = $container['dataMapper'];
@@ -307,13 +315,13 @@ class Bundle extends \Asgard\Core\BundleLoader {
 				$dbCreate = new \Asgard\Db\Command\CreateCommand($db);
 				$container['console']->add($dbCreate);
 
-				$ormAutomigrate = new \Asgard\Orm\Command\AutoMigrateCommand($em, $mm, $dataMapper);
+				$ormAutomigrate = new \Asgard\Orm\Command\AutoMigrateCommand($om);
 				$container['console']->add($ormAutomigrate);
 
-				$ormGenerateMigration = new \Asgard\Orm\Command\GenerateMigrationCommand($em, $mm, $dataMapper);
+				$ormGenerateMigration = new \Asgard\Orm\Command\GenerateMigrationCommand($om);
 				$container['console']->add($ormGenerateMigration);
 
-				$ormPreviewMigration = new \Asgard\Orm\Command\PreviewMigrationCommand($em, $mm, $dataMapper);
+				$ormPreviewMigration = new \Asgard\Orm\Command\PreviewMigrationCommand($om);
 				$container['console']->add($ormPreviewMigration);
 
 				$dbEmpty = new \Asgard\Db\Command\EmptyCommand($db);

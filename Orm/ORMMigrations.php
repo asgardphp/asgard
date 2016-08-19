@@ -16,6 +16,11 @@ class ORMMigrations {
 	 * @var DataMapperInterface
 	 */
 	protected $dataMapper;
+	/**
+	 * Callback to customize entities schema.
+	 * @var callable
+	 */
+	protected $entitiesSchemaCallback;
 
 	/**
 	 * Constructor.
@@ -25,6 +30,31 @@ class ORMMigrations {
 	public function __construct(DataMapperInterface $dataMapper, \Asgard\Migration\MigrationManagerInterface $MigrationManager=null) {
 		$this->dataMapper = $dataMapper;
 		$this->MigrationManager = $MigrationManager;
+	}
+
+	/**
+	 * Set entities schema callback.
+	 * @param callable $entitiesSchemaCallback
+	 */
+	public function setEntitiesSchemaCallback($entitiesSchemaCallback) {
+		$this->entitiesSchemaCallback = $entitiesSchemaCallback;
+		return $this;
+	}
+
+	/**
+	 * Return migration manager dependency.
+	 * @return \Asgard\Migration\MigrationManagerInterface
+	 */
+	public function getMigrationManager() {
+		return $this->MigrationManager;
+	}
+
+	/**
+	 * Return datamapper dependency.
+	 * @return DataMapperInterface
+	 */
+	public function getDataMapper() {
+		return $this->dataMapper;
 	}
 
 	/**
@@ -222,6 +252,9 @@ class ORMMigrations {
 			
 			$table->setPrimaryKey(['id']);
 		}
+
+		if($cb = $this->entitiesSchemaCallback)
+			$cb($this, $schema);
 
 		return $schema;
 	}

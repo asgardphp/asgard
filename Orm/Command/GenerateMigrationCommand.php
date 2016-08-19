@@ -19,31 +19,17 @@ class GenerateMigrationCommand extends \Asgard\Console\Command {
 	 */
 	protected $description = 'Generate a migration from ORM entities';
 	/**
-	 * Entities manager dependency.
-	 * @var \Asgard\Entity\EntityManagerInterface
+	 * ORM migrations manager dependency.
+	 * @var \Asgard\Orm\ORMMigrations
 	 */
-	protected $entityManager;
-	/**
-	 * Migrations manager dependency.
-	 * @var \Asgard\Migration\MigrationManagerInterface
-	 */
-	protected $MigrationManager;
-	/**
-	 * DataMapper dependency.
-	 * @var \Asgard\Orm\DataMapperInterface
-	 */
-	protected $dataMapper;
+	protected $ormMigrations;
 
 	/**
 	 * Constructor.
-	 * @param \Asgard\Entity\EntityManagerInterface      $entityManager
-	 * @param \Asgard\Migration\MigrationManagerInterface $MigrationManager
-	 * @param \Asgard\Orm\DataMapperInterface              $dataMapper
+	 * @param \Asgard\Orm\ORMMigrations             $ormMigrations
 	 */
-	public function __construct(\Asgard\Entity\EntityManagerInterface $entityManager, \Asgard\Migration\MigrationManagerInterface $MigrationManager, \Asgard\Orm\DataMapperInterface $dataMapper) {
-		$this->entityManager = $entityManager;
-		$this->MigrationManager = $MigrationManager;
-		$this->dataMapper = $dataMapper;
+	public function __construct(\Asgard\Orm\ORMMigrations $ormMigrations) {
+		$this->ormMigrations = $ormMigrations;
 		parent::__construct();
 	}
 
@@ -53,12 +39,13 @@ class GenerateMigrationCommand extends \Asgard\Console\Command {
 	protected function execute(InputInterface $input, OutputInterface $output) {
 		$migration = $this->input->getArgument('migration') ? $this->input->getArgument('migration'):'Migration';
 
-		$dm = $this->dataMapper;
-		$mm = $this->MigrationManager;
-		$om = new \Asgard\Orm\ORMMigrations($dm, $mm);
+		$om = $this->ormMigrations;
+		$mm = $om->getMigrationManager();
+		$em = $om->getDataMapper()->getEntityManager();
+		$entityDefinitions = $em->getDefinitions();
 
 		$definitions = [];
-		foreach($this->entityManager->getDefinitions() as $definition) {
+		foreach($entityDefinitions as $definition) {
 			if($definition->get('ormMigrate'))
 				$definitions[] = $definition;
 		}
