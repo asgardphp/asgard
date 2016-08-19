@@ -232,16 +232,12 @@ class Form extends Group implements FormInterface {
 		}
 		#otherwise we try to guess by comparing fields
 		else {
-			if($method == 'POST' || $method == 'PUT')
-				$input = $this->getRequest()->post;
-			elseif($method == 'GET')
-				$input = $this->getRequest()->get;
-			else
-				return false;
-			foreach($input->all() as $k=>$v) {
+			$input = $this->data;
+			foreach($input as $k=>$v) {
 				if($this->has($k))
 					return true;
 			}
+			return false;
 		}
 
 		return false;
