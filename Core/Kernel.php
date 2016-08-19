@@ -170,7 +170,6 @@ class Kernel implements \ArrayAccess {
 
 		$this->bundles = $this->doGetBundles();
 		$container = $this->getContainer();
-		$container['errorHandler'] = $this->errorHandler;
 
 		if($this->params['env']) {
 			if(file_exists($this->params['root'].'/app/bootstrap_'.strtolower($this->params['env']).'.php'))
@@ -257,6 +256,7 @@ class Kernel implements \ArrayAccess {
 		$bundles = $this->getAllBundles();
 		#use the Container default instance, in case someones uses it
 		$container = $this->container = \Asgard\Container\Container::singleton();
+		$container['errorHandler'] = $this->errorHandler;
 		$container['kernel'] = $this;
 		$container['config'] = $this->getConfig();
 
