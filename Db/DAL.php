@@ -111,7 +111,7 @@ class DAL implements \Iterator {
 	 * Batch replace.
 	 * @var array
 	 */
-	protected $batch_replace;
+	protected $batch_replace = [];
 	/**
 	 * Batch.
 	 * @var array
@@ -132,10 +132,10 @@ class DAL implements \Iterator {
 	/**
 	 * Set insert batch size and replace parameters.
 	 * @param  integer    $size
-	 * @param  array|null $replace
+	 * @param  array $replace
 	 * @return static
 	 */
-	public function setBatch($size, array $replace=null) {
+	public function setBatch($size, array $replace=[]) {
 		$this->batch_size = $size;
 		$this->batch_replace = $replace;
 		return $this;
