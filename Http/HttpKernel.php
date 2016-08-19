@@ -292,37 +292,31 @@ class HttpKernel implements HttpKernelInterface {
 		$resolver = $this->getResolver();
 		$resolver->sortRoutes();
 
-		if($response = $this->hookManager->trigger('Asgard.Http.Start', [$request]))
-			return $response;
-
 		$route = $resolver->getRoute($request);
-		if($route === null) {
-			if($response = $this->executeStart($request, null))
-				return $response;
 
-			throw new Exception\NotFoundException;
+		if($route) {
+			$request->setRoute($route);
+			$controllerClass = $route->getController();
+			$action = $route->getAction();
+
+			$controller = new $controllerClass();
+			$controller->setFlash($this->flash);
+			$controller->setResolver($this->resolver);
+			$controller->setContainer($this->container);
+
+			$this->prepareController($controller, $action, $request, $route);
 		}
+		else
+			$controller = null;
 
-		$request->setRoute($route);
-		$controllerClass = $route->getController();
-		$action = $route->getAction();
-
-		return $this->runController($controllerClass, $action, $request, $route);
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function runController($controllerClass, $action, Request $request, Route $route=null) {
-		$controller = new $controllerClass();
-		$controller->setFlash($this->flash);
-		$controller->setResolver($this->resolver);
-		$controller->setContainer($this->container);
-
-		$this->prepareController($controller, $action, $request, $route);
+		if($response = $this->hookManager->trigger('Asgard.Http.Start', [$request, $controller]))
+			return $response;
 
 		if($response = $this->executeStart($request, $controller))
 			return $response;
+
+		if($route === null)
+			throw new Exception\NotFoundException;
 
 		return $controller->run($action, $request);
 	}

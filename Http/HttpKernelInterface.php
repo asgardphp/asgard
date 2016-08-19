@@ -124,16 +124,6 @@ interface HttpKernelInterface {
 	public function getRequest();
 
 	/**
-	 * Run the controller and action.
-	 * @param  string          $controllerClass
-	 * @param  string|callable $action
-	 * @param  Request         $request
-	 * @param  Route           $route     Route prefix to match.
-	 * @return mixed
-	 */
-	public function runController($controllerClass, $action, Request $request, Route $route=null);
-
-	/**
 	 * Add a template path solver.
 	 * @param callable $cb
 	 */
