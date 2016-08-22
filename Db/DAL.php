@@ -728,6 +728,14 @@ class DAL implements \Iterator {
 	}
 
 	/**
+	 * Return jointures.
+	 * @return array
+	 */
+	public function getJointures() {
+		return $this->joins;
+	}
+
+	/**
 	 * Format identifiers.
 	 * @param  string $condition
 	 * @return string
