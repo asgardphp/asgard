@@ -321,6 +321,26 @@ class HttpKernel implements HttpKernelInterface {
 		return $controller->run($action, $request);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
+	public function runController($controllerClass, $action, Request $request, Route $route=null) {
+		$controller = new $controllerClass();
+		$controller->setFlash($this->flash);
+		$controller->setResolver($this->resolver);
+		$controller->setContainer($this->container);
+
+		$this->prepareController($controller, $action, $request, $route);
+
+		if($response = $this->hookManager->trigger('Asgard.Http.Start', [$request, $controller]))
+			return $response;
+
+		if($response = $this->executeStart($request, $controller))
+			return $response;
+
+		return $controller->run($action, $request);
+	}
+
 	public function prepareController($controller, $action, Request $request, Route $route=null) {
 		$this->addFilters($controller, $action, $request, $route);
 
