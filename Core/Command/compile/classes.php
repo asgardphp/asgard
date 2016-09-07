@@ -186,12 +186,15 @@ return array_map('realpath', [
 	// $root.'/vendor/asgard/asgard/Validation/ValidatorInterface.php',
 	// $root.'/vendor/asgard/asgard/Validation/ValidatorFactory.php',
 	// $root.'/vendor/asgard/vendor/nesbot/carbon/src/Carbon/Carbon.php',
-	$root.'/vendor/doctrine/annotations/lib/Doctrine/Common/Annotations/Annotation/Target.php',
-	$root.'/vendor/doctrine/annotations/lib/Doctrine/Common/Annotations/AnnotationRegistry.php',
-	$root.'/vendor/doctrine/annotations/lib/Doctrine/Common/Annotations/DocLexer.php',
-	$root.'/vendor/doctrine/annotations/lib/Doctrine/Common/Annotations/DocParser.php',
-	$root.'/vendor/doctrine/annotations/lib/Doctrine/Common/Annotations/Reader.php',
-	$root.'/vendor/doctrine/annotations/lib/Doctrine/Common/Annotations/SimpleAnnotationReader.php',
+
+	#problem with classpreloader
+	// $root.'/vendor/doctrine/annotations/lib/Doctrine/Common/Annotations/Annotation/Target.php',
+	// $root.'/vendor/doctrine/annotations/lib/Doctrine/Common/Annotations/AnnotationRegistry.php',
+	// $root.'/vendor/doctrine/annotations/lib/Doctrine/Common/Annotations/DocLexer.php',
+	// $root.'/vendor/doctrine/annotations/lib/Doctrine/Common/Annotations/DocParser.php',
+	// $root.'/vendor/doctrine/annotations/lib/Doctrine/Common/Annotations/Reader.php',
+	// $root.'/vendor/doctrine/annotations/lib/Doctrine/Common/Annotations/SimpleAnnotationReader.php',
+
 	// $root.'/vendor/asgard/vendor/doctrine/cache/lib/Doctrine/Common/Cache/Cache.php',
 	// $root.'/vendor/asgard/vendor/doctrine/common/lib/Doctrine/Common/EventManager.php',
 	// $root.'/vendor/asgard/vendor/doctrine/lexer/lib/Doctrine/Common/Lexer/AbstractLexer.php',
