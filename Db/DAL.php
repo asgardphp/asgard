@@ -1589,7 +1589,9 @@ class DAL implements \Iterator {
 		$i=0;
 		return preg_replace_callback('/\?/', function() use(&$i, $params, $sql) {
 			$rep = $params[$i++];
-			if(!$rep instanceof Raw && !$rep instanceof static)
+			if($rep === null)
+				return 'NULL';
+			elseif(!$rep instanceof Raw && !$rep instanceof static)
 				return "'".addslashes($rep)."'";
 			else
 				return '?';
