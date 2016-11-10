@@ -18,7 +18,7 @@ class TextWidget extends \Asgard\Form\Widget {
 		return \Asgard\Form\HTMLHelper::tag('input', [
 			'type'	=>	'text',
 			'name'	=>	$this->name,
-			'value'	=>	$this->value,
+			'value'	=>	htmlentities($this->value),
 			'id'	=>	isset($options['id']) ? $options['id']:null,
 		]+$attrs);
 	}
