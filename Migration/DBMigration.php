@@ -48,6 +48,9 @@ abstract class DBMigration extends Migration {
 		} catch(\Exception $e) {
 			$db->rollback();
 			throw $e;
+		} catch(\Throwable $e) {
+			$db->rollback();
+			throw $e;
 		}
 	}
 
@@ -62,6 +65,9 @@ abstract class DBMigration extends Migration {
 			parent::_down();
 			$db->commit();
 		} catch(\Exception $e) {
+			$db->rollback();
+			throw $e;
+		} catch(\Throwable $e) {
 			$db->rollback();
 			throw $e;
 		}

@@ -33,6 +33,8 @@ class ExecuteCommand extends \Asgard\Console\Command {
 			eval($cmd);
 		} catch(\Exception $e) {
 			$this->error($e->getMessage());
+		} catch(\Throwable $e) {
+			$this->error($e->getMessage());
 		}
 	}
 

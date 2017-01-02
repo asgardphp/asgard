@@ -44,6 +44,9 @@ class ConsoleCommand extends \Asgard\Console\Command {
 			} catch(\Exception $e) {
 				ob_get_clean();
 				$this->error($e->getMessage());
+			} catch(\Throwable $e) {
+				ob_get_clean();
+				$this->error($e->getMessage());
 			}
 
 			$cmd = $dialog->ask($this->input, $this->output, $question);

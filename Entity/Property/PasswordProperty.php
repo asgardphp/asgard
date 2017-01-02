@@ -26,6 +26,8 @@ class PasswordProperty extends \Asgard\Entity\Property {
 			$key = $entity->getDefinition()->getEntityManager()->getContainer()['config']['key'];
 		} catch(\Exception $e) {
 			$key = '';
+		} catch(\Throwable $e) {
+			$key = '';
 		}
 		return sha1($key.$val);
 	}

@@ -10,6 +10,9 @@ class ErrorHandlerTest extends \PHPUnit_Framework_TestCase {
 		} catch(\Exception $e) {
 			$trace = $errorHandler->getBacktraceFromException($e);
 			$this->assertTrue(is_array($trace));
+		} catch(\Throwable $e) {
+			$trace = $errorHandler->getBacktraceFromException($e);
+			$this->assertTrue(is_array($trace));
 		}
 	}
 

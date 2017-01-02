@@ -438,6 +438,10 @@ class DataMapper implements DataMapperInterface {
 				if(!$inTransaction)
 					$this->getDB()->rollback();
 				throw $e;
+			} catch(\Throwable $e) {
+				if(!$inTransaction)
+					$this->getDB()->rollback();
+				throw $e;
 			}
 
 			if(!$inTransaction)

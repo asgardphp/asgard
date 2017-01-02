@@ -237,12 +237,20 @@ class HttpKernel implements HttpKernelInterface {
 				$response = (new Response())->setRequest($request)->setContent($response);
 		}
 		else {
+			$exception = false;
 			try {
 				$this->startObLevel = ob_get_level();
 				$response = $this->processRaw($request);
 				if(!$response instanceof Response)
 					$response = (new Response())->setRequest($request)->setContent($response);
-			} catch(\Exception $e) {
+			}
+			catch(\Exception $e) {
+				$exception = true;
+			}
+			catch(\Throwable $e) {
+				$exception = true;
+			}
+			if($exception) {
 				if($e instanceof ControllerException) {
 					$response = $e->getResponse()->setRequest($request);
 					$severity = $e->getSeverity();
@@ -264,7 +272,11 @@ class HttpKernel implements HttpKernelInterface {
 			if($this->end !== null)
 				include $this->end;
 			$this->hookManager->trigger('Asgard.Http.End', [$response]);
-		} catch(\Exception $e) {
+		}
+		catch(\Exception $e) {
+			$this->errorHandler->logException($e);
+		}
+		catch(\Throwable $e) {
 			$this->errorHandler->logException($e);
 		}
 
@@ -361,10 +373,10 @@ class HttpKernel implements HttpKernelInterface {
 
 	/**
 	 * Get a response from an exception.
-	 * @param  \Exception $e
+	 * @param  \Exception|\Throwable $e
 	 * @return Response
 	 */
-	protected function getExceptionResponse(\Exception $e) {
+	protected function getExceptionResponse($e) {
 		while(ob_get_level() > $this->startObLevel)
 			ob_end_clean();
 

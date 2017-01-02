@@ -123,10 +123,10 @@ class ErrorHandler {
 
 	/**
 	 * Return backtrace from an exception.
-	 * @param  \Exception $e
+	 * @param  \Exception|\Throwable $e
 	 * @return array
 	 */
-	public function getBacktraceFromException(\Exception $e) {
+	public function getBacktraceFromException($e) {
 		$trace = $e->getTrace();
 
 		if($e instanceof FatalErrorException) {
@@ -193,9 +193,9 @@ class ErrorHandler {
 
 	/**
 	 * Exception handler.
-	 * @param  \Exception $e
+	 * @param  \Exception|\Throwable $e
 	 */
-	public function exceptionHandler(\Exception $e) {
+	public function exceptionHandler($e) {
 		static::$reservedMemory = null;
 
 		$this->logException($e);
@@ -227,9 +227,9 @@ class ErrorHandler {
 
 	/**
 	 * Log an exception.
-	 * @param  \Exception $e
+	 * @param  \Exception|\Throwable $e
 	 */
-	public function logException(\Exception $e) {
+	public function logException($e) {
 		if(!$this->isLogging())
 			return;
 

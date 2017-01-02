@@ -139,5 +139,6 @@ class ListCommand extends \Asgard\Console\Command {
 			$obj = $this->getContainer()->get($name);
 			return gettype($obj)=='object' ? get_class($obj):gettype($obj);
 		} catch(\Exception $e) {} #defined = ??? / class = ???
+		} catch(\Throwable $e) {} #defined = ??? / class = ???
 	}
 }

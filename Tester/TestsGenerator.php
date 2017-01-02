@@ -73,6 +73,8 @@ public function test'.$testName.'() {
 					$actionRoute = $route->getRoute();
 				} catch(\Exception $e) {
 					continue;
+				} catch(\Throwable $e) {
+					continue;
 				}
 				$testName = str_replace('\\', '', $route->getController()).ucfirst($route->getAction());
 				$tests[] = [

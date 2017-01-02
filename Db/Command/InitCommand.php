@@ -100,6 +100,8 @@ class InitCommand extends \Asgard\Console\Command {
 			}
 		} catch(\Exception $e) {
 			$this->comment('Database could not be created.');
+		} catch(\Throwable $e) {
+			$this->comment('Database could not be created.');
 		}
 
 		if(\Asgard\File\FileSystem::write($this->dir.'/'.$file, $config))

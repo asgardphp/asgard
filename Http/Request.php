@@ -168,7 +168,9 @@ class Request implements \ArrayAccess {
 		#attempt to decode json
 		try {
 			return json_decode($this->body, true);
-		} catch(\Exception $e) {}
+		}
+		catch(\Exception $e) {}
+		catch(\Throwable $e) {}
 	}
 
 	/**

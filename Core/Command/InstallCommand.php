@@ -156,6 +156,7 @@ class InstallCommand extends \Asgard\Console\Command {
 		try {
 			\Asgard\File\FileSystem::delete($tmp);
 		} catch(\Exception $e) {}
+		} catch(\Throwable $e) {}
 
 		$modules[] = $name;
 

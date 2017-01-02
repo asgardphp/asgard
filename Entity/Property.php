@@ -307,6 +307,8 @@ class Property {
 				return $this->doSet($val, $entity, $name);
 			} catch(\Exception $e) {
 				return null;
+			} catch(\Throwable $e) {
+				return null;
 			}
 		}
 		else

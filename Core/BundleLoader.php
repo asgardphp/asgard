@@ -139,7 +139,9 @@ class BundleLoader {
 				if(is_subclass_of($class, 'Symfony\Component\Console\Command\Command')) {
 					try {
 						$console->add(new $class);
-					} catch(\Exception $e) {} #ignore if it cannot be instantiated without arguments
+					}
+					catch(\Exception $e) {} #ignore if it cannot be instantiated without arguments
+					catch(\Throwable $e) {} #ignore if it cannot be instantiated without arguments
 				}
 			}
 		}

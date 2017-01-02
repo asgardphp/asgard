@@ -25,6 +25,7 @@ class DateField extends \Asgard\Form\Field {
 			try {
 				$this->value = \Asgard\Common\Date::createFromFormat('Y-m-d', $value);
 			} catch(\Exception $e) {
+			} catch(\Throwable $e) {
 			}
 		}
 	}

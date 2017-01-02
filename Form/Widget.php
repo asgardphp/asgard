@@ -70,7 +70,9 @@ abstract class Widget {
 	public function __toString() {
 		try {
 			return $this->render();
-		}catch(\Exception $e) {
+		} catch(\Exception $e) {
+			d($e);#todo
+		} catch(\Throwable $e) {
 			d($e);#todo
 		}
 	}
