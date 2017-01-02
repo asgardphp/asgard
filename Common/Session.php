@@ -21,18 +21,25 @@ class Session implements BagInterface {
 	/**
 	 * Constructor.
 	 */
-	public function __construct() {
-		if(headers_sent())
-			return;
-		if(session_status() !== PHP_SESSION_NONE)
-			return;
-		if(isset($_SERVER['PHPSESSID']))
-			session_id($_SERVER['PHPSESSID']);
-		elseif(isset($_POST['PHPSESSID']))
-			session_id($_POST['PHPSESSID']);
-		elseif(isset($_GET['PHPSESSID']))
-			session_id($_GET['PHPSESSID']);
+	public function __construct($session_id=null) {
+		if($session_id === null)
+			$session_id = static::getGlobalSessionId();
+		if($session_id)
+			session_id($session_id);
 		session_start();
+	}
+
+	/**
+	 * Return the global session id.
+	 * @return string
+	*/
+	public static function getGlobalSessionId() {
+		if(isset($_SERVER['PHPSESSID']))
+			return $_SERVER['PHPSESSID'];
+		elseif(isset($_POST['PHPSESSID']))
+			return $_POST['PHPSESSID'];
+		elseif(isset($_GET['PHPSESSID']))
+			return $_GET['PHPSESSID'];
 	}
 
 	/**
