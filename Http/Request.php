@@ -132,14 +132,19 @@ class Request implements \ArrayAccess {
 		else
 			$root = dirname($request->server['SCRIPT_NAME']);
 
-		if($request->server->has('PATH_INFO'))
-			$url = $request->server['PATH_INFO'];
+		if($request->header->has('X_ORIGINAL_URL'))
+			$url = $request->header['X_ORIGINAL_URL'];
+		if($request->header->has('X_REWRITE_URL'))
+			$url = $request->header['X_REWRITE_URL'];
+		elseif($request->server->has('IIS_WasUrlRewritten'))
+			$url = $request->server['IIS_WasUrlRewritten'];
+		elseif($request->server->has('REQUEST_URI'))
+			$url = $request->server['REQUEST_URI'];
 		elseif($request->server->has('ORIG_PATH_INFO'))
 			$url = $request->server['ORIG_PATH_INFO'];
-		elseif($request->server->has('REDIRECT_URL'))
-			$url = $request->server['REDIRECT_URL'];
 		else
 			$url = '';
+		$url = parse_url($url)['path'];
 		$url = preg_replace('/^'.preg_quote($root, '/').'/', '', $url);
 		$url = ltrim($url, '/');
 		$root = trim($root, '/');
