@@ -39,8 +39,9 @@ class DeployCommand extends \Asgard\Console\Command {
 		try {
 			$this->getContainer()['systemcache']->deleteAll();
 			$this->info('Cache deleted with success.');
-		} catch(\Exception $e) {}
-		} catch(\Throwable $e) {}
+		}
+		catch(\Exception $e) {}
+		catch(\Throwable $e) {}
 
 		#compile
 		$this->callSilent('compile');
