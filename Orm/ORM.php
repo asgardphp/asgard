@@ -434,6 +434,7 @@ class ORM implements ORMInterface, \Countable {
 	protected function hydrate(\Asgard\Entity\Entity $entity, array $raw) {
 		$this->unserialize($entity, $raw);
 		$entity->setParameter('persisted', true);
+		$entity->resetChanged();
 
 		return $entity;
 	}
