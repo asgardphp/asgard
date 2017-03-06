@@ -144,6 +144,7 @@ class Request implements \ArrayAccess {
 			$url = $request->server['ORIG_PATH_INFO'];
 		else
 			$url = '';
+		$url = ltrim($url, '/');
 		$url = parse_url($url)['path'];
 		$url = preg_replace('/^'.preg_quote($root, '/').'/', '', $url);
 		$url = ltrim($url, '/');
