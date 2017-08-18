@@ -131,6 +131,7 @@ class Request implements \ArrayAccess {
 			$root = dirname($request->server['ORIG_SCRIPT_NAME']);
 		else
 			$root = dirname($request->server['SCRIPT_NAME']);
+		$root = trim($root, '/');
 
 		if($request->header->has('X_ORIGINAL_URL'))
 			$url = $request->header['X_ORIGINAL_URL'];
@@ -144,11 +145,10 @@ class Request implements \ArrayAccess {
 			$url = $request->server['ORIG_PATH_INFO'];
 		else
 			$url = '';
-		$url = ltrim($url, '/');
 		$url = parse_url($url)['path'];
-		$url = preg_replace('/^'.preg_quote($root, '/').'/', '', $url);
 		$url = ltrim($url, '/');
 		$root = trim($root, '/');
+		$url = preg_replace('/^'.preg_quote($root, '/').'/', '', $url);
 
 		$protocol = $request->server['REQUEST_SCHEME'].'://';
 
