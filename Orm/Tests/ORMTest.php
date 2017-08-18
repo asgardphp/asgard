@@ -44,7 +44,7 @@ class ORMTest extends \PHPUnit_Framework_TestCase {
 		$orm = $dataMapper->orm('Asgard\Orm\Tests\Fixtures\NamesConflict\A');
 
 		$this->assertEquals(
-			'SELECT `a`.* FROM `a`'."\n".'LEFT JOIN `b` `parent` ON `parent`.`id` = `a`.`parent_id`'."\n".'LEFT JOIN `c` `parent1` ON `parent1`.`id` = `parent`.`parent_id`'."\n".'LEFT JOIN `b` `childs` ON `childs`.`parent_id` = `parent1`.`id`'."\n".'LEFT JOIN `a` `childs1` ON `childs1`.`parent_id` = `childs`.`id`'."\n".'GROUP BY `a`.`id`'."\n".'ORDER BY `a`.`id` DESC',
+			'SELECT "a".* FROM "a"'."\n".'LEFT JOIN "b" "parent" ON "parent"."id" = "a"."parent_id"'."\n".'LEFT JOIN "c" "parent1" ON "parent1"."id" = "parent"."parent_id"'."\n".'LEFT JOIN "b" "childs" ON "childs"."parent_id" = "parent1"."id"'."\n".'LEFT JOIN "a" "childs1" ON "childs1"."parent_id" = "childs"."id"'."\n".'GROUP BY "a"."id"'."\n".'ORDER BY "a"."id" DESC',
 			$orm->join([
 				'parent' => [
 					'parent' => [
@@ -56,14 +56,14 @@ class ORMTest extends \PHPUnit_Framework_TestCase {
 
 		$orm = $dataMapper->orm('Asgard\Orm\Tests\Fixtures\NamesConflict\A');
 		$this->assertEquals(
-			'SELECT `a`.* FROM `a`'."\n".'INNER JOIN `b` `parent` ON `parent`.`id` = `a`.`parent_id`'."\n".'INNER JOIN `c` `parent1` ON `parent1`.`id` = `parent`.`parent_id`'."\n".'INNER JOIN `b` `childs` ON `childs`.`parent_id` = `parent1`.`id`'."\n".'INNER JOIN `a` `childs1` ON `childs1`.`parent_id` = `childs`.`id`'."\n".'GROUP BY `a`.`id`'."\n".'ORDER BY `a`.`id` DESC',
+			'SELECT "a".* FROM "a"'."\n".'INNER JOIN "b" "parent" ON "parent"."id" = "a"."parent_id"'."\n".'INNER JOIN "c" "parent1" ON "parent1"."id" = "parent"."parent_id"'."\n".'INNER JOIN "b" "childs" ON "childs"."parent_id" = "parent1"."id"'."\n".'INNER JOIN "a" "childs1" ON "childs1"."parent_id" = "childs"."id"'."\n".'GROUP BY "a"."id"'."\n".'ORDER BY "a"."id" DESC',
 			$orm->parent()->parent()->childs()->childs()->getDAL()->dbgSelect()
 		);
 
 		#with conditions
 		$orm = $dataMapper->orm('Asgard\Orm\Tests\Fixtures\NamesConflict\A');
 		$this->assertEquals(
-			'SELECT `a`.* FROM `a`'."\n".'INNER JOIN `b` `parent` ON `parent`.`id` = `a`.`parent_id`'."\n".'INNER JOIN `c` `parent1` ON `parent1`.`id` = `parent`.`parent_id`'."\n".'INNER JOIN `b` `childs` ON `childs`.`parent_id` = `parent1`.`id`'."\n".'INNER JOIN `a` `childs1` ON `childs1`.`parent_id` = `childs`.`id`'."\n".'WHERE `parent1`.`a`=\'b\''."\n".'GROUP BY `a`.`id`'."\n".'ORDER BY `a`.`id` DESC',
+			'SELECT "a".* FROM "a"'."\n".'INNER JOIN "b" "parent" ON "parent"."id" = "a"."parent_id"'."\n".'INNER JOIN "c" "parent1" ON "parent1"."id" = "parent"."parent_id"'."\n".'INNER JOIN "b" "childs" ON "childs"."parent_id" = "parent1"."id"'."\n".'INNER JOIN "a" "childs1" ON "childs1"."parent_id" = "childs"."id"'."\n".'WHERE "parent1"."a"=\'b\''."\n".'GROUP BY "a"."id"'."\n".'ORDER BY "a"."id" DESC',
 			$orm->parent()->parent()->where('a','b')->childs()->childs()->getDAL()->dbgSelect()
 		);
 	}
