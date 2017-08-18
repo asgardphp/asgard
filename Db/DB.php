@@ -81,7 +81,7 @@ class DB implements DBInterface {
 	 * @return \PDO
 	 */
 	public function getPDO() {
-		if(!$this->pdo)
+		if(!isset($this->pdo))
 			$this->buildPDO();
 
 		return $this->pdo;

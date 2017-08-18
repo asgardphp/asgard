@@ -103,20 +103,10 @@ class DAL implements \Iterator {
 	 */
 	protected $ignore = false;
 	/**
-	 * Batch size.
-	 * @var integer
+	 * Identifier quotation character.
+	 * @var string
 	 */
-	protected $batch_size;
-	/**
-	 * Batch replace.
-	 * @var array
-	 */
-	protected $batch_replace = [];
-	/**
-	 * Batch.
-	 * @var array
-	 */
-	protected $batch;
+	protected $quote = '"';
 
 	/**
 	 * Constructor.
@@ -126,19 +116,12 @@ class DAL implements \Iterator {
 	 */
 	public function __construct(DBInterface $db, $tables=null) {
 		$this->db = $db;
+		$driver = $db->getPDO()->getAttribute(\PDO::ATTR_DRIVER_NAME);
+		if($driver === 'mysql')
+			$this->quote = '`';
+		else
+			$this->quote = '"';
 		$this->addFrom($tables);
-	}
-
-	/**
-	 * Set insert batch size and replace parameters.
-	 * @param  integer    $size
-	 * @param  array $replace
-	 * @return static
-	 */
-	public function setBatch($size, array $replace=[]) {
-		$this->batch_size = $size;
-		$this->batch_replace = $replace;
-		return $this;
 	}
 
 	/**
@@ -728,20 +711,12 @@ class DAL implements \Iterator {
 	}
 
 	/**
-	 * Return jointures.
-	 * @return array
-	 */
-	public function getJointures() {
-		return $this->joins;
-	}
-
-	/**
 	 * Format identifiers.
 	 * @param  string $condition
 	 * @return string
 	 */
 	protected function replace($condition, $setTable=true) {
-		$condition = preg_replace_callback('/(?<![\.a-zA-Z0-9_`\(\)])[a-z_][a-zA-Z0-9._]*(?![^\(]*\))/', function($matches) use($setTable) {
+		$condition = preg_replace_callback('/(?<![\.a-zA-Z0-9_'.$this->quote.'\(\)])[a-z_][a-zA-Z0-9._]*(?![^\(]*\))/', function($matches) use($setTable) {
 			if($setTable && strpos($matches[0], '.')===false && count($this->joins) > 0 && count($this->tables)===1)
 				$matches[0] = array_keys($this->tables)[0].'.'.$matches[0];
 
@@ -767,11 +742,11 @@ class DAL implements \Iterator {
 	 */
 	protected function identifierQuotes($str) {
 		#for every word
-		return preg_replace_callback('/(?<![\.a-zA-Z0-9_`\(\)])[a-z_][a-zA-Z0-9._]*/', function($matches) {
+		return preg_replace_callback('/(?<![\.a-zA-Z0-9_'.$this->quote.'\(\)])[a-z_][a-zA-Z0-9._]*/', function($matches) {
 			$res = [];
 			foreach(explode('.', $matches[0]) as $substr) {
 				if(preg_match('/^[a-z_][a-zA-Z0-9_]*$/', $substr))
-					$res[] = '`'.$substr.'`';
+					$res[] = $this->quote.$substr.$this->quote;
 				else
 					$res[] = $substr;
 			}
@@ -955,12 +930,12 @@ class DAL implements \Iterator {
 		}
 
 		if($table instanceof static) {
-			$_table = '('.$table->buildSQL().') `'.$alias.'`';
+			$_table = '('.$table->buildSQL().') '.$this->quote.$alias.$this->quote;
 			$params = array_merge($params, $table->getParameters());
 			$table = $_table;
 		}
 		elseif($table instanceof Raw)
-			$table = '('.$table.') `'.$alias.'`';
+			$table = '('.$table.') '.$this->quote.$alias.$this->quote;
 		else {
 			if($alias !== null)
 				$table = $table.' '.$alias;
@@ -1011,15 +986,15 @@ class DAL implements \Iterator {
 			throw new \Exception('Must set tables with method from($tables) before running the query.');
 		foreach($this->tables as $alias=>$table) {
 			if($table instanceof static) {
-				$tables[] = '('.$table->buildSQL().') `'.$alias.'`';
+				$tables[] = '('.$table->buildSQL().') '.$this->quote.$alias.$this->quote;
 				$params = array_merge($params, $table->getParameters());
 			}
 			elseif($table instanceof Raw)
-				$tables[] = '('.$table.') `'.$alias.'`';
+				$tables[] = '('.$table.') '.$this->quote.$alias.$this->quote;
 			elseif($alias !== $table && $with_alias)
-				$tables[] = '`'.$table.'` `'.$alias.'`';
+				$tables[] = $this->quote.$table.$this->quote.' '.$this->quote.$alias.$this->quote;
 			else
-				$tables[] = '`'.$table.'`';
+				$tables[] = $this->quote.$table.$this->quote;
 		}
 		$sql = implode(', ', $tables);
 		return [$sql, $params];
@@ -1237,14 +1212,14 @@ class DAL implements \Iterator {
 			#if multiple tables to delete from
 			if($del_tables) {
 				foreach($del_tables as $k=>$v)
-					$del_tables[$k] = '`'.$v.'`';
+					$del_tables[$k] = $this->quote.$v.$this->quote;
 				$del_tables = implode(', ', $del_tables);
 				$sql = 'DELETE '.$del_tables.' FROM '.$tables.$jointures.$where;
 			}
 			#jointures and given table to delete from
 			#jointures require to say from which table to delete. if no table given, use the default table.
 			elseif($this->joins && !$del_tables) {
-				$del_table = '`'.$this->getDefaultTable().'`';
+				$del_table = $this->quote.$this->getDefaultTable().$this->quote;
 				$sql = 'DELETE '.$del_table.' FROM '.$tables.$jointures.$where;
 			}
 			else
@@ -1434,33 +1409,6 @@ class DAL implements \Iterator {
 	}
 
 	/**
-	 * Insert a row into batch.
-	 * @param  array $row
-	 * @return boolean    return true when a batch is inserted
-	 */
-	public function insertBatch(array $row) {
-		$this->batch[] = $row;
-		if(count($this->batch) >= $this->batch_size) {
-			$this->flushBatch();
-			return true;
-		}
-		return false;
-	}
-
-	/**
-	 * Flush the batch.
-	 * @return boolean    return true when a batch is inserted
-	 */
-	public function flushBatch() {
-		if(count($this->batch) > 0) {
-			$this->insertMany($this->batch, $this->batch_replace);
-			$this->batch = [];
-			return true;
-		}
-		return false;
-	}
-
-	/**
 	 * Insert rows.
 	 * @param  array  $values
 	 * @param  array  $update
@@ -1589,9 +1537,7 @@ class DAL implements \Iterator {
 		$i=0;
 		return preg_replace_callback('/\?/', function() use(&$i, $params, $sql) {
 			$rep = $params[$i++];
-			if($rep === null)
-				return 'NULL';
-			elseif(!$rep instanceof Raw && !$rep instanceof static)
+			if(!$rep instanceof Raw && !$rep instanceof static)
 				return "'".addslashes($rep)."'";
 			else
 				return '?';
@@ -1716,14 +1662,5 @@ class DAL implements \Iterator {
 		}, $sql);
 
 		$params = \Asgard\Common\ArrayUtils::flatten($params);
-	}
-
-	/**
-	 * Return the database dependency.
-	 * @return DBInterface
-	 * @api
-	 */
-	public function getDB() {
-		return $this->db;
 	}
 }
