@@ -18,7 +18,8 @@
         "asgard/validation": "~0.3.0"
     },
     "require-dev": {
-        "asgard/file": "~0.3.0"
+        "asgard/file": "~0.3.0",
+        "phpunit/phpunit": "^4.0"
     },
     "extra": {
         "branch-alias": {

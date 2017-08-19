@@ -18,6 +18,9 @@
         "asgard/debug": "~0.3.0",
         "asgard/templating": "~0.3.0"
     },
+    "require-dev": {
+        "phpunit/phpunit": "^4.0"
+    },
     "suggest": {
         "asgard/cache": "~0.3.0"
     },

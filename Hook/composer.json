@@ -11,6 +11,9 @@
         "doctrine/annotations": "^1.0",
         "asgard/container": "~0.3.0"
     },
+    "require-dev": {
+        "phpunit/phpunit": "^4.0"
+    },
     "suggest": {
         "asgard/cache": "~0.3.0"
     },

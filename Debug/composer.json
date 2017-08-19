@@ -13,7 +13,8 @@
         "psr/log": "^1.0"
     },
     "require-dev": {
-        "asgard/http": "~0.3.0"
+        "asgard/http": "~0.3.0",
+        "phpunit/phpunit": "^4.0"
     },
     "extra": {
         "branch-alias": {

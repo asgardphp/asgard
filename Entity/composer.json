@@ -19,7 +19,8 @@
         "asgard/file": "~0.3.0",
         "asgard/config": "~0.3.0",
         "asgard/http": "~0.3.0",
-        "nesbot/carbon": "^1.0"
+        "nesbot/carbon": "^1.0",
+        "phpunit/phpunit": "^4.0"
     },
     "suggest": {
         "asgard/file": "~0.3.0",

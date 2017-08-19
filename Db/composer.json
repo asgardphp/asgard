@@ -13,7 +13,8 @@
         "asgard/common": "~0.3.0"
     },
     "require-dev": {
-        "doctrine/dbal": "^2.0"
+        "doctrine/dbal": "^2.0",
+        "phpunit/phpunit": "^4.0"
     },
     "suggest": {
         "doctrine/dbal": "^2.0"

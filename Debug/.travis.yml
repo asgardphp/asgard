@@ -16,4 +16,4 @@ before_script:
   - curl -s http://getcomposer.org/installer | php
   - COMPOSER_ROOT_VERSION=dev-master php composer.phar install --prefer-source --no-interaction
 
-script: phpunit
+script: vendor/bin/phpunit

@@ -13,6 +13,9 @@
         "asgard/form": "~0.3.0",
         "asgard/entity": "~0.3.0"
     },
+    "require-dev": {
+        "phpunit/phpunit": "^4.0"
+    },
     "extra": {
         "branch-alias": {
             "dev-master": "0.3-dev"
