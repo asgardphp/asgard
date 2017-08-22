@@ -154,6 +154,16 @@ class Response {
 	}
 
 	/**
+	 * Remove a header.
+	 * @param string    $header
+	 * @return Response $this
+	 */
+	public function removeHeader($header) {
+		unset($this->headers[strtolower($header)]);
+		return $this;
+	}
+
+	/**
 	 * Get a header.
 	 * @param  string $header string
 	 * @return string

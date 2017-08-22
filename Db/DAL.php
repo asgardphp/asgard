@@ -770,8 +770,11 @@ class DAL implements \Iterator {
 					$params = array_merge($params, $column->getParameters());
 					$select[] = '('.$sql.') AS '.$this->identifierQuotes($alias);
 				}
-				elseif($column instanceof Raw)
-					$select[] = $column.' AS '.$this->identifierQuotes($alias);
+				elseif($column instanceof Raw) {
+					$sql = $column->getSQL();
+					$params = array_merge($params, $column->getParameters());
+					$select[] = $sql.' AS '.$this->identifierQuotes($alias);
+				}
 				elseif((string)$alias !== (string)$column)
 					$select[] = $this->identifierQuotes($column).' AS '.$this->identifierQuotes($alias);
 				else
@@ -934,8 +937,11 @@ class DAL implements \Iterator {
 			$params = array_merge($params, $table->getParameters());
 			$table = $_table;
 		}
-		elseif($table instanceof Raw)
-			$table = '('.$table.') '.$this->quote.$alias.$this->quote;
+		elseif($table instanceof Raw) {
+			$_table = '('.$table->getSQL().') '.$this->quote.$alias.$this->quote;
+			$params = array_merge($params, $table->getParameters());
+			$table = $_table;
+		}
 		else {
 			if($alias !== null)
 				$table = $table.' '.$alias;
@@ -989,8 +995,10 @@ class DAL implements \Iterator {
 				$tables[] = '('.$table->buildSQL().') '.$this->quote.$alias.$this->quote;
 				$params = array_merge($params, $table->getParameters());
 			}
-			elseif($table instanceof Raw)
-				$tables[] = '('.$table.') '.$this->quote.$alias.$this->quote;
+			elseif($table instanceof Raw) {
+				$tables[] = '('.$table->getSQL().') '.$this->quote.$alias.$this->quote;
+				$params = array_merge($params, $table->getParameters());
+			}
 			elseif($alias !== $table && $with_alias)
 				$tables[] = $this->quote.$table.$this->quote.' '.$this->quote.$alias.$this->quote;
 			else
@@ -1016,8 +1024,9 @@ class DAL implements \Iterator {
 			}
 			if($params[$i] instanceof Raw) {
 				$r = $params[$i];
-				unset($params[$i]);
-				return (string)$r;
+				$sql = $r->getSQL();
+				$params = array_merge(array_slice($params, 0, $i), $r->getParameters(), array_slice($params, $i+1));
+				return $sql;
 			}
 			else
 				return '?';
@@ -1097,8 +1106,11 @@ class DAL implements \Iterator {
 					$params = array_merge($params, $v->getParameters());
 					$set[] = $this->replace($k).'=('.$sql.')';
 				}
-				elseif($v instanceof Raw)
-					$set[] = $this->replace($k).'='.$v;
+				elseif($v instanceof Raw) {
+					$sql = $v->getSQL();
+					$params = array_merge($params, $v->getParameters());
+					$set[] = $this->replace($k).'='.$sql;
+				}
 				else {
 					$params[] = $v;
 					$set[] = $this->replace($k).'=?';
@@ -1130,8 +1142,11 @@ class DAL implements \Iterator {
 					$params[] = array_merge($params, $v->getParameters());
 					$set[] = $this->replace($k, false).'=('.$sql.')';
 				}
-				elseif($v instanceof Raw)
-					$set[] = $this->replace($k, false).'='.$v;
+				elseif($v instanceof Raw) {
+					$sql = $v->getSQL();
+					$params[] = array_merge($params, $v->getParameters());
+					$set[] = $this->replace($k, false).'='.$sql;
+				}
 				else {
 					$params[] = $v;
 					$set[] = $this->replace($k, false).'=?';
@@ -1164,8 +1179,11 @@ class DAL implements \Iterator {
 					$params[] = array_merge($params, $v->getParameters());
 					$set[] = $this->replace($k, false).'=('.$sql.')';
 				}
-				elseif($v instanceof Raw)
-					$set[] = $this->replace($k, false).'='.$v;
+				elseif($v instanceof Raw) {
+					$sql = $v->getSQL();
+					$params[] = array_merge($params, $v->getParameters());
+					$set[] = $this->replace($k, false).'='.$sql;
+				}
 				else {
 					$params[] = $v;
 					$set[] = $this->replace($k, false).'=?';
@@ -1314,10 +1332,11 @@ class DAL implements \Iterator {
 	 * Build an INSERT SQL query.
 	 * @param  array  $values
 	 * @param  array  $update
+	 * @param  array  $constraint
 	 * @return string
 	 * @api
 	 */
-	public function buildInsertSQL(array $rows, array $update=[]) {
+	public function buildInsertSQL(array $rows, array $update=[], array $constraint=[]) {
 		if($this->into === null && count($this->tables) !== 1)
 			throw new \Exception('The into table is not defined.');
 		if($this->into !== null)
@@ -1343,8 +1362,11 @@ class DAL implements \Iterator {
 					$params = array_merge($params, $v->getParameters());
 					$v = '('.$sql.')';
 				}
-				elseif($v instanceof Raw)
-					$v = (string)$v;
+				elseif($v instanceof Raw) {
+					$sql = $v->getSQL();
+					$params = array_merge($params, $v->getParameters());
+					$v = $sql;
+				}
 				else {
 					$params[] = $v;
 					$v = '?';
@@ -1356,17 +1378,22 @@ class DAL implements \Iterator {
 		}
 		$str = implode(', ', $strs);
 
+		$driver = $this->db->getPDO()->getAttribute(\PDO::ATTR_DRIVER_NAME);
+
 		$sql = 'INSERT'.($this->ignore ? ' IGNORE':'').' INTO '.$into.$colsstr.$str;
 		if(count($update) > 0) {
 			$set = [];
 			foreach($update as $k=>$v) {
 				if($v instanceof static) {
-					$sql = $v->buildSQL();
+					$_sql = $v->buildSQL();
 					$params = array_merge($params, $v->getParameters());
-					$set[] = $this->replace($k).'=('.$sql.')';
+					$set[] = $this->replace($k).'=('.$_sql.')';
 				}
-				elseif($v instanceof Raw)
-					$set[] = $this->replace($k).'='.$v;
+				elseif($v instanceof Raw) {
+					$_sql = $v->getSQL();
+					$params = array_merge($params, $v->getParameters());
+					$set[] = $this->replace($k).'='.$_sql;
+				}
 				else {
 					$params[] = $v;
 					$set[] = $this->replace($k).'=?';
@@ -1374,7 +1401,10 @@ class DAL implements \Iterator {
 			}
 			$str = implode(', ', $set);
 
-			$sql .= ' ON DUPLICATE KEY UPDATE '.$str;
+			if($driver === 'pgsql')
+				$sql .= ' ON CONFLICT ('.implode(', ', array_map(function($a){return '"'.$a.'"';}, $constraint)).') DO UPDATE SET '.$str;
+			else
+				$sql .= ' ON DUPLICATE KEY UPDATE '.$str;
 		}
 
 		$this->replaceArrayParams($sql, $params);
@@ -1412,11 +1442,12 @@ class DAL implements \Iterator {
 	 * Insert rows.
 	 * @param  array  $values
 	 * @param  array  $update
+	 * @param  array  $constraint
 	 * @return integer
 	 * @api
 	 */
-	public function insert(array $values, array $update=[]) {
-		$sql = $this->buildInsertSQL([$values], $update);
+	public function insert(array $values, array $update=[], array $constraint=[]) {
+		$sql = $this->buildInsertSQL([$values], $update, $constraint);
 		$params = $this->getParameters();
 		$this->db->query($sql, $params);
 		return $this->db->id();
@@ -1571,10 +1602,11 @@ class DAL implements \Iterator {
 	 * Conpute the insert sql query for debugging.
 	 * @param  array  $values
 	 * @param  array  $update
+	 * @param  array  $constraint
 	 * @return string
 	 */
-	public function dbgInsert(array $values, array $update=[]) {
-		$sql = $this->buildInsertSQL([$values], $update);
+	public function dbgInsert(array $values, array $update=[], array $contraint=[]) {
+		$sql = $this->buildInsertSQL([$values], $update, $constraint);
 		$params = $this->getParameters();
 
 		return $this->replaceParams($sql, $params);
@@ -1584,10 +1616,11 @@ class DAL implements \Iterator {
 	 * Conpute the insert many sql query for debugging.
 	 * @param  array  $rows
 	 * @param  array  $update
+	 * @param  array  $constraint
 	 * @return string
 	 */
-	public function dbgInsertMany(array $rows, array $update=[]) {
-		$sql = $this->buildInsertSQL($rows, $update);
+	public function dbgInsertMany(array $rows, array $update=[], array $constraint=[]) {
+		$sql = $this->buildInsertSQL($rows, $update, $constraint);
 		$params = $this->getParameters();
 
 		return $this->replaceParams($sql, $params);
@@ -1622,11 +1655,12 @@ class DAL implements \Iterator {
 	 * Insert rows.
 	 * @param  array  $rows
 	 * @param  array  $update
+	 * @param  array  $constraint
 	 * @return integer
 	 * @api
 	 */
-	public function insertMany(array $rows, array $update=[]) {
-		$sql = $this->buildInsertSQL($rows, $update);
+	public function insertMany(array $rows, array $update=[], array $constraint=[]) {
+		$sql = $this->buildInsertSQL($rows, $update, $constraint);
 		$params = $this->getParameters();
 		$this->db->query($sql, $params);
 		return $this->db->id();
