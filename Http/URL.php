@@ -43,7 +43,7 @@ class URL implements URLInterface {
 		$this->request = $request;
 		$this->host = $host;
 		$this->root = $root;
-		$this->url = $url;
+		$this->url = ltrim($url, '/');
 		$this->protocol = $protocol;
 	}
 
@@ -58,7 +58,7 @@ class URL implements URLInterface {
 	 * {@inheritDoc}
 	 */
 	public function setURL($url) {
-		return $this->url = $url;
+		return $this->url = ltrim($url, '/');
 	}
 
 	/**
