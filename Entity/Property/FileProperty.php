@@ -47,11 +47,7 @@ class FileProperty extends \Asgard\Entity\Property {
 		parent::__construct($params);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function prepareValidator(\Asgard\Validation\ValidatorInterface $validator) {
-		parent::prepareValidator($validator);
+	public function _prepareValidator(\Asgard\Validation\ValidatorInterface $validator) {
 		$rules = [];
 		$rules['isNull'] = function($input) {
 			return !$input || $input->shouldDelete() || !$input->src();

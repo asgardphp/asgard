@@ -6,11 +6,7 @@ namespace Asgard\Entity\Property;
  * @author Michel Hognerud <michel@hognerud.com>
  */
 class EmailProperty extends TextProperty {
-	/**
-	 * {@inheritDoc}
-	 */
-	public function prepareValidator(\Asgard\Validation\ValidatorInterface $validator) {
-		parent::prepareValidator($validator);
+	public function _prepareValidator(\Asgard\Validation\ValidatorInterface $validator) {
 		$validator->rule('email');
 	}
 

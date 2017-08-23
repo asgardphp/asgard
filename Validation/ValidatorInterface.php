@@ -8,6 +8,18 @@ use Symfony\Component\Translation\TranslatorInterface;
   */
 interface ValidatorInterface {
 	/**
+	 * Set the continueAfterError flag.
+	 * @return ValidatorInterface $this
+	 */
+	public function setContinueAfterError($continueAfterError);
+
+	/**
+	 * Return continueAfterError flag.
+	 * @return boolean
+	 */
+	public function getContinueAfterError();
+
+	/**
 	 * Set the translator.
 	 * @param \Symfony\Component\Translation\TranslatorInterface $translator
 	 */

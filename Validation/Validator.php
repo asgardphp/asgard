@@ -74,6 +74,11 @@ class Validator implements ValidatorInterface {
 	 * @var callback
 	 */
 	protected $formatParameters;
+	/**
+	 * Flag to continue after an error.
+	 * @var boolean
+	 */
+	protected $continueAfterError = false;
 
 	/**
 	 * Groups.
@@ -87,6 +92,21 @@ class Validator implements ValidatorInterface {
 	 */
 	public function __construct(RulesRegistryInterface $registry=null) {
 		$this->registry = $registry;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function setContinueAfterError($continueAfterError) {
+		$this->continueAfterError = $continueAfterError;
+		return $this;
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	public function getContinueAfterError() {
+		return $this->continueAfterError;
 	}
 
 	/**
@@ -525,6 +545,8 @@ class Validator implements ValidatorInterface {
 					}
 					elseif($rule instanceof static)
 						$errors = $this->mergeErrors($errors, $rule->_errors($input, $groups));
+					if(!$this->continueAfterError)
+						break;
 				}
 			}
 			foreach($this->attributes as $attribute=>$validator) {

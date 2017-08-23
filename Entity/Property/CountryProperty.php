@@ -17,11 +17,7 @@ class CountryProperty extends \Asgard\Entity\Property {
 		return $params;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public function prepareValidator(\Asgard\Validation\ValidatorInterface $validator) {
-		parent::prepareValidator($validator);
+	public function _prepareValidator(\Asgard\Validation\ValidatorInterface $validator) {
 		$validator->rule('in', [array_keys($this->getIntl()->getCountryNames())]);
 	}
 

@@ -6,11 +6,7 @@ namespace Asgard\Entity\Property;
  * @author Michel Hognerud <michel@hognerud.com>
  */
 class DatetimeProperty extends \Asgard\Entity\Property {
-	/**
-	 * {@inheritDoc}
-	 */
-	public function prepareValidator(\Asgard\Validation\ValidatorInterface $validator) {
-		parent::prepareValidator($validator);
+	public function _prepareValidator(\Asgard\Validation\ValidatorInterface $validator) {
 		$validator->rule('isinstanceof', 'Asgard\Common\DatetimeInterface');
 	}
 

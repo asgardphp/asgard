@@ -182,16 +182,20 @@ class Property {
 	 * @return array
 	 */
 	public function prepareValidator(\Asgard\Validation\ValidatorInterface $validator) {
+		if($this->get('required'))
+			$validator->rule('required', true);
+		if($this->get('length'))
+			$validator->rule('maxlength', $this->get('length'));
+		if($this->get('in'))
+			$validator->rule('in', [array_keys($this->get('in'))]);
+
+		if(method_exists($this, '_prepareValidator'))
+			$this->_prepareValidator($validator);
+
 		$rules = isset($this->params['validation']) ? $this->params['validation']:[];
 		if(!is_array($rules))
 			$rules = [$rules];
 		$validator->rules($rules);
-		if($this->get('length'))
-			$validator->rule('maxlength', $this->get('length'));
-		if($this->get('required'))
-			$validator->rule('required', true);
-		if($this->get('in'))
-			$validator->rule('in', [array_keys($this->get('in'))]);
 	}
 
 	/**
