@@ -381,8 +381,11 @@ class DataMapper implements DataMapperInterface {
 				if(count($vars) > 0) {
 					if($persisted)
 						$orm->reset()->resetScopes()->where(['id'=>$entity->id])->getDAL()->update($vars);
-					else
+					else {
+						if($vars['id'] === null)
+							$vars['id'] = new \Asgard\Db\Raw('DEFAULT');
 						$entity->id = $orm->getDAL()->insert($vars);
+					}
 				}
 
 				#Persist i18n
