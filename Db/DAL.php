@@ -1482,21 +1482,23 @@ class DAL implements \Iterator {
 			$clone->offset(null);
 			$clone->limit(null);
 		}
+
+		$alias = strtolower($fct);
 		if($group_by) {
 			$dal = new static($this->db);
-			$dal->select($group_by.' groupby, '.$fct.'('.$what.') '.$fct)
+			$dal->select($group_by.' groupby, '.$fct.'('.$what.') '.$alias)
 			    ->groupBy($group_by)
 			    ->from($clone, 's');
 			$res = [];
 			foreach($dal->get() as $v)
-				$res[$v['groupby']] = $v[$fct];
+				$res[$v['groupby']] = $v[$alias];
 			return $res;
 		}
 		else {
 			$dal = new static($this->db);
-			$dal->select($fct.'('.$what.') '.$fct)
+			$dal->select($fct.'('.$what.') '.$alias)
 			    ->from($clone, 's');
-			return \Asgard\Common\ArrayUtils::array_get($dal->first(), $fct);
+			return \Asgard\Common\ArrayUtils::array_get($dal->first(), $alias);
 		}
 	}
 
