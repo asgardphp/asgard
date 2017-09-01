@@ -159,6 +159,16 @@ class ErrorHandler {
 				]];
 			}
 		}
+		elseif($e instanceof \Throwable) {
+			array_unshift($trace, [
+				'file' => $e->getFile(),
+				'line' => $e->getLine(),
+				'function' => null,
+				'class' => null,
+				'type' => null,
+				'args' => [],
+			]);
+		}
 
 		return $trace;
 	}
