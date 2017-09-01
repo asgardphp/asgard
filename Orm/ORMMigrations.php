@@ -21,6 +21,11 @@ class ORMMigrations {
 	 * @var callable
 	 */
 	protected $entitiesSchemaCallback;
+	/**
+	 * Flag to generate foreign constraints.
+	 * @var boolean
+	 */
+	protected $generateForeignConstraints = false;
 
 	/**
 	 * Constructor.
@@ -30,6 +35,23 @@ class ORMMigrations {
 	public function __construct(DataMapperInterface $dataMapper, \Asgard\Migration\MigrationManagerInterface $MigrationManager=null) {
 		$this->dataMapper = $dataMapper;
 		$this->MigrationManager = $MigrationManager;
+	}
+
+	/**
+	 * Set the generateForeignConstraints flag.
+	 * @param boolean $entitiesSchemaCallback
+	 */
+	public function setGenerateForeignConstraints($generateForeignConstraints) {
+		$this->generateForeignConstraints = $generateForeignConstraints;
+		return $this;
+	}
+
+	/**
+	 * Return the generateForeignConstraints flag.
+	 * @return boolean
+	 */
+	public function getGenerateForeignConstraints() {
+		return $this->generateForeignConstraints;
 	}
 
 	/**
@@ -138,6 +160,16 @@ class ORMMigrations {
 								'autoincrement'  => false,
 							]);
 						}
+						else {
+							$foreign_table = $dataMapper->getTable($relation->getTargetDefinition());
+							$column = $relation->getLink();
+							$options = [];
+							if($relation->get('onUpdate'))
+								$options['onUpdate'] = $relation->get('onUpdate');
+							if($relation->get('onDelete'))
+								$options['onDelete'] = $relation->get('onDelete');
+							$table->addForeignKeyConstraint($foreign_table, [$column], ['id'], $options);
+						}
 					}
 					#HMABT relations
 					elseif($relation->type() == 'HMABT' && !$relation->isPolymorphic()) {
@@ -155,6 +187,13 @@ class ORMMigrations {
 								'notnull'        => false,
 								'autoincrement'  => false,
 							]);
+
+							$options = [
+								'onDelete' => 'CASCADE',
+							];
+							$foreign_table = $dataMapper->getTable($relation->getTargetDefinition());
+							$relTable->addForeignKeyConstraint($table, [$relation->getLinkA()], ['id'], $options);
+							$relTable->addForeignKeyConstraint($foreign_table, [$relation->getLinkB()], ['id'], $options);
 						}
 						if($relation->reverse()->isPolymorphic()) {
 							$schema->getTable($table_name)->addColumn($relation->reverse()->getLinkType(), 'string', [
@@ -326,6 +365,12 @@ class ORMMigrations {
 			foreach($table->removedIndexes as $indexName=>$index)
 				$colsRes .= $this->dropIndex($indexName);
 
+			foreach($table->addedForeignKeys as $key)
+				$colsRes .= $this->createForeignKey($key);
+
+			foreach($table->removedForeignKeys as $key)
+				$colsRes .= $this->dropForeignKey($key);
+
 			if($colsRes)
 				$res .= "\$this->schema->table('$tableName', function(\$table) {".$colsRes."\n});\n\n";
 		}
@@ -378,6 +423,9 @@ class ORMMigrations {
 		foreach($table->getIndexes() as $index)
 			$res .= $this->createIndex($index);
 
+		foreach($table->getForeignKeys() as $key)
+			$res .= $this->createForeignKey($key);
+
 		$res .= "\n});\n\n";
 
 		return $res;
@@ -428,9 +476,9 @@ class ORMMigrations {
 		if($col->getLength() !== null)
 			$res .= "\n		'length' => ".$col->getLength().",";
 		if($col->getFixed())
-			$res .= "\n		'length' => true,";
+			$res .= "\n		'fixed' => true,";
 		if($col->getUnsigned())
-			$res .= "\n		'length' => true,";
+			$res .= "\n		'unsigned' => true,";
 		$res .= "\n	]);";
 
 		return $res;
@@ -463,6 +511,27 @@ class ORMMigrations {
 	 */
 	protected function dropIndex($indexName) {
 		return "\n\t\$table->dropIndex('$indexName');";
+	}
+
+	/**
+	 * Build a foreign key.
+	 * @param  \Doctrine\DBAL\Schema\ForeignKeyConstraint $key
+	 * @return string
+	 */
+	protected function createForeignKey($key) {
+		$res = "\n\t\$table->addForeignKeyConstraint('".$key->getForeignTableName()."', ".$this->outputPHP($key->getLocalColumns(), 2).", ".$this->outputPHP($key->getForeignColumns(), 2).
+			", ".$this->outputPHP($key->getOptions(), 2).", '".$key->getName()."');";
+
+		return $res;
+	}
+
+	/**
+	 * Drop a foreign key.
+	 * @param  \Doctrine\DBAL\Schema\ForeignKeyConstraint $key
+	 * @return string
+	 */
+	protected function dropForeignKey($key) {
+		return "\n\t\$table->removeForeignKey('".$key->getName()."');";
 	}
 
 	/**
