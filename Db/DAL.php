@@ -967,16 +967,27 @@ class DAL implements \Iterator {
 		if(!$this->limit && !$this->offset)
 			return '';
 
-		$limit = "\n".'LIMIT ';
-		if($this->offset) {
-			$limit .= $this->offset;
+		$driver = $this->db->getPDO()->getAttribute(\PDO::ATTR_DRIVER_NAME);
+		if($driver === 'pgsql') {
+			$limit = '';
 			if($this->limit)
-				$limit .= ', '.$this->limit;
-			else
-				$limit .= ', '.PHP_INT_MAX;
+				$limit .= "\n".'LIMIT '.$this->limit;
+			if($this->offset)
+				$limit .= "\n".'OFFSET '.$this->offset;
 		}
-		else
-			$limit .= $this->limit;
+		else {
+			$limit = "\n".'LIMIT ';
+			if($this->offset) {
+				$limit .= $this->offset;
+				if($this->limit)
+					$limit .= ', '.$this->limit;
+				else
+					$limit .= ', '.PHP_INT_MAX;
+			}
+			else
+				$limit .= $this->limit;
+		}
+
 		return $limit;
 	}
 
@@ -1139,12 +1150,12 @@ class DAL implements \Iterator {
 			foreach($values as $k=>$v) {
 				if($v instanceof static) {
 					$sql = $v->buildSQL();
-					$params[] = array_merge($params, $v->getParameters());
+					$params = array_merge($params, $v->getParameters());
 					$set[] = $this->replace($k, false).'=('.$sql.')';
 				}
 				elseif($v instanceof Raw) {
 					$sql = $v->getSQL();
-					$params[] = array_merge($params, $v->getParameters());
+					$params = array_merge($params, $v->getParameters());
 					$set[] = $this->replace($k, false).'='.$sql;
 				}
 				else {
@@ -1176,12 +1187,12 @@ class DAL implements \Iterator {
 			foreach($values as $k=>$v) {
 				if($v instanceof static) {
 					$sql = $v->buildSQL();
-					$params[] = array_merge($params, $v->getParameters());
+					$params = array_merge($params, $v->getParameters());
 					$set[] = $this->replace($k, false).'=('.$sql.')';
 				}
 				elseif($v instanceof Raw) {
 					$sql = $v->getSQL();
-					$params[] = array_merge($params, $v->getParameters());
+					$params = array_merge($params, $v->getParameters());
 					$set[] = $this->replace($k, false).'='.$sql;
 				}
 				else {
@@ -1276,6 +1287,7 @@ class DAL implements \Iterator {
 		else {
 			list($tables, $tableparams) = $this->buildTables(false);
 			$params = array_merge($params, $tableparams);
+
 
 			list($where, $whereparams) = $this->buildWhere();
 			$params = array_merge($params, $whereparams);
