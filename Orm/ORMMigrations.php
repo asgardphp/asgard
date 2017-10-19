@@ -440,8 +440,9 @@ class ORMMigrations {
 	protected function updateColumn($name, \Doctrine\DBAL\Schema\ColumnDiff $col) {
 		$res = "\n\t\$table->changeColumn('$name', [";
 
+		$type_changed = in_array('type', $col->changedProperties);
 		foreach($col->column->toArray() as $propName=>$prop) {
-			if(in_array($propName, $col->changedProperties)) {
+			if(($type_changed && $prop) || in_array($propName, $col->changedProperties)) {
 				if($propName === 'type')
 					$res .= "\n\t\t'$propName' => '".strtolower($prop)."',";
 				else

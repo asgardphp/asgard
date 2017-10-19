@@ -22,8 +22,8 @@ class DecimalProperty extends \Asgard\Entity\Property {
 	public function getORMParameters() {
 		return [
 			'type' => 'decimal',
-			'precision' => 20,
-			'scale' => 6,
+			'precision' => $this->get('precision') ? $this->get('precision'):20,
+			'scale' => $this->get('scale') ? $this->get('scale'):6,
 		];
 	}
 
