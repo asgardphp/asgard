@@ -442,7 +442,7 @@ class ORMMigrations {
 
 		$type_changed = in_array('type', $col->changedProperties);
 		foreach($col->column->toArray() as $propName=>$prop) {
-			if(($type_changed && $prop) || in_array($propName, $col->changedProperties)) {
+			if(($type_changed && $prop && $propName !== 'name') || in_array($propName, $col->changedProperties)) {
 				if($propName === 'type')
 					$res .= "\n\t\t'$propName' => '".strtolower($prop)."',";
 				else
