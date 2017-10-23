@@ -1392,7 +1392,10 @@ class DAL implements \Iterator {
 
 		$driver = $this->db->getPDO()->getAttribute(\PDO::ATTR_DRIVER_NAME);
 
-		$sql = 'INSERT'.($this->ignore ? ' IGNORE':'').' INTO '.$into.$colsstr.$str;
+		if($driver === 'mysql')
+			$sql = 'INSERT'.($this->ignore ? ' IGNORE':'').' INTO '.$into.$colsstr.$str;
+		else
+			$sql = 'INSERT INTO '.$into.$colsstr.$str;
 		if(count($update) > 0) {
 			$set = [];
 			foreach($update as $k=>$v) {
@@ -1418,6 +1421,8 @@ class DAL implements \Iterator {
 			else
 				$sql .= ' ON DUPLICATE KEY UPDATE '.$str;
 		}
+		elseif($this->ignore && $driver === 'pgsql')
+			$sql .= ' ON CONFLICT DO NOTHING';
 
 		$this->replaceArrayParams($sql, $params);
 		$this->replaceRaws($sql, $params);
