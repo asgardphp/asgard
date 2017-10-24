@@ -361,9 +361,11 @@ class Kernel implements \ArrayAccess {
 
 			#Remove duplicates
 			foreach($bundles as $k=>$b) {
-				for($i=$k+1; isset($bundles[$i]); $i++) {
-					if($b->getPath() === $bundles[$i]->getPath())
-						unset($bundles[$i]);
+				foreach($bundles as $j=>$bj) {
+					if($j === $k)
+						continue;
+					if($b->getPath() === $bundles[$j]->getPath())
+						unset($bundles[$j]);
 				}
 			}
 

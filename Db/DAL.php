@@ -1460,14 +1460,14 @@ class DAL implements \Iterator {
 	 * @param  array  $values
 	 * @param  array  $update
 	 * @param  array  $constraint
-	 * @return integer
+	 * @return DAL
 	 * @api
 	 */
 	public function insert(array $values, array $update=[], array $constraint=[]) {
 		$sql = $this->buildInsertSQL([$values], $update, $constraint);
 		$params = $this->getParameters();
 		$this->db->query($sql, $params);
-		return $this->db->id();
+		return $this;
 	}
 
 	/**
@@ -1675,14 +1675,14 @@ class DAL implements \Iterator {
 	 * @param  array  $rows
 	 * @param  array  $update
 	 * @param  array  $constraint
-	 * @return integer
+	 * @return DAL
 	 * @api
 	 */
 	public function insertMany(array $rows, array $update=[], array $constraint=[]) {
 		$sql = $this->buildInsertSQL($rows, $update, $constraint);
 		$params = $this->getParameters();
 		$this->db->query($sql, $params);
-		return $this->db->id();
+		return $this;
 	}
 
 	/**
