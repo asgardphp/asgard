@@ -324,6 +324,8 @@ class ErrorHandler {
 			E_USER_NOTICE => \Psr\Log\LogLevel::NOTICE,
 			E_STRICT => \Psr\Log\LogLevel::NOTICE,
 		];
+		if(!isset($PHP_ERROR_LEVELS[$code]))
+			return;
 		return $PHP_ERROR_LEVELS[$code];
 	}
 

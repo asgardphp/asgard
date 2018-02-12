@@ -143,6 +143,14 @@ class ORMMigrations {
 			$table = $schema->createTable($dataMapper->getTable($definition));
 
 			foreach($definition->properties() as $name=>$prop) {
+				$col = [];
+				if(method_exists($prop, 'getORMParameters'))
+					$col = $prop->getORMParameters();
+				if($ormCol = $prop->get('orm'))
+					$col = array_merge($col, $ormCol);
+				if(!isset($col['notnull']))
+					$col['notnull'] = false;
+
 				#relations
 				if($prop->get('type') == 'entity') {
 					$relation = $dataMapper->relation($definition, $name);
@@ -150,13 +158,13 @@ class ORMMigrations {
 					if(!$relation->get('many')) {
 						$table->addColumn($relation->getLink(), 'integer', [
 							'length'         => 11,
-							'notnull'        => false,
+							'notnull'        => $col['notnull'],
 							'autoincrement'  => false,
 						]);
 						if($relation->isPolymorphic()) {
 							$table->addColumn($relation->getLinkType(), 'string', [
 								'length'         => 50,
-								'notnull'        => false,
+								'notnull'        => $col['notnull'],
 								'autoincrement'  => false,
 							]);
 						}
@@ -179,12 +187,12 @@ class ORMMigrations {
 							$relTable = $schema->createTable($table_name);
 							$relTable->addColumn($relation->getLinkB(), 'integer', [
 								'length'         => 11,
-								'notnull'        => false,
+								'notnull'        => $col['notnull'],
 								'autoincrement'  => false,
 							]);
 							$relTable->addColumn($relation->getLinkA(), 'integer', [
 								'length'         => 11,
-								'notnull'        => false,
+								'notnull'        => $col['notnull'],
 								'autoincrement'  => false,
 							]);
 
@@ -198,7 +206,7 @@ class ORMMigrations {
 						if($relation->reverse()->isPolymorphic()) {
 							$schema->getTable($table_name)->addColumn($relation->reverse()->getLinkType(), 'string', [
 								'length'         => 50,
-								'notnull'        => false,
+								'notnull'        => $col['notnull'],
 								'autoincrement'  => false,
 							]);
 						}
@@ -206,19 +214,13 @@ class ORMMigrations {
 						if($relation->get('sortable')) {
 							$schema->getTable($table_name)->addColumn($relation->getPositionField(), 'integer', [
 								'length'         => 11,
-								'notnull'        => false,
+								'notnull'        => $col['notnull'],
 								'autoincrement'  => false,
 							]);
 						}
 					}
 					continue;
 				}
-
-				$col = [];
-				if(method_exists($prop, 'getORMParameters'))
-					$col = $prop->getORMParameters();
-				if($ormCol = $prop->get('orm'))
-					$col = array_merge($col, $ormCol);
 
 				if($prop->get('many')) {
 					$type = 'blob';
@@ -230,8 +232,6 @@ class ORMMigrations {
 					$type = $col['type'];
 				unset($col['type']);
 
-				if(!isset($col['notnull']))
-					$col['notnull'] = false;
 				if(!isset($col['autoincrement']))
 					$col['autoincrement'] = false;
 

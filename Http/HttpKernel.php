@@ -271,7 +271,7 @@ class HttpKernel implements HttpKernelInterface {
 		try {
 			if($this->end !== null)
 				include $this->end;
-			$this->hookManager->trigger('Asgard.Http.End', [$response]);
+			$this->hookManager->trigger('Asgard.Http.End', [&$response, $request]);
 		}
 		catch(\Exception $e) {
 			$this->errorHandler->logException($e);

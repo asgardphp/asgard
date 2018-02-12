@@ -360,12 +360,13 @@ class Kernel implements \ArrayAccess {
 			}
 
 			#Remove duplicates
-			foreach($bundles as $k=>$b) {
-				foreach($bundles as $j=>$bj) {
-					if($j === $k)
-						continue;
-					if($b->getPath() === $bundles[$j]->getPath())
-						unset($bundles[$j]);
+			$kbundles = array_keys($bundles);
+			$vbundles = array_values($bundles);
+			foreach($vbundles as $k=>$b) {
+				$key = $kbundles[$k];
+				for($i=$k+1; isset($bundles[$i]); $i++) {
+					if($b->getPath() === $bundles[$i]->getPath())
+						unset($bundles[$k]);
 				}
 			}
 

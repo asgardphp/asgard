@@ -371,7 +371,7 @@ class Datetime extends \DateTime implements DatetimeInterface {
 	/**
 	 * {@inheritDoc}
 	 */
-	public function setTime($hour, $minute, $second=0) {
+	public function setTime($hour, $minute, $second = NULL, $microseconds = NULL) {
 		return static::createFromCarbon($this->carbon->setTime($hour, $minute, $second));
 	}
 

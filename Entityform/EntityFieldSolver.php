@@ -46,6 +46,8 @@ class EntityFieldSolver implements EntityFieldSolverInterface {
 					return new \Asgard\Form\Field\DateField;
 				case 'Asgard\Entity\Property\FileProperty':
 					return new \Asgard\Form\Field\FileField;
+				case 'Asgard\Entity\Property\CountryProperty':
+					return new \Asgard\Form\Field\SelectField;
 			}
 		});
 		foreach($solvers as $solver)

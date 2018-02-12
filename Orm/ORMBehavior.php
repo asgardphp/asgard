@@ -209,7 +209,7 @@ class ORMBehavior extends \Asgard\Entity\Behavior implements \Asgard\Entity\Pers
 	 * @param  array|null            $groups validation groups
 	 * @return \Asgard\Entity\Entity
 	 */
-	public function call_save(\Asgard\Entity\Entity $entity, array $values=[], $groups=[]) {
+	public function call_save(\Asgard\Entity\Entity $entity, array $values=[], array $groups=[]) {
 		return $this->getDataMapper()->save($entity, $values, $groups);
 	}
 

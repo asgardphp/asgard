@@ -37,8 +37,7 @@ class BooleanProperty extends \Asgard\Entity\Property {
 	 */
 	public function getORMParameters() {
 		return [
-			'type' => 'integer',
-			'length' => 1,
+			'type' => 'boolean',
 		];
 	}
 

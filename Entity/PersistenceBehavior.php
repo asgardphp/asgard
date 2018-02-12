@@ -50,12 +50,12 @@ interface PersistenceBehavior {
 
 	/**
 	 * $article->save()
-	 * @param  Entity  $entity
-	 * @param  array   $attrs
-	 * @param  boolean $validate
+	 * @param  Entity      $entity
+	 * @param  array       $attrs
+	 * @param  array|null  $groups validation groups
 	 * @return Entity
 	 */
-	public function call_save(Entity $entity, array $attrs=null, $validate=true);
+	public function call_save(Entity $entity, array $attrs=[], array $groups=[]);
 
 	/**
 	 * $article->destroy()
