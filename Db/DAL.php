@@ -628,7 +628,7 @@ class DAL implements \Iterator {
 	 * @return array   first element is the SQL, second is the parameters.
 	 */
 	protected function processConditions($params, $condition = 'and', $brackets=false, $table=null) {
-		if(count($params) == 0)
+		if(is_array($params) && count($params) == 0)
 			return ['', []];
 
 		$string_conditions = [];

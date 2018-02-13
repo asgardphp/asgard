@@ -764,7 +764,7 @@ class ORM implements ORMInterface, \Countable {
 			$ids[] = $row['id'];
 		}
 
-		if(count($entities) && count($this->with)) {
+		if(is_array($entities) && count($entities) && is_array($this->with) && count($this->with)) {
 			foreach($this->with as $relationName=>$closure) {
 				$rel = $this->dataMapper->relation($this->definition, $relationName);
 				$relation_type = $rel->type();
