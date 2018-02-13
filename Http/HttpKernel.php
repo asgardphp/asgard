@@ -255,7 +255,6 @@ class HttpKernel implements HttpKernelInterface {
 					$response = $e->getResponse()->setRequest($request);
 					$severity = $e->getSeverity();
 					$trace = $this->errorHandler->getBacktraceFromException($e);
-					$this->errorHandler->log($severity, $e->getMessage(), $e->getFile(), $e->getLine(), $e, $trace);
 				}
 				else {
 					$response = null;
