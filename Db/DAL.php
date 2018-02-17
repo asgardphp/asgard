@@ -1716,4 +1716,8 @@ class DAL implements \Iterator {
 
 		$params = \Asgard\Common\ArrayUtils::flatten($params);
 	}
+
+	public function getDB() {
+		return $this->db;
+	}
 }

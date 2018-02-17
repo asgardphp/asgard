@@ -384,7 +384,9 @@ class DataMapper implements DataMapperInterface {
 					else {
 						if($vars['id'] === null)
 							$vars['id'] = new \Asgard\Db\Raw('DEFAULT');
-						$entity->id = $orm->getDAL()->insert($vars);
+						$dal = $orm->getDAL();
+						$dal->insert($vars);
+						$entity->id = $dal->getDB()->id();
 					}
 				}
 
