@@ -41,10 +41,17 @@ class DBException extends \PDOException {
 		$this->sql = $sql;
 		$this->args = $args;
 
-		$msg = $this->getMessage().'<br/>'."\n".'SQL: '.$sql;
-		if(count($args) > 0)
+		$this->message = $this->getMessage();
+
+		if(strlen($sql) > 2048)
+			return $this;
+		$msg = '<br/>'."\n".'SQL: '.$sql;
+		if(count($args) > 0) {
 			$msg .= ' ('.implode(', ', $args).')';
-		$this->message = $msg;
+			if(strlen($msg) > 2048)
+				return $this;
+		}
+		$this->message .= $msg;
 
 		return $this;
 	}

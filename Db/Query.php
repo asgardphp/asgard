@@ -47,6 +47,14 @@ class Query {
 	}
 
 	/**
+	 * Return the ressource.
+	 * @api
+	 */
+	public function rsc() {
+		return $this->rsc;
+	}
+
+	/**
 	 * Return the next row.
 	 * @return array
 	 * @api
