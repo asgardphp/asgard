@@ -677,7 +677,7 @@ class DAL implements \Iterator {
 						if(strpos($key, '?') === false) {
 							#if we are checking that the identifier is equal to null
 							if($value === null)
-								$res = $key.' IS NULL';
+								$res = $this->identifierQuotes($key).' IS NULL';
 							else {
 								$res .= '=?';
 								$pdoparams[] = $value;

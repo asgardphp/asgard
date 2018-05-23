@@ -246,6 +246,8 @@ class Kernel implements \ArrayAccess {
 		if($cache) {
 			if(($container = $cache->fetch('asgard.container')) instanceof \Asgard\Container\Container) {
 				$container['kernel'] = $this;
+				$container['errorHandler'] = $this->errorHandler;
+
 				$this->container = $container;
 				#make $this->container the default instance of Container, in case someones uses it
 				\Asgard\Container\Container::setInstance($this->container);
