@@ -148,8 +148,12 @@ class Response {
 	 * @param string    $value
 	 * @return Response $this
 	 */
-	public function setHeader($header, $value) {
-		$this->headers[strtolower($header)] = $value;
+	public function setHeader($header, $value, $replace=true) {
+		if($replace)
+			$this->removeHeader($header);
+
+		$this->headers[] = [$header, $value, $replace];
+
 		return $this;
 	}
 
@@ -159,7 +163,11 @@ class Response {
 	 * @return Response $this
 	 */
 	public function removeHeader($header) {
-		unset($this->headers[strtolower($header)]);
+		foreach($this->headers as $k => $v) {
+			if($k === $header)
+				unset($this->headers[$k]);
+		}
+
 		return $this;
 	}
 
@@ -169,9 +177,10 @@ class Response {
 	 * @return string
 	 */
 	public function getHeader($header) {
-		if(!isset($this->headers[strtolower($header)]))
-			return;
-		return $this->headers[strtolower($header)];
+		foreach($this->headers as $k => $v) {
+			if($k === $header)
+				return $v;
+		}
 	}
 
 	/**
@@ -208,14 +217,11 @@ class Response {
 
 		$headers = [];
 		if(array_key_exists($this->code, static::$codes))
-			$headers[] = 'HTTP/1.1 '.$this->code.' '.static::$codes[$this->code];
+			header('HTTP/1.1 '.$this->code.' '.static::$codes[$this->code]);
 		else
-			$headers[] = 'HTTP/1.1 200 '.static::$codes[200];
-		foreach($this->headers as $k=>$v)
-			$headers[] = $k.': '.$v;
-
-		foreach($headers as $h)
-			header($h);
+			header('HTTP/1.1 200 '.static::$codes[200]);
+		foreach($this->headers as $v)
+			header($v[0].': '.$v[1], $v[2]);
 	}
 
 	/**
