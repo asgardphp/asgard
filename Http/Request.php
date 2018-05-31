@@ -146,7 +146,11 @@ class Request implements \ArrayAccess {
 		else
 			$url = '';
 		$url = ltrim($url, '/');
-		$url = parse_url($url)['path'];
+		$parse = parse_url($url);
+		if(isset($parse['path']))
+			$url = $parse['path'];
+		else
+			$url = '';
 		$root = trim($root, '/');
 		$url = preg_replace('/^'.preg_quote($root, '/').'/', '', $url);
 
