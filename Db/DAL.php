@@ -109,6 +109,22 @@ class DAL implements \Iterator {
 	protected $quote = '"';
 
 	/**
+	 * Batch size.
+	 * @var integer
+	 */
+	protected $batch_size;
+	/**
+	 * Batch replace.
+	 * @var array
+	 */
+	protected $batch_replace = [];
+	/**
+	 * Batch.
+	 * @var array
+	 */
+	protected $batch;
+
+	/**
 	 * Constructor.
 	 * @param DBInterface  $db
 	 * @param string  $tables
@@ -122,6 +138,44 @@ class DAL implements \Iterator {
 		else
 			$this->quote = '"';
 		$this->addFrom($tables);
+	}
+
+	/**
+	 * Set insert batch size and replace parameters.
+	 * @param  integer    $size
+	 * @param  array $replace
+	 * @return static
+	 */
+	public function setBatch($size, array $replace=[]) {
+		$this->batch_size = $size;
+		$this->batch_replace = $replace;
+		return $this;
+	}
+
+	/**
+	 * Insert a row into batch.
+	 * @param  array $row
+	 * @return boolean    return true when a batch is inserted
+	 */
+	public function insertBatch(array $row) {
+		$this->batch[] = $row;
+		if(count($this->batch) >= $this->batch_size) {
+			$this->flushBatch();
+			return true;
+		}
+		return false;
+	}
+	/**
+	 * Flush the batch.
+	 * @return boolean    return true when a batch is inserted
+	 */
+	public function flushBatch() {
+		if(count($this->batch) > 0) {
+			$this->insertMany($this->batch, $this->batch_replace);
+			$this->batch = [];
+			return true;
+		}
+		return false;
 	}
 
 	/**

@@ -178,7 +178,7 @@ class Response {
 	 */
 	public function getHeader($header) {
 		foreach($this->headers as $k => $v) {
-			if($k === $header)
+			if($v[0] === $header)
 				return $v;
 		}
 	}
